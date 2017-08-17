@@ -1,0 +1,12 @@
+dependencies {
+    compile configurations.common,
+            'javax.validation:validation-api:1.1.0.Final',
+            'com.fasterxml.jackson.core:jackson-annotations:2.6.0',
+            'org.slf4j:slf4j-api:1.7.12',
+            'commons-lang:commons-lang:2.6'
+
+    testCompile configurations.test_deps,
+            project(':stub-idp-saml-test'),
+            "uk.gov.ida:common-utils:$ida_utils_version",
+            'org.assertj:assertj-joda-time:1.1.0'
+}

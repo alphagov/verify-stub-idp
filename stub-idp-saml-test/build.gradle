@@ -1,0 +1,4 @@
+dependencies {
+    compile configurations.common,
+            configurations.test_deps
+}

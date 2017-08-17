@@ -1,0 +1,23 @@
+*.class
+build
+repo
+.DS_Store
+.gradle
+.idea
+*.iml
+*.ipr
+.sass-cache
+*.iws
+out/**
+deploy/perf_graphs
+# Package Files #
+*.jar
+*.log
+*~
+*.swp
+
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
