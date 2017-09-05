@@ -38,7 +38,7 @@ subprojects {
                 'javax.inject:javax.inject:1',
                 'com.google.inject:guice:4.0'
 
-        test_deps "uk.gov.verify:saml-test-utils:$opensaml_version-20",
+        test_deps "uk.gov.verify:saml-test-utils:$opensaml_version-24",
                 'commons-codec:commons-codec:1.10'
     }
 }
