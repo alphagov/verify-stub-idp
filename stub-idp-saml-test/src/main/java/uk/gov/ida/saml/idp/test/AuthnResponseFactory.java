@@ -6,6 +6,7 @@ import org.opensaml.saml.saml2.core.Subject;
 import org.opensaml.security.credential.Credential;
 import org.opensaml.xmlsec.algorithm.DigestAlgorithm;
 import org.opensaml.xmlsec.algorithm.SignatureAlgorithm;
+import org.opensaml.xmlsec.encryption.support.EncryptionConstants;
 import uk.gov.ida.saml.core.test.TestCertificateStrings;
 import uk.gov.ida.saml.core.test.TestCredentialFactory;
 import uk.gov.ida.saml.core.test.builders.AuthnStatementBuilder;
@@ -71,6 +72,18 @@ public class AuthnResponseFactory {
             String destination,
             SignatureAlgorithm signatureAlgorithm,
             DigestAlgorithm digestAlgorithm) throws Exception {
+        return aResponseFromIdp(requestId, idpEntityId, publicCert, privateKey, destination, signatureAlgorithm, digestAlgorithm, EncryptionConstants.ALGO_ID_BLOCKCIPHER_AES128);
+    }
+
+    public Response aResponseFromIdp(
+            String requestId,
+            String idpEntityId,
+            String publicCert,
+            String privateKey,
+            String destination,
+            SignatureAlgorithm signatureAlgorithm,
+            DigestAlgorithm digestAlgorithm,
+            String encryptionAlgorithm) throws Exception {
         TestCredentialFactory hubEncryptionCredentialFactory =
                 new TestCredentialFactory(TestCertificateStrings.HUB_TEST_PUBLIC_ENCRYPTION_CERT, TestCertificateStrings.HUB_TEST_PRIVATE_ENCRYPTION_KEY);
         TestCredentialFactory idpSigningCredentialFactory =  new TestCredentialFactory(publicCert, privateKey);
@@ -102,7 +115,7 @@ public class AuthnResponseFactory {
                                         .withSigningCredential(signingCredential)
                                         .withSignatureAlgorithm(signatureAlgorithm)
                                         .withDigestAlgorithm(assertion_id1, digestAlgorithm).build())
-                                .buildWithEncrypterCredential(encryptingCredential))
+                                .buildWithEncrypterCredential(encryptingCredential, encryptionAlgorithm))
                 .addEncryptedAssertion(
                         AssertionBuilder.anAssertion()
                                 .withId(assertion_id2)
@@ -114,7 +127,7 @@ public class AuthnResponseFactory {
                                         .withSigningCredential(signingCredential)
                                         .withSignatureAlgorithm(signatureAlgorithm)
                                         .withDigestAlgorithm(assertion_id2, digestAlgorithm).build())
-                                .buildWithEncrypterCredential(encryptingCredential))
+                                .buildWithEncrypterCredential(encryptingCredential, encryptionAlgorithm))
                 .build();
     }
 
@@ -139,6 +152,20 @@ public class AuthnResponseFactory {
         Response response = aResponseFromIdp(requestId, idpEntityId, publicCert, privateKey, destination, signatureAlgorithm, digestAlgorithm);
         return responseToStringTransformer.apply(response);
     }
+
+    public String aSamlResponseFromIdp(
+            String requestId,
+            String idpEntityId,
+            String publicCert,
+            String privateKey,
+            String destination,
+            SignatureAlgorithm signatureAlgorithm,
+            DigestAlgorithm digestAlgorithm,
+            String encryptionAlgorithm) throws Exception {
+        Response response = aResponseFromIdp(requestId, idpEntityId, publicCert, privateKey, destination, signatureAlgorithm, digestAlgorithm, encryptionAlgorithm);
+        return responseToStringTransformer.apply(response);
+    }
+
 
     public String aSamlResponseFromIdp(
             String idpEntityId,
