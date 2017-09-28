@@ -36,6 +36,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import static uk.gov.ida.saml.idp.test.builders.AttributeStatementBuilder.anAttributeStatement;
+import static uk.gov.ida.saml.idp.test.builders.NameIdBuilder.aNameId;
 
 public class AuthnResponseFactory {
 
@@ -193,8 +194,10 @@ public class AuthnResponseFactory {
                 new TestCredentialFactory(TestCertificateStrings.HUB_TEST_PUBLIC_ENCRYPTION_CERT, TestCertificateStrings.HUB_TEST_PRIVATE_ENCRYPTION_KEY);
         TestCredentialFactory idpSigningCredentialFactory =  new TestCredentialFactory(publicCert, privateKey);
 
+        final String persistentId = "UK/GB/12345";
         final Subject authnAssertionSubject =
                 SubjectBuilder.aSubject()
+                        .withNameId(aNameId().withValue(persistentId).build())
                         .withSubjectConfirmation(
                                 SubjectConfirmationBuilder.aSubjectConfirmation()
                                         .withSubjectConfirmationData(SubjectConfirmationDataBuilder.aSubjectConfirmationData()
@@ -222,7 +225,7 @@ public class AuthnResponseFactory {
         Attribute firstNameAttribute = AttributeFactory.firstNameAttribute("Javier");
         Attribute familyNameAttribute = AttributeFactory.familyNameAttribute("Garcia");
         Attribute dateOfBirthAttribute = AttributeFactory.dateOfBirthAttribute("1965-01-01");
-        Attribute personIdentifierAttribute = AttributeFactory.personIdentifierAttribute("UK/GB/12345");
+        Attribute personIdentifierAttribute = AttributeFactory.personIdentifierAttribute(persistentId);
         Attribute currentAddressAttribute = AttributeFactory.currentAddressAttribute("12 World Street, E22 6NW, London, UK");
         Attribute genderAttribute = AttributeFactory.genderAttribute("Male");
 
@@ -272,6 +275,4 @@ public class AuthnResponseFactory {
         Response response = aResponseFromCountry(requestId, idpEntityId, publicCert, privateKey, destination, signatureAlgorithm, digestAlgorithm, encryptionAlgorithm, authnContext, recipient, audienceId);
         return responseToStringTransformer.apply(response);
     }
-
-
 }
