@@ -18,7 +18,7 @@ subprojects {
     }
 
     ext {
-      ida_utils_version = '2.0.0-309'
+      ida_utils_version = '2.0.0-317'
       opensaml_version = '3.3.0'
     }
     group = "uk.gov.ida"
@@ -31,7 +31,7 @@ subprojects {
     }
 
     dependencies {
-        common  "uk.gov.verify:saml-utils:$opensaml_version-44",
+        common  "uk.gov.verify:saml-utils:$opensaml_version-46",
                 "org.opensaml:opensaml-core:$opensaml_version",
                 'com.google.guava:guava:18.0',
                 'joda-time:joda-time:2.9',
