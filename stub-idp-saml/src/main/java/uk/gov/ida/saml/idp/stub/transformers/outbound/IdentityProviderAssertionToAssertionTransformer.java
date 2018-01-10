@@ -7,7 +7,6 @@ import org.opensaml.saml.saml2.core.AttributeStatement;
 import org.opensaml.saml.saml2.core.Issuer;
 import uk.gov.ida.saml.core.domain.FraudAuthnDetails;
 import uk.gov.ida.saml.core.domain.IdentityProviderAssertion;
-import uk.gov.ida.saml.transformers.Transformer;
 import uk.gov.ida.saml.core.OpenSamlXmlObjectFactory;
 import uk.gov.ida.saml.core.domain.IdentityProviderAuthnStatement;
 import uk.gov.ida.saml.core.domain.IpAddress;
@@ -18,7 +17,7 @@ import uk.gov.ida.saml.hub.factories.AttributeFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class IdentityProviderAssertionToAssertionTransformer implements Transformer<IdentityProviderAssertion,Assertion> {
+public class IdentityProviderAssertionToAssertionTransformer {
 
     private final OpenSamlXmlObjectFactory openSamlXmlObjectFactory;
     private final AttributeFactory attributeFactory;
