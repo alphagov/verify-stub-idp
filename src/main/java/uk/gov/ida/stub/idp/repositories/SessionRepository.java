@@ -9,6 +9,8 @@ import uk.gov.ida.stub.idp.domain.IdpLanguageHint;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -38,6 +40,10 @@ public class SessionRepository {
         return updateSession(idpSessionId, session);
     }
 
+    public SessionId newSession(IdaAuthnRequestFromHub idaRequestFromHub, String relayState, Optional<IdpLanguageHint> languageHint) {
+        return newSession(idaRequestFromHub, relayState, Collections.emptyList(), Collections.emptyList(), languageHint, Optional.of(false));
+    }
+
     public SessionId updateSession(SessionId id, Session session) {
         sessions.put(id, session);
         return id;
@@ -45,7 +51,9 @@ public class SessionRepository {
 
     public Optional<Session> deleteAndGet(SessionId sessionToken) {
         return Optional.ofNullable(sessions.asMap().remove(sessionToken));
-
     }
 
+    public void delete(SessionId sessionToken) {
+        sessions.asMap().remove(sessionToken);
+    }
 }

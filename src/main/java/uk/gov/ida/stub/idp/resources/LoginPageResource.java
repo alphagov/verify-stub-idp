@@ -109,9 +109,9 @@ public class LoginPageResource {
                 try {
                     idpUserService.attachIdpUserToSession(idpName, username, password, sessionCookie);
                 } catch (InvalidUsernameOrPasswordException e) {
-                    return createErrorResponse(samlRequestId, INVALID_USERNAME_OR_PASSWORD, idpName);
+                    return createErrorResponse(INVALID_USERNAME_OR_PASSWORD, idpName);
                 } catch (InvalidSessionIdException e) {
-                    return createErrorResponse(samlRequestId, INVALID_SESSION_ID, idpName);
+                    return createErrorResponse(INVALID_SESSION_ID, idpName);
                 }
                 return Response.seeOther(UriBuilder.fromPath(Urls.CONSENT_RESOURCE)
                         .build(idpName))
@@ -231,11 +231,7 @@ public class LoginPageResource {
         return session.get();
     }
 
-    private WebApplicationException errorResponse(String error) {
-        return new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(error).build());
-    }
-
-    private Response createErrorResponse(String samlRequestId, ErrorMessageType errorMessage, String idpName) {
+    private Response createErrorResponse(ErrorMessageType errorMessage, String idpName) {
         URI uri = UriBuilder.fromPath(format(Urls.LOGIN_FORMAT, idpName))
                 .queryParam(Urls.ERROR_MESSAGE_PARAM, errorMessage)
                 .build();

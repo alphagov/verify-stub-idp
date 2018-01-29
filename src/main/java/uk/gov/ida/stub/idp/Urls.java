@@ -7,6 +7,7 @@ public interface Urls {
     String RELAY_STATE_PARAM = "RelayState";
     String LANGUAGE_HINT_PARAM = "language";
     String IDP_ID_PARAM = "idpId";
+    String SCHEME_ID_PARAM = "schemeId";
     String REGISTRATION_PARAM = "registration";
     String SUBMIT_PARAM = "submit";
     String ERROR_MESSAGE_PARAM = "errorMessage";
@@ -32,10 +33,12 @@ public interface Urls {
 
     // paths and resources
     String IDP_SAML2_SSO_RESOURCE = "/{"+IDP_ID_PARAM+"}/SAML2/SSO";
+    String EIDAS_SAML2_SSO_RESOURCE = "/eidas/{"+SCHEME_ID_PARAM+"}/SAML2/SSO";
     String HEADLESS_ROOT = "/headless";
 
     String LOGIN_FORMAT = "/{0}/login";
     String LOGIN_RESOURCE = "/{"+IDP_ID_PARAM+"}/login";
+    String EIDAS_LOGIN_RESOURCE = "/eidas/{"+SCHEME_ID_PARAM+"}/login";
     String LOGIN_AUTHN_FAILURE_PATH = "authn-failure";
     String LOGIN_NO_AUTHN_CONTEXT_PATH = "no-authn-context";
     String LOGIN_FRAUD_FAILURE_PATH = "fraud-failure";
@@ -46,10 +49,12 @@ public interface Urls {
     String LOGIN_AUTHN_PENDING_PATH = "authn-pending";
     String DEBUG_RESOURCE = "/{"+IDP_ID_PARAM+"}/debug";
     String CONSENT_RESOURCE = "/{"+IDP_ID_PARAM+"}/consent";
+    String EIDAS_CONSENT_RESOURCE = "eidas/{"+SCHEME_ID_PARAM+"}/consent";
 
     String USERS_RESOURCE = "/{"+IDP_ID_PARAM+"}/users";
     String DELETE_USER_PATH = "/delete";
     String GET_USER_PATH = "/{" + USERNAME_PARAM + "}";
+
 
     @SuppressWarnings("squid:S2068")
     String PASSWORD_GEN_RESOURCE = "/password-gen";

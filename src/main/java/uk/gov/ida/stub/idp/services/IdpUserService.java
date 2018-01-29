@@ -145,4 +145,6 @@ public class IdpUserService {
         return new SimpleMdsValue<>(value, DateTime.parse("2000-01-01"), DateTime.parse("2013-01-03"), false);
     }
 
+    public void attachEidasUserToSession(String schemeName, String username, String password, SessionId sessionCookie) throws InvalidSessionIdException, InvalidUsernameOrPasswordException{
+    }
 }

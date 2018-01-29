@@ -56,7 +56,33 @@ public class AuthnRequestReceiverService {
     public SessionCreated handleAuthnRequest(String idpName, String samlRequest, Set<String> idpHints, Optional<Boolean> registration, String relayState, Optional<IdpLanguageHint> languageHint) {
         final List<IdpHint> validHints = new ArrayList<>();
         final List<String> invalidHints = new ArrayList<>();
+        validateHints(idpHints, validHints, invalidHints);
 
+
+        final IdaAuthnRequestFromHub idaRequestFromHub = samlRequestTransformer.apply(samlRequest);
+        final SessionId idpSessionId = sessionRepository.newSession(idaRequestFromHub, relayState, validHints, invalidHints, languageHint, registration);
+
+        UriBuilder uriBuilder;
+        if (registration.isPresent() && registration.get()) {
+            uriBuilder = UriBuilder.fromPath(Urls.REGISTER_RESOURCE);
+        } else {
+            uriBuilder = UriBuilder.fromPath(Urls.LOGIN_RESOURCE);
+        }
+
+        return new SessionCreated(uriBuilder.build(idpName), idpSessionId);
+    }
+
+    public SessionCreated handleEidasAuthnRequest(String schemeId, String samlRequest, String relayState, Optional<IdpLanguageHint> languageHint) {
+
+        final IdaAuthnRequestFromHub idaRequestFromHub = samlRequestTransformer.apply(samlRequest); //Use an eidas transformer instead
+        final SessionId idpSessionId = sessionRepository.newSession(idaRequestFromHub, relayState, languageHint);
+
+        UriBuilder uriBuilder = UriBuilder.fromPath(Urls.EIDAS_LOGIN_RESOURCE);
+
+        return new SessionCreated(uriBuilder.build(schemeId), idpSessionId);
+    }
+
+    private void validateHints(Set<String> idpHints, List<IdpHint> validHints, List<String> invalidHints) {
         if (idpHints != null && !idpHints.isEmpty()) {
             for (String hint : idpHints) {
                 try {
@@ -74,18 +100,5 @@ public class AuthnRequestReceiverService {
                 LOG.info("Received unknown hints: {}", invalidHints);
             }
         }
-
-        final IdaAuthnRequestFromHub idaRequestFromHub = samlRequestTransformer.apply(samlRequest);
-        final SessionId idpSessionId = sessionRepository.newSession(idaRequestFromHub, relayState, validHints, invalidHints, languageHint, registration);
-
-        UriBuilder uriBuilder;
-        if (registration.isPresent() && registration.get()) {
-            uriBuilder = UriBuilder.fromPath(Urls.REGISTER_RESOURCE);
-        } else {
-            uriBuilder = UriBuilder.fromPath(Urls.LOGIN_RESOURCE);
-        }
-
-        return new SessionCreated(uriBuilder.build(idpName), idpSessionId);
     }
-
 }

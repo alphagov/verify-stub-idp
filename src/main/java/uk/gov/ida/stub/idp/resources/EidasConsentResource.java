@@ -14,6 +14,7 @@ import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.services.NonSuccessAuthnResponseService;
 import uk.gov.ida.stub.idp.services.SuccessAuthnResponseService;
 import uk.gov.ida.stub.idp.views.ConsentView;
+import uk.gov.ida.stub.idp.views.EidasConsentView;
 import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
 
 import javax.inject.Inject;
@@ -31,86 +32,61 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Optional;
 
-@Path(Urls.CONSENT_RESOURCE)
+@Path(Urls.EIDAS_CONSENT_RESOURCE)
 @Produces(MediaType.TEXT_HTML)
 @SessionCookieValueMustExistAsASession
-public class ConsentResource {
+public class EidasConsentResource {
 
-    private final IdpStubsRepository idpStubsRepository;
     private final SessionRepository sessionRepository;
     private final SuccessAuthnResponseService successAuthnResponseService;
-    private final NonSuccessAuthnResponseService nonSuccessAuthnResponseService;
     private final SamlResponseRedirectViewFactory samlResponseRedirectViewFactory;
 
-    public static final String I_AGREE_SUBMIT_VALUE = "I Agree";
-    public static final String I_REFUSE_SUBMIT_VALUE = "I Refuse";
-
     @Inject
-    public ConsentResource(
-            IdpStubsRepository idpStubsRepository,
+    public EidasConsentResource(
             SessionRepository sessionRepository,
             SuccessAuthnResponseService successAuthnResponseService,
-            NonSuccessAuthnResponseService nonSuccessAuthnResponseService,
             SamlResponseRedirectViewFactory samlResponseRedirectViewFactory) {
         this.successAuthnResponseService = successAuthnResponseService;
-        this.idpStubsRepository = idpStubsRepository;
         this.sessionRepository = sessionRepository;
-        this.nonSuccessAuthnResponseService = nonSuccessAuthnResponseService;
         this.samlResponseRedirectViewFactory = samlResponseRedirectViewFactory;
     }
 
     @GET
     public Response get(
-            @PathParam(Urls.IDP_ID_PARAM) @NotNull String idpName,
+            @PathParam(Urls.IDP_ID_PARAM) @NotNull String schemeId,
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
 
-        Session session = getAndValidateSession(idpName, sessionCookie);
+        validateSession(schemeId, sessionCookie);
 
-        IdpUser idpUser = session.getIdpUser().get();
-
-        List<AuthnContext> requestLevelsOfAssurance = session.getIdaAuthnRequestFromHub().getLevelsOfAssurance();
-        AuthnContext userLevelOfAssurance = idpUser.getLevelOfAssurance();
-        boolean isUserLOATooLow = !requestLevelsOfAssurance.stream().anyMatch(loa -> loa.equals(userLevelOfAssurance));
-
-        Idp idp = idpStubsRepository.getIdpWithFriendlyId(idpName);
-        return Response.ok(new ConsentView(idp.getDisplayName(), idp.getFriendlyId(), idp.getAssetId(), idpUser, isUserLOATooLow, userLevelOfAssurance, requestLevelsOfAssurance)).build();
-    }
-
-    private WebApplicationException errorResponse(String error) {
-        return new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(error).build());
+        return Response.ok(new EidasConsentView("Stub Country", schemeId, schemeId)).build();
     }
 
     @POST
     public Response consent(
-            @PathParam(Urls.IDP_ID_PARAM) @NotNull String idpName,
+            @PathParam(Urls.IDP_ID_PARAM) @NotNull String schemeId,
             @FormParam(Urls.SUBMIT_PARAM) @NotNull String submitButtonValue,
             @FormParam(Urls.RANDOMISE_PID_PARAM) boolean randomisePid,
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
 
-        getAndValidateSession(idpName, sessionCookie);
+        validateSession(schemeId, sessionCookie);
         Session session = sessionRepository.deleteAndGet(sessionCookie).get();
 
-        switch (submitButtonValue) {
-            case I_AGREE_SUBMIT_VALUE:
-                return samlResponseRedirectViewFactory.sendSamlMessage(successAuthnResponseService.getSuccessResponse(randomisePid, "TODO: Get IP ADDRESS from request", idpName, session));
-            case I_REFUSE_SUBMIT_VALUE:
-                return samlResponseRedirectViewFactory.sendSamlMessage(nonSuccessAuthnResponseService.generateNoAuthnContext(session.getIdaAuthnRequestFromHub().getId(), idpName, session.getRelayState()));
-
-            default:
-                throw errorResponse("Invalid button value " + submitButtonValue);
-        }
+        return samlResponseRedirectViewFactory.sendSamlMessage(successAuthnResponseService.getSuccessResponse(randomisePid, "TODO: Get IP ADDRESS from request", schemeId, session));
     }
 
-    private Session getAndValidateSession(String idpName, SessionId sessionCookie) {
+    private void validateSession(String schemeId, SessionId sessionCookie) {
         if (Strings.isNullOrEmpty(sessionCookie.toString())) {
-            throw errorResponse("Unable to locate session cookie for " + idpName);
+            throw errorResponse("Unable to locate session cookie for " + schemeId);
         }
 
         Optional<Session> session = sessionRepository.get(sessionCookie);
 
         if (!session.isPresent() || !session.get().getIdpUser().isPresent()) {
-            throw errorResponse("Session is invalid for " + idpName);
+            throw errorResponse("Session is invalid for " + schemeId);
         }
-        return session.get();
+    }
+
+    private WebApplicationException errorResponse(String error) {
+        return new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(error).build());
     }
 }
