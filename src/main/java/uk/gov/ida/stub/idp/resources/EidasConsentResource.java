@@ -64,17 +64,17 @@ public class EidasConsentResource {
         validateSession(schemeId, sessionCookie);
         Session session = sessionRepository.deleteAndGet(sessionCookie).get();
 
-        return samlResponseRedirectViewFactory.sendSamlMessage(successAuthnResponseService.getSuccessResponse(randomisePid, "TODO: Get IP ADDRESS from request", schemeId, session));
+        return samlResponseRedirectViewFactory.sendSamlMessage(successAuthnResponseService.getEidasSuccessResponse(randomisePid, schemeId, session));
     }
 
     private void validateSession(String schemeId, SessionId sessionCookie) {
-        if (Strings.isNullOrEmpty(sessionCookie.toString())) {
+        if (sessionCookie == null || Strings.isNullOrEmpty(sessionCookie.toString())) {
             throw errorResponse("Unable to locate session cookie for " + schemeId);
         }
 
         Optional<Session> session = sessionRepository.get(sessionCookie);
 
-        if (!session.isPresent() || !session.get().getIdpUser().isPresent()) {
+        if (!session.isPresent()) {
             throw errorResponse("Session is invalid for " + schemeId);
         }
     }

@@ -41,14 +41,11 @@ import static uk.gov.ida.stub.idp.views.ErrorMessageType.NO_ERROR;
 @SessionCookieValueMustExistAsASession
 public class EidasLoginPageResource {
 
-    private final IdpUserService idpUserService;
     private final SessionRepository sessionRepository;
 
     @Inject
     public EidasLoginPageResource(
-            IdpUserService idpUserService,
             SessionRepository sessionRepository) {
-        this.idpUserService = idpUserService;
         this.sessionRepository = sessionRepository;
     }
 
@@ -75,20 +72,13 @@ public class EidasLoginPageResource {
 
         checkSession(schemeName, sessionCookie);
 
-        try {
-            idpUserService.attachEidasUserToSession(schemeName, username, password, sessionCookie);
-        } catch (InvalidUsernameOrPasswordException e) {
-            return createErrorResponse(INVALID_USERNAME_OR_PASSWORD, schemeName);
-        } catch (InvalidSessionIdException e) {
-            return createErrorResponse(INVALID_SESSION_ID, schemeName);
-        }
         return Response.seeOther(UriBuilder.fromPath(Urls.EIDAS_CONSENT_RESOURCE)
                 .build(schemeName))
                 .build();
     }
 
     private void checkSession(String idpName, SessionId sessionCookie) {
-        if (Strings.isNullOrEmpty(sessionCookie.toString())) {
+        if (sessionCookie == null || Strings.isNullOrEmpty(sessionCookie.toString())) {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Unable to locate session cookie for " + idpName))).build());
         }
 
@@ -99,10 +89,4 @@ public class EidasLoginPageResource {
         }
     }
 
-    private Response createErrorResponse(ErrorMessageType errorMessage, String idpName) {
-        URI uri = UriBuilder.fromPath(format(Urls.LOGIN_FORMAT, idpName))
-                .queryParam(Urls.ERROR_MESSAGE_PARAM, errorMessage)
-                .build();
-        return Response.seeOther(uri).build();
-    }
 }
