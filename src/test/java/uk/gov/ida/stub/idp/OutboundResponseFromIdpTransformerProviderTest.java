@@ -14,10 +14,10 @@ import uk.gov.ida.saml.core.test.TestCertificateStrings;
 import uk.gov.ida.saml.core.test.TestEntityIds;
 import uk.gov.ida.saml.security.IdaKeyStore;
 import uk.gov.ida.security.HardCodedKeyStore;
-import uk.gov.ida.stub.idp.saml.transformers.OutboundResponseFromIdpTransformerProvider;
 import uk.gov.ida.stub.idp.domain.factories.StubTransformersFactory;
-import uk.gov.ida.stub.idp.saml.locators.AssignableEntityToEncryptForLocator;
 import uk.gov.ida.stub.idp.repositories.Idp;
+import uk.gov.ida.stub.idp.saml.locators.AssignableEntityToEncryptForLocator;
+import uk.gov.ida.stub.idp.saml.transformers.OutboundResponseFromIdpTransformerProvider;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;
@@ -42,9 +42,9 @@ public class OutboundResponseFromIdpTransformerProviderTest {
     private static final KeyPair encryptionKeyPair = new KeyPair(publicEncryptionKey, privateEncryptionKey);
 
     private static final IdaKeyStore PRIV_KEYSTORE_DUMMY = new IdaKeyStore(new KeyPair(publicKey, privateKey), Collections.singletonList(encryptionKeyPair));
-    private static final com.google.common.base.Optional<String> TEST_SIGNING_KEY = com.google.common.base.Optional.of("some/signing/key");
+    private static final Optional<String> TEST_SIGNING_KEY = Optional.of("some/signing/key");
     private static final AssignableEntityToEncryptForLocator ENTITY_TO_ENCRYPT_FOR_LOCATOR = new AssignableEntityToEncryptForLocator();
-    public static final String ISSUER_ID = TestEntityIds.STUB_IDP_ONE;
+    private static final String ISSUER_ID = TestEntityIds.STUB_IDP_ONE;
 
     private static StubTransformersFactory mockStubTransformersFactory;
     private OutboundResponseFromIdpTransformerProvider testTransformerProvider;
@@ -66,7 +66,7 @@ public class OutboundResponseFromIdpTransformerProviderTest {
 
     @Test
     public void testGet_shouldReturnTransformerWhichAddsKeyInfoWhenConfiguredToSend() throws Exception {
-        Idp idpSendingKeyInfo = new Idp("test-idp", "Test Idp", "test-idp-asset-id", true, ISSUER_ID, Optional.empty(), null);
+        Idp idpSendingKeyInfo = new Idp("test-idp", "Test Idp", "test-idp-asset-id", true, ISSUER_ID, null);
 
         testTransformerProvider.get(idpSendingKeyInfo);
 
@@ -83,7 +83,7 @@ public class OutboundResponseFromIdpTransformerProviderTest {
 
     @Test
     public void testGet_shouldReturnTransformerWithoutKeyInfoWhenConfiguredNotToSend() throws Exception {
-        Idp idpNotSendingKeyInfo = new Idp("test-idp", "Test Idp", "test-idp-asset-id", false, ISSUER_ID, Optional.empty(), null);
+        Idp idpNotSendingKeyInfo = new Idp("test-idp", "Test Idp", "test-idp-asset-id", false, ISSUER_ID, null);
 
         testTransformerProvider.get(idpNotSendingKeyInfo);
 
@@ -98,12 +98,12 @@ public class OutboundResponseFromIdpTransformerProviderTest {
 
     @Test
     public void testGet_shouldReturnTransformerWithoutKeyInfoWhenSigningKeyIsAbsent() throws Exception {
-        Idp idpNotSendingKeyInfo = new Idp("test-idp", "Test Idp", "test-idp-asset-id", false, ISSUER_ID, Optional.empty(), null);
+        Idp idpNotSendingKeyInfo = new Idp("test-idp", "Test Idp", "test-idp-asset-id", false, ISSUER_ID, null);
         OutboundResponseFromIdpTransformerProvider nullPublicKeyTransformerProvider = new OutboundResponseFromIdpTransformerProvider(
                 ENC_KEYSTORE_DUMMY,
                 PRIV_KEYSTORE_DUMMY,
                 ENTITY_TO_ENCRYPT_FOR_LOCATOR,
-                com.google.common.base.Optional.<String>absent(),
+                Optional.empty(),
                 mockStubTransformersFactory,
                 SIGNATURE_ALGORITHM,
                 DIGEST_ALGORITHM

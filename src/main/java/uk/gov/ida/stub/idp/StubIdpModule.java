@@ -10,6 +10,8 @@ import io.dropwizard.configuration.DefaultConfigurationFactoryFactory;
 import io.dropwizard.servlets.tasks.Task;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.joda.time.Period;
+import org.joda.time.ReadablePeriod;
 import org.opensaml.saml.metadata.resolver.MetadataResolver;
 import org.opensaml.saml.metadata.resolver.impl.AbstractReloadingMetadataResolver;
 import org.opensaml.saml.saml2.core.AuthnRequest;
@@ -42,6 +44,8 @@ import uk.gov.ida.saml.security.SignatureFactory;
 import uk.gov.ida.saml.security.SigningKeyStore;
 import uk.gov.ida.shared.dropwizard.infinispan.util.InfinispanCacheManager;
 import uk.gov.ida.stub.idp.auth.ManagedAuthFilterInstaller;
+import uk.gov.ida.stub.idp.builders.CountryMetadataBuilder;
+import uk.gov.ida.stub.idp.builders.SigningHelper;
 import uk.gov.ida.stub.idp.configuration.AssertionLifetimeConfiguration;
 import uk.gov.ida.stub.idp.configuration.IdpStubsConfiguration;
 import uk.gov.ida.stub.idp.configuration.StubIdpConfiguration;
@@ -82,6 +86,7 @@ import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -115,6 +120,7 @@ public class StubIdpModule extends AbstractModule {
         bind(EntityToEncryptForLocator.class).to(IdpHardCodedEntityToEncryptForLocator.class).asEagerSingleton();
         bind(IdaKeyStoreCredentialRetriever.class).asEagerSingleton();
         bind(SignatureFactory.class).asEagerSingleton();
+        bind(SigningHelper.class).asEagerSingleton();
         bind(SessionRepository.class).asEagerSingleton();
         bind(new TypeLiteral<ConcurrentMap<String, Document>>() {}).toInstance(new ConcurrentHashMap<>());
 
@@ -128,6 +134,7 @@ public class StubIdpModule extends AbstractModule {
         bind(AssertionFactory.class);
         bind(AssertionRestrictionsFactory.class);
         bind(IdentityProviderAssertionFactory.class);
+        bind(CountryMetadataBuilder.class);
 
         bind(StubIdpsFileListener.class).asEagerSingleton();
 
@@ -199,6 +206,18 @@ public class StubIdpModule extends AbstractModule {
     }
 
     @Provides
+    @Named("metadataSignatureFactory")
+    private SignatureFactory getSignatureFactoryWithKeyInfo(IdaKeyStoreCredentialRetriever keyStoreCredentialRetriever, DigestAlgorithm digestAlgorithm, SignatureAlgorithm signatureAlgorithm) {
+        return new SignatureFactory(true, keyStoreCredentialRetriever, signatureAlgorithm, digestAlgorithm);
+    }
+
+    @Provides
+    @Named("metadataValidityPeriod")
+    private ReadablePeriod getMetadataValidity() {
+        return new Period().withYears(100);
+    }
+
+    @Provides
     public Function<String, IdaAuthnRequestFromHub> getStringToIdaAuthnRequestFromHubTransformer(SigningKeyStore signingKeyStore) {
         return new StubTransformersFactory().getStringToIdaAuthnRequestFromHub(
                 signingKeyStore
@@ -216,7 +235,7 @@ public class StubIdpModule extends AbstractModule {
                 encryptionKeyStore,
                 keyStore,
                 entityToEncryptForLocator,
-                com.google.common.base.Optional.fromNullable(stubIdpConfiguration.getSigningKeyPairConfiguration().getCert()),
+                Optional.ofNullable(stubIdpConfiguration.getSigningKeyPairConfiguration().getCert()),
                 new StubTransformersFactory(),
                 new SignatureRSASHA256(),
                 new DigestSHA256()
@@ -245,10 +264,11 @@ public class StubIdpModule extends AbstractModule {
     @Singleton
     public IdaKeyStore getKeyStore(StubIdpConfiguration stubIdpConfiguration) {
         PrivateKey privateSigningKey = stubIdpConfiguration.getSigningKeyPairConfiguration().getPrivateKey();
-        PublicKey publicSigningKey = new X509CertificateFactory().createCertificate(stubIdpConfiguration.getSigningKeyPairConfiguration().getCert()).getPublicKey();
+        X509Certificate signingCertificate = new X509CertificateFactory().createCertificate(stubIdpConfiguration.getSigningKeyPairConfiguration().getCert());
+        PublicKey publicSigningKey = signingCertificate.getPublicKey();
         KeyPair signingKeyPair = new KeyPair(publicSigningKey, privateSigningKey);
 
-        return new IdaKeyStore(signingKeyPair, Collections.emptyList());
+        return new IdaKeyStore(signingCertificate, signingKeyPair, Collections.emptyList());
     }
 
     @Provides

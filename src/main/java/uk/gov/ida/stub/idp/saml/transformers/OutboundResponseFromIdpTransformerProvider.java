@@ -1,6 +1,5 @@
 package uk.gov.ida.stub.idp.saml.transformers;
 
-import com.google.common.base.Optional;
 import org.opensaml.xmlsec.algorithm.DigestAlgorithm;
 import org.opensaml.xmlsec.algorithm.SignatureAlgorithm;
 import uk.gov.ida.saml.security.EncryptionKeyStore;
@@ -10,6 +9,7 @@ import uk.gov.ida.stub.idp.domain.OutboundResponseFromIdp;
 import uk.gov.ida.stub.idp.domain.factories.StubTransformersFactory;
 import uk.gov.ida.stub.idp.repositories.Idp;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 public class OutboundResponseFromIdpTransformerProvider {

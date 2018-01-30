@@ -12,7 +12,6 @@ import uk.gov.ida.stub.idp.configuration.UserCredentials;
 import uk.gov.ida.stub.idp.exceptions.IdpNotFoundException;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
@@ -62,7 +61,6 @@ public class IdpStubsRepository {
                         stubIdp.getAssetId(),
                         stubIdp.getSendKeyInfo(),
                         format(entityIdTemplate, stubIdp.getFriendlyId()),
-                        Optional.ofNullable(stubIdp.getMetadataLocation()).map(File::new),
                         allIdpsUserRepository
                 );
                 tempIdpMap.put(stubIdp.getFriendlyId(), idp);

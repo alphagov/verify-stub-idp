@@ -34,10 +34,6 @@ public class StubIdp {
     @JsonProperty
     protected boolean sendKeyInfo;
 
-    @Valid
-    @JsonProperty
-    protected String metadataLocation;
-
 
     public List<UserCredentials> getIdpUserCredentials() {
         return idpUserCredentials;
@@ -54,6 +50,4 @@ public class StubIdp {
     public boolean getSendKeyInfo() {
         return sendKeyInfo;
     }
-
-    public String getMetadataLocation() { return metadataLocation; }
 }
