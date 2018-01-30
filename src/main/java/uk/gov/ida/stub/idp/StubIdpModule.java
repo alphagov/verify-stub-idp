@@ -8,6 +8,7 @@ import io.dropwizard.configuration.ConfigurationFactory;
 import io.dropwizard.configuration.ConfigurationSourceProvider;
 import io.dropwizard.configuration.DefaultConfigurationFactoryFactory;
 import io.dropwizard.setup.Bootstrap;
+import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.xmlsec.algorithm.DigestAlgorithm;
 import org.opensaml.xmlsec.algorithm.SignatureAlgorithm;
 import org.opensaml.xmlsec.algorithm.descriptors.DigestSHA256;
@@ -176,6 +177,11 @@ public class StubIdpModule extends AbstractModule {
         return new StubTransformersFactory().getStringToIdaAuthnRequestFromHub(
                 signingKeyStore
         );
+    }
+
+    @Provides
+    public  Function<String, AuthnRequest> getStringToAuthnRequestTransformer(){
+        return new StubTransformersFactory().getStringToAuthnRequest();
     }
 
     @Provides

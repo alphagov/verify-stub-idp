@@ -79,4 +79,16 @@ public class SuccessAuthnResponseService {
         return new SamlResponse(idpResponse, session.getRelayState(), hubUrl);
     }
 
+    public SamlResponse getEidasSuccessResponse(boolean randomisePid, String remoteIpAddress, String schemeName, Session session){
+        URI hubUrl = metadataProvider.getAssertionConsumerServiceLocation();
+        String requestId = session.getEidasAuthnRequest().getRequestId();
+
+        PersistentId persistentId = new PersistentId(UUID.randomUUID().toString());
+
+
+
+
+        return null;
+    }
+
 }

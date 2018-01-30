@@ -28,6 +28,7 @@ import java.util.Set;
 
 @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 @Produces(MediaType.TEXT_HTML)
+@Path("/")
 public class IdpAuthenticationRequestReceiverResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(IdpAuthenticationRequestReceiverResource.class);

@@ -1,9 +1,11 @@
 package uk.gov.ida.stub.idp.services;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.ida.common.SessionId;
+import uk.gov.ida.notification.saml.translation.EidasAuthnRequest;
 import uk.gov.ida.saml.hub.domain.IdaAuthnRequestFromHub;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.domain.IdpHint;
@@ -25,6 +27,7 @@ public class AuthnRequestReceiverService {
 
     private final Function<String, IdaAuthnRequestFromHub> samlRequestTransformer;
     private final SessionRepository sessionRepository;
+    private final Function<String, AuthnRequest> stringAuthnRequestTransformer;
 
     public static class SessionCreated {
         private URI nextLocation;
@@ -47,10 +50,12 @@ public class AuthnRequestReceiverService {
     @Inject
     public AuthnRequestReceiverService(
             Function<String, IdaAuthnRequestFromHub> samlRequestTransformer,
-            SessionRepository sessionRepository) {
+            SessionRepository sessionRepository,
+            Function<String, AuthnRequest> stringToAuthnRequestTransformer) {
 
         this.samlRequestTransformer = samlRequestTransformer;
         this.sessionRepository = sessionRepository;
+        this.stringAuthnRequestTransformer = stringToAuthnRequestTransformer;
     }
 
     public SessionCreated handleAuthnRequest(String idpName, String samlRequest, Set<String> idpHints, Optional<Boolean> registration, String relayState, Optional<IdpLanguageHint> languageHint) {
@@ -74,13 +79,16 @@ public class AuthnRequestReceiverService {
 
     public SessionCreated handleEidasAuthnRequest(String schemeId, String samlRequest, String relayState, Optional<IdpLanguageHint> languageHint) {
 
-        final IdaAuthnRequestFromHub idaRequestFromHub = samlRequestTransformer.apply(samlRequest); //Use an eidas transformer instead
-        final SessionId idpSessionId = sessionRepository.newSession(idaRequestFromHub, relayState, languageHint);
+        AuthnRequest authnRequest = stringAuthnRequestTransformer.apply(samlRequest);
+        EidasAuthnRequest eidasAuthnRequest = EidasAuthnRequest.buildFromAuthnRequest(authnRequest);
+        final SessionId idpSessionId = sessionRepository.newSession(eidasAuthnRequest, relayState, languageHint);
 
         UriBuilder uriBuilder = UriBuilder.fromPath(Urls.EIDAS_LOGIN_RESOURCE);
 
         return new SessionCreated(uriBuilder.build(schemeId), idpSessionId);
     }
+
+
 
     private void validateHints(Set<String> idpHints, List<IdpHint> validHints, List<String> invalidHints) {
         if (idpHints != null && !idpHints.isEmpty()) {

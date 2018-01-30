@@ -2,18 +2,12 @@ package uk.gov.ida.stub.idp.resources;
 
 import com.google.common.base.Strings;
 import uk.gov.ida.common.SessionId;
-import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.cookies.CookieNames;
-import uk.gov.ida.stub.idp.domain.IdpUser;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASession;
-import uk.gov.ida.stub.idp.repositories.Idp;
-import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
 import uk.gov.ida.stub.idp.repositories.Session;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
-import uk.gov.ida.stub.idp.services.NonSuccessAuthnResponseService;
 import uk.gov.ida.stub.idp.services.SuccessAuthnResponseService;
-import uk.gov.ida.stub.idp.views.ConsentView;
 import uk.gov.ida.stub.idp.views.EidasConsentView;
 import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
 
@@ -29,7 +23,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
 import java.util.Optional;
 
 @Path(Urls.EIDAS_CONSENT_RESOURCE)
