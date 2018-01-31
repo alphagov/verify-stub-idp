@@ -2,8 +2,10 @@ package uk.gov.ida.apprule.steps;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
+import org.joda.time.DateTime;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import uk.gov.ida.apprule.support.EidasAuthnRequestBuilder;
 import uk.gov.ida.apprule.support.TestSamlRequestFactory;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.cookies.CookieNames;
@@ -58,8 +60,50 @@ public class AuthnRequestSteps {
     }
 
     public Cookies userPostsAuthnRequestToStubIdp(List<String> hints, Optional<String> language, Optional<Boolean> registration) {
+        String authnRequest = TestSamlRequestFactory.anAuthnRequest();
+        Response response = postAuthnRequest(hints, language, registration, authnRequest, Urls.IDP_SAML2_SSO_RESOURCE);
+
+        assertThat(response.getStatus()).isEqualTo(303);
+        if(registration.isPresent() && registration.get()) {
+            assertThat(response.getLocation().getPath()).startsWith(getStubIdpUri(Urls.REGISTER_RESOURCE).getPath());
+        } else {
+            assertThat(response.getLocation().getPath()).startsWith(getStubIdpUri(Urls.LOGIN_RESOURCE).getPath());
+        }
+
+        return getCookiesAndFollowRedirect(response);
+    }
+
+    public Cookies userPostsEidasAuthnRequestToStubIdp() {
+        String authnRequest = EidasAuthnRequestBuilder.anAuthnRequest().build();
+        Response response = postAuthnRequest(ImmutableList.of(), Optional.absent(), Optional.absent(), authnRequest, Urls.EIDAS_SAML2_SSO_RESOURCE);
+
+        assertThat(response.getStatus()).isEqualTo(303);
+        assertThat(response.getLocation().getPath()).startsWith(getStubIdpUri(Urls.EIDAS_LOGIN_RESOURCE).getPath());
+
+        return getCookiesAndFollowRedirect(response);
+    }
+
+    private Cookies getCookiesAndFollowRedirect(Response response) {
+        final NewCookie sessionCookie = response.getCookies().get(CookieNames.SESSION_COOKIE_NAME);
+        assertThat(sessionCookie).isNotNull();
+        assertThat(sessionCookie.getValue()).isNotNull();
+        final String sessionCookieValue = sessionCookie.getValue();
+
+        final NewCookie secureCookie = response.getCookies().get(CookieNames.SECURE_COOKIE_NAME);
+        final String secureCookieValue = secureCookie==null?null:secureCookie.getValue();
+
+        response = client.target(response.getLocation())
+                .request()
+                .cookie(CookieNames.SESSION_COOKIE_NAME, sessionCookieValue)
+                .cookie(CookieNames.SECURE_COOKIE_NAME, secureCookieValue)
+                .get();
+        assertThat(response.getStatus()).isEqualTo(200);
+        return new Cookies(sessionCookieValue, secureCookieValue);
+    }
+
+    private Response postAuthnRequest(List<String> hints, Optional<String> language, Optional<Boolean> registration, String authnRequest, String ssoEndpoint) {
         Form form = new Form();
-        form.param(Urls.SAML_REQUEST_PARAM, TestSamlRequestFactory.anAuthnRequest());
+        form.param(Urls.SAML_REQUEST_PARAM, authnRequest);
         if(registration.isPresent()) {
             form.param(Urls.REGISTRATION_PARAM, registration.get().toString());
         }
@@ -71,53 +115,49 @@ public class AuthnRequestSteps {
         }
         form.param(Urls.RELAY_STATE_PARAM, "relay_state");
 
-        Response response = client.target(getStubIdpUri(Urls.IDP_SAML2_SSO_RESOURCE))
+        return client.target(getStubIdpUri(ssoEndpoint))
                 .request()
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
-        assertThat(response.getStatus()).isEqualTo(303);
-        if(registration.isPresent() && registration.get()) {
-            assertThat(response.getLocation().getPath()).startsWith(getStubIdpUri(Urls.REGISTER_RESOURCE).getPath());
-        } else {
-            assertThat(response.getLocation().getPath()).startsWith(getStubIdpUri(Urls.LOGIN_RESOURCE).getPath());
-        }
-
-        final NewCookie sessionCookie = response.getCookies().get(CookieNames.SESSION_COOKIE_NAME);
-        assertThat(sessionCookie).isNotNull();
-        assertThat(sessionCookie.getValue()).isNotNull();
-        final NewCookie secureCookie = response.getCookies().get(CookieNames.SECURE_COOKIE_NAME);
-        final String secureCookieValue = secureCookie==null?null:secureCookie.getValue();
-
-        response = client.target(response.getLocation())
-                .request()
-                .cookie(CookieNames.SESSION_COOKIE_NAME, sessionCookie.getValue())
-                .cookie(CookieNames.SECURE_COOKIE_NAME, secureCookieValue)
-                .get();
-        assertThat(response.getStatus()).isEqualTo(200);
-        return new Cookies(sessionCookie.getValue(), secureCookieValue);
     }
 
     public void userLogsIn(Cookies cookies) {
         userLogsIn(cookies, idpName);
     }
 
+    public void eidasUserLogsIn(Cookies cookies) {
+        userLogsIn(cookies, idpName, Urls.EIDAS_LOGIN_RESOURCE, Urls.EIDAS_CONSENT_RESOURCE);
+    }
+
     public void userLogsIn(Cookies cookies, String username) {
+        userLogsIn(cookies, username, Urls.LOGIN_RESOURCE, Urls.CONSENT_RESOURCE);
+    }
+
+    private void userLogsIn(Cookies cookies, String username, String loginUrl, String consentUrl) {
         Form form = new Form();
         form.param(Urls.USERNAME_PARAM, username);
         form.param(Urls.PASSWORD_PARAM, "bar");
         form.param(Urls.SUBMIT_PARAM, "SignIn");
 
-        Response response = client.target(getStubIdpUri(Urls.LOGIN_RESOURCE))
+        Response response = client.target(getStubIdpUri(loginUrl))
                 .request()
                 .cookie(CookieNames.SESSION_COOKIE_NAME, cookies.getSessionId())
                 .cookie(CookieNames.SECURE_COOKIE_NAME, cookies.getSecure())
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 
         assertThat(response.getStatus()).isEqualTo(303);
-        assertThat(response.getLocation().getPath()).isEqualTo(getStubIdpUri(Urls.CONSENT_RESOURCE).getPath());
+        assertThat(response.getLocation().getPath()).isEqualTo(getStubIdpUri(consentUrl).getPath());
     }
 
     public String userConsentsReturnSamlResponse(Cookies cookies, boolean randomize) {
-        Response response = client.target(getStubIdpUri(Urls.CONSENT_RESOURCE))
+        return userConsentsReturnSamlResponse(cookies, randomize, Urls.CONSENT_RESOURCE);
+    }
+
+    public String eidasUserConsentsReturnSamlResponse(Cookies cookies, boolean randomize) {
+        return userConsentsReturnSamlResponse(cookies, randomize, Urls.EIDAS_CONSENT_RESOURCE);
+    }
+
+    private String userConsentsReturnSamlResponse(Cookies cookies, boolean randomize, String consentUrl) {
+        Response response = client.target(getStubIdpUri(consentUrl))
                 .request()
                 .cookie(CookieNames.SESSION_COOKIE_NAME, cookies.getSessionId())
                 .cookie(CookieNames.SECURE_COOKIE_NAME, cookies.getSecure())
@@ -129,7 +169,7 @@ public class AuthnRequestSteps {
         form.param(Urls.SUBMIT_PARAM, "I Agree");
         form.param(Urls.RANDOMISE_PID_PARAM, Boolean.toString(randomize));
 
-        response = client.target(getStubIdpUri(Urls.CONSENT_RESOURCE))
+        response = client.target(getStubIdpUri(consentUrl))
                 .request()
                 .cookie(CookieNames.SESSION_COOKIE_NAME, cookies.getSessionId())
                 .cookie(CookieNames.SECURE_COOKIE_NAME, cookies.getSecure())

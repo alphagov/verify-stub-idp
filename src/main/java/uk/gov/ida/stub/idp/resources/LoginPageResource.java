@@ -232,9 +232,9 @@ public class LoginPageResource {
     }
 
     private Response createErrorResponse(ErrorMessageType errorMessage, String idpName) {
-        URI uri = UriBuilder.fromPath(format(Urls.LOGIN_FORMAT, idpName))
+        URI uri = UriBuilder.fromPath(Urls.LOGIN_RESOURCE)
                 .queryParam(Urls.ERROR_MESSAGE_PARAM, errorMessage)
-                .build();
+                .build(idpName);
         return Response.seeOther(uri).build();
     }
 }

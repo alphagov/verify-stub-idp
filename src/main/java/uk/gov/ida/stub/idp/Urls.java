@@ -36,7 +36,6 @@ public interface Urls {
     String EIDAS_SAML2_SSO_RESOURCE = "/eidas/{"+SCHEME_ID_PARAM+"}/SAML2/SSO";
     String HEADLESS_ROOT = "/headless";
 
-    String LOGIN_FORMAT = "/{0}/login";
     String LOGIN_RESOURCE = "/{"+IDP_ID_PARAM+"}/login";
     String EIDAS_LOGIN_RESOURCE = "/eidas/{"+SCHEME_ID_PARAM+"}/login";
     String LOGIN_AUTHN_FAILURE_PATH = "authn-failure";

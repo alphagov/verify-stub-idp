@@ -1,6 +1,6 @@
 <#-- @ftlvariable name="" type="uk.gov.ida.stub.idp.views.EidasLoginPageView" -->
 <div class="main">
-    <form action="/eidas/${schemeId}/login" class="login" method="post">
+    <form action="/eidas/${idpId}/login" class="login" method="post">
         <fieldset>
             <legend>European ID Login</legend>
             <p>Use your existing username and password to access your European ID.</p>

@@ -85,10 +85,7 @@ public class SuccessAuthnResponseService {
 
         PersistentId persistentId = new PersistentId(UUID.randomUUID().toString());
 
-
-
-
-        return null;
+        return new SamlResponse("", session.getRelayState(), hubUrl);
     }
 
 }

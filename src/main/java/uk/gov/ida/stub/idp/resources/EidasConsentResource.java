@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.cookies.CookieNames;
+import uk.gov.ida.stub.idp.domain.SamlResponse;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASession;
 import uk.gov.ida.stub.idp.repositories.Session;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
@@ -46,7 +47,7 @@ public class EidasConsentResource {
 
     @GET
     public Response get(
-            @PathParam(Urls.IDP_ID_PARAM) @NotNull String schemeId,
+            @PathParam(Urls.SCHEME_ID_PARAM) @NotNull String schemeId,
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
 
         validateSession(schemeId, sessionCookie);
@@ -56,7 +57,7 @@ public class EidasConsentResource {
 
     @POST
     public Response consent(
-            @PathParam(Urls.IDP_ID_PARAM) @NotNull String schemeId,
+            @PathParam(Urls.SCHEME_ID_PARAM) @NotNull String schemeId,
             @FormParam(Urls.SUBMIT_PARAM) @NotNull String submitButtonValue,
             @FormParam(Urls.RANDOMISE_PID_PARAM) boolean randomisePid,
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
@@ -64,7 +65,8 @@ public class EidasConsentResource {
         validateSession(schemeId, sessionCookie);
         Session session = sessionRepository.deleteAndGet(sessionCookie).get();
 
-        return samlResponseRedirectViewFactory.sendSamlMessage(successAuthnResponseService.getEidasSuccessResponse(randomisePid, schemeId, session));
+        SamlResponse samlResponse = successAuthnResponseService.getEidasSuccessResponse(randomisePid, schemeId, session);
+        return samlResponseRedirectViewFactory.sendSamlMessage(samlResponse);
     }
 
     private void validateSession(String schemeId, SessionId sessionCookie) {

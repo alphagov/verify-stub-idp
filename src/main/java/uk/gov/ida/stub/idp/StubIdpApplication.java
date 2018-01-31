@@ -35,6 +35,8 @@ import uk.gov.ida.stub.idp.filters.StubIdpCacheControlFilter;
 import uk.gov.ida.stub.idp.healthcheck.StubIdpHealthCheck;
 import uk.gov.ida.stub.idp.resources.ConsentResource;
 import uk.gov.ida.stub.idp.resources.DebugPageResource;
+import uk.gov.ida.stub.idp.resources.EidasConsentResource;
+import uk.gov.ida.stub.idp.resources.EidasLoginPageResource;
 import uk.gov.ida.stub.idp.resources.GeneratePasswordResource;
 import uk.gov.ida.stub.idp.resources.HeadlessIdpResource;
 import uk.gov.ida.stub.idp.resources.IdpAuthenticationRequestReceiverResource;
@@ -130,6 +132,8 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
         //resources
         environment.jersey().register(IdpAuthenticationRequestReceiverResource.class);
         environment.jersey().register(LoginPageResource.class);
+        environment.jersey().register(EidasLoginPageResource.class);
+        environment.jersey().register(EidasConsentResource.class);
         environment.jersey().register(RegistrationPageResource.class);
         environment.jersey().register(DebugPageResource.class);
         environment.jersey().register(ConsentResource.class);
