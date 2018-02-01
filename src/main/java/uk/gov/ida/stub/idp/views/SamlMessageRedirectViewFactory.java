@@ -20,7 +20,7 @@ public abstract class SamlMessageRedirectViewFactory {
     }
 
     public Response sendSamlMessage(SamlResponse samlResponse) {
-        return getResponse(samlResponse.getIdpResponse(), samlResponse.getRelayState(), samlResponse.getHubUrl(), Optional.empty());
+        return getResponse(samlResponse.getResponse(), samlResponse.getRelayState(), samlResponse.getHubUrl(), Optional.empty());
     }
 
     private Response getResponse(

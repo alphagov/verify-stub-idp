@@ -66,7 +66,7 @@ public class EidasConsentResourceTest {
         when(sessionRepository.deleteAndGet(SESSION_ID)).thenReturn(Optional.ofNullable(session));
 
         SamlResponse samlResponse = new SamlResponse(null, null, null);
-        when(successAuthnResponseService.getEidasSuccessResponse(true, SCHEME_NAME, session)).thenReturn(samlResponse);
+        when(successAuthnResponseService.getEidasSuccessResponse(session)).thenReturn(samlResponse);
         when(samlResponseRedirectViewFactory.sendSamlMessage(samlResponse)).thenReturn(Response.ok().build());
 
         final Response response = resource.consent(SCHEME_NAME, null, true, SESSION_ID );

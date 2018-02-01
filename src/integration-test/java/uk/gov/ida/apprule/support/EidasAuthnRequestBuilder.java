@@ -49,7 +49,6 @@ public class EidasAuthnRequestBuilder {
         authnRequest.setID(new SecureRandomIdentifierGenerationStrategy().generateIdentifier());
         authnRequest.setDestination(destination);
         authnRequest.setIssueInstant(issueInstant);
-
         authnRequest.setIssuer(createIssuer(issuerEntityId));
         authnRequest.setExtensions(createEidasExtensions());
         authnRequest.setNameIDPolicy(createNameIDPolicy());

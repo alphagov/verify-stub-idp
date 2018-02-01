@@ -1,6 +1,7 @@
 package uk.gov.ida.stub.idp.domain.factories;
 
 import org.opensaml.saml.saml2.core.AuthnRequest;
+import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.xmlsec.algorithm.DigestAlgorithm;
 import org.opensaml.xmlsec.algorithm.SignatureAlgorithm;
 import uk.gov.ida.saml.core.OpenSamlXmlObjectFactory;
@@ -95,6 +96,22 @@ public class StubTransformersFactory {
                 digestAlgorithm);
 
         return responseStringTransformer.compose(getOutboundResponseFromIdpToSamlResponseTransformer());
+    }
+
+    public Function<Response, String> getEidasResponseToStringTransformer(
+            final EncryptionKeyStore encryptionKeyStore,
+            final IdaKeyStore keyStore,
+            EntityToEncryptForLocator entityToEncryptForLocator,
+            SignatureAlgorithm signatureAlgorithm,
+            DigestAlgorithm digestAlgorithm
+    ){
+        return coreTransformersFactory.getResponseStringTransformer(
+                encryptionKeyStore,
+                keyStore,
+                entityToEncryptForLocator,
+                signatureAlgorithm,
+                digestAlgorithm
+        );
     }
 
     public OutboundResponseFromIdpToSamlResponseTransformer getOutboundResponseFromIdpToSamlResponseTransformer() {

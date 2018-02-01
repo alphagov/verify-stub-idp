@@ -23,6 +23,7 @@ import uk.gov.ida.common.shared.security.IdGenerator;
 import uk.gov.ida.common.shared.security.PublicKeyFactory;
 import uk.gov.ida.common.shared.security.SecureCookieKeyConfigurationKeyStore;
 import uk.gov.ida.common.shared.security.X509CertificateFactory;
+import uk.gov.ida.notification.saml.translation.EidasResponseBuilder;
 import uk.gov.ida.saml.hub.domain.IdaAuthnRequestFromHub;
 import uk.gov.ida.saml.idp.configuration.SamlConfiguration;
 import uk.gov.ida.saml.security.EncryptionKeyStore;
@@ -50,6 +51,7 @@ import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.repositories.UserRepository;
 import uk.gov.ida.stub.idp.repositories.infinispan.InfinispanUserRepository;
 import uk.gov.ida.stub.idp.saml.locators.IdpHardCodedEntityToEncryptForLocator;
+import uk.gov.ida.stub.idp.saml.transformers.EidasResponseTransformerProvider;
 import uk.gov.ida.stub.idp.saml.transformers.OutboundResponseFromIdpTransformerProvider;
 import uk.gov.ida.stub.idp.security.HubEncryptionKeyStore;
 import uk.gov.ida.stub.idp.security.IdaAuthnRequestKeyStore;
@@ -198,6 +200,18 @@ public class StubIdpModule extends AbstractModule {
     }
 
     @Provides
+    public EidasResponseTransformerProvider getEidasResponseTransformerProvider(EncryptionKeyStore encryptionKeyStore, IdaKeyStore keyStore, EntityToEncryptForLocator entityToEncryptForLocator) {
+        return new EidasResponseTransformerProvider(
+                new StubTransformersFactory(),
+                encryptionKeyStore,
+                keyStore,
+                entityToEncryptForLocator,
+                new SignatureRSASHA256(),
+                new DigestSHA256()
+        );
+    }
+
+    @Provides
     @Singleton
     public SamlConfiguration samlConfiguration(StubIdpConfiguration stubIdpConfiguration) {
         return stubIdpConfiguration.getSamlConfiguration();
@@ -237,5 +251,13 @@ public class StubIdpModule extends AbstractModule {
     @Singleton
     public SecureCookieConfiguration getSecureCookieConfiguration(StubIdpConfiguration stubIdpConfiguration) {
         return isSecureCookieEnabled(stubIdpConfiguration)?stubIdpConfiguration.getSecureCookieConfiguration():new SecureCookieConfiguration() { { this.secure = false; } };
+    }
+
+    @Provides
+    @Singleton
+    public EidasResponseBuilder getEidasResponseBuilder(StubIdpConfiguration configuration){
+        return new EidasResponseBuilder(configuration.getConnectorNodeUrl().toString(),
+                configuration.getProxyNodeMetadataForConnectorNodeUrl().toString(),
+                configuration.getConnectorNodeIssuerId());
     }
 }

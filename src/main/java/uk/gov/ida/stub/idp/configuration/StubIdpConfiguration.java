@@ -16,6 +16,7 @@ import uk.gov.ida.shared.dropwizard.infinispan.config.InfinispanServiceConfigura
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.net.URI;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class StubIdpConfiguration extends Configuration implements
@@ -87,6 +88,21 @@ public class StubIdpConfiguration extends Configuration implements
     @JsonProperty
     protected SecureCookieConfiguration secureCookieConfiguration = null;
 
+    @NotNull
+    @Valid
+    @JsonProperty
+    protected URI connectorNodeUrl;
+
+    @NotNull
+    @Valid
+    @JsonProperty
+    protected URI proxyNodeMetadataForConnectorNodeUrl;
+
+    @NotNull
+    @Valid
+    @JsonProperty
+    protected String connectorNodeIssuerId;
+
     protected StubIdpConfiguration() {
     }
 
@@ -145,4 +161,15 @@ public class StubIdpConfiguration extends Configuration implements
         return secureCookieConfiguration;
     }
 
+    public URI getConnectorNodeUrl() {
+        return connectorNodeUrl;
+    }
+
+    public URI getProxyNodeMetadataForConnectorNodeUrl() {
+        return proxyNodeMetadataForConnectorNodeUrl;
+    }
+
+    public String getConnectorNodeIssuerId() {
+        return connectorNodeIssuerId;
+    }
 }

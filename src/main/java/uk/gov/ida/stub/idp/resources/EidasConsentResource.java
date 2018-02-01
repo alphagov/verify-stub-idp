@@ -65,7 +65,7 @@ public class EidasConsentResource {
         validateSession(schemeId, sessionCookie);
         Session session = sessionRepository.deleteAndGet(sessionCookie).get();
 
-        SamlResponse samlResponse = successAuthnResponseService.getEidasSuccessResponse(randomisePid, schemeId, session);
+        SamlResponse samlResponse = successAuthnResponseService.getEidasSuccessResponse(session);
         return samlResponseRedirectViewFactory.sendSamlMessage(samlResponse);
     }
 
