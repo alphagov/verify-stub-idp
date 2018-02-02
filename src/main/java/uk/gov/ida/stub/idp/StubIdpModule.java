@@ -1,13 +1,17 @@
 package uk.gov.ida.stub.idp;
 
-import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.TypeLiteral;
 import io.dropwizard.configuration.ConfigurationFactory;
 import io.dropwizard.configuration.ConfigurationSourceProvider;
 import io.dropwizard.configuration.DefaultConfigurationFactoryFactory;
+import io.dropwizard.servlets.tasks.Task;
 import io.dropwizard.setup.Bootstrap;
+import io.dropwizard.setup.Environment;
+import org.opensaml.saml.metadata.resolver.MetadataResolver;
+import org.opensaml.saml.metadata.resolver.impl.AbstractReloadingMetadataResolver;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.xmlsec.algorithm.DigestAlgorithm;
 import org.opensaml.xmlsec.algorithm.SignatureAlgorithm;
@@ -25,8 +29,11 @@ import uk.gov.ida.common.shared.security.SecureCookieKeyConfigurationKeyStore;
 import uk.gov.ida.common.shared.security.X509CertificateFactory;
 import uk.gov.ida.notification.saml.translation.EidasResponseBuilder;
 import uk.gov.ida.saml.core.api.CoreTransformersFactory;
+import uk.gov.ida.saml.dropwizard.metadata.MetadataHealthCheck;
 import uk.gov.ida.saml.hub.domain.IdaAuthnRequestFromHub;
 import uk.gov.ida.saml.idp.configuration.SamlConfiguration;
+import uk.gov.ida.saml.metadata.MetadataResolverConfiguration;
+import uk.gov.ida.saml.metadata.factories.DropwizardMetadataResolverFactory;
 import uk.gov.ida.saml.security.EncryptionKeyStore;
 import uk.gov.ida.saml.security.EntityToEncryptForLocator;
 import uk.gov.ida.saml.security.IdaKeyStore;
@@ -70,11 +77,13 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.validation.Validator;
+import java.io.PrintWriter;
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
@@ -83,6 +92,13 @@ public class StubIdpModule extends AbstractModule {
 
     private final Provider<InfinispanCacheManager> infinispanCacheManagerProvider;
     private final Bootstrap<StubIdpConfiguration> bootstrap;
+
+    public static final String HUB_CONNECTOR_METADATA_REPOSITORY = "HubConnectorMetadataRepository";
+    public static final String HUB_METADATA_REPOSITORY = "HubMetadataRepository";
+    public static final String HUB_CONNECTOR_METADATA_RESOLVER = "HubConnectorMetadataResolver";
+    public static final String HUB_METADATA_RESOLVER = "HubMetadataResolver";
+    public static final String HUB_CONNECTOR_ENCRYPTION_KEY_STORE = "HubConnectorEncryptionKeyStore";
+    public static final String HUB_ENCRYPTION_KEY_STORE = "HubEncryptionKeyStore";
 
     public StubIdpModule(final Provider<InfinispanCacheManager> infinispanCacheManagerProvider, Bootstrap<StubIdpConfiguration> bootstrap) {
         this.infinispanCacheManagerProvider = infinispanCacheManagerProvider;
@@ -94,7 +110,6 @@ public class StubIdpModule extends AbstractModule {
         bind(InfinispanCacheManager.class).toProvider(infinispanCacheManagerProvider);
         bind(AssertionLifetimeConfiguration.class).to(StubIdpConfiguration.class).asEagerSingleton();
 
-        bind(EncryptionKeyStore.class).to(HubEncryptionKeyStore.class).asEagerSingleton();
         bind(SigningKeyStore.class).to(IdaAuthnRequestKeyStore.class).asEagerSingleton();
 
         bind(EntityToEncryptForLocator.class).to(IdpHardCodedEntityToEncryptForLocator.class).asEagerSingleton();
@@ -102,7 +117,6 @@ public class StubIdpModule extends AbstractModule {
         bind(SignatureFactory.class).asEagerSingleton();
         bind(SessionRepository.class).asEagerSingleton();
         bind(new TypeLiteral<ConcurrentMap<String, Document>>() {}).toInstance(new ConcurrentHashMap<>());
-        bind(MetadataRepository.class).asEagerSingleton();
 
         bind(AllIdpsUserRepository.class).asEagerSingleton();
 
@@ -149,6 +163,13 @@ public class StubIdpModule extends AbstractModule {
     }
 
     @Provides
+    @Singleton
+    @Named("HubConnectorEntityId")
+    public String getHubConnectorEntityId(StubIdpConfiguration configuration) {
+        return configuration.getEuropeanIdentityConfiguration().getHubConnectorEntityId();
+    }
+
+    @Provides
     private ConfigurationFactory<IdpStubsConfiguration> getConfigurationFactory() {
         Validator validator = bootstrap.getValidatorFactory().getValidator();
         return new DefaultConfigurationFactoryFactory<IdpStubsConfiguration>()
@@ -190,12 +211,12 @@ public class StubIdpModule extends AbstractModule {
     }
 
     @Provides
-    public OutboundResponseFromIdpTransformerProvider getOutboundResponseFromIdpTransformerProvider(EncryptionKeyStore encryptionKeyStore, IdaKeyStore keyStore, EntityToEncryptForLocator entityToEncryptForLocator, StubIdpConfiguration stubIdpConfiguration) {
+    public OutboundResponseFromIdpTransformerProvider getOutboundResponseFromIdpTransformerProvider(@Named(StubIdpModule.HUB_ENCRYPTION_KEY_STORE) EncryptionKeyStore encryptionKeyStore, IdaKeyStore keyStore, EntityToEncryptForLocator entityToEncryptForLocator, StubIdpConfiguration stubIdpConfiguration) {
         return new OutboundResponseFromIdpTransformerProvider(
                 encryptionKeyStore,
                 keyStore,
                 entityToEncryptForLocator,
-                Optional.fromNullable(stubIdpConfiguration.getSigningKeyPairConfiguration().getCert()),
+                com.google.common.base.Optional.fromNullable(stubIdpConfiguration.getSigningKeyPairConfiguration().getCert()),
                 new StubTransformersFactory(),
                 new SignatureRSASHA256(),
                 new DigestSHA256()
@@ -203,10 +224,10 @@ public class StubIdpModule extends AbstractModule {
     }
 
     @Provides
-    public EidasResponseTransformerProvider getEidasResponseTransformerProvider(EncryptionKeyStore encryptionKeyStore, IdaKeyStore keyStore, EntityToEncryptForLocator entityToEncryptForLocator) {
+    public EidasResponseTransformerProvider getEidasResponseTransformerProvider(@Named(StubIdpModule.HUB_CONNECTOR_ENCRYPTION_KEY_STORE) Optional<EncryptionKeyStore> encryptionKeyStore, IdaKeyStore keyStore, EntityToEncryptForLocator entityToEncryptForLocator) {
         return new EidasResponseTransformerProvider(
                 new CoreTransformersFactory(),
-                encryptionKeyStore,
+                encryptionKeyStore.orElse(null),
                 keyStore,
                 entityToEncryptForLocator,
                 new SignatureRSASHA256(),
@@ -258,9 +279,78 @@ public class StubIdpModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public EidasResponseBuilder getEidasResponseBuilder(StubIdpConfiguration configuration){
-        return new EidasResponseBuilder(configuration.getConnectorNodeUrl().toString(),
-                configuration.getStubCountryMetadataUrl().toString(),
-                configuration.getConnectorNodeIssuerId());
+    public EidasResponseBuilder getEidasResponseBuilder(StubIdpConfiguration configuration, @Named("HubConnectorEntityId") String hubConnectorEntityId) {
+        if (configuration.getEuropeanIdentityConfiguration().isEnabled()) {
+            return new EidasResponseBuilder(configuration.getEuropeanIdentityConfiguration().getStubCountryMetadataUrl().toString(), hubConnectorEntityId);
+        }
+        return null;
+    }
+
+    @Provides
+    @Named(HUB_ENCRYPTION_KEY_STORE)
+    @Singleton
+    public EncryptionKeyStore getHubEncryptionKeyStore(@Named(HUB_METADATA_REPOSITORY) MetadataRepository metadataRepository, PublicKeyFactory publicKeyFactory) {
+        return new HubEncryptionKeyStore(metadataRepository, publicKeyFactory);
+    }
+
+    @Provides
+    @Named(HUB_CONNECTOR_ENCRYPTION_KEY_STORE)
+    @Singleton
+    public Optional<EncryptionKeyStore> getHubConnectorEncryptionKeyStore(@Named(HUB_CONNECTOR_METADATA_REPOSITORY) Optional<MetadataRepository> metadataRepository, PublicKeyFactory publicKeyFactory) {
+        if (metadataRepository.isPresent()) {
+            return Optional.of(new HubEncryptionKeyStore(metadataRepository.get(), publicKeyFactory));
+        }
+        return Optional.empty();
+    }
+
+    @Provides
+    @Named(HUB_METADATA_REPOSITORY)
+    @Singleton
+    public MetadataRepository getHubMetadataRepository(@Named(HUB_METADATA_RESOLVER) MetadataResolver metadataResolver, @Named("HubEntityId") String hubEntityId) {
+        return new MetadataRepository(metadataResolver, hubEntityId);
+    }
+
+    @Provides
+    @Named(HUB_CONNECTOR_METADATA_REPOSITORY)
+    @Singleton
+    public Optional<MetadataRepository> getHubConnectorMetadataRepository(@Named(HUB_CONNECTOR_METADATA_RESOLVER) Optional<MetadataResolver> metadataResolver, @Named("HubConnectorEntityId") String hubEntityId) {
+        if (metadataResolver.isPresent()) {
+            return Optional.of(new MetadataRepository(metadataResolver.get(), hubEntityId));
+        }
+        return Optional.empty();
+    }
+
+    @Provides
+    @Named(HUB_METADATA_RESOLVER)
+    @Singleton
+    public MetadataResolver getHubMetadataResolver(Environment environment, StubIdpConfiguration configuration) {
+        MetadataResolver metadataResolver = new DropwizardMetadataResolverFactory().createMetadataResolver(environment, configuration.getMetadataConfiguration());
+        registerMetadataHealthcheckAndRefresh(environment, metadataResolver, configuration.getMetadataConfiguration(), "metadata");
+        return metadataResolver;
+    }
+
+    @Provides
+    @Named(HUB_CONNECTOR_METADATA_RESOLVER)
+    @Singleton
+    public Optional<MetadataResolver> getHubConnectorMetadataResolver(Environment environment, StubIdpConfiguration configuration) {
+        if (configuration.getEuropeanIdentityConfiguration().isEnabled()) {
+            MetadataResolver metadataResolver = new DropwizardMetadataResolverFactory().createMetadataResolver(environment, configuration.getEuropeanIdentityConfiguration().getMetadata());
+            registerMetadataHealthcheckAndRefresh(environment, metadataResolver, configuration.getEuropeanIdentityConfiguration().getMetadata(), "connector-metadata");
+            return Optional.of(metadataResolver);
+        }
+        return Optional.empty();
+    }
+
+    private void registerMetadataHealthcheckAndRefresh(Environment environment, MetadataResolver metadataResolver, MetadataResolverConfiguration metadataResolverConfiguration, String name) {
+        String expectedEntityId = metadataResolverConfiguration.getExpectedEntityId();
+        MetadataHealthCheck metadataHealthCheck = new MetadataHealthCheck(metadataResolver, expectedEntityId);
+        environment.healthChecks().register(name, metadataHealthCheck);
+
+        environment.admin().addTask(new Task(name + "-refresh") {
+            @Override
+            public void execute(ImmutableMultimap<String, String> parameters, PrintWriter output) throws Exception {
+                ((AbstractReloadingMetadataResolver) metadataResolver).refresh();
+            }
+        });
     }
 }

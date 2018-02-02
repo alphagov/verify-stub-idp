@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import se.litsec.eidas.opensaml.ext.SPTypeEnumeration;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.notification.saml.translation.EidasAuthnRequest;
 import uk.gov.ida.stub.idp.domain.EidasUser;
@@ -20,6 +21,7 @@ import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
@@ -52,7 +54,8 @@ public class EidasConsentResourceTest {
     public void setUp(){
         resource = new EidasConsentResource(sessionRepository, successAuthnResponseService, samlResponseRedirectViewFactory);
 
-        session = new Session(SESSION_ID, (EidasAuthnRequest) null, null, null, null, null, null);
+        EidasAuthnRequest eidasAuthnRequest = new EidasAuthnRequest("request-id", "issuer", "destination", SPTypeEnumeration.PUBLIC, "loa", Collections.emptyList());
+        session = new Session(SESSION_ID, eidasAuthnRequest, null, null, null, null, null);
         EidasUser user = new EidasUser("Jane", "Doe", "pid", null, new LocalDate(1990, 1, 2), null);
         session.setEidasUser(user);
         when(sessionRepository.get(SESSION_ID)).thenReturn(Optional.of(session));

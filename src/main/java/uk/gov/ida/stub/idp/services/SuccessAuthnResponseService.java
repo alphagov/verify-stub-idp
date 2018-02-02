@@ -3,6 +3,7 @@ package uk.gov.ida.stub.idp.services;
 import uk.gov.ida.saml.core.domain.IdentityProviderAssertion;
 import uk.gov.ida.saml.core.domain.IpAddress;
 import uk.gov.ida.saml.core.domain.PersistentId;
+import uk.gov.ida.stub.idp.StubIdpModule;
 import uk.gov.ida.stub.idp.domain.IdpUser;
 import uk.gov.ida.stub.idp.domain.OutboundResponseFromIdp;
 import uk.gov.ida.stub.idp.domain.SamlResponse;
@@ -16,6 +17,7 @@ import uk.gov.ida.stub.idp.repositories.Session;
 import uk.gov.ida.stub.idp.saml.transformers.OutboundResponseFromIdpTransformerProvider;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.net.URI;
 import java.util.UUID;
 
@@ -33,7 +35,7 @@ public class SuccessAuthnResponseService {
     public SuccessAuthnResponseService(
             IdentityProviderAssertionFactory identityProviderAssertionFactory,
             IdpStubsRepository idpStubsRepository,
-            MetadataRepository metadataProvider,
+            @Named(StubIdpModule.HUB_METADATA_REPOSITORY) MetadataRepository metadataProvider,
             AssertionRestrictionsFactory assertionRestrictionsFactory,
             OutboundResponseFromIdpTransformerProvider outboundResponseFromIdpTransformerProvider) {
 

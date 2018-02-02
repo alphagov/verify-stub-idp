@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import se.litsec.eidas.opensaml.ext.SPTypeEnumeration;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.notification.saml.translation.EidasAuthnRequest;
 import uk.gov.ida.stub.idp.Urls;
@@ -16,6 +17,7 @@ import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,7 +46,8 @@ public class EidasLoginPageResourceTest {
     @Before
     public void setUp(){
         resource = new EidasLoginPageResource(sessionRepository);
-        session = new Session(null, (EidasAuthnRequest)null, null, null, null, Optional.empty(), Optional.empty());
+        EidasAuthnRequest eidasAuthnRequest = new EidasAuthnRequest("request-id", "issuer", "destination", SPTypeEnumeration.PUBLIC, "loa", Collections.emptyList());
+        session = new Session(null, eidasAuthnRequest, null, null, null, Optional.empty(), Optional.empty());
         when(sessionRepository.get(SESSION_ID)).thenReturn(Optional.ofNullable(session));
     }
 
@@ -68,7 +71,5 @@ public class EidasLoginPageResourceTest {
     @Test(expected = WebApplicationException.class)
     public void loginShouldThrowAWebApplicationExceptionWhenSessionIsEmpty(){
         resource.get(SCHEME_NAME, Optional.empty(), null);
-
     }
-
 }

@@ -108,7 +108,7 @@ public class ConsentResource {
 
         Optional<Session> session = sessionRepository.get(sessionCookie);
 
-        if (!session.isPresent() || !session.get().getIdpUser().isPresent()) {
+        if (!session.isPresent() || !session.get().getIdpUser().isPresent() || session.get().getIdaAuthnRequestFromHub() == null) {
             throw errorResponse("Session is invalid for " + idpName);
         }
         return session.get();

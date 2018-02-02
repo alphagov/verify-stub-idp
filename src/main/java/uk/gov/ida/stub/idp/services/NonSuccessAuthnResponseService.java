@@ -2,6 +2,7 @@ package uk.gov.ida.stub.idp.services;
 
 import uk.gov.ida.saml.core.domain.IdentityProviderAssertion;
 import uk.gov.ida.saml.core.domain.IpAddress;
+import uk.gov.ida.stub.idp.StubIdpModule;
 import uk.gov.ida.stub.idp.domain.FraudIndicator;
 import uk.gov.ida.stub.idp.domain.IdpUser;
 import uk.gov.ida.stub.idp.domain.OutboundResponseFromIdp;
@@ -14,6 +15,7 @@ import uk.gov.ida.stub.idp.repositories.Session;
 import uk.gov.ida.stub.idp.saml.transformers.OutboundResponseFromIdpTransformerProvider;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.net.URI;
 
 import static uk.gov.ida.stub.idp.domain.OutboundResponseFromIdp.createAuthnCancelResponseIssuedByIdp;
@@ -34,7 +36,7 @@ public class NonSuccessAuthnResponseService {
     @Inject
     public NonSuccessAuthnResponseService(
             IdpStubsRepository idpStubsRepository,
-            MetadataRepository metadataRepository,
+            @Named(StubIdpModule.HUB_METADATA_REPOSITORY) MetadataRepository metadataRepository,
             AssertionFactory assertionFactory,
             OutboundResponseFromIdpTransformerProvider outboundResponseFromIdpTransformerProvider) {
 

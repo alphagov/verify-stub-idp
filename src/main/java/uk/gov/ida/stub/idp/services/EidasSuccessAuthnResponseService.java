@@ -14,6 +14,7 @@ import se.litsec.eidas.opensaml.ext.attributes.GenderType;
 import se.litsec.eidas.opensaml.ext.attributes.PersonIdentifierType;
 import uk.gov.ida.notification.saml.translation.EidasAttributeBuilder;
 import uk.gov.ida.notification.saml.translation.EidasResponseBuilder;
+import uk.gov.ida.stub.idp.StubIdpModule;
 import uk.gov.ida.stub.idp.domain.EidasUser;
 import uk.gov.ida.stub.idp.domain.SamlResponse;
 import uk.gov.ida.stub.idp.repositories.MetadataRepository;
@@ -21,9 +22,11 @@ import uk.gov.ida.stub.idp.repositories.Session;
 import uk.gov.ida.stub.idp.saml.transformers.EidasResponseTransformerProvider;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -34,10 +37,10 @@ public class EidasSuccessAuthnResponseService {
     private final MetadataRepository metadataProvider;
 
     @Inject
-    public EidasSuccessAuthnResponseService(EidasResponseBuilder eidasResponseBuilder, EidasResponseTransformerProvider eidasResponseTransformerProvider, MetadataRepository metadataProvider) {
+    public EidasSuccessAuthnResponseService(EidasResponseBuilder eidasResponseBuilder, EidasResponseTransformerProvider eidasResponseTransformerProvider, @Named(StubIdpModule.HUB_CONNECTOR_METADATA_REPOSITORY) Optional<MetadataRepository> metadataProvider) {
         this.eidasResponseBuilder = eidasResponseBuilder;
         this.eidasResponseTransformerProvider = eidasResponseTransformerProvider;
-        this.metadataProvider = metadataProvider;
+        this.metadataProvider = metadataProvider.get();
     }
 
     public SamlResponse getEidasSuccessResponse(Session session){
@@ -46,7 +49,8 @@ public class EidasSuccessAuthnResponseService {
         List<Attribute> eidasAttributes = getEidasAttributes(session);
         DateTime issueInstant = DateTime.now();
 
-        Response response = eidasResponseBuilder.createEidasResponse(StatusCode.SUCCESS, UUID.randomUUID().toString(), EidasConstants.EIDAS_LOA_SUBSTANTIAL, eidasAttributes, requestId, issueInstant, issueInstant, issueInstant );
+        Response response = eidasResponseBuilder.createEidasResponse(StatusCode.SUCCESS, UUID.randomUUID().toString(),
+                EidasConstants.EIDAS_LOA_SUBSTANTIAL, eidasAttributes, requestId, issueInstant, issueInstant, issueInstant, hubUrl.toString());
         String eidasResponse = eidasResponseTransformerProvider.getTransformer().apply(response);
 
         return new SamlResponse(eidasResponse, session.getRelayState(), hubUrl);

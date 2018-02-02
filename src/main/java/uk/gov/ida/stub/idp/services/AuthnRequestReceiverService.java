@@ -77,7 +77,6 @@ public class AuthnRequestReceiverService {
     }
 
     public SessionCreated handleEidasAuthnRequest(String schemeId, String samlRequest, String relayState, Optional<IdpLanguageHint> languageHint) {
-
         AuthnRequest authnRequest = stringAuthnRequestTransformer.apply(samlRequest);
         EidasAuthnRequest eidasAuthnRequest = EidasAuthnRequest.buildFromAuthnRequest(authnRequest);
         final SessionId idpSessionId = sessionRepository.newSession(eidasAuthnRequest, relayState, languageHint);

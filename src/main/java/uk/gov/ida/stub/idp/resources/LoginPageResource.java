@@ -212,7 +212,7 @@ public class LoginPageResource {
 
         Optional<Session> session = sessionRepository.get(sessionCookie);
 
-        if (!session.isPresent()) {
+        if (!session.isPresent() || session.get().getIdaAuthnRequestFromHub() == null) {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Session is invalid for " + idpName))).build());
         }
         return session.get();
@@ -225,7 +225,7 @@ public class LoginPageResource {
 
         Optional<Session> session = sessionRepository.deleteAndGet(sessionCookie);
 
-        if (!session.isPresent()) {
+        if (!session.isPresent() || session.get().getIdaAuthnRequestFromHub() == null) {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Session is invalid for " + idpName))).build());
         }
         return session.get();

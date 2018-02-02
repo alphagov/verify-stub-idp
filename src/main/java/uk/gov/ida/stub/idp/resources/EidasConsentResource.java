@@ -73,7 +73,7 @@ public class EidasConsentResource {
 
         Optional<Session> session = shouldDelete ? sessionRepository.deleteAndGet(sessionCookie) : sessionRepository.get(sessionCookie);
 
-        if (!session.isPresent() || !session.get().getEidasUser().isPresent()) {
+        if (!session.isPresent() || !session.get().getEidasUser().isPresent() || session.get().getEidasAuthnRequest() == null) {
             throw errorResponse("Session is invalid for " + schemeId);
         }
 

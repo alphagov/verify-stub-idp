@@ -33,7 +33,7 @@ public class EidasUserLogsInIntegrationTests {
 
     @Before
     public void refreshMetadata() {
-        client.target("http://localhost:"+applicationRule.getAdminPort()+"/tasks/metadata-refresh").request().post(Entity.text(""));
+        client.target("http://localhost:"+applicationRule.getAdminPort()+"/tasks/connector-metadata-refresh").request().post(Entity.text(""));
     }
 
     @Test

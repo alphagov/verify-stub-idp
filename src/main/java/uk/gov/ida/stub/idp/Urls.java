@@ -48,7 +48,7 @@ public interface Urls {
     String LOGIN_AUTHN_PENDING_PATH = "authn-pending";
     String DEBUG_RESOURCE = "/{"+IDP_ID_PARAM+"}/debug";
     String CONSENT_RESOURCE = "/{"+IDP_ID_PARAM+"}/consent";
-    String EIDAS_CONSENT_RESOURCE = "eidas/{"+SCHEME_ID_PARAM+"}/consent";
+    String EIDAS_CONSENT_RESOURCE = "/eidas/{"+SCHEME_ID_PARAM+"}/consent";
 
     String USERS_RESOURCE = "/{"+IDP_ID_PARAM+"}/users";
     String DELETE_USER_PATH = "/delete";

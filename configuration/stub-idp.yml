@@ -75,10 +75,6 @@ infinispan:
 
 hubEntityId: ${METADATA_ENTITY_ID}
 
-stubCountryMetadataUrl: ${STUB_COUNTRY_METADATA_URL:-http://DefaultNotUsed}
-connectorNodeUrl: https://${SIGNIN_DOMAIN}/SAML2/SSO/EidasResponse/POST
-connectorNodeIssuerId: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}
-
 metadata:
   client:
     timeout: 60s
@@ -94,3 +90,24 @@ metadata:
   minRefreshDelay: 30000
   maxRefreshDelay: 1800000
   expectedEntityId: ${METADATA_ENTITY_ID}
+
+europeanIdentity:
+  enabled: ${EUROPEAN_IDENTITY_ENABLED:-false}
+  hubConnectorEntityId: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}
+  stubCountryMetadataUrl: ${STUB_COUNTRY_METADATA_URL:-http://DefaultNotUsed}
+  metadata:
+    jerseyClientName: connector-metadata-client
+    client:
+      timeout: 60s
+      timeToLive: 10m
+      connectionTimeout: 4s
+      tls:
+        protocol: TLSv1.2
+        verifyHostname: false
+    uri: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}
+    trustStore:
+      path: ${TRUSTSTORE_PATH}/ida_metadata_truststore.ts
+      password: ${TRUSTSTORE_PASSWORD}
+    minRefreshDelay: 30000
+    maxRefreshDelay: 1800000
+    expectedEntityId: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}

@@ -2,9 +2,11 @@ package uk.gov.ida.stub.idp.security;
 
 import uk.gov.ida.common.shared.security.PublicKeyFactory;
 import uk.gov.ida.saml.security.SigningKeyStore;
+import uk.gov.ida.stub.idp.StubIdpModule;
 import uk.gov.ida.stub.idp.repositories.MetadataRepository;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.security.PublicKey;
 import java.util.List;
 
@@ -15,7 +17,7 @@ public class IdaAuthnRequestKeyStore implements SigningKeyStore {
     private final PublicKeyFactory publicKeyFactory;
 
     @Inject
-    public IdaAuthnRequestKeyStore(MetadataRepository metadataRepository, PublicKeyFactory publicKeyFactory) {
+    public IdaAuthnRequestKeyStore(@Named(StubIdpModule.HUB_METADATA_REPOSITORY) MetadataRepository metadataRepository, PublicKeyFactory publicKeyFactory) {
         this.metadataRepository = metadataRepository;
         this.publicKeyFactory = publicKeyFactory;
     }

@@ -12,7 +12,6 @@ public class HubEncryptionKeyStore implements EncryptionKeyStore {
     private final MetadataRepository metadataRepository;
     private final PublicKeyFactory publicKeyFactory;
 
-    @Inject
     public HubEncryptionKeyStore(MetadataRepository metadataRepository, PublicKeyFactory publicKeyFactory) {
         this.metadataRepository = metadataRepository;
         this.publicKeyFactory = publicKeyFactory;

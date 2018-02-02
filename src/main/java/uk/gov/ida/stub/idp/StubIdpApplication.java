@@ -14,15 +14,11 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.views.ViewBundle;
 import io.dropwizard.views.freemarker.FreemarkerViewRenderer;
-import org.opensaml.saml.metadata.resolver.MetadataResolver;
 import uk.gov.ida.bundles.LoggingBundle;
 import uk.gov.ida.bundles.MonitoringBundle;
 import uk.gov.ida.bundles.ServiceStatusBundle;
 import uk.gov.ida.filters.AcceptLanguageFilter;
 import uk.gov.ida.saml.core.IdaSamlBootstrap;
-import uk.gov.ida.saml.dropwizard.metadata.MetadataHealthCheck;
-import uk.gov.ida.saml.dropwizard.metadata.MetadataRefreshTask;
-import uk.gov.ida.saml.metadata.bundle.MetadataResolverBundle;
 import uk.gov.ida.shared.dropwizard.infinispan.util.InfinispanBundle;
 import uk.gov.ida.stub.idp.configuration.StubIdpConfiguration;
 import uk.gov.ida.stub.idp.exceptions.mappers.CatchAllExceptionMapper;
@@ -49,8 +45,6 @@ import java.util.EnumSet;
 import java.util.Map;
 
 public class StubIdpApplication extends Application<StubIdpConfiguration> {
-
-    private MetadataResolverBundle<StubIdpConfiguration> metadataResolverBundle;
 
     public static void main(String[] args) {
         JerseyGuiceUtils.reset();
@@ -90,14 +84,10 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
         final InfinispanBundle infinispanBundle = new InfinispanBundle();
         // the infinispan cache manager needs to be lazy loaded because it is not initialized at this point.
         bootstrap.addBundle(infinispanBundle);
-        metadataResolverBundle = new MetadataResolverBundle<>((config) -> config.getMetadataConfiguration());
-
-        bootstrap.addBundle(metadataResolverBundle);
 
         GuiceBundle<StubIdpConfiguration> guiceBundle = GuiceBundle
                 .defaultBuilder(getConfigurationClass())
-                .modules(metadataResolverBundle.getMetadataModule(),
-                        new StubIdpModule(infinispanBundle.getInfinispanCacheManagerProvider(), bootstrap),
+                .modules(new StubIdpModule(infinispanBundle.getInfinispanCacheManagerProvider(), bootstrap),
                         new DropwizardModule())
                 .build();
         bootstrap.addBundle(guiceBundle);
@@ -153,15 +143,5 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
         //health checks
         StubIdpHealthCheck healthCheck = new StubIdpHealthCheck();
         environment.healthChecks().register(healthCheck.getName(), healthCheck);
-
-        MetadataResolver metadataResolver = metadataResolverBundle.getMetadataResolver();
-
-        //metadata healthcheck
-        String expectedEntityId = configuration.getMetadataConfiguration().getExpectedEntityId();
-        MetadataHealthCheck metadataHealthCheck = new MetadataHealthCheck(metadataResolver, expectedEntityId);
-        environment.healthChecks().register(metadataHealthCheck.getName(), metadataHealthCheck);
-
-        //metadata refresh task
-        environment.admin().addTask(new MetadataRefreshTask(metadataResolver));
     }
 }

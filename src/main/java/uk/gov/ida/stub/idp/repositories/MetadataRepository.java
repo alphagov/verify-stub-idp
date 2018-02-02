@@ -26,8 +26,7 @@ public class MetadataRepository {
     private final MetadataResolver metadataResolver;
     private final String hubEntityId;
 
-    @Inject
-    public MetadataRepository(MetadataResolver metadataResolver, @Named("HubEntityId") String hubEntityId) {
+    public MetadataRepository(MetadataResolver metadataResolver, String hubEntityId) {
         this.metadataResolver = metadataResolver;
         this.hubEntityId = hubEntityId;
     }

@@ -23,10 +23,6 @@ saml:
 
 hubEntityId: ${HUB_ENTITY_ID}
 
-stubCountryMetadataUrl: http://www.example.com
-connectorNodeUrl: https://connector.acme.org/SAML2/SSO/EidasResponse/POST
-connectorNodeIssuerId: https://localhost:55000/local-connector/metadata.xml
-
 serviceInfo:
   name: stub-idp
 
@@ -60,3 +56,24 @@ secureCookieConfiguration:
   keyConfiguration:
     keyUri: ./deploy/keys/cookie.key
   secure: false
+
+europeanIdentity:
+  enabled: true
+  hubConnectorEntityId: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}
+  stubCountryMetadataUrl: ${STUB_COUNTRY_METADATA_URL:-http://DefaultNotUsed}
+  metadata:
+    jerseyClientName: connector-metadata-client
+    client:
+      timeout: 60s
+      timeToLive: 10m
+      connectionTimeout: 4s
+      tls:
+        protocol: TLSv1.2
+        verifyHostname: false
+    uri: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}
+    trustStore:
+      path: ${METADATA_TRUST_STORE}
+      password: ${METADATA_TRUST_STORE_PASSWORD}
+    minRefreshDelay: 30000
+    maxRefreshDelay: 1800000
+    expectedEntityId: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}

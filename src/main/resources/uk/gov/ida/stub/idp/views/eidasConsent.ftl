@@ -41,7 +41,7 @@
             authenticating?</p>
     </div>
     <div class="submit">
-        <form action="/${idpId}/consent" method="post">
+        <form action="/eidas/${idpId}/consent" method="post">
             <input id="agree" class="button color-ok" type="submit" name="submit" value="I Agree"/>
         </form>
     </div>

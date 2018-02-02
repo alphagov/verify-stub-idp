@@ -91,17 +91,7 @@ public class StubIdpConfiguration extends Configuration implements
     @NotNull
     @Valid
     @JsonProperty
-    protected URI connectorNodeUrl;
-
-    @NotNull
-    @Valid
-    @JsonProperty
-    protected URI stubCountryMetadataUrl;
-
-    @NotNull
-    @Valid
-    @JsonProperty
-    protected String connectorNodeIssuerId;
+    private EuropeanIdentityConfiguration europeanIdentity;
 
     protected StubIdpConfiguration() {
     }
@@ -161,15 +151,7 @@ public class StubIdpConfiguration extends Configuration implements
         return secureCookieConfiguration;
     }
 
-    public URI getConnectorNodeUrl() {
-        return connectorNodeUrl;
-    }
-
-    public URI getStubCountryMetadataUrl() {
-        return stubCountryMetadataUrl;
-    }
-
-    public String getConnectorNodeIssuerId() {
-        return connectorNodeIssuerId;
+    public EuropeanIdentityConfiguration getEuropeanIdentityConfiguration() {
+        return europeanIdentity;
     }
 }
