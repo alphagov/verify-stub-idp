@@ -2,7 +2,6 @@ package uk.gov.ida.apprule.steps;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
-import org.joda.time.DateTime;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import uk.gov.ida.apprule.support.EidasAuthnRequestBuilder;

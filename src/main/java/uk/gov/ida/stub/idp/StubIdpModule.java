@@ -24,6 +24,7 @@ import uk.gov.ida.common.shared.security.PublicKeyFactory;
 import uk.gov.ida.common.shared.security.SecureCookieKeyConfigurationKeyStore;
 import uk.gov.ida.common.shared.security.X509CertificateFactory;
 import uk.gov.ida.notification.saml.translation.EidasResponseBuilder;
+import uk.gov.ida.saml.core.api.CoreTransformersFactory;
 import uk.gov.ida.saml.hub.domain.IdaAuthnRequestFromHub;
 import uk.gov.ida.saml.idp.configuration.SamlConfiguration;
 import uk.gov.ida.saml.security.EncryptionKeyStore;
@@ -56,6 +57,7 @@ import uk.gov.ida.stub.idp.saml.transformers.OutboundResponseFromIdpTransformerP
 import uk.gov.ida.stub.idp.security.HubEncryptionKeyStore;
 import uk.gov.ida.stub.idp.security.IdaAuthnRequestKeyStore;
 import uk.gov.ida.stub.idp.services.AuthnRequestReceiverService;
+import uk.gov.ida.stub.idp.services.EidasSuccessAuthnResponseService;
 import uk.gov.ida.stub.idp.services.GeneratePasswordService;
 import uk.gov.ida.stub.idp.services.IdpUserService;
 import uk.gov.ida.stub.idp.services.NonSuccessAuthnResponseService;
@@ -124,6 +126,7 @@ public class StubIdpModule extends AbstractModule {
 
         bind(AuthnRequestReceiverService.class);
         bind(SuccessAuthnResponseService.class);
+        bind(EidasSuccessAuthnResponseService.class);
         bind(GeneratePasswordService.class);
         bind(NonSuccessAuthnResponseService.class);
         bind(IdpUserService.class);
@@ -202,7 +205,7 @@ public class StubIdpModule extends AbstractModule {
     @Provides
     public EidasResponseTransformerProvider getEidasResponseTransformerProvider(EncryptionKeyStore encryptionKeyStore, IdaKeyStore keyStore, EntityToEncryptForLocator entityToEncryptForLocator) {
         return new EidasResponseTransformerProvider(
-                new StubTransformersFactory(),
+                new CoreTransformersFactory(),
                 encryptionKeyStore,
                 keyStore,
                 entityToEncryptForLocator,
@@ -257,7 +260,7 @@ public class StubIdpModule extends AbstractModule {
     @Singleton
     public EidasResponseBuilder getEidasResponseBuilder(StubIdpConfiguration configuration){
         return new EidasResponseBuilder(configuration.getConnectorNodeUrl().toString(),
-                configuration.getProxyNodeMetadataForConnectorNodeUrl().toString(),
+                configuration.getStubCountryMetadataUrl().toString(),
                 configuration.getConnectorNodeIssuerId());
     }
 }

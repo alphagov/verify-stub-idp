@@ -36,7 +36,7 @@ public class EidasLoginPageResourceTest {
     private final SessionId SESSION_ID = SessionId.createNewSessionId();
     private final String USERNAME = "username";
     private final String PASSWORD = "password";
-
+    private Session session;
 
     @Mock
     private SessionRepository sessionRepository;
@@ -44,14 +44,15 @@ public class EidasLoginPageResourceTest {
     @Before
     public void setUp(){
         resource = new EidasLoginPageResource(sessionRepository);
-
-        when(sessionRepository.get(SESSION_ID)).thenReturn(Optional.ofNullable(new Session(null, (EidasAuthnRequest)null, null, null, null, Optional.empty(), Optional.empty())));
+        session = new Session(null, (EidasAuthnRequest)null, null, null, null, Optional.empty(), Optional.empty());
+        when(sessionRepository.get(SESSION_ID)).thenReturn(Optional.ofNullable(session));
     }
 
     @Test
     public void loginShouldRedirectToEidasConsentResource(){
         final Response response = resource.post(SCHEME_NAME, USERNAME, PASSWORD, SESSION_ID);
 
+        assertThat(session.getEidasUser().isPresent()).isTrue();
         assertThat(response.getLocation()).isEqualTo(UriBuilder.fromPath(Urls.EIDAS_CONSENT_RESOURCE)
                 .build(SCHEME_NAME));
         assertThat(response.getStatus()).isEqualTo(Response.Status.SEE_OTHER.getStatusCode());

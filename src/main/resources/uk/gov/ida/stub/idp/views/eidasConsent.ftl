@@ -1,5 +1,5 @@
 <#-- @ftlvariable name="" type="uk.gov.ida.stub.idp.views.EidasConsentView" -->
-<#include "address.ftl">
+<#include "eidasAddress.ftl">
 <div class="consent">
     <h2>
         You've successfully authenticated with ${name}
@@ -10,18 +10,28 @@
         <ul>
             <li>
                 <label for="firstName">First Name:</label>
-                <#--<span id="firstName">${firstName}</span>-->
+                <span id="firstName">${user.firstName}</span>
             </li>
-        <#if address??>
             <li>
-                <label for="address">Address:</label>
-                <#--<span id="address"><@addy address></@addy></span>-->
+                <label for="familyName">Family Name:</label>
+                <span id="familyName">${user.familyName}</span>
+            </li>
+            <li>
+                <label for="dateOfBirth">Date of Birth:</label>
+                <span id="dateOfBirth">${user.dateOfBirth}</span>
+            </li>
+        <#if user.gender.isPresent()>
+            <li>
+                <label for="gender">Gender:</label>
+                <span id="gender">${user.gender.get().getValue()}</span>
             </li>
         </#if>
+        <#if user.address??>
             <li>
-                <label for="loa">Level of assurance</label>
-                <#--<span id="loa">${loa}</span>-->
+                <label for="address">Address:</label>
+                <span id="address"><@addy user.address></@addy></span>
             </li>
+        </#if>
         </ul>
     </div>
     <div class="consent-details">

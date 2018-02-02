@@ -96,7 +96,7 @@ public class StubIdpConfiguration extends Configuration implements
     @NotNull
     @Valid
     @JsonProperty
-    protected URI proxyNodeMetadataForConnectorNodeUrl;
+    protected URI stubCountryMetadataUrl;
 
     @NotNull
     @Valid
@@ -165,8 +165,8 @@ public class StubIdpConfiguration extends Configuration implements
         return connectorNodeUrl;
     }
 
-    public URI getProxyNodeMetadataForConnectorNodeUrl() {
-        return proxyNodeMetadataForConnectorNodeUrl;
+    public URI getStubCountryMetadataUrl() {
+        return stubCountryMetadataUrl;
     }
 
     public String getConnectorNodeIssuerId() {

@@ -63,7 +63,6 @@ public class AuthnRequestReceiverService {
         final List<String> invalidHints = new ArrayList<>();
         validateHints(idpHints, validHints, invalidHints);
 
-
         final IdaAuthnRequestFromHub idaRequestFromHub = samlRequestTransformer.apply(samlRequest);
         final SessionId idpSessionId = sessionRepository.newSession(idaRequestFromHub, relayState, validHints, invalidHints, languageHint, registration);
 
@@ -87,8 +86,6 @@ public class AuthnRequestReceiverService {
 
         return new SessionCreated(uriBuilder.build(schemeId), idpSessionId);
     }
-
-
 
     private void validateHints(Set<String> idpHints, List<IdpHint> validHints, List<String> invalidHints) {
         if (idpHints != null && !idpHints.isEmpty()) {

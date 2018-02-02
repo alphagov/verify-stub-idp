@@ -75,9 +75,9 @@ infinispan:
 
 hubEntityId: ${METADATA_ENTITY_ID}
 
-proxyNodeMetadataForConnectorNodeUrl: http://www.example.com
+stubCountryMetadataUrl: ${STUB_COUNTRY_METADATA_URL:-http://DefaultNotUsed}
 connectorNodeUrl: https://${SIGNIN_DOMAIN}/SAML2/SSO/EidasResponse/POST
-connectorNodeIssuerId: ${EIDAS_METADATA_ENTITY_ID}
+connectorNodeIssuerId: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}
 
 metadata:
   client:

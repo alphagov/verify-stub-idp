@@ -23,7 +23,7 @@ saml:
 
 hubEntityId: ${HUB_ENTITY_ID}
 
-proxyNodeMetadataForConnectorNodeUrl: http://www.example.com
+stubCountryMetadataUrl: http://www.example.com
 connectorNodeUrl: https://connector.acme.org/SAML2/SSO/EidasResponse/POST
 connectorNodeIssuerId: https://localhost:55000/local-connector/metadata.xml
 

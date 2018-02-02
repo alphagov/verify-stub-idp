@@ -1,15 +1,16 @@
 package uk.gov.ida.stub.idp.resources;
 
 import com.google.common.base.Strings;
+import org.joda.time.LocalDate;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.cookies.CookieNames;
-import uk.gov.ida.stub.idp.exceptions.InvalidSessionIdException;
-import uk.gov.ida.stub.idp.exceptions.InvalidUsernameOrPasswordException;
+import uk.gov.ida.stub.idp.domain.EidasAddress;
+import uk.gov.ida.stub.idp.domain.EidasUser;
+import uk.gov.ida.stub.idp.domain.Gender;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASession;
 import uk.gov.ida.stub.idp.repositories.Session;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
-import uk.gov.ida.stub.idp.services.IdpUserService;
 import uk.gov.ida.stub.idp.views.EidasLoginPageView;
 import uk.gov.ida.stub.idp.views.ErrorMessageType;
 
@@ -28,12 +29,9 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
-import java.net.URI;
 import java.util.Optional;
 
 import static java.text.MessageFormat.format;
-import static uk.gov.ida.stub.idp.views.ErrorMessageType.INVALID_SESSION_ID;
-import static uk.gov.ida.stub.idp.views.ErrorMessageType.INVALID_USERNAME_OR_PASSWORD;
 import static uk.gov.ida.stub.idp.views.ErrorMessageType.NO_ERROR;
 
 @Path(Urls.EIDAS_LOGIN_RESOURCE)
@@ -70,14 +68,20 @@ public class EidasLoginPageResource {
             @FormParam(Urls.PASSWORD_PARAM) String password,
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
 
-        checkSession(schemeName, sessionCookie);
+        Session session = checkSession(schemeName, sessionCookie);
+
+        EidasAddress address = new EidasAddress("","","","","","",
+                "10 Europe Street","","75001");
+        EidasUser eidasUser = new EidasUser("Bob", "Smith", "pid", address,
+                new LocalDate(1988, 10, 10), Optional.of(Gender.MALE));
+        session.setEidasUser(eidasUser);
 
         return Response.seeOther(UriBuilder.fromPath(Urls.EIDAS_CONSENT_RESOURCE)
                 .build(schemeName))
                 .build();
     }
 
-    private void checkSession(String idpName, SessionId sessionCookie) {
+    private Session checkSession(String idpName, SessionId sessionCookie) {
         if (sessionCookie == null || Strings.isNullOrEmpty(sessionCookie.toString())) {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Unable to locate session cookie for " + idpName))).build());
         }
@@ -87,6 +91,8 @@ public class EidasLoginPageResource {
         if (!session.isPresent()) {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Session is invalid for " + idpName))).build());
         }
+
+        return session.get();
     }
 
 }

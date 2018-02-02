@@ -39,14 +39,10 @@ public class SessionRepository {
         return updateSession(idpSessionId, session);
     }
 
-    public SessionId newSession(EidasAuthnRequest eidasAuthnRequest, String relayState, List<IdpHint> validHints, List<String> invalidHints, Optional<IdpLanguageHint> languageHint, Optional<Boolean> registration) {
-        SessionId idpSessionId = SessionId.createNewSessionId();
-        Session session = new Session(idpSessionId, eidasAuthnRequest, relayState, validHints, invalidHints, languageHint, registration);
-        return updateSession(idpSessionId, session);
-    }
-
     public SessionId newSession(EidasAuthnRequest eidasAuthnRequest, String relayState, Optional<IdpLanguageHint> languageHint) {
-        return newSession(eidasAuthnRequest, relayState, Collections.emptyList(), Collections.emptyList(), languageHint, Optional.of(false));
+        SessionId idpSessionId = SessionId.createNewSessionId();
+        Session session = new Session(idpSessionId, eidasAuthnRequest, relayState, Collections.emptyList(), Collections.emptyList(), languageHint, Optional.empty());
+        return updateSession(idpSessionId, session);
     }
 
     public SessionId updateSession(SessionId id, Session session) {
@@ -58,7 +54,4 @@ public class SessionRepository {
         return Optional.ofNullable(sessions.asMap().remove(sessionToken));
     }
 
-    public void delete(SessionId sessionToken) {
-        sessions.asMap().remove(sessionToken);
-    }
 }

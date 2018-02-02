@@ -49,6 +49,10 @@ assets:
 
 hubEntityId: https://dev-hub.local
 
+stubCountryMetadataUrl: ${STUB_COUNTRY_METADATA_URL:-http://DefaultNotUsed}
+connectorNodeUrl: https://${SIGNIN_DOMAIN}/SAML2/SSO/EidasResponse/POST
+connectorNodeIssuerId: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}
+
 metadata:
   uri: ${METADATA_URL}
   trustStore:
