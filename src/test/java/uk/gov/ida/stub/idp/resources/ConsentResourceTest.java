@@ -64,7 +64,7 @@ public class ConsentResourceTest {
     }
 
     private final String idpName = "idpName";
-    private final Idp idp = new Idp(idpName, "Test Idp", "test-idp-asset-id", true, TestEntityIds.STUB_IDP_ONE, null);
+    private final Idp idp = new Idp(idpName, "Test Idp", "test-idp-asset-id", true, TestEntityIds.STUB_IDP_ONE, Optional.empty(), null);
 
     @Test
     public void shouldWarnUserIfLOAIsTooLow() {

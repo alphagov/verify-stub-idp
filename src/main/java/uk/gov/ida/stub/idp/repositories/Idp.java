@@ -6,7 +6,7 @@ import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.saml.core.domain.Gender;
 import uk.gov.ida.saml.core.domain.SimpleMdsValue;
 import uk.gov.ida.stub.idp.domain.IdpUser;
-
+import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -20,13 +20,15 @@ public class Idp {
     private boolean sendKeyInfo;
     private String issuerId;
     private AllIdpsUserRepository allIdpsUserRepository;
+	private Optional<File> metadataLocation;
 
-    public Idp(String displayName, String friendlyId, String assetId, boolean sendKeyInfo, String issuerId, AllIdpsUserRepository allIdpsUserRepository) {
+    public Idp(String displayName, String friendlyId, String assetId, boolean sendKeyInfo, String issuerId, Optional<File> metadataLocation, AllIdpsUserRepository allIdpsUserRepository) {
         this.friendlyId = friendlyId;
         this.displayName = displayName;
         this.assetId = assetId;
         this.sendKeyInfo = sendKeyInfo;
         this.issuerId = issuerId;
+        this.metadataLocation = metadataLocation;
         this.allIdpsUserRepository = allIdpsUserRepository;
     }
 
@@ -44,6 +46,10 @@ public class Idp {
 
     public boolean shouldSendKeyInfo() {
         return sendKeyInfo;
+    }
+
+    public Optional<File> getMetadataLocation() {
+        return metadataLocation;
     }
 
     public Optional<IdpUser> getUser(String username, String password) {

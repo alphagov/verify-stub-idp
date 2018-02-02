@@ -18,7 +18,7 @@ import java.io.File;
 public class StubIdpsFileListener implements Managed {
     private static final Logger LOG = LoggerFactory.getLogger(StubIdpsFileListener.class);
 
-    private final String stubIdpsYmlFileLocation;
+    private final File stubIdpsYmlFileLocation;
 
     private final StubIdpConfiguration stubIdpConfiguration;
     private final IdpStubsRepository idpStubsRepository;
@@ -29,7 +29,7 @@ public class StubIdpsFileListener implements Managed {
      */
     @Inject
     public StubIdpsFileListener(StubIdpConfiguration stubIdpConfiguration, IdpStubsRepository idpStubsRepository) {
-        this.stubIdpsYmlFileLocation = stubIdpConfiguration.getStubIdpsYmlFileLocation();
+        this.stubIdpsYmlFileLocation = new File(stubIdpConfiguration.getStubIdpsYmlFileLocation());
         this.stubIdpConfiguration = stubIdpConfiguration;
         this.idpStubsRepository = idpStubsRepository;
         this.fileAlterationMonitor = new FileAlterationMonitor(stubIdpConfiguration.getStubIdpYmlFileRefresh().toMilliseconds());
@@ -38,8 +38,8 @@ public class StubIdpsFileListener implements Managed {
     @Override
     public void start() throws Exception {
         idpStubsRepository.load(stubIdpConfiguration.getStubIdpsYmlFileLocation());
-        String fileName = stubIdpsYmlFileLocation.substring(stubIdpsYmlFileLocation.lastIndexOf('/') + 1);
-        String directory = stubIdpsYmlFileLocation.substring(0, stubIdpsYmlFileLocation.lastIndexOf('/'));
+        String fileName = stubIdpsYmlFileLocation.getName();
+        String directory = stubIdpsYmlFileLocation.getParent();
         IOFileFilter fileFilter = FileFilterUtils.nameFileFilter(fileName);
         FileAlterationObserver fileAlterationObserver = new FileAlterationObserver(directory, fileFilter);
         FileAlterationListener listener = new FileAlterationListenerAdaptor() {
