@@ -69,8 +69,8 @@ public class CountryMetadataResourceTest {
     @Before
     public void setUp() throws CertificateEncodingException, MarshallingException, SecurityException, SignatureException, URISyntaxException {
         validIdpUri = new URI(String.format("https://stub.test/%s/ServiceMetadata", VALID_IDP));
-        invalidIdpUri = new URI(String.format("https://stub.test/%s/ServiceMetadata", INVALID_IDP));
-        resource = new CountryMetadataResource(idpStubsRepository, idaKeyStore, countryMetadataBuilder);
+        invalidIdpUri = new URI(String.format("https://stub.test//ServiceMetadata", INVALID_IDP));
+        resource = new CountryMetadataResource(idaKeyStore, countryMetadataBuilder);
         entityDescriptor = (EntityDescriptor) XMLObjectProviderRegistrySupport.getBuilderFactory()
           .getBuilder(EntityDescriptor.DEFAULT_ELEMENT_NAME).buildObject(EntityDescriptor.DEFAULT_ELEMENT_NAME, EntityDescriptor.TYPE_NAME);
         when(idpStubsRepository.getIdpWithFriendlyId(VALID_IDP)).thenReturn(validIdp);
@@ -91,14 +91,17 @@ public class CountryMetadataResourceTest {
     }
 
     @Test
-    public void getShouldReturnNotFoundWhenIdpIsUnknown() throws CertificateEncodingException, MarshallingException, SecurityException, SignatureException {
+    public void getShouldReturnNotFoundWhenIdpIsNullOrEmpty() throws CertificateEncodingException, MarshallingException, SecurityException, SignatureException {
         final UriInfo requestContext = mock(UriInfo.class);
         when(requestContext.getAbsolutePath()).thenReturn(invalidIdpUri);
 
-        final Response response = resource.getMetadata(requestContext, INVALID_IDP);
-
+        Response response = resource.getMetadata(requestContext, null);
         assertThat(response.getStatus()).isEqualTo(Response.Status.NOT_FOUND.getStatusCode());
         assertThat(response.getEntity()).isEqualTo(null);
+        response = resource.getMetadata(requestContext, "");
+        assertThat(response.getStatus()).isEqualTo(Response.Status.NOT_FOUND.getStatusCode());
+        assertThat(response.getEntity()).isEqualTo(null);
+
         verify(countryMetadataBuilder, times(0)).createEntityDescriptorForProxyNodeService(any(), any(), any());
     }
 }
