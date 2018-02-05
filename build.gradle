@@ -42,12 +42,15 @@ task pushToPaas(type: Exec, dependsOn: [paasManifestFileCheck, distZip]) {
     }
 }
 
-if(project.hasProperty('includeDirectory')) {
+if(project.hasProperty('includeDirectories')) {
     distZip {
-        into(project.name + '/resources') {
-            from includeDirectory
-            include '*'
-
+        includeDirectories.split(',').each {
+            def dir = "${it}"
+            println dir
+            into(project.name + '/resources') {
+                from dir
+                include '*'
+            }
         }
     }
 }
