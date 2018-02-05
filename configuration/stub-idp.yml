@@ -29,10 +29,6 @@ saml:
 serviceInfo:
   name: stub-idp
 
-clientTrustStoreConfiguration:
-  path: ${TRUSTSTORE_PATH}/ida_truststore.ts
-  password: ${TRUSTSTORE_PASSWORD}
-
 logging:
   level: INFO
   appenders:
@@ -57,7 +53,7 @@ signingKeyPairConfiguration:
 
 basicAuthEnabledForUserResource: ${STUB_IDP_BASIC_AUTH}
 
-stubIdpsYmlFileLocation: /ida/stub-idp/stub-idps.yml
+stubIdpsYmlFileLocation: ${STUB_IDPS_FILE_PATH:-/ida/stub-idp/stub-idps.yml}
 stubIdpYmlFileRefresh: 10s
 
 metrics:
@@ -83,7 +79,7 @@ metadata:
     tls:
       protocol: TLSv1.2
       verifyHostname: false
-  uri: https://${SIGNIN_DOMAIN}/SAML2/metadata/federation
+  uri: ${METADATA_URL}
   trustStore:
     path: ${TRUSTSTORE_PATH}/ida_metadata_truststore.ts
     password: ${TRUSTSTORE_PASSWORD}
