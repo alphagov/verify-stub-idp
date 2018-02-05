@@ -42,6 +42,13 @@ task pushToPaas(type: Exec, dependsOn: [paasManifestFileCheck, distZip]) {
     }
 }
 
+distZip {
+    into(project.name) {
+        from 'configuration'
+        include '*.yml'
+    }
+}
+
 if(project.hasProperty('includeDirectories')) {
     distZip {
         includeDirectories.split(',').each {
