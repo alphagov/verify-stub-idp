@@ -29,7 +29,6 @@ import uk.gov.ida.common.shared.security.IdGenerator;
 import uk.gov.ida.common.shared.security.PublicKeyFactory;
 import uk.gov.ida.common.shared.security.SecureCookieKeyConfigurationKeyStore;
 import uk.gov.ida.common.shared.security.X509CertificateFactory;
-import uk.gov.ida.notification.saml.translation.EidasResponseBuilder;
 import uk.gov.ida.saml.core.api.CoreTransformersFactory;
 import uk.gov.ida.saml.dropwizard.metadata.MetadataHealthCheck;
 import uk.gov.ida.saml.hub.domain.IdaAuthnRequestFromHub;
@@ -45,6 +44,7 @@ import uk.gov.ida.saml.security.SigningKeyStore;
 import uk.gov.ida.shared.dropwizard.infinispan.util.InfinispanCacheManager;
 import uk.gov.ida.stub.idp.auth.ManagedAuthFilterInstaller;
 import uk.gov.ida.stub.idp.builders.CountryMetadataBuilder;
+import uk.gov.ida.stub.idp.builders.EidasResponseBuilder;
 import uk.gov.ida.stub.idp.builders.SigningHelper;
 import uk.gov.ida.stub.idp.configuration.AssertionLifetimeConfiguration;
 import uk.gov.ida.stub.idp.configuration.IdpStubsConfiguration;
@@ -177,6 +177,13 @@ public class StubIdpModule extends AbstractModule {
     }
 
     @Provides
+    @Singleton
+    @Named("StubCountryMetadataUrl")
+    public String getStubCountryMetadataUrl(StubIdpConfiguration configuration) {
+        return configuration.getEuropeanIdentityConfiguration().getStubCountryMetadataUrl();
+    }
+
+    @Provides
     private ConfigurationFactory<IdpStubsConfiguration> getConfigurationFactory() {
         Validator validator = bootstrap.getValidatorFactory().getValidator();
         return new DefaultConfigurationFactoryFactory<IdpStubsConfiguration>()
@@ -301,7 +308,7 @@ public class StubIdpModule extends AbstractModule {
     @Singleton
     public EidasResponseBuilder getEidasResponseBuilder(StubIdpConfiguration configuration, @Named("HubConnectorEntityId") String hubConnectorEntityId) {
         if (configuration.getEuropeanIdentityConfiguration().isEnabled()) {
-            return new EidasResponseBuilder(configuration.getEuropeanIdentityConfiguration().getStubCountryMetadataUrl().toString(), hubConnectorEntityId);
+            return new EidasResponseBuilder(hubConnectorEntityId);
         }
         return null;
     }

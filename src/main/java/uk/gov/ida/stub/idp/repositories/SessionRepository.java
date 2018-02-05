@@ -3,8 +3,8 @@ package uk.gov.ida.stub.idp.repositories;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import uk.gov.ida.common.SessionId;
-import uk.gov.ida.notification.saml.translation.EidasAuthnRequest;
 import uk.gov.ida.saml.hub.domain.IdaAuthnRequestFromHub;
+import uk.gov.ida.stub.idp.domain.EidasAuthnRequest;
 import uk.gov.ida.stub.idp.domain.IdpHint;
 import uk.gov.ida.stub.idp.domain.IdpLanguageHint;
 
@@ -53,5 +53,4 @@ public class SessionRepository {
     public Optional<Session> deleteAndGet(SessionId sessionToken) {
         return Optional.ofNullable(sessions.asMap().remove(sessionToken));
     }
-
 }

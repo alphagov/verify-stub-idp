@@ -49,10 +49,6 @@ assets:
 
 hubEntityId: https://dev-hub.local
 
-stubCountryMetadataUrl: ${STUB_COUNTRY_METADATA_URL:-http://DefaultNotUsed}
-connectorNodeUrl: https://${SIGNIN_DOMAIN}/SAML2/SSO/EidasResponse/POST
-connectorNodeIssuerId: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}
-
 metadata:
   uri: ${METADATA_URL}
   trustStore:
@@ -66,3 +62,24 @@ metadata:
     timeToLive: 10m
     cookiesEnabled: false
     connectionTimeout: 1s
+
+europeanIdentity:
+  enabled: ${EUROPEAN_IDENTITY_ENABLED:-false}
+  hubConnectorEntityId: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}
+  stubCountryMetadataUrl: https://${STUB_IDP_HOSTNAME:-DefaultNotUsed}/{0}/ServiceMetadata
+  metadata:
+    jerseyClientName: connector-metadata-client
+    client:
+      timeout: 60s
+      timeToLive: 10m
+      connectionTimeout: 4s
+      tls:
+        protocol: TLSv1.2
+        verifyHostname: false
+    uri: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}
+    trustStore:
+      path: ${TRUSTSTORE_PATH}/ida_metadata_truststore.ts
+      password: ${TRUSTSTORE_PASSWORD}
+    minRefreshDelay: 30000
+    maxRefreshDelay: 1800000
+    expectedEntityId: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}

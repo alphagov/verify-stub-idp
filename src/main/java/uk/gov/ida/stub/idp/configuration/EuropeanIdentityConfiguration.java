@@ -23,7 +23,7 @@ public class EuropeanIdentityConfiguration {
     @NotNull
     @Valid
     @JsonProperty
-    private URI stubCountryMetadataUrl;
+    private String stubCountryMetadataUrl;
 
     @NotNull
     @Valid
@@ -42,7 +42,7 @@ public class EuropeanIdentityConfiguration {
         return enabled;
     }
 
-    public URI getStubCountryMetadataUrl() {
+    public String getStubCountryMetadataUrl() {
         return stubCountryMetadataUrl;
     }
 }

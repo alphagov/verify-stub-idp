@@ -8,9 +8,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import se.litsec.eidas.opensaml.ext.SPTypeEnumeration;
 import uk.gov.ida.common.SessionId;
-import uk.gov.ida.notification.saml.translation.EidasAuthnRequest;
+import uk.gov.ida.stub.idp.domain.EidasAuthnRequest;
 import uk.gov.ida.stub.idp.domain.EidasUser;
 import uk.gov.ida.stub.idp.domain.SamlResponse;
 import uk.gov.ida.stub.idp.repositories.Session;
@@ -54,7 +53,7 @@ public class EidasConsentResourceTest {
     public void setUp(){
         resource = new EidasConsentResource(sessionRepository, successAuthnResponseService, samlResponseRedirectViewFactory);
 
-        EidasAuthnRequest eidasAuthnRequest = new EidasAuthnRequest("request-id", "issuer", "destination", SPTypeEnumeration.PUBLIC, "loa", Collections.emptyList());
+        EidasAuthnRequest eidasAuthnRequest = new EidasAuthnRequest("request-id", "issuer", "destination", "loa", Collections.emptyList());
         session = new Session(SESSION_ID, eidasAuthnRequest, null, null, null, null, null);
         EidasUser user = new EidasUser("Jane", "Doe", "pid", null, new LocalDate(1990, 1, 2), null);
         session.setEidasUser(user);
@@ -72,7 +71,7 @@ public class EidasConsentResourceTest {
     @Test
     public void postShouldReturnASuccessfulResponseWhenSessionIsValid() {
         SamlResponse samlResponse = new SamlResponse(null, null, null);
-        when(successAuthnResponseService.getEidasSuccessResponse(session)).thenReturn(samlResponse);
+        when(successAuthnResponseService.getEidasSuccessResponse(session, SCHEME_NAME)).thenReturn(samlResponse);
         when(samlResponseRedirectViewFactory.sendSamlMessage(samlResponse)).thenReturn(Response.ok().build());
 
         final Response response = resource.consent(SCHEME_NAME, "submit", SESSION_ID);

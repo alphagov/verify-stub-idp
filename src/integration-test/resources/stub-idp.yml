@@ -60,7 +60,7 @@ secureCookieConfiguration:
 europeanIdentity:
   enabled: true
   hubConnectorEntityId: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}
-  stubCountryMetadataUrl: ${STUB_COUNTRY_METADATA_URL:-http://DefaultNotUsed}
+  stubCountryMetadataUrl: https://${STUB_IDP_HOSTNAME:-DefaultNotUsed}/{0}/ServiceMetadata
   metadata:
     jerseyClientName: connector-metadata-client
     client:

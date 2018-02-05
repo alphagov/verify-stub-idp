@@ -7,10 +7,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import se.litsec.eidas.opensaml.ext.SPTypeEnumeration;
 import uk.gov.ida.common.SessionId;
-import uk.gov.ida.notification.saml.translation.EidasAuthnRequest;
 import uk.gov.ida.stub.idp.Urls;
+import uk.gov.ida.stub.idp.domain.EidasAuthnRequest;
 import uk.gov.ida.stub.idp.repositories.Session;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
 
@@ -22,7 +21,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-
 
 @RunWith(MockitoJUnitRunner.class)
 public class EidasLoginPageResourceTest {
@@ -46,7 +44,7 @@ public class EidasLoginPageResourceTest {
     @Before
     public void setUp(){
         resource = new EidasLoginPageResource(sessionRepository);
-        EidasAuthnRequest eidasAuthnRequest = new EidasAuthnRequest("request-id", "issuer", "destination", SPTypeEnumeration.PUBLIC, "loa", Collections.emptyList());
+        EidasAuthnRequest eidasAuthnRequest = new EidasAuthnRequest("request-id", "issuer", "destination", "loa", Collections.emptyList());
         session = new Session(null, eidasAuthnRequest, null, null, null, Optional.empty(), Optional.empty());
         when(sessionRepository.get(SESSION_ID)).thenReturn(Optional.ofNullable(session));
     }

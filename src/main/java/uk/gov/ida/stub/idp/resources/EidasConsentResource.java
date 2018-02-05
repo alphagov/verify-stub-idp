@@ -62,7 +62,7 @@ public class EidasConsentResource {
 
         Session session = getAndValidateSession(schemeId, sessionCookie, true);
 
-        SamlResponse samlResponse = successAuthnResponseService.getEidasSuccessResponse(session);
+        SamlResponse samlResponse = successAuthnResponseService.getEidasSuccessResponse(session, schemeId);
         return samlResponseRedirectViewFactory.sendSamlMessage(samlResponse);
     }
 

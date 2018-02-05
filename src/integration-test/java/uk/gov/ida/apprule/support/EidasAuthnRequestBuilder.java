@@ -12,12 +12,12 @@ import org.opensaml.saml.saml2.core.Issuer;
 import org.opensaml.saml.saml2.core.NameIDPolicy;
 import org.opensaml.saml.saml2.core.NameIDType;
 import org.opensaml.saml.saml2.core.RequestedAuthnContext;
-import se.litsec.eidas.opensaml.common.EidasConstants;
-import se.litsec.eidas.opensaml.ext.RequestedAttribute;
-import se.litsec.eidas.opensaml.ext.RequestedAttributes;
-import se.litsec.eidas.opensaml.ext.SPType;
-import se.litsec.eidas.opensaml.ext.SPTypeEnumeration;
-import se.litsec.eidas.opensaml.ext.attributes.AttributeConstants;
+import uk.gov.ida.saml.core.IdaConstants;
+import uk.gov.ida.saml.core.extensions.RequestedAttribute;
+import uk.gov.ida.saml.core.extensions.RequestedAttributes;
+import uk.gov.ida.saml.core.extensions.SPType;
+import uk.gov.ida.saml.core.extensions.impl.RequestedAttributesImpl;
+import uk.gov.ida.saml.hub.domain.LevelOfAssurance;
 import uk.gov.ida.saml.serializers.XmlObjectToBase64EncodedStringTransformer;
 
 public class EidasAuthnRequestBuilder {
@@ -54,7 +54,7 @@ public class EidasAuthnRequestBuilder {
         authnRequest.setNameIDPolicy(createNameIDPolicy());
         authnRequest.setRequestedAuthnContext(createRequestedAuthnContext(
                 AuthnContextComparisonTypeEnumeration.MINIMUM,
-                EidasConstants.EIDAS_LOA_SUBSTANTIAL));
+                LevelOfAssurance.SUBSTANTIAL.toString()));
 
         return new XmlObjectToBase64EncodedStringTransformer<>().apply(authnRequest);
     }
@@ -78,13 +78,13 @@ public class EidasAuthnRequestBuilder {
 
     private Extensions createEidasExtensions() {
         SPType spType = (SPType) XMLObjectSupport.buildXMLObject(SPType.DEFAULT_ELEMENT_NAME);
-        spType.setType(SPTypeEnumeration.PUBLIC);
+        spType.setValue("public");
 
-        RequestedAttributes requestedAttributes = (RequestedAttributes) XMLObjectSupport.buildXMLObject(RequestedAttributes.DEFAULT_ELEMENT_NAME);
-        requestedAttributes.getRequestedAttributes().add(createRequestedAttribute(AttributeConstants.EIDAS_PERSON_IDENTIFIER_ATTRIBUTE_NAME));
-        requestedAttributes.getRequestedAttributes().add(createRequestedAttribute(AttributeConstants.EIDAS_CURRENT_FAMILY_NAME_ATTRIBUTE_NAME));
-        requestedAttributes.getRequestedAttributes().add(createRequestedAttribute(AttributeConstants.EIDAS_CURRENT_GIVEN_NAME_ATTRIBUTE_NAME));
-        requestedAttributes.getRequestedAttributes().add(createRequestedAttribute(AttributeConstants.EIDAS_DATE_OF_BIRTH_ATTRIBUTE_NAME));
+        RequestedAttributesImpl requestedAttributes = (RequestedAttributesImpl) XMLObjectSupport.buildXMLObject(RequestedAttributes.DEFAULT_ELEMENT_NAME);
+        requestedAttributes.setRequestedAttributes(createRequestedAttribute(IdaConstants.Eidas_Attributes.PersonIdentifier.NAME),
+                createRequestedAttribute(IdaConstants.Eidas_Attributes.FamilyName.NAME),
+                createRequestedAttribute(IdaConstants.Eidas_Attributes.FirstName.NAME),
+                createRequestedAttribute(IdaConstants.Eidas_Attributes.DateOfBirth.NAME));
 
         Extensions extensions = (Extensions) XMLObjectSupport.buildXMLObject(Extensions.DEFAULT_ELEMENT_NAME);
         extensions.getUnknownXMLObjects().add(spType);
