@@ -16,11 +16,14 @@ apply plugin: 'jacoco'
 apply from: 'idea.gradle'
 apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'application'
+apply plugin: 'maven-publish'
 
 mainClassName = 'uk.gov.ida.stub.idp.StubIdpApplication'
 
 
 archivesBaseName = 'stub-idp'
+
+version = "$version"
 
 ext {
     opensaml_version = '3.3.0'
@@ -43,9 +46,26 @@ task pushToPaas(type: Exec, dependsOn: [paasManifestFileCheck, distZip]) {
 }
 
 distZip {
-    into(project.name) {
+    into("ida-stub-idp-" + project.version) {
         from 'configuration'
         include '*.yml'
+    }
+}
+
+publishing {
+    publications {
+        zipFile(MavenPublication) {
+            artifactId = "ida-stub-idp"
+            version = "$version"
+            groupId = "uk.gov.ida"
+
+            artifact file('build/distributions/ida-stub-idp' + "-$version" + '.zip')
+        }
+    }
+    repositories {
+        maven {
+            url "/srv/maven"
+        }
     }
 }
 
