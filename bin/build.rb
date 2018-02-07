@@ -81,7 +81,7 @@ puts('Task took: ' + Benchmark.realtime do
     service_map.each do |package_name, attributes|
       service_path = attributes['path']
       puts "Building debian package: #{package_name}"
-      service_name = service_path.split('/')[1]
+      service_name = "stub-idp"
       build_number = ENV.fetch('BUILD_NUMBER', '0')
       ensure_artefacts_directory_exists
       install_prefix = '/ida'
