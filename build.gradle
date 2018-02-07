@@ -23,7 +23,7 @@ mainClassName = 'uk.gov.ida.stub.idp.StubIdpApplication'
 
 archivesBaseName = 'stub-idp'
 
-version = "$version"
+def buildNumber = "$version"
 
 ext {
     opensaml_version = '3.3.0'
@@ -46,7 +46,7 @@ task pushToPaas(type: Exec, dependsOn: [paasManifestFileCheck, distZip]) {
 }
 
 distZip {
-    into("ida-stub-idp-" + project.version) {
+    into(project.name + "-" + buildNumber) {
         from 'configuration'
         include '*.yml'
     }
@@ -56,10 +56,10 @@ publishing {
     publications {
         zipFile(MavenPublication) {
             artifactId = "ida-stub-idp"
-            version = "$version"
+            version = "$buildNumber"
             groupId = "uk.gov.ida"
 
-            artifact file('build/distributions/ida-stub-idp' + "-$version" + '.zip')
+            artifact file("build/distributions/$project.name" + "-$buildNumber" + '.zip')
         }
     }
     repositories {
