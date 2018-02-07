@@ -100,7 +100,7 @@ if (project.hasProperty('includeDirectories')) {
 
 def dependencyVersions = [
         stub_idp_saml         : "$opensaml_version-58",
-        ida_utils             : 317,
+        ida_utils             : 329,
         dropwizard            : '1.1.4',
         ida_dev_pki           : '1.1.0-20',
         saml_metadata_bindings: "$opensaml_version-58",

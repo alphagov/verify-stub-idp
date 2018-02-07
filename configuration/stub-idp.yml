@@ -46,9 +46,11 @@ logging:
 
 signingKeyPairConfiguration:
   privateKeyConfiguration:
-    keyFile: ${KEYS_DIRECTORY}/stub_idp_signing.pk8
+    type: ${KEY_TYPE:-file}
+    key: ${STUB_IDP_SIGNING_PRIVATE_KEY}
   publicKeyConfiguration:
-    certFile: ${CERTS_DIRECTORY}/stub_idp_signing.crt
+    type: ${CERT_TYPE:-file}
+    cert: ${STUB_IDP_SIGNING_CERT}
     name: idp.signing.cert
 
 basicAuthEnabledForUserResource: ${STUB_IDP_BASIC_AUTH}
@@ -81,7 +83,8 @@ metadata:
       verifyHostname: false
   uri: ${METADATA_URL}
   trustStore:
-    path: ${TRUSTSTORE_PATH}/ida_metadata_truststore.ts
+    type: ${TRUSTSTORE_TYPE:-file}
+    store: ${METADATA_TRUSTSTORE}
     password: ${TRUSTSTORE_PASSWORD}
   minRefreshDelay: 30000
   maxRefreshDelay: 1800000
@@ -102,7 +105,8 @@ europeanIdentity:
         verifyHostname: false
     uri: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}
     trustStore:
-      path: ${TRUSTSTORE_PATH}/ida_metadata_truststore.ts
+      type: ${TRUSTSTORE_TYPE:-file}
+      store: ${TRUSTSTORE}
       password: ${TRUSTSTORE_PASSWORD}
     minRefreshDelay: 30000
     maxRefreshDelay: 1800000
