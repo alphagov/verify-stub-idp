@@ -4,8 +4,8 @@ buildscript {
     }
     dependencies {
         classpath 'org.gradle.plugins:gradle-compass:1.0.7',
-                  'uk.gov.ida:ida-gradle:1.1.0-15',
-                  'com.github.ben-manes:gradle-versions-plugin:0.11.3'
+                'uk.gov.ida:ida-gradle:1.1.0-15',
+                'com.github.ben-manes:gradle-versions-plugin:0.11.3'
     }
 }
 
@@ -46,9 +46,20 @@ task pushToPaas(type: Exec, dependsOn: [paasManifestFileCheck, distZip]) {
 }
 
 distZip {
-    into(project.name + "-" + buildNumber) {
+    into(project.name) {
         from 'configuration'
         include '*.yml'
+    }
+
+    into(project.name + '/resources') {
+        from 'deployment/resources'
+        include '*'
+    }
+
+    def versionedPath = archivePath
+    version = null
+    doLast {
+        archivePath.renameTo(versionedPath)
     }
 }
 
@@ -69,7 +80,7 @@ publishing {
     }
 }
 
-if(project.hasProperty('includeDirectories')) {
+if (project.hasProperty('includeDirectories')) {
     distZip {
         includeDirectories.split(',').each {
             def dir = "${it}"
@@ -83,16 +94,16 @@ if(project.hasProperty('includeDirectories')) {
 }
 
 def dependencyVersions = [
-        stub_idp_saml:"$opensaml_version-58",
-        ida_utils:317,
-        dropwizard:'1.1.4',
-        ida_dev_pki:'1.1.0-20',
-        saml_metadata_bindings:"$opensaml_version-58",
-        saml_security:"$opensaml_version-46",
-        ida_test_utils: '37',
-        hub_saml:"$opensaml_version-87",
-        hk2_version: '2.5.0-b05',
-        eidas_notification:'1.0.0-129'
+        stub_idp_saml         : "$opensaml_version-58",
+        ida_utils             : 317,
+        dropwizard            : '1.1.4',
+        ida_dev_pki           : '1.1.0-20',
+        saml_metadata_bindings: "$opensaml_version-58",
+        saml_security         : "$opensaml_version-46",
+        ida_test_utils        : '37',
+        hub_saml              : "$opensaml_version-87",
+        hk2_version           : '2.5.0-b05',
+        eidas_notification    : '1.0.0-129'
 ]
 
 
