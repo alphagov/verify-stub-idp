@@ -1,16 +1,14 @@
 package uk.gov.ida.stub.idp.domain;
 
 import org.opensaml.core.xml.XMLObject;
-import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import uk.gov.ida.saml.core.extensions.RequestedAttribute;
 import uk.gov.ida.saml.core.extensions.impl.RequestedAttributesImpl;
 
-import javax.xml.namespace.QName;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class EidasAuthnRequest {
 
@@ -54,31 +52,21 @@ public class EidasAuthnRequest {
         String destination = request.getDestination();
         String requestLoa = request.getRequestedAuthnContext().getAuthnContextClassRefs().get(0).getAuthnContextClassRef();
 
-        return new EidasAuthnRequest(requestId, issuer, destination, requestLoa, getRequestAttributeList(request));
+        return new EidasAuthnRequest(requestId, issuer, destination, requestLoa, getRequestAttributes(request));
     }
 
-    private static List<RequestedAttribute> getRequestAttributeList(AuthnRequest request){
-        List<RequestedAttribute> attributeList = new ArrayList<>();
+    private static List<RequestedAttribute> getRequestAttributes(AuthnRequest request){
 
         Optional<XMLObject> requestedAttributesObj = request.getExtensions().getOrderedChildren()
                 .stream()
                 .filter(x -> x.getClass() == RequestedAttributesImpl.class)
                 .findFirst();
 
-        List<XMLObject> requestedAttributes = requestedAttributesObj
-                .map(obj -> (obj).getOrderedChildren())
-                .orElse(Collections.emptyList());
-
-        for (XMLObject object : requestedAttributes){
-            RequestedAttribute requestedAttribute = build(RequestedAttribute.DEFAULT_ELEMENT_NAME);
-            requestedAttribute.getAttributeValues().add(object);
-            attributeList.add(requestedAttribute);
-        }
-
-        return attributeList;
-    }
-
-    private static <T extends XMLObject> T build(QName elementName) {
-        return (T) XMLObjectSupport.buildXMLObject(elementName);
+        return requestedAttributesObj
+                .map(XMLObject::getOrderedChildren)
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(xmlObject -> (RequestedAttribute) xmlObject)
+                .collect(Collectors.toList());
     }
 }
