@@ -56,6 +56,11 @@ distZip {
         include '*'
     }
 
+    // We want the .zip filename to be "ida-stub-idp-$version.zip",
+    // but it's more convenient if the inner directory is "ida-stub-idp"
+    // because the app needs to refer to its own location (at the moment).
+    // TODO (2018-02-12): Remove the need for the app to know its own location
+    // and remove this workaround.
     def versionedPath = archivePath
     version = null
     doLast {
