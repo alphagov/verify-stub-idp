@@ -26,7 +26,7 @@ import java.util.List;
 
 public class EidasResponseBuilder {
 
-    public static final String TEMPORARY_PID_TRANSLATION = "UK/EU/";
+    private static final String TEMPORARY_PID_TRANSLATION = "UK/EU/";
     private final SecureRandomIdentifierGenerationStrategy idGeneratorStrategy = new SecureRandomIdentifierGenerationStrategy();
     private final String connectorNodeIssuerId;
 

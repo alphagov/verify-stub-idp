@@ -53,7 +53,7 @@ public class EidasSuccessAuthnResponseService {
         this.stubCountryMetadataUrl = stubCountryMetadataUrl;
     }
 
-    public SamlResponse getEidasSuccessResponse(Session session, String schemeId){
+    public SamlResponse getEidasSuccessResponse(Session session, String schemeId) {
         String issuerId = MessageFormat.format(stubCountryMetadataUrl, schemeId);
         URI hubUrl = metadataProvider.getAssertionConsumerServiceLocation();
         String requestId = session.getEidasAuthnRequest().getRequestId();
@@ -67,7 +67,7 @@ public class EidasSuccessAuthnResponseService {
         return new SamlResponse(eidasResponse, session.getRelayState(), hubUrl);
     }
 
-    private List<Attribute> getEidasAttributes(Session session){
+    private List<Attribute> getEidasAttributes(Session session) {
         List<RequestedAttribute> requestedAttributes = session.getEidasAuthnRequest().getAttributes();
         EidasUser user = session.getEidasUser().get();
 
@@ -75,7 +75,7 @@ public class EidasSuccessAuthnResponseService {
         attributes.add(buildCurrentGivenNameAttribute(user.getFirstName()));
         attributes.add(buildCurrentFamilyNameAttribute(user.getFamilyName()));
         attributes.add(buildDateOfBirthAttribute(user.getDateOfBirth()));
-        attributes.add(buildPersonIdentifierAttribute(user.getFirstName()));
+        attributes.add(buildPersonIdentifierAttribute(user.getPersistentId()));
 
         Boolean isGenderRequired = requestedAttributes.stream().anyMatch(attribute -> attribute.getName().equals(IdaConstants.Eidas_Attributes.Gender.NAME) && attribute.isRequired());
         if (isGenderRequired && user.getGender().isPresent()) {
