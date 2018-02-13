@@ -30,7 +30,7 @@ serviceInfo:
   name: stub-idp
 
 logging:
-  level: INFO
+  level: ${LOG_LEVEL:-INFO}
   appenders:
     - type: file
       currentLogFilename: ${LOG_PATH}/debug/stub-idp.log
