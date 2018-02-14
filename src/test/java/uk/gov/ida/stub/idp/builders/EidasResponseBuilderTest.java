@@ -11,6 +11,7 @@ import org.opensaml.saml.saml2.core.Attribute;
 import org.opensaml.saml.saml2.core.AuthnStatement;
 import org.opensaml.saml.saml2.core.NameIDType;
 import org.opensaml.saml.saml2.core.Response;
+import org.opensaml.saml.saml2.core.SubjectConfirmation;
 import uk.gov.ida.saml.core.IdaSamlBootstrap;
 
 import java.util.Collections;
@@ -53,6 +54,9 @@ public class EidasResponseBuilderTest {
         assertThat(authnStatement.getAuthnInstant().getMillis()).isEqualTo(authnStatementIssueInstant.getMillis());
         assertThat(assertion.getSubject().getNameID().getValue()).isEqualTo("UK/EU/pid");
         assertThat(assertion.getSubject().getNameID().getFormat()).isEqualTo(NameIDType.PERSISTENT);
+        assertThat(assertion.getSubject().getSubjectConfirmations().get(0).getSubjectConfirmationData().getInResponseTo()).isEqualTo("inResponseTo");
+        assertThat(assertion.getSubject().getSubjectConfirmations().get(0).getSubjectConfirmationData().getRecipient()).isEqualTo("destinationUrl");
+        assertThat(assertion.getSubject().getSubjectConfirmations().get(0).getMethod()).isEqualTo(SubjectConfirmation.METHOD_BEARER);
         assertThat(assertion.getIssuer().getValue()).isEqualTo("responseIssuerId");
         assertThat(assertion.getConditions().getNotBefore().getMillis()).isEqualTo(DateTime.now().getMillis());
         assertThat(assertion.getConditions().getNotOnOrAfter().getMillis()).isEqualTo(DateTime.now().plusMinutes(5).getMillis());

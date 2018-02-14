@@ -20,6 +20,8 @@ import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.saml.saml2.core.Status;
 import org.opensaml.saml.saml2.core.StatusCode;
 import org.opensaml.saml.saml2.core.Subject;
+import org.opensaml.saml.saml2.core.SubjectConfirmation;
+import org.opensaml.saml.saml2.core.SubjectConfirmationData;
 
 import javax.xml.namespace.QName;
 import java.util.List;
@@ -43,7 +45,7 @@ public class EidasResponseBuilder {
         AuthnStatement authnStatement = createAuthnStatement(loa);
         authnStatement.setAuthnInstant(authnStatementAuthnInstant);
 
-        Subject subject = createSubject(pid);
+        Subject subject = createSubject(pid, inResponseTo, destinationUrl);
         AttributeStatement attributeStatement = createAttributeStatement(attributes);
         Issuer responseIssuer = createIssuer(responseIssuerId);
         Issuer assertionIssuer = createIssuer(responseIssuerId);
@@ -114,12 +116,14 @@ public class EidasResponseBuilder {
         return authnStatement;
     }
 
-    private Subject createSubject(String pid) {
+    private Subject createSubject(String pid, String inResponseTo, String destinationUrl) {
         Subject subject = build(Subject.DEFAULT_ELEMENT_NAME);
         NameID nameID = build(NameID.DEFAULT_ELEMENT_NAME);
         nameID.setValue(TEMPORARY_PID_TRANSLATION + pid);
         nameID.setFormat(NameIDType.PERSISTENT);
         subject.setNameID(nameID);
+        SubjectConfirmation subjectConfirmation = createSubjectConfirmation(inResponseTo, destinationUrl);
+        subject.getSubjectConfirmations().add(subjectConfirmation);
         return subject;
     }
 
@@ -136,6 +140,19 @@ public class EidasResponseBuilder {
         responseIssuer.setFormat(NameIDType.ENTITY);
         responseIssuer.setValue(responseIssuerId);
         return responseIssuer;
+    }
+
+    private SubjectConfirmation createSubjectConfirmation(String inResponseTo, String destinationUrl) {
+        SubjectConfirmationData subjectConfirmationData = build(SubjectConfirmationData.DEFAULT_ELEMENT_NAME);
+        subjectConfirmationData.setInResponseTo(inResponseTo);
+        subjectConfirmationData.setNotOnOrAfter(DateTime.now().plusMinutes(5));
+        subjectConfirmationData.setRecipient(destinationUrl);
+
+        SubjectConfirmation subjectConfirmation = build(SubjectConfirmation.DEFAULT_ELEMENT_NAME);
+        subjectConfirmation.setMethod(SubjectConfirmation.METHOD_BEARER);
+        subjectConfirmation.setSubjectConfirmationData(subjectConfirmationData);
+
+        return subjectConfirmation;
     }
     
     private static <T extends XMLObject> T build(QName elementName) {
