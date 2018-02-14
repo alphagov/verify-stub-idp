@@ -163,7 +163,7 @@ sourceSets {
             srcDir 'src/integration-test/java'
         }
         resources {
-            srcDir 'src/integration-test/resources'
+            srcDir 'configuration'
         }
         compileClasspath += sourceSets.main.runtimeClasspath
         compileClasspath += sourceSets.test.runtimeClasspath

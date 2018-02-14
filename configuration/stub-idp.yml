@@ -69,7 +69,7 @@ metrics:
 infinispan:
   type: standalone
   persistenceToFileEnabled: true
-  persistenceFileLocation: '${APP_LIB_DIR}/stub-idp-v2'
+  persistenceFileLocation: ${APP_LIB_DIR}/stub-idp-v2
 
 hubEntityId: ${METADATA_ENTITY_ID}
 
