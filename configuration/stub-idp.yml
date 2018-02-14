@@ -24,7 +24,7 @@ server:
 assertionLifetime: 60m
 
 saml:
-  entityId: ${ENTITY_ID:-"http://stub_idp.acme.org/{0}/SSO/POST"}
+  entityId: ${ENTITY_ID:-"http://stub_idp.acme.org/%s/SSO/POST"}
 
 serviceInfo:
   name: stub-idp
