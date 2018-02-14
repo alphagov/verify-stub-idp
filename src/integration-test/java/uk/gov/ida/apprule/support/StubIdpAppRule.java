@@ -50,6 +50,8 @@ public class StubIdpAppRule extends DropwizardAppRule<StubIdpConfiguration> {
                 .add(ConfigOverride.config("server.requestLog.appenders[0].type", "console"))
                 .add(ConfigOverride.config("server.requestLog.appenders[1].type", "console"))
                 .add(ConfigOverride.config("server.requestLog.appenders[2].type", "console"))
+                .add(ConfigOverride.config("server.applicationConnectors[0].port", "0"))
+                .add(ConfigOverride.config("server.adminConnectors[0].port", "0"))
                 .add(ConfigOverride.config("logging.appenders[0].type", "console"))
                 .add(ConfigOverride.config("logging.appenders[1].type", "console"))
                 .add(ConfigOverride.config("logging.appenders[2].type", "console"))
