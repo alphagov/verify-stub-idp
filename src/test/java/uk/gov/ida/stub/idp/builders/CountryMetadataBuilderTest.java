@@ -45,6 +45,7 @@ public class CountryMetadataBuilderTest {
     }
 
     private final URI ENTITY_ID = URI.create("https://stub-country-location");
+    private final URI SSO_URL = URI.create("https://stub-country-location/sso");
     private final java.security.cert.X509Certificate SIGNING_CERTIFICATE =
         new X509CertificateFactory().createCertificate(TestCertificateStrings.METADATA_SIGNING_A_PUBLIC_CERT);
     private final java.security.cert.X509Certificate ENCRYPTING_CERTIFICATE =
@@ -71,7 +72,7 @@ public class CountryMetadataBuilderTest {
     private EntityDescriptor getMetadata() throws CertificateEncodingException, MarshallingException, SecurityException, SignatureException {
         when(metadataSigner.sign(any(EntityDescriptor.class))).thenAnswer(i -> i.getArguments()[0]);
         CountryMetadataBuilder countryMetadataBuilder = new CountryMetadataBuilder(new Period(1, 0, 0, 0), metadataSigner);
-        return countryMetadataBuilder.createEntityDescriptorForProxyNodeService(ENTITY_ID,SIGNING_CERTIFICATE, ENCRYPTING_CERTIFICATE);
+        return countryMetadataBuilder.createEntityDescriptorForProxyNodeService(ENTITY_ID, SSO_URL, SIGNING_CERTIFICATE, ENCRYPTING_CERTIFICATE);
     }
 
     @Test
@@ -81,6 +82,7 @@ public class CountryMetadataBuilderTest {
         assertThat(metadata.getValidUntil()).isNotNull();
         assertThat(metadata.getValidUntil()).isLessThanOrEqualTo(DateTime.now().plusHours(1));
         assertThat(metadata.getEntityID()).isEqualTo(ENTITY_ID.toString());
+        assertThat(metadata.getIDPSSODescriptor(SAMLConstants.SAML20P_NS).getSingleSignOnServices().get(0).getLocation()).isEqualTo(SSO_URL.toString());
     }
 
     @Test

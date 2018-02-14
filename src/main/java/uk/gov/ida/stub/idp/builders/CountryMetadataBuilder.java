@@ -22,6 +22,8 @@ import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.opensaml.saml.saml2.metadata.IDPSSODescriptor;
 import org.opensaml.saml.saml2.metadata.RoleDescriptor;
+import org.opensaml.saml.saml2.metadata.SingleSignOnService;
+import org.opensaml.saml.saml2.metadata.impl.SingleSignOnServiceBuilder;
 import org.opensaml.security.SecurityException;
 import org.opensaml.xmlsec.signature.support.SignatureException;
 
@@ -47,13 +49,14 @@ public class CountryMetadataBuilder {
 
     public EntityDescriptor createEntityDescriptorForProxyNodeService(
         URI entityId,
+        URI ssoEndpoint,
         java.security.cert.Certificate signingCertificate,
         java.security.cert.Certificate encryptingCertificate
     ) throws MarshallingException, SecurityException, SignatureException, CertificateEncodingException {
         EntityDescriptor entityDescriptor = createElement(EntityDescriptor.DEFAULT_ELEMENT_NAME, EntityDescriptor.TYPE_NAME);
         entityDescriptor.setEntityID(entityId.toString());
         entityDescriptor.setValidUntil(DateTime.now().plus(validity));
-        entityDescriptor.getRoleDescriptors().add(getIdpSsoDescriptor(entityId, signingCertificate, encryptingCertificate));
+        entityDescriptor.getRoleDescriptors().add(getIdpSsoDescriptor(entityId, ssoEndpoint, signingCertificate, encryptingCertificate));
 
         metadataSigner.sign(entityDescriptor);
         return entityDescriptor;
@@ -61,6 +64,7 @@ public class CountryMetadataBuilder {
 
     private RoleDescriptor getIdpSsoDescriptor(
         URI entityId,
+        URI ssoEndpoint,
         java.security.cert.Certificate signingCertificate,
         java.security.cert.Certificate encryptingCertificate
     ) throws CertificateEncodingException {
@@ -72,6 +76,11 @@ public class CountryMetadataBuilder {
           getSigningCertificate(entityId, signingCertificate),
           getEncryptingCertificate(entityId, encryptingCertificate));
         idpSsoDescriptor.getKeyDescriptors().addAll(keyDescriptorsUnmarshaller.fromCertificates(certificates));
+
+        SingleSignOnService ssoService = new SingleSignOnServiceBuilder().buildObject();
+        ssoService.setLocation(ssoEndpoint.toString());
+        ssoService.setBinding(SAMLConstants.SAML2_POST_BINDING_URI);
+        idpSsoDescriptor.getSingleSignOnServices().add(ssoService);
 
         return idpSsoDescriptor;
     }

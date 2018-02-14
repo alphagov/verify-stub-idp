@@ -2,6 +2,7 @@ package uk.gov.ida.stub.idp.resources;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -30,11 +31,9 @@ import org.opensaml.security.SecurityException;
 import org.opensaml.xmlsec.signature.support.SignatureException;
 import org.w3c.dom.Document;
 
+import uk.gov.ida.saml.core.IdaSamlBootstrap;
 import uk.gov.ida.saml.security.IdaKeyStore;
 import uk.gov.ida.stub.idp.builders.CountryMetadataBuilder;
-import uk.gov.ida.stub.idp.exceptions.IdpNotFoundException;
-import uk.gov.ida.stub.idp.repositories.Idp;
-import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CountryMetadataResourceTest {
@@ -45,20 +44,12 @@ public class CountryMetadataResourceTest {
     }
 
     private CountryMetadataResource resource;
-    private static final String VALID_IDP = "stub-country-one";
-    private static final String INVALID_IDP = "stub-country-two";
+    private static final String VALID_COUNTRY = "stub-country-one";
     private EntityDescriptor entityDescriptor;
-    private URI validIdpUri;
-    private URI invalidIdpUri;
-
-    @Mock
-    private Idp validIdp;
+    private URI validCountryUri;
 
     @Mock
     private X509Certificate signingCertificate;
-
-    @Mock
-    private IdpStubsRepository idpStubsRepository;
 
     @Mock
     private IdaKeyStore idaKeyStore;
@@ -66,42 +57,47 @@ public class CountryMetadataResourceTest {
     @Mock
     private CountryMetadataBuilder countryMetadataBuilder;
 
+    @BeforeClass
+    public static void classSetUp() {
+        IdaSamlBootstrap.bootstrap();
+    }
+
     @Before
     public void setUp() throws CertificateEncodingException, MarshallingException, SecurityException, SignatureException, URISyntaxException {
-        validIdpUri = new URI(String.format("https://stub.test/%s/ServiceMetadata", VALID_IDP));
-        invalidIdpUri = new URI(String.format("https://stub.test//ServiceMetadata", INVALID_IDP));
+        validCountryUri = new URI(String.format("https://stub.test/%s/ServiceMetadata", VALID_COUNTRY));
         resource = new CountryMetadataResource(idaKeyStore, countryMetadataBuilder);
         entityDescriptor = (EntityDescriptor) XMLObjectProviderRegistrySupport.getBuilderFactory()
           .getBuilder(EntityDescriptor.DEFAULT_ELEMENT_NAME).buildObject(EntityDescriptor.DEFAULT_ELEMENT_NAME, EntityDescriptor.TYPE_NAME);
-        when(idpStubsRepository.getIdpWithFriendlyId(VALID_IDP)).thenReturn(validIdp);
-        when(idpStubsRepository.getIdpWithFriendlyId(INVALID_IDP)).thenThrow(IdpNotFoundException.class);
         when(idaKeyStore.getSigningCertificate()).thenReturn(signingCertificate);
-        when(countryMetadataBuilder.createEntityDescriptorForProxyNodeService(any(), any(), any())).thenReturn(entityDescriptor);;
+        when(countryMetadataBuilder.createEntityDescriptorForProxyNodeService(any(), any(), any(), any())).thenReturn(entityDescriptor);;
     }
 
     @Test
-    public void getShouldReturnADocumentWhenIdpIsKnown(){
+    public void getShouldReturnADocumentWhenIdpIsKnown() throws URISyntaxException, SecurityException, CertificateEncodingException, SignatureException, MarshallingException {
         final UriInfo requestContext = mock(UriInfo.class);
-        when(requestContext.getAbsolutePath()).thenReturn(validIdpUri);
+        when(requestContext.getAbsolutePath()).thenReturn(validCountryUri);
+        when(requestContext.getBaseUri()).thenReturn(new URI("https://stub.test"));
 
-        final Response response = resource.getMetadata(requestContext, VALID_IDP);
+        final Response response = resource.getMetadata(requestContext, VALID_COUNTRY);
 
+        URI validCountrySsoUri = new URI(String.format("https://stub.test/eidas/%s/SAML2/SSO", VALID_COUNTRY));
         assertThat(response.getStatus()).isEqualTo(Response.Status.OK.getStatusCode());
         assertThat(Document.class).isAssignableFrom(response.getEntity().getClass());
+        verify(countryMetadataBuilder).createEntityDescriptorForProxyNodeService(eq(validCountryUri), eq(validCountrySsoUri), eq(signingCertificate), any());
     }
 
     @Test
     public void getShouldReturnNotFoundWhenIdpIsNullOrEmpty() throws CertificateEncodingException, MarshallingException, SecurityException, SignatureException {
         final UriInfo requestContext = mock(UriInfo.class);
-        when(requestContext.getAbsolutePath()).thenReturn(invalidIdpUri);
 
         Response response = resource.getMetadata(requestContext, null);
         assertThat(response.getStatus()).isEqualTo(Response.Status.NOT_FOUND.getStatusCode());
         assertThat(response.getEntity()).isEqualTo(null);
+
         response = resource.getMetadata(requestContext, "");
         assertThat(response.getStatus()).isEqualTo(Response.Status.NOT_FOUND.getStatusCode());
         assertThat(response.getEntity()).isEqualTo(null);
 
-        verify(countryMetadataBuilder, times(0)).createEntityDescriptorForProxyNodeService(any(), any(), any());
+        verify(countryMetadataBuilder, times(0)).createEntityDescriptorForProxyNodeService(any(), any(), any(), any());
     }
 }

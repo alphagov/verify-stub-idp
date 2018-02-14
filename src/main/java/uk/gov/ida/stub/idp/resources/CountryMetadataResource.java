@@ -10,6 +10,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
 import org.opensaml.core.xml.io.MarshallingException;
@@ -49,8 +50,10 @@ public class CountryMetadataResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
+        URI ssoEndpoint = UriBuilder.fromUri(uriInfo.getBaseUri()).path("eidas/{0}/SAML2/SSO").build(idpName);
+
         try {
-            Document metadata = getMetadataDocument(uriInfo.getAbsolutePath());
+            Document metadata = getMetadataDocument(uriInfo.getAbsolutePath(), ssoEndpoint);
             return Response.ok(metadata).build();
 		} catch (CertificateEncodingException | MarshallingException | SecurityException | SignatureException e) {
             LOG.error("Failed to generate metadata", e);
@@ -58,9 +61,10 @@ public class CountryMetadataResource {
         }
     }
 
-    private Document getMetadataDocument(URI requestPath) throws CertificateEncodingException, MarshallingException, SecurityException, SignatureException {
+    private Document getMetadataDocument(URI requestPath, URI ssoEndpoint) throws CertificateEncodingException, MarshallingException, SecurityException, SignatureException {
         EntityDescriptor metadata = countryMetadataBuilder.createEntityDescriptorForProxyNodeService(
             requestPath,
+            ssoEndpoint,
             idaKeyStore.getSigningCertificate(),
             /* We use signing cert for encryption cert below because we need some certificate to be there
                but the stub currently doesn't have or need an encrypting certificate. */
