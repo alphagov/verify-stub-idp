@@ -106,7 +106,7 @@ europeanIdentity:
     uri: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}
     trustStore:
       type: ${TRUSTSTORE_TYPE:-file}
-      store: ${TRUSTSTORE}
+      store: ${METADATA_TRUSTSTORE}
       password: ${TRUSTSTORE_PASSWORD}
     minRefreshDelay: 30000
     maxRefreshDelay: 1800000
