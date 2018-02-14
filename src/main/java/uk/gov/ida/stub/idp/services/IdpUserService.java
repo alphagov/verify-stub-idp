@@ -75,7 +75,7 @@ public class IdpUserService {
         sessionRepository.updateSession(session.get().getSessionId(), session.get());
     }
 
-    private IdpUser createUserInIdp(String firstname, String surname, String addressLine1, String addressLine2, String addressTown, String addressPostCode, AuthnContext levelOfAssurance, String dateOfBirth, String username, String password, Idp idp) throws IncompleteRegistrationException, InvalidDateException, UsernameAlreadyTakenException {
+    private IdpUser createUserInIdp(String firstname, String surname, String addressLine1, String addressLine2, String addressTown, String addressPostCode, final AuthnContext _levelOfAssurance, String dateOfBirth, String username, String password, Idp idp) throws IncompleteRegistrationException, InvalidDateException, UsernameAlreadyTakenException {
         if (!isMandatoryDataPresent(firstname, surname, addressLine1, addressLine2, addressTown, addressPostCode, dateOfBirth, username, password)) {
             throw new IncompleteRegistrationException();
         }
@@ -94,6 +94,7 @@ public class IdpUserService {
 
         Address address = new Address(asList(addressLine1, addressLine2), addressPostCode, null, null, null, null, false);
 
+        AuthnContext levelOfAssurance = _levelOfAssurance;
         if ("LevelZeroUser".equals(username)) {
             levelOfAssurance = AuthnContext.LEVEL_X;
         }
