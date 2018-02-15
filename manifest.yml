@@ -1,0 +1,24 @@
+---
+applications:
+  - name: ida-stub-idp
+    memory: 1G
+    buildpack: java_buildpack
+    path: ../build/distributions/ida-stub-idp.zip
+    env:
+      LOG_PATH: /app/ida-stub-idp/logs
+      LOG_LEVEL: DEBUG
+      CONFIG_FILE: /app/ida-stub-idp/stub-idp.yml
+      ENTITY_ID: "http://stub_idp.paas.org/%s/SSO/POST"
+      METADATA_ENTITY_ID: https://signin.service.gov.uk
+      KEY_TYPE: encoded
+      CERT_TYPE: encoded
+      TRUSTSTORE_TYPE: encoded
+      TRUSTSTORE_PASSWORD: puppet
+      STUB_IDPS_FILE_PATH: /app/ida-stub-idp/resources/paas-stub-idps.yml
+      METADATA_URL: https://verify-integration-metadata.cloudapps.digital/metadata.xml
+      TRUSTSTORE_PATH: /app/ida-stub-idp/resources
+      TRUSTSTORE_PASSWORD: puppet
+      STUB_IDP_BASIC_AUTH: true
+      STUB_COUNTRY_METADATA_URL: empty
+      SIGNIN_DOMAIN: empty
+      HUB_CONNECTOR_ENTITY_ID: empty

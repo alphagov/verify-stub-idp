@@ -51,11 +51,6 @@ distZip {
         include '*.yml'
     }
 
-    into(project.name + '/resources') {
-        from 'deployment/resources'
-        include '*'
-    }
-
     // We want the .zip filename to be "ida-stub-idp-$version.zip",
     // but it's more convenient if the inner directory is "ida-stub-idp"
     // because the app needs to refer to its own location (at the moment).
