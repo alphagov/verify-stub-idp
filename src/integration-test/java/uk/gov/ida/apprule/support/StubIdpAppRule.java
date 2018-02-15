@@ -68,6 +68,10 @@ public class StubIdpAppRule extends DropwizardAppRule<StubIdpConfiguration> {
                 .add(ConfigOverride.config("signingKeyPairConfiguration.privateKeyConfiguration.key", STUB_IDP_PUBLIC_PRIMARY_PRIVATE_KEY))
                 .add(ConfigOverride.config("signingKeyPairConfiguration.publicKeyConfiguration.type", "x509"))
                 .add(ConfigOverride.config("signingKeyPairConfiguration.publicKeyConfiguration.cert", STUB_IDP_PUBLIC_PRIMARY_CERT))
+                .add(ConfigOverride.config("europeanIdentity.signingKeyPairConfiguration.privateKeyConfiguration.type", "encoded"))
+                .add(ConfigOverride.config("europeanIdentity.signingKeyPairConfiguration.privateKeyConfiguration.key", STUB_IDP_PUBLIC_PRIMARY_PRIVATE_KEY))
+                .add(ConfigOverride.config("europeanIdentity.signingKeyPairConfiguration.publicKeyConfiguration.type", "x509"))
+                .add(ConfigOverride.config("europeanIdentity.signingKeyPairConfiguration.publicKeyConfiguration.cert", STUB_IDP_PUBLIC_PRIMARY_CERT))
                 .add(configOverrides)
                 .build();
         return overrides.toArray(new ConfigOverride[overrides.size()]);

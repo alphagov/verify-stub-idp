@@ -45,9 +45,10 @@ import uk.gov.ida.shared.dropwizard.infinispan.util.InfinispanCacheManager;
 import uk.gov.ida.stub.idp.auth.ManagedAuthFilterInstaller;
 import uk.gov.ida.stub.idp.builders.CountryMetadataBuilder;
 import uk.gov.ida.stub.idp.builders.EidasResponseBuilder;
-import uk.gov.ida.stub.idp.builders.SigningHelper;
+import uk.gov.ida.stub.idp.builders.CountryMetadataSigningHelper;
 import uk.gov.ida.stub.idp.configuration.AssertionLifetimeConfiguration;
 import uk.gov.ida.stub.idp.configuration.IdpStubsConfiguration;
+import uk.gov.ida.stub.idp.configuration.SigningKeyPairConfiguration;
 import uk.gov.ida.stub.idp.configuration.StubIdpConfiguration;
 import uk.gov.ida.stub.idp.cookies.CookieFactory;
 import uk.gov.ida.stub.idp.cookies.HmacValidator;
@@ -104,6 +105,8 @@ public class StubIdpModule extends AbstractModule {
     public static final String HUB_METADATA_RESOLVER = "HubMetadataResolver";
     public static final String HUB_CONNECTOR_ENCRYPTION_KEY_STORE = "HubConnectorEncryptionKeyStore";
     public static final String HUB_ENCRYPTION_KEY_STORE = "HubEncryptionKeyStore";
+    public static final String COUNTRY_SIGNING_KEY_STORE = "CountrySigningKeyStore";
+    public static final String IDP_SIGNING_KEY_STORE = "IdpSigningKeyStore";
 
     public StubIdpModule(final Provider<InfinispanCacheManager> infinispanCacheManagerProvider, Bootstrap<StubIdpConfiguration> bootstrap) {
         this.infinispanCacheManagerProvider = infinispanCacheManagerProvider;
@@ -118,9 +121,8 @@ public class StubIdpModule extends AbstractModule {
         bind(SigningKeyStore.class).to(IdaAuthnRequestKeyStore.class).asEagerSingleton();
 
         bind(EntityToEncryptForLocator.class).to(IdpHardCodedEntityToEncryptForLocator.class).asEagerSingleton();
-        bind(IdaKeyStoreCredentialRetriever.class).asEagerSingleton();
         bind(SignatureFactory.class).asEagerSingleton();
-        bind(SigningHelper.class).asEagerSingleton();
+        bind(CountryMetadataSigningHelper.class).asEagerSingleton();
         bind(SessionRepository.class).asEagerSingleton();
         bind(new TypeLiteral<ConcurrentMap<String, Document>>() {}).toInstance(new ConcurrentHashMap<>());
 
@@ -213,9 +215,9 @@ public class StubIdpModule extends AbstractModule {
     }
 
     @Provides
-    @Named("metadataSignatureFactory")
-    private SignatureFactory getSignatureFactoryWithKeyInfo(IdaKeyStoreCredentialRetriever keyStoreCredentialRetriever, DigestAlgorithm digestAlgorithm, SignatureAlgorithm signatureAlgorithm) {
-        return new SignatureFactory(true, keyStoreCredentialRetriever, signatureAlgorithm, digestAlgorithm);
+    @Named("countryMetadataSignatureFactory")
+    private SignatureFactory getSignatureFactoryWithKeyInfo(@Named(COUNTRY_SIGNING_KEY_STORE) IdaKeyStore keyStore, DigestAlgorithm digestAlgorithm, SignatureAlgorithm signatureAlgorithm) {
+        return new SignatureFactory(true, new IdaKeyStoreCredentialRetriever(keyStore), signatureAlgorithm, digestAlgorithm);
     }
 
     @Provides
@@ -237,7 +239,11 @@ public class StubIdpModule extends AbstractModule {
     }
 
     @Provides
-    public OutboundResponseFromIdpTransformerProvider getOutboundResponseFromIdpTransformerProvider(@Named(StubIdpModule.HUB_ENCRYPTION_KEY_STORE) EncryptionKeyStore encryptionKeyStore, IdaKeyStore keyStore, EntityToEncryptForLocator entityToEncryptForLocator, StubIdpConfiguration stubIdpConfiguration) {
+    public OutboundResponseFromIdpTransformerProvider getOutboundResponseFromIdpTransformerProvider(
+            @Named(StubIdpModule.HUB_ENCRYPTION_KEY_STORE) EncryptionKeyStore encryptionKeyStore,
+            @Named(IDP_SIGNING_KEY_STORE) IdaKeyStore keyStore,
+            EntityToEncryptForLocator entityToEncryptForLocator,
+            StubIdpConfiguration stubIdpConfiguration) {
         return new OutboundResponseFromIdpTransformerProvider(
                 encryptionKeyStore,
                 keyStore,
@@ -250,7 +256,10 @@ public class StubIdpModule extends AbstractModule {
     }
 
     @Provides
-    public EidasResponseTransformerProvider getEidasResponseTransformerProvider(@Named(StubIdpModule.HUB_CONNECTOR_ENCRYPTION_KEY_STORE) Optional<EncryptionKeyStore> encryptionKeyStore, IdaKeyStore keyStore, EntityToEncryptForLocator entityToEncryptForLocator) {
+    public EidasResponseTransformerProvider getEidasResponseTransformerProvider(
+            @Named(StubIdpModule.HUB_CONNECTOR_ENCRYPTION_KEY_STORE) Optional<EncryptionKeyStore> encryptionKeyStore,
+            @Named(COUNTRY_SIGNING_KEY_STORE) IdaKeyStore keyStore,
+            EntityToEncryptForLocator entityToEncryptForLocator) {
         return new EidasResponseTransformerProvider(
                 new CoreTransformersFactory(),
                 encryptionKeyStore.orElse(null),
@@ -269,13 +278,16 @@ public class StubIdpModule extends AbstractModule {
 
     @Provides
     @Singleton
+    @Named(IDP_SIGNING_KEY_STORE)
     public IdaKeyStore getKeyStore(StubIdpConfiguration stubIdpConfiguration) {
-        PrivateKey privateSigningKey = stubIdpConfiguration.getSigningKeyPairConfiguration().getPrivateKey();
-        X509Certificate signingCertificate = new X509CertificateFactory().createCertificate(stubIdpConfiguration.getSigningKeyPairConfiguration().getCert());
-        PublicKey publicSigningKey = signingCertificate.getPublicKey();
-        KeyPair signingKeyPair = new KeyPair(publicSigningKey, privateSigningKey);
+        return getKeystoreFromConfig(stubIdpConfiguration.getSigningKeyPairConfiguration());
+    }
 
-        return new IdaKeyStore(signingCertificate, signingKeyPair, Collections.emptyList());
+    @Provides
+    @Singleton
+    @Named(COUNTRY_SIGNING_KEY_STORE)
+    public IdaKeyStore getCountryKeyStore(StubIdpConfiguration stubIdpConfiguration) {
+        return getKeystoreFromConfig(stubIdpConfiguration.getEuropeanIdentityConfiguration().getSigningKeyPairConfiguration());
     }
 
     @Provides
@@ -379,5 +391,14 @@ public class StubIdpModule extends AbstractModule {
                 ((AbstractReloadingMetadataResolver) metadataResolver).refresh();
             }
         });
+    }
+
+    private IdaKeyStore getKeystoreFromConfig(SigningKeyPairConfiguration keyPairConfiguration) {
+        PrivateKey privateSigningKey = keyPairConfiguration.getPrivateKey();
+        X509Certificate signingCertificate = new X509CertificateFactory().createCertificate(keyPairConfiguration.getCert());
+        PublicKey publicSigningKey = signingCertificate.getPublicKey();
+        KeyPair signingKeyPair = new KeyPair(publicSigningKey, privateSigningKey);
+
+        return new IdaKeyStore(signingCertificate, signingKeyPair, Collections.emptyList());
     }
 }

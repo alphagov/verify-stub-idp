@@ -52,7 +52,7 @@ public class CountryMetadataBuilderTest {
         new X509CertificateFactory().createCertificate(TestCertificateStrings.TEST_PUBLIC_CERT);
 
     @Mock
-    private SigningHelper metadataSigner;
+    private CountryMetadataSigningHelper metadataSigner;
 
     private void assertCertificate(Optional<KeyDescriptor> keyDescriptor, String certString) {
         Optional<X509Certificate> signingCertificate = keyDescriptor

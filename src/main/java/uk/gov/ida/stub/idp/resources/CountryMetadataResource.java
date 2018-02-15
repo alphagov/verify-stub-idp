@@ -3,6 +3,7 @@ import java.net.URI;
 import java.security.cert.CertificateEncodingException;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -23,6 +24,7 @@ import org.w3c.dom.Document;
 
 import uk.gov.ida.saml.security.IdaKeyStore;
 import uk.gov.ida.saml.serializers.XmlObjectToElementTransformer;
+import uk.gov.ida.stub.idp.StubIdpModule;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.builders.CountryMetadataBuilder;
 
@@ -36,7 +38,7 @@ public class CountryMetadataResource {
 	private final CountryMetadataBuilder countryMetadataBuilder;
 
 	@Inject
-    public CountryMetadataResource(IdaKeyStore idaKeyStore, CountryMetadataBuilder countryMetadataBuilder) {
+    public CountryMetadataResource(@Named(StubIdpModule.COUNTRY_SIGNING_KEY_STORE) IdaKeyStore idaKeyStore, CountryMetadataBuilder countryMetadataBuilder) {
         this.countryMetadataBuilder = countryMetadataBuilder;
         this.idaKeyStore = idaKeyStore;
     }

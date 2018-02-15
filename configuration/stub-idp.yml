@@ -111,3 +111,11 @@ europeanIdentity:
     minRefreshDelay: 30000
     maxRefreshDelay: 1800000
     expectedEntityId: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}
+  signingKeyPairConfiguration:
+    privateKeyConfiguration:
+      type: ${KEY_TYPE:-file}
+      key: ${STUB_COUNTRY_SIGNING_PRIVATE_KEY}
+    publicKeyConfiguration:
+      type: ${CERT_TYPE:-file}
+      cert: ${STUB_COUNTRY_SIGNING_CERT}
+      name: stub_country_signing_cert

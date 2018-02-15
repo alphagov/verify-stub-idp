@@ -35,12 +35,12 @@ public class CountryMetadataBuilder {
     private final ReadablePeriod validity;
     private final KeyDescriptorsUnmarshaller keyDescriptorsUnmarshaller;
     private final XMLObjectBuilderFactory xmlFactory;
-    private final SigningHelper metadataSigner;
+    private final CountryMetadataSigningHelper metadataSigner;
 
     @Inject
     public CountryMetadataBuilder(
             @Named("metadataValidityPeriod") ReadablePeriod validity,
-            SigningHelper metadataSigner) {
+            CountryMetadataSigningHelper metadataSigner) {
         this.validity = validity;
         this.metadataSigner = metadataSigner;
         this.keyDescriptorsUnmarshaller = new CoreTransformersFactory().getCertificatesToKeyDescriptorsTransformer();

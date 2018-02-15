@@ -11,11 +11,11 @@ import org.opensaml.xmlsec.signature.support.Signer;
 
 import uk.gov.ida.saml.security.SignatureFactory;
 
-public class SigningHelper {
+public class CountryMetadataSigningHelper {
     private SignatureFactory signatureFactory;
 
     @Inject
-    public SigningHelper(@Named("metadataSignatureFactory") SignatureFactory signatureFactory) {
+    public CountryMetadataSigningHelper(@Named("countryMetadataSignatureFactory") SignatureFactory signatureFactory) {
         this.signatureFactory = signatureFactory;
     }
 

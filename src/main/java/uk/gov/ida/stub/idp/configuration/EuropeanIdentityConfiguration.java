@@ -30,6 +30,11 @@ public class EuropeanIdentityConfiguration {
     @JsonProperty
     private TrustStoreBackedMetadataConfiguration metadata;
 
+    @NotNull
+    @Valid
+    @JsonProperty
+    protected SigningKeyPairConfiguration signingKeyPairConfiguration;
+
     public String getHubConnectorEntityId() {
         return hubConnectorEntityId;
     }
@@ -44,6 +49,10 @@ public class EuropeanIdentityConfiguration {
 
     public String getStubCountryMetadataUrl() {
         return stubCountryMetadataUrl;
+    }
+
+    public SigningKeyPairConfiguration getSigningKeyPairConfiguration() {
+        return signingKeyPairConfiguration;
     }
 }
 
