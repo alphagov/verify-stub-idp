@@ -121,7 +121,6 @@ public class StubIdpModule extends AbstractModule {
         bind(SigningKeyStore.class).to(IdaAuthnRequestKeyStore.class).asEagerSingleton();
 
         bind(EntityToEncryptForLocator.class).to(IdpHardCodedEntityToEncryptForLocator.class).asEagerSingleton();
-        bind(SignatureFactory.class).asEagerSingleton();
         bind(CountryMetadataSigningHelper.class).asEagerSingleton();
         bind(SessionRepository.class).asEagerSingleton();
         bind(new TypeLiteral<ConcurrentMap<String, Document>>() {}).toInstance(new ConcurrentHashMap<>());
