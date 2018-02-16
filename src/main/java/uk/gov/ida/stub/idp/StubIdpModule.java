@@ -181,7 +181,14 @@ public class StubIdpModule extends AbstractModule {
     @Singleton
     @Named("StubCountryMetadataUrl")
     public String getStubCountryMetadataUrl(StubIdpConfiguration configuration) {
-        return configuration.getEuropeanIdentityConfiguration().getStubCountryMetadataUrl();
+        return configuration.getEuropeanIdentityConfiguration().getStubCountryBaseUrl() + Urls.METADATA_RESOURCE;
+    }
+
+    @Provides
+    @Singleton
+    @Named("StubCountrySsoUrl")
+    public String getStubCountrySsoUrl(StubIdpConfiguration configuration) {
+        return configuration.getEuropeanIdentityConfiguration().getStubCountryBaseUrl() + Urls.EIDAS_SAML2_SSO_RESOURCE;
     }
 
     @Provides

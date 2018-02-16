@@ -27,9 +27,9 @@ import uk.gov.ida.stub.idp.saml.transformers.EidasResponseTransformerProvider;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.ws.rs.core.UriBuilder;
 import javax.xml.namespace.QName;
 import java.net.URI;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -54,7 +54,7 @@ public class EidasSuccessAuthnResponseService {
     }
 
     public SamlResponse getEidasSuccessResponse(Session session, String schemeId) {
-        String issuerId = MessageFormat.format(stubCountryMetadataUrl, schemeId);
+        String issuerId = UriBuilder.fromUri(stubCountryMetadataUrl).build(schemeId).toString();
         URI hubUrl = metadataProvider.getAssertionConsumerServiceLocation();
         String requestId = session.getEidasAuthnRequest().getRequestId();
         List<Attribute> eidasAttributes = getEidasAttributes(session);

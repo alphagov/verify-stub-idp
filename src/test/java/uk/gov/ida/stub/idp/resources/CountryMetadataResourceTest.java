@@ -12,12 +12,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
+import java.text.MessageFormat;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import com.squarespace.jersey2.guice.JerseyGuiceUtils;
 
+import com.sun.javafx.binding.StringFormatter;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -45,6 +47,8 @@ public class CountryMetadataResourceTest {
 
     private CountryMetadataResource resource;
     private static final String VALID_COUNTRY = "stub-country-one";
+    private static final String METADATA_URL_PATTERN = "https://stub.test/{0}/ServiceMetadata";
+    private static final String SSO_URL_PATTERN = "https://stub.test/eidas/{0}/SAML2/SSO";
     private EntityDescriptor entityDescriptor;
     private URI validCountryUri;
 
@@ -64,8 +68,8 @@ public class CountryMetadataResourceTest {
 
     @Before
     public void setUp() throws CertificateEncodingException, MarshallingException, SecurityException, SignatureException, URISyntaxException {
-        validCountryUri = new URI(String.format("https://stub.test/%s/ServiceMetadata", VALID_COUNTRY));
-        resource = new CountryMetadataResource(idaKeyStore, countryMetadataBuilder);
+        validCountryUri = new URI(MessageFormat.format(METADATA_URL_PATTERN, VALID_COUNTRY));
+        resource = new CountryMetadataResource(idaKeyStore, METADATA_URL_PATTERN, SSO_URL_PATTERN, countryMetadataBuilder);
         entityDescriptor = (EntityDescriptor) XMLObjectProviderRegistrySupport.getBuilderFactory()
           .getBuilder(EntityDescriptor.DEFAULT_ELEMENT_NAME).buildObject(EntityDescriptor.DEFAULT_ELEMENT_NAME, EntityDescriptor.TYPE_NAME);
         when(idaKeyStore.getSigningCertificate()).thenReturn(signingCertificate);
@@ -74,11 +78,7 @@ public class CountryMetadataResourceTest {
 
     @Test
     public void getShouldReturnADocumentWhenIdpIsKnown() throws URISyntaxException, SecurityException, CertificateEncodingException, SignatureException, MarshallingException {
-        final UriInfo requestContext = mock(UriInfo.class);
-        when(requestContext.getAbsolutePath()).thenReturn(validCountryUri);
-        when(requestContext.getBaseUri()).thenReturn(new URI("https://stub.test"));
-
-        final Response response = resource.getMetadata(requestContext, VALID_COUNTRY);
+        final Response response = resource.getMetadata(VALID_COUNTRY);
 
         URI validCountrySsoUri = new URI(String.format("https://stub.test/eidas/%s/SAML2/SSO", VALID_COUNTRY));
         assertThat(response.getStatus()).isEqualTo(Response.Status.OK.getStatusCode());
@@ -88,13 +88,11 @@ public class CountryMetadataResourceTest {
 
     @Test
     public void getShouldReturnNotFoundWhenIdpIsNullOrEmpty() throws CertificateEncodingException, MarshallingException, SecurityException, SignatureException {
-        final UriInfo requestContext = mock(UriInfo.class);
-
-        Response response = resource.getMetadata(requestContext, null);
+        Response response = resource.getMetadata(null);
         assertThat(response.getStatus()).isEqualTo(Response.Status.NOT_FOUND.getStatusCode());
         assertThat(response.getEntity()).isEqualTo(null);
 
-        response = resource.getMetadata(requestContext, "");
+        response = resource.getMetadata("");
         assertThat(response.getStatus()).isEqualTo(Response.Status.NOT_FOUND.getStatusCode());
         assertThat(response.getEntity()).isEqualTo(null);
 

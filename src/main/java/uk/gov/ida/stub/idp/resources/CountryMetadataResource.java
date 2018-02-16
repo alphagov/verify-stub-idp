@@ -9,10 +9,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
 
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
@@ -36,26 +34,32 @@ public class CountryMetadataResource {
     private static final Logger LOG = LoggerFactory.getLogger(CountryMetadataResource.class);
     private final IdaKeyStore idaKeyStore;
 	private final CountryMetadataBuilder countryMetadataBuilder;
+	private final String metadataUrlPattern;
+	private final String ssoUrlPattern;
 
 	@Inject
-    public CountryMetadataResource(@Named(StubIdpModule.COUNTRY_SIGNING_KEY_STORE) IdaKeyStore idaKeyStore, CountryMetadataBuilder countryMetadataBuilder) {
+    public CountryMetadataResource(@Named(StubIdpModule.COUNTRY_SIGNING_KEY_STORE) IdaKeyStore idaKeyStore,
+                                   @Named("StubCountryMetadataUrl") String metadataUrlPattern,
+                                   @Named("StubCountrySsoUrl") String ssoUrlPattern,
+                                   CountryMetadataBuilder countryMetadataBuilder) {
         this.countryMetadataBuilder = countryMetadataBuilder;
         this.idaKeyStore = idaKeyStore;
+        this.metadataUrlPattern = metadataUrlPattern;
+        this.ssoUrlPattern = ssoUrlPattern;
     }
 
     @GET
-    public Response getMetadata(
-        @Context UriInfo uriInfo,
-        @PathParam(Urls.IDP_ID_PARAM) @NotNull String idpName) {
+    public Response getMetadata(@PathParam(Urls.IDP_ID_PARAM) @NotNull String idpName) {
 
         if (idpName == null || idpName.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        URI ssoEndpoint = UriBuilder.fromUri(uriInfo.getBaseUri()).path("eidas/{0}/SAML2/SSO").build(idpName);
+        URI ssoEndpoint = UriBuilder.fromUri(ssoUrlPattern).build(idpName);
+        URI metadataUrl = UriBuilder.fromUri(metadataUrlPattern).build(idpName);
 
         try {
-            Document metadata = getMetadataDocument(uriInfo.getAbsolutePath(), ssoEndpoint);
+            Document metadata = getMetadataDocument(metadataUrl, ssoEndpoint);
             return Response.ok(metadata).build();
 		} catch (CertificateEncodingException | MarshallingException | SecurityException | SignatureException e) {
             LOG.error("Failed to generate metadata", e);

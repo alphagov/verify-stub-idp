@@ -23,7 +23,7 @@ public class EuropeanIdentityConfiguration {
     @NotNull
     @Valid
     @JsonProperty
-    private String stubCountryMetadataUrl;
+    private String stubCountryBaseUrl;
 
     @NotNull
     @Valid
@@ -47,8 +47,8 @@ public class EuropeanIdentityConfiguration {
         return enabled;
     }
 
-    public String getStubCountryMetadataUrl() {
-        return stubCountryMetadataUrl;
+    public String getStubCountryBaseUrl() {
+        return stubCountryBaseUrl;
     }
 
     public SigningKeyPairConfiguration getSigningKeyPairConfiguration() {

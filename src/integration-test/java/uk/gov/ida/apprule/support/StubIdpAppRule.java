@@ -60,6 +60,7 @@ public class StubIdpAppRule extends DropwizardAppRule<StubIdpConfiguration> {
                 .add(ConfigOverride.config("metadata.trustStore.password", trustStore.getPassword()))
                 .add(ConfigOverride.config("europeanIdentity.enabled", "true"))
                 .add(ConfigOverride.config("europeanIdentity.hubConnectorEntityId", HUB_ENTITY_ID))
+                .add(ConfigOverride.config("europeanIdentity.stubCountryBaseUrl", "http://localhost:0"))
                 .add(ConfigOverride.config("europeanIdentity.metadata.uri", "http://localhost:" + metadataServer.getPort() + METADATA_PATH))
                 .add(ConfigOverride.config("europeanIdentity.metadata.expectedEntityId", HUB_ENTITY_ID))
                 .add(ConfigOverride.config("europeanIdentity.metadata.trustStore.store", trustStore.getAbsolutePath()))
