@@ -2,13 +2,11 @@ package uk.gov.ida.stub.idp.domain.factories;
 
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.MatchingDataset;
-import uk.gov.ida.saml.core.domain.SimpleMdsValue;
 import uk.gov.ida.stub.idp.domain.IdpUser;
-import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 
 public final class MatchingDatasetFactory {
@@ -16,24 +14,7 @@ public final class MatchingDatasetFactory {
     private MatchingDatasetFactory() {}
 
     public static MatchingDataset create(final IdpUser user) {
-         return new MatchingDataset(
-             from(user.getFirstnames()),
-             from(user.getMiddleNames()),
-             from(user.getSurnames()),
-             user.getGender().transform(MatchingDatasetFactory::from),
-             from(user.getDateOfBirths()),
-             getCurrentAddresses(
-                 user.getAddresses()),
-             getPreviousAddresses(user.getAddresses())
-         );
-    }
-
-    private static <T> List<SimpleMdsValue<T>> from(List<MatchingDatasetValue<T>> input) {
-        return input.stream().map(MatchingDatasetFactory::from).collect(Collectors.toList());
-    }
-
-    private static <T> SimpleMdsValue<T> from(MatchingDatasetValue<T> input) {
-        return new SimpleMdsValue<>(input.getValue(), input.getFrom(), input.getTo(), input.isVerified());
+         return new MatchingDataset(user.getFirstnames(), user.getMiddleNames(), user.getSurnames(), user.getGender(), user.getDateOfBirths(), getCurrentAddresses(user.getAddresses()), getPreviousAddresses(user.getAddresses()));
     }
 
     private static List<Address> getPreviousAddresses(List<Address> addresses) {

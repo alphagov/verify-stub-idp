@@ -83,10 +83,3 @@ europeanIdentity:
     minRefreshDelay: 30000
     maxRefreshDelay: 1800000
     expectedEntityId: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}
-
-database:
-# Ensure to run the application you have DB_URI
-# Format for DB_URI: jdbc:postgresql://host-name:port/database-name?user=user-name&password=password
-# example: jdbc:postgresql://localhost:5432/postgres?user=postgres&password=password
-  url: ${DB_URI:-}
-#  url: ${DB_URI:-jdbc:postgresql://localhost:5432/postgres?user=postgres&password=password}

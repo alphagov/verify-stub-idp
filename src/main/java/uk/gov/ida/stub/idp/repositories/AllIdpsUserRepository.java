@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.saml.core.domain.Gender;
+import uk.gov.ida.saml.core.domain.SimpleMdsValue;
 import uk.gov.ida.stub.idp.domain.IdpUser;
-import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 
 import javax.inject.Inject;
 import java.util.Collection;
@@ -38,11 +38,11 @@ public class AllIdpsUserRepository {
 
     public IdpUser createUserForIdp(String idpFriendlyName,
                                     String persistentId,
-                                    List<MatchingDatasetValue<String>> firstnames,
-                                    List<MatchingDatasetValue<String>> middleNames,
-                                    List<MatchingDatasetValue<String>> surnames,
-                                    Optional<MatchingDatasetValue<Gender>> gender,
-                                    List<MatchingDatasetValue<LocalDate>> dateOfBirths,
+                                    List<SimpleMdsValue<String>> firstnames,
+                                    List<SimpleMdsValue<String>> middleNames,
+                                    List<SimpleMdsValue<String>> surnames,
+                                    Optional<SimpleMdsValue<Gender>> gender,
+                                    List<SimpleMdsValue<LocalDate>> dateOfBirths,
                                     List<Address> addresses,
                                     String username,
                                     String password,

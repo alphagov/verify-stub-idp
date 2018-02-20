@@ -6,34 +6,34 @@ import org.joda.time.LocalDate;
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.saml.core.domain.Gender;
+import uk.gov.ida.saml.core.domain.SimpleMdsValue;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Objects;
 
-public class IdpUser implements Serializable {
+public class IdpUser implements Serializable{
     private final String username;
     private final String persistentId;
     private final String password;
-    private final List<MatchingDatasetValue<String>> firstnames;
-    private final List<MatchingDatasetValue<String>> middleNames;
-    private final List<MatchingDatasetValue<String>> surnames;
-    private final Optional<MatchingDatasetValue<Gender>> gender;
-    private final List<MatchingDatasetValue<LocalDate>> dateOfBirths;
+    private final List<SimpleMdsValue<String>> firstnames;
+    private final List<SimpleMdsValue<String>> middleNames;
+    private final List<SimpleMdsValue<String>> surnames;
+    private final Optional<SimpleMdsValue<Gender>> gender;
+    private final List<SimpleMdsValue<LocalDate>> dateOfBirths;
     private final List<Address> addresses;
     private final AuthnContext levelOfAssurance;
 
     public IdpUser(
-        String username,
-        String persistentId,
-        String password,
-        List<MatchingDatasetValue<String>> firstnames,
-        List<MatchingDatasetValue<String>> middleNames,
-        List<MatchingDatasetValue<String>> surnames,
-        Optional<MatchingDatasetValue<Gender>> gender,
-        List<MatchingDatasetValue<LocalDate>> dateOfBirths,
-        List<Address> addresses,
-        AuthnContext levelOfAssurance) {
+            String username,
+            String persistentId,
+            String password,
+            List<SimpleMdsValue<String>> firstnames,
+            List<SimpleMdsValue<String>> middleNames,
+            List<SimpleMdsValue<String>> surnames,
+            Optional<SimpleMdsValue<Gender>> gender,
+            List<SimpleMdsValue<LocalDate>> dateOfBirths,
+            List<Address> addresses,
+            AuthnContext levelOfAssurance) {
 
         this.username = username;
         this.persistentId = persistentId;
@@ -59,23 +59,23 @@ public class IdpUser implements Serializable {
         return password;
     }
 
-    public List<MatchingDatasetValue<String>> getFirstnames() {
+    public List<SimpleMdsValue<String>> getFirstnames() {
         return firstnames;
     }
 
-    public List<MatchingDatasetValue<String>> getMiddleNames() {
+    public List<SimpleMdsValue<String>> getMiddleNames() {
         return middleNames;
     }
 
-    public List<MatchingDatasetValue<String>> getSurnames() {
+    public List<SimpleMdsValue<String>> getSurnames() {
         return surnames;
     }
 
-    public Optional<MatchingDatasetValue<Gender>> getGender() {
+    public Optional<SimpleMdsValue<Gender>> getGender() {
         return gender;
     }
 
-    public List<MatchingDatasetValue<LocalDate>> getDateOfBirths() {
+    public List<SimpleMdsValue<LocalDate>> getDateOfBirths() {
         return dateOfBirths;
     }
 
@@ -93,43 +93,5 @@ public class IdpUser implements Serializable {
 
     public AuthnContext getLevelOfAssurance() {
         return levelOfAssurance;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof IdpUser)) return false;
-        IdpUser idpUser = (IdpUser) o;
-        return Objects.equals(username, idpUser.username) &&
-            Objects.equals(persistentId, idpUser.persistentId) &&
-            Objects.equals(password, idpUser.password) &&
-            Objects.equals(firstnames, idpUser.firstnames) &&
-            Objects.equals(middleNames, idpUser.middleNames) &&
-            Objects.equals(surnames, idpUser.surnames) &&
-            Objects.equals(gender, idpUser.gender) &&
-            Objects.equals(dateOfBirths, idpUser.dateOfBirths) &&
-            Objects.equals(addresses, idpUser.addresses) &&
-            levelOfAssurance == idpUser.levelOfAssurance;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(username, persistentId, password, firstnames, middleNames, surnames, gender, dateOfBirths, addresses, levelOfAssurance);
-    }
-
-    @Override
-    public String toString() {
-        return "IdpUser{" +
-            "username='" + username + '\'' +
-            ", persistentId='" + persistentId + '\'' +
-            ", password='" + password + '\'' +
-            ", firstnames=" + firstnames +
-            ", middleNames=" + middleNames +
-            ", surnames=" + surnames +
-            ", gender=" + gender +
-            ", dateOfBirths=" + dateOfBirths +
-            ", addresses=" + addresses +
-            ", levelOfAssurance=" + levelOfAssurance +
-            '}';
     }
 }

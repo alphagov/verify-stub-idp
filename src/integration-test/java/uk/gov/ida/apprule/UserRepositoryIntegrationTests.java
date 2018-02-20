@@ -13,9 +13,9 @@ import uk.gov.ida.apprule.support.StubIdpAppRule;
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.saml.core.domain.Gender;
+import uk.gov.ida.saml.core.domain.SimpleMdsValue;
 import uk.gov.ida.stub.idp.builders.SimpleMdsValueBuilder;
 import uk.gov.ida.stub.idp.Urls;
-import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 import uk.gov.ida.stub.idp.dtos.IdpUserDto;
 
 import javax.ws.rs.client.Client;
@@ -181,12 +181,12 @@ public class UserRepositoryIntegrationTests {
         return applicationRule.getObjectMapper().readValue(response.readEntity(String.class), IdpUserDto.class);
     }
 
-    private static <T> Optional<MatchingDatasetValue<T>> createOptionalMdsValue(Optional<T> value) {
+    private static <T> Optional<SimpleMdsValue<T>> createOptionalMdsValue(Optional<T> value) {
         if (!value.isPresent()) {
             return absent();
         }
 
-        return fromNullable(new MatchingDatasetValue<>(value.get(), null, null, true));
+        return fromNullable(new SimpleMdsValue<>(value.get(), null, null, true));
     }
 
     protected static class UserBuilder {
@@ -205,11 +205,11 @@ public class UserRepositoryIntegrationTests {
                     pid,
                     username.orNull(),
                     password.orNull(),
-                    Optional.<MatchingDatasetValue<String>>absent(),
-                    Optional.<MatchingDatasetValue<String>>absent(),
-                    Collections.<MatchingDatasetValue<String>>emptyList(),
-                    Optional.<MatchingDatasetValue<Gender>>absent(),
-                    Optional.<MatchingDatasetValue<LocalDate>>absent(),
+                    Optional.<SimpleMdsValue<String>>absent(),
+                    Optional.<SimpleMdsValue<String>>absent(),
+                    Collections.<SimpleMdsValue<String>>emptyList(),
+                    Optional.<SimpleMdsValue<Gender>>absent(),
+                    Optional.<SimpleMdsValue<LocalDate>>absent(),
                     address,
                     levelOfAssurance.orNull());
         }

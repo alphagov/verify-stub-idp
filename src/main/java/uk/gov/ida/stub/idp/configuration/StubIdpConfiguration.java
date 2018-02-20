@@ -93,10 +93,6 @@ public class StubIdpConfiguration extends Configuration implements
     @JsonProperty
     private EuropeanIdentityConfiguration europeanIdentity;
 
-    @Valid
-    @JsonProperty("database")
-    private DatabaseConfiguration databaseConfiguration;
-
     protected StubIdpConfiguration() {
     }
 
@@ -157,9 +153,5 @@ public class StubIdpConfiguration extends Configuration implements
 
     public EuropeanIdentityConfiguration getEuropeanIdentityConfiguration() {
         return europeanIdentity;
-    }
-
-    public DatabaseConfiguration getDatabaseConfiguration() {
-        return databaseConfiguration;
     }
 }

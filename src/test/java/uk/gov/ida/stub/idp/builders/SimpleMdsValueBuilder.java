@@ -1,7 +1,7 @@
 package uk.gov.ida.stub.idp.builders;
 
 import org.joda.time.DateTime;
-import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
+import uk.gov.ida.saml.core.domain.SimpleMdsValue;
 
 public class SimpleMdsValueBuilder<T> {
 
@@ -15,8 +15,8 @@ public class SimpleMdsValueBuilder<T> {
         return new SimpleMdsValueBuilder<>();
     }
 
-    public MatchingDatasetValue<T> build() {
-        return new MatchingDatasetValue<>(value, from, to, verified);
+    public SimpleMdsValue<T> build() {
+        return new SimpleMdsValue<>(value, from, to, verified);
     }
 
     public SimpleMdsValueBuilder<T> withValue(T value) {

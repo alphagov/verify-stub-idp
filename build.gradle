@@ -137,9 +137,7 @@ dependencies {
             "uk.gov.ida:saml-security:$dependencyVersions.saml_security",
             "uk.gov.ida:dropwizard-saml:$opensaml_version-368",
             "uk.gov.ida:ida-saml-extensions:$dependencyVersions.ida_saml_extensions",
-            "uk.gov.verify:saml-utils:$dependencyVersions.saml_utils",
-            "org.jdbi:jdbi3-core:3.0.0",
-            "org.postgresql:postgresql:42.1.4"
+            "uk.gov.verify:saml-utils:$dependencyVersions.saml_utils"
 
     runtime 'joda-time:joda-time:2.3',
             'net.logstash.logback:logstash-logback-encoder:4.9'
@@ -150,8 +148,7 @@ dependencies {
             'uk.gov.ida:saml-metadata-bindings-test:' + dependencyVersions.saml_metadata_bindings,
             'uk.gov.ida:common-test-utils:2.0.0-' + dependencyVersions.ida_test_utils,
             "uk.gov.ida:hub-saml:$dependencyVersions.hub_saml",
-            "uk.gov.ida:hub-saml-test-utils:$dependencyVersions.hub_saml",
-            "com.h2database:h2:1.4.196"
+            "uk.gov.ida:hub-saml-test-utils:$dependencyVersions.hub_saml"
 
 }
 

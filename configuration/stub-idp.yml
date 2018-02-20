@@ -119,10 +119,3 @@ europeanIdentity:
       type: ${CERT_TYPE:-file}
       cert: ${STUB_COUNTRY_SIGNING_CERT}
       name: stub_country_signing_cert
-
-database:
-# Ensure to run the application you have DB_URI
-# Format for DB_URI: jdbc:postgresql://host-name:port/database-name?user=user-name&password=password
-# example: jdbc:postgresql://localhost:5432/postgres?user=postgres&password=password
-  url: ${DB_URI:-}
-#  url: ${DB_URI:-jdbc:postgresql://localhost:5432/postgres?user=postgres&password=password}

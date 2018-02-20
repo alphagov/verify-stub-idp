@@ -5,8 +5,8 @@ import com.google.common.collect.Collections2;
 import org.apache.commons.lang.StringUtils;
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.AuthnContext;
+import uk.gov.ida.saml.core.domain.SimpleMdsValue;
 import uk.gov.ida.stub.idp.domain.IdpUser;
-import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -43,15 +43,15 @@ public class ConsentView extends IdpPageView {
         return createEmptySimpleMdsStringValue().getValue();
     }
 
-    private MatchingDatasetValue<String> createEmptySimpleMdsStringValue() {
-        return new MatchingDatasetValue<>("", null, null, true);
+    private SimpleMdsValue<String> createEmptySimpleMdsStringValue() {
+        return new SimpleMdsValue<>("", null, null, true);
     }
 
     public String getSurname() {
-        Collection<String> surnameValues = Collections2.transform(this.idpUser.getSurnames(), new Function<MatchingDatasetValue<String>, String>() {
+        Collection<String> surnameValues = Collections2.transform(this.idpUser.getSurnames(), new Function<SimpleMdsValue<String>, String>() {
             @Nullable
             @Override
-            public String apply(@Nullable MatchingDatasetValue<String> input) {
+            public String apply(@Nullable SimpleMdsValue<String> input) {
                 return input != null ? input.getValue() : null;
             }
         });

@@ -4,8 +4,8 @@ import org.joda.time.LocalDate;
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.saml.core.domain.Gender;
+import uk.gov.ida.saml.core.domain.SimpleMdsValue;
 import uk.gov.ida.stub.idp.domain.IdpUser;
-import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 
 import java.util.Collection;
 import java.util.List;
@@ -57,11 +57,11 @@ public class Idp {
 
     public IdpUser createUser(
             Optional<String> pid,
-            List<MatchingDatasetValue<String>> firstnames,
-            List<MatchingDatasetValue<String>> middleNames,
-            List<MatchingDatasetValue<String>> surnames,
-            com.google.common.base.Optional<MatchingDatasetValue<Gender>> gender,
-            List<MatchingDatasetValue<LocalDate>> dateOfBirths,
+            List<SimpleMdsValue<String>> firstnames,
+            List<SimpleMdsValue<String>> middleNames,
+            List<SimpleMdsValue<String>> surnames,
+            com.google.common.base.Optional<SimpleMdsValue<Gender>> gender,
+            List<SimpleMdsValue<LocalDate>> dateOfBirths,
             List<Address> addresses,
             String username,
             String password,

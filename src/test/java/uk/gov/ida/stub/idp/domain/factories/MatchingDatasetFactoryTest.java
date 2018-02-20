@@ -9,8 +9,8 @@ import uk.gov.ida.saml.core.domain.AddressFactory;
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.saml.core.domain.Gender;
 import uk.gov.ida.saml.core.domain.MatchingDataset;
+import uk.gov.ida.saml.core.domain.SimpleMdsValue;
 import uk.gov.ida.stub.idp.domain.IdpUser;
-import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 
 import java.util.Collections;
 import java.util.UUID;
@@ -27,11 +27,11 @@ public class MatchingDatasetFactoryTest {
             "idpuser-complete",
             UUID.randomUUID().toString(),
     "bar",
-    asList(new MatchingDatasetValue<>("Jack", DateTime.now(), DateTime.now(), true), new MatchingDatasetValue<>("Spud", DateTime.now(), DateTime.now(), true)),
-    asList(new MatchingDatasetValue<>("Cornelius", DateTime.now(), DateTime.now(), true), new MatchingDatasetValue<>("Aurelius", DateTime.now(), DateTime.now(), true)),
-    asList(new MatchingDatasetValue<>("Bauer", DateTime.now(), DateTime.now(), true), new MatchingDatasetValue<>("Superman", DateTime.now().minusDays(5), DateTime.now().minusDays(3), true)),
-    fromNullable(new MatchingDatasetValue<>(Gender.MALE, DateTime.now(), DateTime.now(), true)),
-    asList(new MatchingDatasetValue<>(LocalDate.parse("1984-02-29"), DateTime.now(), DateTime.now(), true), new MatchingDatasetValue<>(LocalDate.parse("1984-03-01"), DateTime.now(), DateTime.now(), true)),
+    asList(new SimpleMdsValue<>("Jack", DateTime.now(), DateTime.now(), true), new SimpleMdsValue<>("Spud", DateTime.now(), DateTime.now(), true)),
+    asList(new SimpleMdsValue<>("Cornelius", DateTime.now(), DateTime.now(), true), new SimpleMdsValue<>("Aurelius", DateTime.now(), DateTime.now(), true)),
+    asList(new SimpleMdsValue<>("Bauer", DateTime.now(), DateTime.now(), true), new SimpleMdsValue<>("Superman", DateTime.now().minusDays(5), DateTime.now().minusDays(3), true)),
+    fromNullable(new SimpleMdsValue<>(Gender.MALE, DateTime.now(), DateTime.now(), true)),
+    asList(new SimpleMdsValue<>(LocalDate.parse("1984-02-29"), DateTime.now(), DateTime.now(), true), new SimpleMdsValue<>(LocalDate.parse("1984-03-01"), DateTime.now(), DateTime.now(), true)),
     asList(previousAddress,
             currentAddress),
     AuthnContext.LEVEL_2);
