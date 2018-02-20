@@ -1,29 +1,38 @@
-package uk.gov.ida.stub.idp.domain;
+package uk.gov.ida.stub.idp.repositories.jdbc.json;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.Optional;
 import org.joda.time.LocalDate;
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.saml.core.domain.Gender;
+import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-public class IdpUser implements Serializable {
-    private final String username;
-    private final String persistentId;
-    private final String password;
-    private final List<MatchingDatasetValue<String>> firstnames;
-    private final List<MatchingDatasetValue<String>> middleNames;
-    private final List<MatchingDatasetValue<String>> surnames;
-    private final Optional<MatchingDatasetValue<Gender>> gender;
-    private final List<MatchingDatasetValue<LocalDate>> dateOfBirths;
-    private final List<Address> addresses;
-    private final AuthnContext levelOfAssurance;
+import static com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion.NON_NULL;
 
-    public IdpUser(
+@JsonSerialize(include = NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class IdpUserJson {
+
+    private String username;
+    private String persistentId;
+    private String password;
+    private List<MatchingDatasetValue<String>> firstnames;
+    private List<MatchingDatasetValue<String>> middleNames;
+    private List<MatchingDatasetValue<String>> surnames;
+    private Optional<MatchingDatasetValue<Gender>> gender;
+    private List<MatchingDatasetValue<LocalDate>> dateOfBirths;
+    private List<Address> addresses;
+    private AuthnContext levelOfAssurance;
+
+    private IdpUserJson() {
+    }
+
+    public IdpUserJson(
         String username,
         String persistentId,
         String password,
@@ -33,8 +42,8 @@ public class IdpUser implements Serializable {
         Optional<MatchingDatasetValue<Gender>> gender,
         List<MatchingDatasetValue<LocalDate>> dateOfBirths,
         List<Address> addresses,
-        AuthnContext levelOfAssurance) {
-
+        AuthnContext levelOfAssurance
+    ) {
         this.username = username;
         this.persistentId = persistentId;
         this.password = password;
@@ -83,14 +92,6 @@ public class IdpUser implements Serializable {
         return addresses;
     }
 
-    // Basing this on the implementation in IdpAssertionToAssertionTransformer
-    public Address getCurrentAddress() {
-        if (addresses.isEmpty()) {
-            return null;
-        }
-        return addresses.get(0);
-    }
-
     public AuthnContext getLevelOfAssurance() {
         return levelOfAssurance;
     }
@@ -98,18 +99,18 @@ public class IdpUser implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof IdpUser)) return false;
-        IdpUser idpUser = (IdpUser) o;
-        return Objects.equals(username, idpUser.username) &&
-            Objects.equals(persistentId, idpUser.persistentId) &&
-            Objects.equals(password, idpUser.password) &&
-            Objects.equals(firstnames, idpUser.firstnames) &&
-            Objects.equals(middleNames, idpUser.middleNames) &&
-            Objects.equals(surnames, idpUser.surnames) &&
-            Objects.equals(gender, idpUser.gender) &&
-            Objects.equals(dateOfBirths, idpUser.dateOfBirths) &&
-            Objects.equals(addresses, idpUser.addresses) &&
-            levelOfAssurance == idpUser.levelOfAssurance;
+        if (!(o instanceof IdpUserJson)) return false;
+        IdpUserJson that = (IdpUserJson) o;
+        return Objects.equals(username, that.username) &&
+            Objects.equals(persistentId, that.persistentId) &&
+            Objects.equals(password, that.password) &&
+            Objects.equals(firstnames, that.firstnames) &&
+            Objects.equals(middleNames, that.middleNames) &&
+            Objects.equals(surnames, that.surnames) &&
+            Objects.equals(gender, that.gender) &&
+            Objects.equals(dateOfBirths, that.dateOfBirths) &&
+            Objects.equals(addresses, that.addresses) &&
+            levelOfAssurance == that.levelOfAssurance;
     }
 
     @Override
@@ -119,7 +120,7 @@ public class IdpUser implements Serializable {
 
     @Override
     public String toString() {
-        return "IdpUser{" +
+        return "IdpUserJson{" +
             "username='" + username + '\'' +
             ", persistentId='" + persistentId + '\'' +
             ", password='" + password + '\'' +
