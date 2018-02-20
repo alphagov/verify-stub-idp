@@ -13,10 +13,10 @@ import uk.gov.ida.common.SessionId;
 import uk.gov.ida.saml.core.domain.AddressFactory;
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.saml.core.domain.Gender;
-import uk.gov.ida.saml.core.domain.SimpleMdsValue;
 import uk.gov.ida.saml.core.test.TestEntityIds;
 import uk.gov.ida.saml.hub.domain.IdaAuthnRequestFromHub;
 import uk.gov.ida.stub.idp.domain.IdpUser;
+import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 import uk.gov.ida.stub.idp.repositories.Idp;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
 import uk.gov.ida.stub.idp.repositories.Session;
@@ -132,7 +132,7 @@ public class ConsentResourceTest {
 
     }
 
-    private static <T> SimpleMdsValue<T> createMdsValue(T value) {
-        return (value == null) ? null : new SimpleMdsValue<>(value, null, null, true);
+    private static <T> MatchingDatasetValue<T> createMdsValue(T value) {
+        return (value == null) ? null : new MatchingDatasetValue<>(value, null, null, true);
     }
 }

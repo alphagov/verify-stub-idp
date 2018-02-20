@@ -7,8 +7,8 @@ import uk.gov.ida.common.SessionId;
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.saml.core.domain.Gender;
-import uk.gov.ida.saml.core.domain.SimpleMdsValue;
 import uk.gov.ida.stub.idp.domain.IdpUser;
+import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 import uk.gov.ida.stub.idp.exceptions.IncompleteRegistrationException;
 import uk.gov.ida.stub.idp.exceptions.InvalidDateException;
 import uk.gov.ida.stub.idp.exceptions.InvalidSessionIdException;
@@ -122,8 +122,8 @@ public class IdpUserService {
         return true;
     }
 
-    private static <T> SimpleMdsValue<T> createMdsValue(com.google.common.base.Optional<T> value) {
-        return new SimpleMdsValue<>(value.get(), null, null, true);
+    private static <T> MatchingDatasetValue<T> createMdsValue(com.google.common.base.Optional<T> value) {
+        return new MatchingDatasetValue<>(value.get(), null, null, true);
     }
 
     public static IdpUser createRandomUser() {
@@ -131,10 +131,10 @@ public class IdpUserService {
                 "tempuser",
                 UUID.randomUUID().toString(),
                 "ifitellyouthen...",
-                Collections.singletonList(createSimpleMdsValue("firstname")),
+                Collections.singletonList(createSimpleMdsValue2("firstname")),
                 Collections.emptyList(),
-                Collections.singletonList(createSimpleMdsValue("smith")),
-                fromNullable(createSimpleMdsValue(Gender.FEMALE)),
+                Collections.singletonList(createSimpleMdsValue2("smith")),
+                fromNullable(createSimpleMdsValue2(Gender.FEMALE)),
                 Collections.emptyList(),
                 Collections.singletonList(
                         new Address(asList("line1", "line2"), "KT23 4XD", null, "fhfhf", DateTime.parse("2000-01-01"), DateTime.parse("2013-05-05"), false)
@@ -142,8 +142,8 @@ public class IdpUserService {
                 AuthnContext.LEVEL_2);
     }
 
-    private static <T> SimpleMdsValue<T> createSimpleMdsValue(T value) {
-        return new SimpleMdsValue<>(value, DateTime.parse("2000-01-01"), DateTime.parse("2013-01-03"), false);
+    private static <T> MatchingDatasetValue<T> createSimpleMdsValue2(T value) {
+        return new MatchingDatasetValue<>(value, DateTime.parse("2000-01-01"), DateTime.parse("2013-01-03"), false);
     }
 
 }

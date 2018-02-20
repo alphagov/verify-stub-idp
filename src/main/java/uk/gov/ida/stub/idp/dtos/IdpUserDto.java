@@ -5,8 +5,8 @@ import com.google.common.base.Optional;
 import org.joda.time.LocalDate;
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.Gender;
-import uk.gov.ida.saml.core.domain.SimpleMdsValue;
 import uk.gov.ida.stub.idp.domain.IdpUser;
+import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 
 import java.util.List;
 
@@ -20,11 +20,11 @@ public class IdpUserDto {
     private Optional<String> pid = absent();
     private String username;
     private String password;
-    private Optional<SimpleMdsValue<String>> firstName = absent();
-    private Optional<SimpleMdsValue<String>> middleNames = absent();
-    private List<SimpleMdsValue<String>> surname = newArrayList();
-    private Optional<SimpleMdsValue<Gender>> gender = absent();
-    private Optional<SimpleMdsValue<LocalDate>> dateOfBirth = absent();
+    private Optional<MatchingDatasetValue<String>> firstName = absent();
+    private Optional<MatchingDatasetValue<String>> middleNames = absent();
+    private List<MatchingDatasetValue<String>> surname = newArrayList();
+    private Optional<MatchingDatasetValue<Gender>> gender = absent();
+    private Optional<MatchingDatasetValue<LocalDate>> dateOfBirth = absent();
     private Optional<Address> address = absent();
     private String levelOfAssurance;
 
@@ -35,11 +35,11 @@ public class IdpUserDto {
             Optional<String> pid,
             String username,
             String password,
-            Optional<SimpleMdsValue<String>> firstName,
-            Optional<SimpleMdsValue<String>> middleNames,
-            List<SimpleMdsValue<String>> surnames,
-            Optional<SimpleMdsValue<Gender>> gender,
-            Optional<SimpleMdsValue<LocalDate>> dateOfBirth,
+            Optional<MatchingDatasetValue<String>> firstName,
+            Optional<MatchingDatasetValue<String>> middleNames,
+            List<MatchingDatasetValue<String>> surnames,
+            Optional<MatchingDatasetValue<Gender>> gender,
+            Optional<MatchingDatasetValue<LocalDate>> dateOfBirth,
             Optional<Address> address,
             String levelOfAssurance) {
 
@@ -67,15 +67,15 @@ public class IdpUserDto {
         return password;
     }
 
-    public Optional<SimpleMdsValue<String>> getFirstName() {
+    public Optional<MatchingDatasetValue<String>> getFirstName() {
         return firstName;
     }
 
-    public List<SimpleMdsValue<String>> getSurnames() {
+    public List<MatchingDatasetValue<String>> getSurnames() {
         return surname;
     }
 
-    public Optional<SimpleMdsValue<LocalDate>> getDateOfBirth() {
+    public Optional<MatchingDatasetValue<LocalDate>> getDateOfBirth() {
         return dateOfBirth;
     }
 
@@ -87,11 +87,11 @@ public class IdpUserDto {
         return levelOfAssurance;
     }
 
-    public Optional<SimpleMdsValue<String>> getMiddleNames() {
+    public Optional<MatchingDatasetValue<String>> getMiddleNames() {
         return middleNames;
     }
 
-    public Optional<SimpleMdsValue<Gender>> getGender() {
+    public Optional<MatchingDatasetValue<Gender>> getGender() {
         return gender;
     }
 
@@ -110,7 +110,7 @@ public class IdpUserDto {
         );
     }
 
-    private static <T> Optional<SimpleMdsValue<T>> getFirstValue(List<SimpleMdsValue<T>> values) {
+    private static <T> Optional<MatchingDatasetValue<T>> getFirstValue(List<MatchingDatasetValue<T>> values) {
         if (values.isEmpty()) {
             return absent();
         }

@@ -1,5 +1,6 @@
 package uk.gov.ida.stub.idp;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -10,6 +11,7 @@ import io.dropwizard.configuration.DefaultConfigurationFactoryFactory;
 import io.dropwizard.servlets.tasks.Task;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.jdbi.v3.core.Jdbi;
 import org.joda.time.Period;
 import org.joda.time.ReadablePeriod;
 import org.opensaml.saml.metadata.resolver.MetadataResolver;
@@ -63,6 +65,8 @@ import uk.gov.ida.stub.idp.repositories.MetadataRepository;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.repositories.UserRepository;
 import uk.gov.ida.stub.idp.repositories.infinispan.InfinispanUserRepository;
+import uk.gov.ida.stub.idp.repositories.jdbc.JDBIUserRepository;
+import uk.gov.ida.stub.idp.repositories.jdbc.UserMapper;
 import uk.gov.ida.stub.idp.saml.locators.IdpHardCodedEntityToEncryptForLocator;
 import uk.gov.ida.stub.idp.saml.transformers.EidasResponseTransformerProvider;
 import uk.gov.ida.stub.idp.saml.transformers.OutboundResponseFromIdpTransformerProvider;
@@ -123,7 +127,8 @@ public class StubIdpModule extends AbstractModule {
         bind(EntityToEncryptForLocator.class).to(IdpHardCodedEntityToEncryptForLocator.class).asEagerSingleton();
         bind(CountryMetadataSigningHelper.class).asEagerSingleton();
         bind(SessionRepository.class).asEagerSingleton();
-        bind(new TypeLiteral<ConcurrentMap<String, Document>>() {}).toInstance(new ConcurrentHashMap<>());
+        bind(new TypeLiteral<ConcurrentMap<String, Document>>() {
+        }).toInstance(new ConcurrentHashMap<>());
 
         bind(AllIdpsUserRepository.class).asEagerSingleton();
 
@@ -155,12 +160,34 @@ public class StubIdpModule extends AbstractModule {
         bind(UserService.class);
         bind(SamlResponseRedirectViewFactory.class);
 
-        bind(UserRepository.class).to(InfinispanUserRepository.class);
-
         bind(HmacValidator.class);
         bind(HmacDigest.class);
         bind(SecureCookieKeyStore.class).to(SecureCookieKeyConfigurationKeyStore.class);
         bind(CookieFactory.class);
+    }
+
+    @Provides
+    public ObjectMapper getObjectMapper() {
+        return bootstrap.getObjectMapper();
+    }
+
+    @Provides
+    public UserMapper getUserMapper(ObjectMapper objectMapper) {
+        return new UserMapper(objectMapper);
+    }
+
+    @Provides
+    public UserRepository getUserRepository(
+        StubIdpConfiguration configuration,
+        InfinispanCacheManager infinispanCacheManager,
+        UserMapper userMapper
+    ) {
+        if (configuration.getDatabaseConfiguration().getUrl() != null) {
+            Jdbi jdbi = Jdbi.create(configuration.getDatabaseConfiguration().getUrl());
+            return new JDBIUserRepository(jdbi, userMapper);
+        }
+
+        return new InfinispanUserRepository(infinispanCacheManager);
     }
 
     @Provides
@@ -195,7 +222,7 @@ public class StubIdpModule extends AbstractModule {
     private ConfigurationFactory<IdpStubsConfiguration> getConfigurationFactory() {
         Validator validator = bootstrap.getValidatorFactory().getValidator();
         return new DefaultConfigurationFactoryFactory<IdpStubsConfiguration>()
-                .create(IdpStubsConfiguration.class, validator, bootstrap.getObjectMapper(), "");
+            .create(IdpStubsConfiguration.class, validator, bootstrap.getObjectMapper(), "");
     }
 
     @Provides
@@ -235,12 +262,12 @@ public class StubIdpModule extends AbstractModule {
     @Provides
     public Function<String, IdaAuthnRequestFromHub> getStringToIdaAuthnRequestFromHubTransformer(SigningKeyStore signingKeyStore) {
         return new StubTransformersFactory().getStringToIdaAuthnRequestFromHub(
-                signingKeyStore
+            signingKeyStore
         );
     }
 
     @Provides
-    public  Function<String, AuthnRequest> getStringToAuthnRequestTransformer(){
+    public Function<String, AuthnRequest> getStringToAuthnRequestTransformer() {
         return new StubTransformersFactory().getStringToAuthnRequest();
     }
 
@@ -251,13 +278,13 @@ public class StubIdpModule extends AbstractModule {
             EntityToEncryptForLocator entityToEncryptForLocator,
             StubIdpConfiguration stubIdpConfiguration) {
         return new OutboundResponseFromIdpTransformerProvider(
-                encryptionKeyStore,
-                keyStore,
-                entityToEncryptForLocator,
-                Optional.ofNullable(stubIdpConfiguration.getSigningKeyPairConfiguration().getCert()),
-                new StubTransformersFactory(),
-                new SignatureRSASHA256(),
-                new DigestSHA256()
+            encryptionKeyStore,
+            keyStore,
+            entityToEncryptForLocator,
+            Optional.ofNullable(stubIdpConfiguration.getSigningKeyPairConfiguration().getCert()),
+            new StubTransformersFactory(),
+            new SignatureRSASHA256(),
+            new DigestSHA256()
         );
     }
 
@@ -267,12 +294,12 @@ public class StubIdpModule extends AbstractModule {
             @Named(COUNTRY_SIGNING_KEY_STORE) IdaKeyStore keyStore,
             EntityToEncryptForLocator entityToEncryptForLocator) {
         return new EidasResponseTransformerProvider(
-                new CoreTransformersFactory(),
-                encryptionKeyStore.orElse(null),
-                keyStore,
-                entityToEncryptForLocator,
-                new SignatureRSASHA256(),
-                new DigestSHA256()
+            new CoreTransformersFactory(),
+            encryptionKeyStore.orElse(null),
+            keyStore,
+            entityToEncryptForLocator,
+            new SignatureRSASHA256(),
+            new DigestSHA256()
         );
     }
 
@@ -313,13 +340,18 @@ public class StubIdpModule extends AbstractModule {
     @Singleton
     @SecureCookieKeyConfiguration
     public KeyConfiguration getSecureCookieKeyConfiguration(StubIdpConfiguration stubIdpConfiguration) {
-        return isSecureCookieEnabled(stubIdpConfiguration)?stubIdpConfiguration.getSecureCookieConfiguration().getKeyConfiguration():new KeyConfiguration() {};
+        return isSecureCookieEnabled(stubIdpConfiguration) ? stubIdpConfiguration.getSecureCookieConfiguration().getKeyConfiguration() : new KeyConfiguration() {
+        };
     }
 
     @Provides
     @Singleton
     public SecureCookieConfiguration getSecureCookieConfiguration(StubIdpConfiguration stubIdpConfiguration) {
-        return isSecureCookieEnabled(stubIdpConfiguration)?stubIdpConfiguration.getSecureCookieConfiguration():new SecureCookieConfiguration() { { this.secure = false; } };
+        return isSecureCookieEnabled(stubIdpConfiguration) ? stubIdpConfiguration.getSecureCookieConfiguration() : new SecureCookieConfiguration() {
+            {
+                this.secure = false;
+            }
+        };
     }
 
     @Provides
