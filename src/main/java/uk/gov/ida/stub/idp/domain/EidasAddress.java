@@ -1,22 +1,26 @@
 package uk.gov.ida.stub.idp.domain;
 
+import org.glassfish.jersey.internal.util.Base64;
+
+import java.text.MessageFormat;
+
 public class EidasAddress {
     private final String poBox;
     private final String locatorDesignator;
     private final String locatorName;
     private final String cvAddressArea;
-    private final String thoroughFare;
+    private final String thoroughfare;
     private final String postName;
     private final String adminunitFirstLine;
     private final String adminunitSecondLine;
     private final String postCode;
 
-    public EidasAddress(String poBox, String locatorDesignator, String locatorName, String cvAddressArea, String throroughFare, String postName, String adminunitFirstLine, String adminunitSecondLine, String postCode) {
+    public EidasAddress(String poBox, String locatorDesignator, String locatorName, String cvAddressArea, String thoroughfare, String postName, String adminunitFirstLine, String adminunitSecondLine, String postCode) {
         this.poBox = poBox;
         this.locatorDesignator = locatorDesignator;
         this.locatorName = locatorName;
         this.cvAddressArea = cvAddressArea;
-        this.thoroughFare = throroughFare;
+        this.thoroughfare = thoroughfare;
         this.postName = postName;
         this.adminunitFirstLine = adminunitFirstLine;
         this.adminunitSecondLine = adminunitSecondLine;
@@ -39,8 +43,8 @@ public class EidasAddress {
         return cvAddressArea;
     }
 
-    public String getThoroughFare() {
-        return thoroughFare;
+    public String getThoroughfare() {
+        return thoroughfare;
     }
 
     public String getPostName() {
@@ -57,5 +61,26 @@ public class EidasAddress {
 
     public String getPostCode() {
         return postCode;
+    }
+
+    public String toBase64EncodedSaml() {
+        String addressAsSamlString = getFieldAsSaml(poBox, "PoBox") +
+                getFieldAsSaml(locatorDesignator, "LocatorDesignator") +
+                getFieldAsSaml(locatorName, "LocatorName") +
+                getFieldAsSaml(cvAddressArea, "CvaddressArea") +
+                getFieldAsSaml(thoroughfare, "Thoroughfare") +
+                getFieldAsSaml(postName, "PostName") +
+                getFieldAsSaml(adminunitFirstLine, "AdminunitFirstline") +
+                getFieldAsSaml(adminunitSecondLine, "AdminunitSecondline") +
+                getFieldAsSaml(postCode, "PostCode");
+
+        return Base64.encodeAsString(addressAsSamlString);
+    }
+
+    private String getFieldAsSaml(String value, String samlTag) {
+        if(value != null && !value.isEmpty()) {
+            return MessageFormat.format("<eidas:{0}>{1}</eidas:{0}>", samlTag, value);
+        }
+        return "";
     }
 }

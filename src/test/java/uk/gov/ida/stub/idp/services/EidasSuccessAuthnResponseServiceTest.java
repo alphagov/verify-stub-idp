@@ -70,7 +70,7 @@ public class EidasSuccessAuthnResponseServiceTest {
     public void getEidasSuccessResponse() throws URISyntaxException, MarshallingException, SignatureException {
         EidasAuthnRequest request = new EidasAuthnRequest("request-id", "issuer", "destination", "loa", Collections.emptyList());
         Session session = new Session(new SessionId("session-id"), request, "relay-state", Collections.emptyList(), Collections.emptyList(), Optional.empty(), Optional.empty());
-        session.setEidasUser(new EidasUser("Firstname", "Familyname", "pid", null, dateOfBirth, Optional.empty()));
+        session.setEidasUser(new EidasUser("Firstname", "Familyname", "pid", dateOfBirth, null, null));
         String samlResponseAsString = "some response";
         when(metadataRepository.getAssertionConsumerServiceLocation()).thenReturn(new URI("http://hub.url"));
         when(eidasResponseTransformerProvider.getTransformer()).thenReturn(x -> samlResponseAsString);

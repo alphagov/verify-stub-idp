@@ -9,17 +9,17 @@ public class EidasUser {
     private String firstName;
     private String familyName;
     private String persistentId;
-    private EidasAddress address;
     private LocalDate dateOfBirth;
-    private Optional<Gender> gender;
+    private EidasAddress address;
+    private Gender gender;
 
-    public EidasUser(String firstName, String familyName,
-                     String persistentId, EidasAddress address, LocalDate dateOfBirth, Optional<Gender> gender) {
+    public EidasUser(String firstName, String familyName, String persistentId,
+                     LocalDate dateOfBirth, EidasAddress address, Gender gender) {
         this.firstName = firstName;
         this.familyName = familyName;
         this.persistentId = persistentId;
-        this.address = address;
         this.dateOfBirth = dateOfBirth;
+        this.address = address;
         this.gender = gender;
     }
 
@@ -35,8 +35,8 @@ public class EidasUser {
         return persistentId;
     }
 
-    public EidasAddress getAddress() {
-        return address;
+    public Optional<EidasAddress> getAddress() {
+        return Optional.ofNullable(address);
     }
 
     public LocalDate getDateOfBirth() {
@@ -44,6 +44,14 @@ public class EidasUser {
     }
 
     public Optional<Gender> getGender() {
-        return gender;
+        return Optional.ofNullable(gender);
+    }
+
+    public void setAddress(EidasAddress address) {
+        this.address = address;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
 }

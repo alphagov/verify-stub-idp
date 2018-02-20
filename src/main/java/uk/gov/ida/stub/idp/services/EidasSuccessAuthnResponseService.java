@@ -12,6 +12,7 @@ import org.opensaml.saml.saml2.core.StatusCode;
 import uk.gov.ida.saml.core.IdaConstants;
 import uk.gov.ida.saml.core.extensions.EidasAuthnContext;
 import uk.gov.ida.saml.core.extensions.RequestedAttribute;
+import uk.gov.ida.saml.core.extensions.eidas.CurrentAddress;
 import uk.gov.ida.saml.core.extensions.eidas.CurrentFamilyName;
 import uk.gov.ida.saml.core.extensions.eidas.CurrentGivenName;
 import uk.gov.ida.saml.core.extensions.eidas.DateOfBirth;
@@ -19,6 +20,7 @@ import uk.gov.ida.saml.core.extensions.eidas.Gender;
 import uk.gov.ida.saml.core.extensions.eidas.PersonIdentifier;
 import uk.gov.ida.stub.idp.StubIdpModule;
 import uk.gov.ida.stub.idp.builders.EidasResponseBuilder;
+import uk.gov.ida.stub.idp.domain.EidasAddress;
 import uk.gov.ida.stub.idp.domain.EidasUser;
 import uk.gov.ida.stub.idp.domain.SamlResponse;
 import uk.gov.ida.stub.idp.repositories.MetadataRepository;
@@ -77,9 +79,11 @@ public class EidasSuccessAuthnResponseService {
         attributes.add(buildDateOfBirthAttribute(user.getDateOfBirth()));
         attributes.add(buildPersonIdentifierAttribute(user.getPersistentId()));
 
-        Boolean isGenderRequired = requestedAttributes.stream().anyMatch(attribute -> attribute.getName().equals(IdaConstants.Eidas_Attributes.Gender.NAME) && attribute.isRequired());
-        if (isGenderRequired && user.getGender().isPresent()) {
+        if (isAttributeRequested(requestedAttributes, IdaConstants.Eidas_Attributes.Gender.NAME) && user.getGender().isPresent()) {
             attributes.add(buildGenderAttribute(user.getGender().get().getValue()));
+        }
+        if (isAttributeRequested(requestedAttributes, IdaConstants.Eidas_Attributes.CurrentAddress.NAME) && user.getAddress().isPresent()) {
+            attributes.add(buildAddressAttribute(user.getAddress().get()));
         }
         return attributes;
     }
@@ -118,10 +122,19 @@ public class EidasSuccessAuthnResponseService {
 
     private Attribute buildGenderAttribute(String value) {
         XMLObjectBuilder<? extends Gender> eidasTypeBuilder = (XMLObjectBuilder<? extends Gender>) XMLObjectSupport.getBuilder(Gender.TYPE_NAME);
-        Gender gender = eidasTypeBuilder.buildObject(AttributeValue.DEFAULT_ELEMENT_NAME, CurrentGivenName.TYPE_NAME);
+        Gender gender = eidasTypeBuilder.buildObject(AttributeValue.DEFAULT_ELEMENT_NAME, Gender.TYPE_NAME);
         gender.setValue(value);
 
         return buildAttribute(gender, IdaConstants.Eidas_Attributes.Gender.NAME, IdaConstants.Eidas_Attributes.Gender.FRIENDLY_NAME);
+    }
+
+    private Attribute buildAddressAttribute(EidasAddress address) {
+        XMLObjectBuilder<? extends CurrentAddress> eidasTypeBuilder = (XMLObjectBuilder<? extends CurrentAddress>) XMLObjectSupport.getBuilder(CurrentAddress.TYPE_NAME);
+        CurrentAddress currentAddress = eidasTypeBuilder.buildObject(AttributeValue.DEFAULT_ELEMENT_NAME, CurrentAddress.TYPE_NAME);
+
+        currentAddress.setCurrentAddress(address.toBase64EncodedSaml());
+
+        return buildAttribute(currentAddress, IdaConstants.Eidas_Attributes.CurrentAddress.NAME, IdaConstants.Eidas_Attributes.CurrentAddress.FRIENDLY_NAME);
     }
 
     private Attribute buildAttribute(XMLObject attributeValue, String attributeName, String attributeFriendlyName) {
@@ -137,5 +150,9 @@ public class EidasSuccessAuthnResponseService {
 
     private static <T extends XMLObject> T build(QName elementName) {
         return (T) XMLObjectSupport.buildXMLObject(elementName);
+    }
+
+    private boolean isAttributeRequested(List<RequestedAttribute> requestedAttributes, String attributeName) {
+        return requestedAttributes.stream().anyMatch(attribute -> attribute.getName().equals(attributeName));
     }
 }

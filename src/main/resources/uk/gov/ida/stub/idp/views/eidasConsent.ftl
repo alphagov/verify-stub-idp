@@ -26,10 +26,10 @@
                 <span id="gender">${user.gender.get().getValue()}</span>
             </li>
         </#if>
-        <#if user.address??>
+        <#if user.address.isPresent()>
             <li>
                 <label for="address">Address:</label>
-                <span id="address"><@addy user.address></@addy></span>
+                <span id="address"><@addy user.address.get()></@addy></span>
             </li>
         </#if>
         </ul>

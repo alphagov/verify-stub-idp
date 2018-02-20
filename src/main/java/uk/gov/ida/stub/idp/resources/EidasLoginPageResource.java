@@ -70,11 +70,9 @@ public class EidasLoginPageResource {
 
         Session session = checkSession(schemeName, sessionCookie);
 
-        EidasAddress address = new EidasAddress("","","","","","",
-                "10 Europe Street","","75001");
-        EidasUser eidasUser = new EidasUser("Bob", "Smith", "pid", address,
-                new LocalDate(1988, 10, 10), Optional.of(Gender.MALE));
-        session.setEidasUser(eidasUser);
+        EidasAddress address = new EidasAddress("","22","","",
+                "Arcacia Avenue","London", "","","SW1A 1AA");
+        session.setEidasUser(new EidasUser("Bob", "Smith", "pid", new LocalDate(1988, 10, 10), address, Gender.MALE));
 
         return Response.seeOther(UriBuilder.fromPath(Urls.EIDAS_CONSENT_RESOURCE)
                 .build(schemeName))
