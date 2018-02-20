@@ -9,6 +9,7 @@ server:
   requestLog:
     type: classic
     appenders:
+      - type: console
       - type: file
         currentLogFilename: ${LOG_PATH}/debug/stub-idp_access.log
         archivedLogFilenamePattern: ${LOG_PATH}/debug/stub-idp_access.log.%d.gz
@@ -32,6 +33,7 @@ serviceInfo:
 logging:
   level: ${LOG_LEVEL:-INFO}
   appenders:
+    - type: console
     - type: file
       currentLogFilename: ${LOG_PATH}/debug/stub-idp.log
       archivedLogFilenamePattern: ${LOG_PATH}/debug/stub-idp.log.%d.gz
