@@ -66,7 +66,7 @@ metrics:
       host: graphite
       port: 2003
       prefix: ${GRAPHITE_PREFIX}
-      frequency: 10s
+      frequency: ${GRAPHITE_REPORTING_FREQUENCY:-10s}
 
 infinispan:
   type: standalone

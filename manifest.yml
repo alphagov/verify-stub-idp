@@ -22,3 +22,4 @@ applications:
       STUB_COUNTRY_METADATA_URL: empty
       SIGNIN_DOMAIN: empty
       HUB_CONNECTOR_ENTITY_ID: empty
+      GRAPHITE_REPORTING_FREQUENCY: 100days
