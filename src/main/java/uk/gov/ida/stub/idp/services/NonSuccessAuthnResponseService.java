@@ -3,8 +3,8 @@ package uk.gov.ida.stub.idp.services;
 import uk.gov.ida.saml.core.domain.IdentityProviderAssertion;
 import uk.gov.ida.saml.core.domain.IpAddress;
 import uk.gov.ida.stub.idp.StubIdpModule;
+import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.FraudIndicator;
-import uk.gov.ida.stub.idp.domain.IdpUser;
 import uk.gov.ida.stub.idp.domain.OutboundResponseFromIdp;
 import uk.gov.ida.stub.idp.domain.SamlResponse;
 import uk.gov.ida.stub.idp.domain.factories.AssertionFactory;
@@ -48,7 +48,7 @@ public class NonSuccessAuthnResponseService {
 
     public SamlResponse generateFraudResponse(String idpName, String samlRequestId, FraudIndicator fraudIndicatorParam, String clientIpAddress, Session session) {
         String requestId = session.getIdaAuthnRequestFromHub().getId();
-        IdpUser idpUser = IdpUserService.createRandomUser();
+        DatabaseIdpUser idpUser = IdpUserService.createRandomUser();
         Idp idp = idpStubsRepository.getIdpWithFriendlyId(idpName);
         URI hubUrl = metadataRepository.getAssertionConsumerServiceLocation();
 

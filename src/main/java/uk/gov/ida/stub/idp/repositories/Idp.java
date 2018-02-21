@@ -4,7 +4,7 @@ import org.joda.time.LocalDate;
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.saml.core.domain.Gender;
-import uk.gov.ida.stub.idp.domain.IdpUser;
+import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 
 import java.util.Collection;
@@ -46,8 +46,8 @@ public class Idp {
         return sendKeyInfo;
     }
 
-    public Optional<IdpUser> getUser(String username, String password) {
-        Optional<IdpUser> userForIdp = allIdpsUserRepository.getUserForIdp(friendlyId, username).toJavaUtil();
+    public Optional<DatabaseIdpUser> getUser(String username, String password) {
+        Optional<DatabaseIdpUser> userForIdp = allIdpsUserRepository.getUserForIdp(friendlyId, username).toJavaUtil();
         if (userForIdp.isPresent() && userForIdp.get().getPassword().equals(password)) {
             return userForIdp;
         }
@@ -55,7 +55,7 @@ public class Idp {
         return Optional.empty();
     }
 
-    public IdpUser createUser(
+    public DatabaseIdpUser createUser(
             Optional<String> pid,
             List<MatchingDatasetValue<String>> firstnames,
             List<MatchingDatasetValue<String>> middleNames,
@@ -79,11 +79,11 @@ public class Idp {
         return allIdpsUserRepository.containsUserForIdp(friendlyId, username);
     }
 
-    public Optional<IdpUser> getUser(String username) {
+    public Optional<DatabaseIdpUser> getUser(String username) {
         return allIdpsUserRepository.getUserForIdp(friendlyId, username).toJavaUtil();
     }
 
-    public Collection<IdpUser> getAllUsers() {
+    public Collection<DatabaseIdpUser> getAllUsers() {
         return allIdpsUserRepository.getAllUsersForIdp(friendlyId);
     }
 

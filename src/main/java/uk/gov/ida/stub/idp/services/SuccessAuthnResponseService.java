@@ -4,7 +4,7 @@ import uk.gov.ida.saml.core.domain.IdentityProviderAssertion;
 import uk.gov.ida.saml.core.domain.IpAddress;
 import uk.gov.ida.saml.core.domain.PersistentId;
 import uk.gov.ida.stub.idp.StubIdpModule;
-import uk.gov.ida.stub.idp.domain.IdpUser;
+import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.OutboundResponseFromIdp;
 import uk.gov.ida.stub.idp.domain.SamlResponse;
 import uk.gov.ida.stub.idp.domain.factories.AssertionRestrictionsFactory;
@@ -50,7 +50,7 @@ public class SuccessAuthnResponseService {
         URI hubUrl = metadataProvider.getAssertionConsumerServiceLocation();
         Idp idp = idpStubsRepository.getIdpWithFriendlyId(idpName);
 
-        IdpUser idpUser = session.getIdpUser().get();
+        DatabaseIdpUser idpUser = session.getIdpUser().get();
         String requestId = session.getIdaAuthnRequestFromHub().getId();
 
         PersistentId persistentId = new PersistentId(idpUser.getPersistentId());

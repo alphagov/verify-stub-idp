@@ -6,7 +6,7 @@ import org.joda.time.LocalDate;
 import uk.gov.ida.saml.core.domain.AddressFactory;
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.saml.core.domain.Gender;
-import uk.gov.ida.stub.idp.domain.IdpUser;
+import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 
 import java.util.ArrayList;
@@ -20,11 +20,11 @@ public final class HardCodedTestUserList {
 
     private HardCodedTestUserList() {}
 
-    public static List<IdpUser> getHardCodedTestUsers(String idpFriendlyId) {
+    public static List<DatabaseIdpUser> getHardCodedTestUsers(String idpFriendlyId) {
 
-        List<IdpUser> sacredUsers = new ArrayList<>();
+        List<DatabaseIdpUser> sacredUsers = new ArrayList<>();
 
-        sacredUsers.add(new IdpUser(
+        sacredUsers.add(new DatabaseIdpUser(
                 idpFriendlyId,
                 UUID.randomUUID().toString(),
                 "bar",
@@ -39,7 +39,7 @@ public final class HardCodedTestUserList {
                 ),
                 AuthnContext.LEVEL_2));
 
-        sacredUsers.add(new IdpUser(
+        sacredUsers.add(new DatabaseIdpUser(
                 idpFriendlyId + "-other",
                 UUID.randomUUID().toString(),
                 "bar",
@@ -52,7 +52,7 @@ public final class HardCodedTestUserList {
                 AuthnContext.LEVEL_2));
 
 
-        sacredUsers.add(new IdpUser(
+        sacredUsers.add(new DatabaseIdpUser(
                 idpFriendlyId + "-new",
                 UUID.randomUUID().toString(),
                 "bar",
@@ -65,7 +65,7 @@ public final class HardCodedTestUserList {
                         new AddressFactory().create(Collections.singletonList("Ye Olde Inn"), "1A 2BB", null, null, DateTime.now().minusYears(3), DateTime.now().minusYears(1), false)),
                 AuthnContext.LEVEL_2));
 
-        sacredUsers.add(new IdpUser(
+        sacredUsers.add(new DatabaseIdpUser(
                 idpFriendlyId + "-c3",
                 UUID.randomUUID().toString(),
                 "bar",
@@ -77,7 +77,7 @@ public final class HardCodedTestUserList {
                 Collections.singletonList(new AddressFactory().create(Collections.singletonList("10 Two St"), "1A 2BC", null, null, null, null, true)),
                 AuthnContext.LEVEL_2));
 
-        sacredUsers.add(new IdpUser(
+        sacredUsers.add(new DatabaseIdpUser(
                 idpFriendlyId + "-complete",
                 UUID.randomUUID().toString(),
                 "bar",
@@ -94,7 +94,7 @@ public final class HardCodedTestUserList {
                         new AddressFactory().create(Collections.singletonList("2 Three St"), "1B 2CD", "Something else", "dummy second uprn", DateTime.now(), DateTime.now(), true)),
                 AuthnContext.LEVEL_2));
 
-        sacredUsers.add(new IdpUser(
+        sacredUsers.add(new DatabaseIdpUser(
                 idpFriendlyId + "-loa1",
                 UUID.randomUUID().toString(),
                 "bar",
@@ -108,7 +108,7 @@ public final class HardCodedTestUserList {
                         new AddressFactory().create(Collections.singletonList("2 Three St"), "1B 2CD", "Something else", "dummy second uprn", DateTime.now(), DateTime.now(), false)),
                 AuthnContext.LEVEL_1));
 
-        sacredUsers.add(new IdpUser(
+        sacredUsers.add(new DatabaseIdpUser(
                 idpFriendlyId + "-loa2",
                 UUID.randomUUID().toString(),
                 "bar",
@@ -122,7 +122,7 @@ public final class HardCodedTestUserList {
                         new AddressFactory().create(Collections.singletonList("2 Three St"), "1B 2CD", "Something else", "dummy second uprn", DateTime.now(), DateTime.now(), true)),
                 AuthnContext.LEVEL_2));
 
-        sacredUsers.add(new IdpUser(
+        sacredUsers.add(new DatabaseIdpUser(
                 idpFriendlyId + "-loa3",
                 UUID.randomUUID().toString(),
                 "bar",
@@ -136,7 +136,7 @@ public final class HardCodedTestUserList {
                         new AddressFactory().create(Collections.singletonList("2 Five St"), "1B 2RD", "Something else", "dummy second uprn", DateTime.now(), DateTime.now(), true)),
                 AuthnContext.LEVEL_3));
 
-        sacredUsers.add(new IdpUser(
+        sacredUsers.add(new DatabaseIdpUser(
                 idpFriendlyId + "-loax",
                 UUID.randomUUID().toString(),
                 "bar",
@@ -150,7 +150,7 @@ public final class HardCodedTestUserList {
                         new AddressFactory().create(Collections.singletonList("2 Three St"), "1B 2CD", "Something else", "dummy second uprn", DateTime.now(), DateTime.now(), true)),
                 AuthnContext.LEVEL_X));
 
-        sacredUsers.add(new IdpUser(
+        sacredUsers.add(new DatabaseIdpUser(
                 idpFriendlyId + "-emoji",
                 UUID.randomUUID().toString(),
                 "bar",

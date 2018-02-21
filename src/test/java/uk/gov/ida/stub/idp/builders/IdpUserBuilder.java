@@ -6,7 +6,7 @@ import org.joda.time.LocalDate;
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.saml.core.domain.Gender;
-import uk.gov.ida.stub.idp.domain.IdpUser;
+import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 
 import java.util.List;
@@ -52,12 +52,12 @@ public class IdpUserBuilder {
         return new IdpUserBuilder();
     }
 
-    public static IdpUser anyIdpUser() {
+    public static DatabaseIdpUser anyIdpUser() {
         return anIdpUser().build();
     }
 
-    public IdpUser build() {
-        return new IdpUser(
+    public DatabaseIdpUser build() {
+        return new DatabaseIdpUser(
             username,
             persistentId,
             password,

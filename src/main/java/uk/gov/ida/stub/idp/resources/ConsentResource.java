@@ -5,7 +5,7 @@ import uk.gov.ida.common.SessionId;
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.cookies.CookieNames;
-import uk.gov.ida.stub.idp.domain.IdpUser;
+import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASession;
 import uk.gov.ida.stub.idp.repositories.Idp;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
@@ -66,7 +66,7 @@ public class ConsentResource {
 
         Session session = getAndValidateSession(idpName, sessionCookie);
 
-        IdpUser idpUser = session.getIdpUser().get();
+        DatabaseIdpUser idpUser = session.getIdpUser().get();
 
         List<AuthnContext> requestLevelsOfAssurance = session.getIdaAuthnRequestFromHub().getLevelsOfAssurance();
         AuthnContext userLevelOfAssurance = idpUser.getLevelOfAssurance();

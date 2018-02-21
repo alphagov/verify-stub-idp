@@ -15,7 +15,7 @@ import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.saml.core.domain.Gender;
 import uk.gov.ida.saml.core.test.TestEntityIds;
 import uk.gov.ida.saml.hub.domain.IdaAuthnRequestFromHub;
-import uk.gov.ida.stub.idp.domain.IdpUser;
+import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 import uk.gov.ida.stub.idp.repositories.Idp;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
@@ -117,8 +117,8 @@ public class ConsentResourceTest {
         assertThat(consentView.isUserLOADidNotMatch()).isFalse();
     }
 
-    private Optional<IdpUser> newUser(AuthnContext levelOfAssurance) {
-        return Optional.ofNullable(new IdpUser(
+    private Optional<DatabaseIdpUser> newUser(AuthnContext levelOfAssurance) {
+        return Optional.ofNullable(new DatabaseIdpUser(
                 idpName + "-new",
                 UUID.randomUUID().toString(),
                 "bar",

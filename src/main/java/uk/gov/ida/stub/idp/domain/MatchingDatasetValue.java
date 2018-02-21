@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.joda.time.DateTime;
 import org.joda.time.base.BaseDateTime;
+import uk.gov.ida.saml.core.domain.SimpleMdsValue;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -69,5 +70,18 @@ public class MatchingDatasetValue<T> implements Serializable {
     public int hashCode() {
 
         return Objects.hash(value, from, to, verified);
+    }
+
+    public SimpleMdsValue<T> asSimpleMdsValue() {
+        return new SimpleMdsValue<>(value, from, to, verified);
+    }
+
+    public static <Z> MatchingDatasetValue<Z> fromSimpleMdsValue(SimpleMdsValue<Z> simpleMdsValue) {
+        return new MatchingDatasetValue<>(
+                simpleMdsValue.getValue(),
+                simpleMdsValue.getFrom(),
+                simpleMdsValue.getTo(),
+                simpleMdsValue.isVerified()
+        );
     }
 }

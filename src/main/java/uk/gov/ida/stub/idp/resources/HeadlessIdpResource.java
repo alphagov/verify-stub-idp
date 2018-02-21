@@ -3,7 +3,7 @@ package uk.gov.ida.stub.idp.resources;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.saml.hub.domain.IdaAuthnRequestFromHub;
 import uk.gov.ida.stub.idp.Urls;
-import uk.gov.ida.stub.idp.domain.IdpUser;
+import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.SamlResponse;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
 import uk.gov.ida.stub.idp.repositories.Session;
@@ -53,7 +53,7 @@ public class HeadlessIdpResource {
 
         final String username = isC3?"headless-c3":"headless";
         final IdaAuthnRequestFromHub idaRequestFromHub = samlRequestTransformer.apply(samlRequest);
-        final Optional<IdpUser> idpUser = idpStubsRepository.getIdpWithFriendlyId(IDP_NAME).getUser(username, "bar");
+        final Optional<DatabaseIdpUser> idpUser = idpStubsRepository.getIdpWithFriendlyId(IDP_NAME).getUser(username, "bar");
 
         final Session session = new Session(SessionId.createNewSessionId(), idaRequestFromHub, relayState, null, null, null, null);
         session.setIdpUser(idpUser);

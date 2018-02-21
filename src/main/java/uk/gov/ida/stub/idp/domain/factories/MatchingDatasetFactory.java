@@ -3,7 +3,7 @@ package uk.gov.ida.stub.idp.domain.factories;
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.MatchingDataset;
 import uk.gov.ida.saml.core.domain.SimpleMdsValue;
-import uk.gov.ida.stub.idp.domain.IdpUser;
+import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ public final class MatchingDatasetFactory {
 
     private MatchingDatasetFactory() {}
 
-    public static MatchingDataset create(final IdpUser user) {
+    public static MatchingDataset create(final DatabaseIdpUser user) {
          return new MatchingDataset(
              from(user.getFirstnames()),
              from(user.getMiddleNames()),

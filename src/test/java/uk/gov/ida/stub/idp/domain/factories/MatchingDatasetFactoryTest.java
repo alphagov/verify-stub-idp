@@ -9,7 +9,7 @@ import uk.gov.ida.saml.core.domain.AddressFactory;
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.saml.core.domain.Gender;
 import uk.gov.ida.saml.core.domain.MatchingDataset;
-import uk.gov.ida.stub.idp.domain.IdpUser;
+import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 
 import java.util.Collections;
@@ -23,7 +23,7 @@ public class MatchingDatasetFactoryTest {
 
     private static final Address currentAddress = new AddressFactory().create(Collections.singletonList("1 Two St"), "1A 2BC", "Something", "dummy uprn", DateTime.now(), null, true);
     private static final Address previousAddress = new AddressFactory().create(Collections.singletonList("2 Three St"), "1B 2CD", "Something else", "dummy second uprn", DateTime.now(), DateTime.now(), true);
-    public static final IdpUser completeUser = new IdpUser(
+    public static final DatabaseIdpUser completeUser = new DatabaseIdpUser(
             "idpuser-complete",
             UUID.randomUUID().toString(),
     "bar",

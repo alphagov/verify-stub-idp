@@ -182,7 +182,7 @@ public class StubIdpModule extends AbstractModule {
         InfinispanCacheManager infinispanCacheManager,
         UserMapper userMapper
     ) {
-        if (configuration.getDatabaseConfiguration().getUrl() != null) {
+        if (configuration.getDatabaseConfiguration() != null) {
             Jdbi jdbi = Jdbi.create(configuration.getDatabaseConfiguration().getUrl());
             return new JDBIUserRepository(jdbi, userMapper);
         }

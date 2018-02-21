@@ -7,7 +7,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import uk.gov.ida.stub.idp.domain.IdpUser;
+import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,13 +49,13 @@ public class JDBIUserRepositoryTest {
     public void addOrUpdateUserForIdpShouldAddRecordIfUserDoesNotExist() {
         ensureNoUserExistsFor("some-idp-friendly-id");
 
-        IdpUser idpUser = anIdpUser()
+        DatabaseIdpUser idpUser = anIdpUser()
             .withUsername("some-username")
             .build();
 
         repository.addOrUpdateUserForIdp("some-idp-friendly-id", idpUser);
 
-        List<IdpUser> idpUsers = new ArrayList<>(repository.getUsersForIdp("some-idp-friendly-id"));
+        List<DatabaseIdpUser> idpUsers = new ArrayList<>(repository.getUsersForIdp("some-idp-friendly-id"));
 
         assertThat(idpUsers).size().isEqualTo(1);
         assertThat(idpUsers.get(0)).isEqualTo(idpUser);
@@ -65,7 +65,7 @@ public class JDBIUserRepositoryTest {
     @Test
     @Ignore
     public void addOrUpdateUserForIdpShouldUpdateRecordIfUserAlreadyExists() {
-        IdpUser someUser = anIdpUser()
+        DatabaseIdpUser someUser = anIdpUser()
             .withUsername("some-username")
             .withPassword("some-password")
             .build();
@@ -73,14 +73,14 @@ public class JDBIUserRepositoryTest {
         ensureNoUserExistsFor("some-idp-friendly-id");
         ensureUserExistsFor("some-idp-friendly-id", someUser);
 
-        IdpUser sameUserDifferentPassword = anIdpUser()
+        DatabaseIdpUser sameUserDifferentPassword = anIdpUser()
             .withUsername("some-username")
             .withPassword("another-password")
             .build();
 
         repository.addOrUpdateUserForIdp("some-idp-friendly-id", sameUserDifferentPassword);
 
-        List<IdpUser> idpUsers = new ArrayList<>(repository.getUsersForIdp("some-idp-friendly-id"));
+        List<DatabaseIdpUser> idpUsers = new ArrayList<>(repository.getUsersForIdp("some-idp-friendly-id"));
 
         assertThat(idpUsers).size().isEqualTo(1);
         assertThat(idpUsers.get(0)).isEqualTo(sameUserDifferentPassword);
@@ -88,7 +88,7 @@ public class JDBIUserRepositoryTest {
 
     @Test
     public void deleteUserFromIdpShouldDeleteGivenUserFromGivenIdp() {
-        IdpUser someUser = anIdpUser()
+        DatabaseIdpUser someUser = anIdpUser()
             .withUsername("some-username")
             .build();
 
@@ -96,7 +96,7 @@ public class JDBIUserRepositoryTest {
 
         repository.deleteUserFromIdp("some-idp-friendly-id", "some-username");
 
-        List<IdpUser> idpUsers = new ArrayList<>(repository.getUsersForIdp("some-idp-friendly-id"));
+        List<DatabaseIdpUser> idpUsers = new ArrayList<>(repository.getUsersForIdp("some-idp-friendly-id"));
 
         assertThat(idpUsers).size().isEqualTo(0);
     }
@@ -105,13 +105,13 @@ public class JDBIUserRepositoryTest {
     public void getUsersForIdpShouldReturnAllUsersForGivenIdp() {
         ensureNoUserExistsFor("some-idp-friendly-id");
 
-        IdpUser firstUser = anIdpUser().withUsername("first-username").build();
-        IdpUser secondUser = anIdpUser().withUsername("second-username").build();
+        DatabaseIdpUser firstUser = anIdpUser().withUsername("first-username").build();
+        DatabaseIdpUser secondUser = anIdpUser().withUsername("second-username").build();
 
         ensureUserExistsFor("some-idp-friendly-id", firstUser);
         ensureUserExistsFor("some-idp-friendly-id", secondUser);
 
-        List<IdpUser> idpUsers = new ArrayList<>(repository.getUsersForIdp("some-idp-friendly-id"));
+        List<DatabaseIdpUser> idpUsers = new ArrayList<>(repository.getUsersForIdp("some-idp-friendly-id"));
 
         assertThat(idpUsers).size().isEqualTo(2);
     }
@@ -124,7 +124,7 @@ public class JDBIUserRepositoryTest {
         );
     }
 
-    private void ensureUserExistsFor(String idpFriendlyId, IdpUser idpUser) {
+    private void ensureUserExistsFor(String idpFriendlyId, DatabaseIdpUser idpUser) {
         repository.deleteUserFromIdp(idpFriendlyId, idpUser.getUsername());
 
         User user = userMapper.mapFrom(idpFriendlyId, idpUser);

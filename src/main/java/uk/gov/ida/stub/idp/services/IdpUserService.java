@@ -7,7 +7,7 @@ import uk.gov.ida.common.SessionId;
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.saml.core.domain.Gender;
-import uk.gov.ida.stub.idp.domain.IdpUser;
+import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 import uk.gov.ida.stub.idp.exceptions.IncompleteRegistrationException;
 import uk.gov.ida.stub.idp.exceptions.InvalidDateException;
@@ -43,7 +43,7 @@ public class IdpUserService {
 
     public void attachIdpUserToSession(String idpName, String username, String password, SessionId idpSessionId) throws InvalidUsernameOrPasswordException, InvalidSessionIdException {
         Idp idp = idpStubsRepository.getIdpWithFriendlyId(idpName);
-        Optional<IdpUser> user = idp.getUser(username, password);
+        Optional<DatabaseIdpUser> user = idp.getUser(username, password);
         attachIdpUserToSession(user, idpSessionId);
     }
 
@@ -55,11 +55,11 @@ public class IdpUserService {
                                        String username, String password,
                                        SessionId idpSessionId) throws InvalidSessionIdException, IncompleteRegistrationException, InvalidDateException, UsernameAlreadyTakenException, InvalidUsernameOrPasswordException {
         Idp idp = idpStubsRepository.getIdpWithFriendlyId(idpName);
-        IdpUser user = createUserInIdp(firstname, surname, addressLine1, addressLine2, addressTown, addressPostCode, levelOfAssurance, dateOfBirth, username, password, idp);
+        DatabaseIdpUser user = createUserInIdp(firstname, surname, addressLine1, addressLine2, addressTown, addressPostCode, levelOfAssurance, dateOfBirth, username, password, idp);
         attachIdpUserToSession(Optional.ofNullable(user), idpSessionId);
     }
 
-    public void attachIdpUserToSession(Optional<IdpUser> user, SessionId idpSessionId) throws InvalidUsernameOrPasswordException, InvalidSessionIdException {
+    public void attachIdpUserToSession(Optional<DatabaseIdpUser> user, SessionId idpSessionId) throws InvalidUsernameOrPasswordException, InvalidSessionIdException {
 
         if (!user.isPresent()) {
             throw new InvalidUsernameOrPasswordException();
@@ -75,7 +75,7 @@ public class IdpUserService {
         sessionRepository.updateSession(session.get().getSessionId(), session.get());
     }
 
-    private IdpUser createUserInIdp(String firstname, String surname, String addressLine1, String addressLine2, String addressTown, String addressPostCode, final AuthnContext _levelOfAssurance, String dateOfBirth, String username, String password, Idp idp) throws IncompleteRegistrationException, InvalidDateException, UsernameAlreadyTakenException {
+    private DatabaseIdpUser createUserInIdp(String firstname, String surname, String addressLine1, String addressLine2, String addressTown, String addressPostCode, final AuthnContext _levelOfAssurance, String dateOfBirth, String username, String password, Idp idp) throws IncompleteRegistrationException, InvalidDateException, UsernameAlreadyTakenException {
         if (!isMandatoryDataPresent(firstname, surname, addressLine1, addressLine2, addressTown, addressPostCode, dateOfBirth, username, password)) {
             throw new IncompleteRegistrationException();
         }
@@ -126,8 +126,8 @@ public class IdpUserService {
         return new MatchingDatasetValue<>(value.get(), null, null, true);
     }
 
-    public static IdpUser createRandomUser() {
-        return new IdpUser(
+    public static DatabaseIdpUser createRandomUser() {
+        return new DatabaseIdpUser(
                 "tempuser",
                 UUID.randomUUID().toString(),
                 "ifitellyouthen...",

@@ -5,7 +5,7 @@ import com.google.common.collect.Collections2;
 import org.apache.commons.lang.StringUtils;
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.AuthnContext;
-import uk.gov.ida.stub.idp.domain.IdpUser;
+import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 
 import javax.annotation.Nullable;
@@ -14,12 +14,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ConsentView extends IdpPageView {
-    private IdpUser idpUser;
+    private DatabaseIdpUser idpUser;
     private final boolean userLOADidNotMatch;
     private final AuthnContext userLevelOfAssurance;
     private final List<uk.gov.ida.saml.core.domain.AuthnContext> levelsOfAssurance;
 
-    public ConsentView(String name, String idpId, String assetId, IdpUser idpUser, boolean userLOADidNotMatch, AuthnContext userLevelOfAssurance, List<AuthnContext> levelsOfAssurance) {
+    public ConsentView(String name, String idpId, String assetId, DatabaseIdpUser idpUser, boolean userLOADidNotMatch, AuthnContext userLevelOfAssurance, List<AuthnContext> levelsOfAssurance) {
         super("consent.ftl", name, idpId, null, assetId);
         this.idpUser = idpUser;
         this.userLOADidNotMatch = userLOADidNotMatch;

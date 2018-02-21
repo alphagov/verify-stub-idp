@@ -5,7 +5,7 @@ import com.google.common.base.Optional;
 import org.joda.time.LocalDate;
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.Gender;
-import uk.gov.ida.stub.idp.domain.IdpUser;
+import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 
 import java.util.List;
@@ -95,7 +95,7 @@ public class IdpUserDto {
         return gender;
     }
 
-    public static IdpUserDto fromIdpUser(IdpUser idpUser) {
+    public static IdpUserDto fromIdpUser(DatabaseIdpUser idpUser) {
         return new IdpUserDto(
                 fromNullable(idpUser.getPersistentId()),
                 idpUser.getUsername(),

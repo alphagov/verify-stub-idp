@@ -2,7 +2,7 @@ package uk.gov.ida.stub.idp.services;
 
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.stub.idp.Urls;
-import uk.gov.ida.stub.idp.domain.IdpUser;
+import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.dtos.IdpUserDto;
 import uk.gov.ida.stub.idp.repositories.Idp;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
@@ -43,7 +43,7 @@ public class UserService {
 
     public Optional<IdpUserDto> getUser(String idpName, String username) {
         Idp idp = idpStubsRepository.getIdpWithFriendlyId(idpName);
-        Optional<IdpUser> user = idp.getUser(username);
+        Optional<DatabaseIdpUser> user = idp.getUser(username);
 
         if (user.isPresent()) {
             return Optional.ofNullable(transform(user.get()));
@@ -140,7 +140,7 @@ public class UserService {
         return newArrayList();
     }
 
-    private IdpUserDto transform(IdpUser idpUser) {
+    private IdpUserDto transform(DatabaseIdpUser idpUser) {
         return IdpUserDto.fromIdpUser(idpUser);
     }
 }

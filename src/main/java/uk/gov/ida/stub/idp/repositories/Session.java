@@ -2,11 +2,11 @@ package uk.gov.ida.stub.idp.repositories;
 
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.saml.hub.domain.IdaAuthnRequestFromHub;
+import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.EidasAuthnRequest;
 import uk.gov.ida.stub.idp.domain.EidasUser;
 import uk.gov.ida.stub.idp.domain.IdpHint;
 import uk.gov.ida.stub.idp.domain.IdpLanguageHint;
-import uk.gov.ida.stub.idp.domain.IdpUser;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,7 +14,7 @@ import java.util.Optional;
 public class Session {
 
     private final SessionId sessionId;
-    private Optional<IdpUser> idpUser = Optional.empty();
+    private Optional<DatabaseIdpUser> idpUser = Optional.empty();
     private Optional<EidasUser> eidasUser = Optional.empty();
     private final String relayState;
     private final List<IdpHint> validHints;
@@ -52,7 +52,7 @@ public class Session {
         return sessionId;
     }
 
-    public void setIdpUser(Optional<IdpUser> idpUser) {
+    public void setIdpUser(Optional<DatabaseIdpUser> idpUser) {
         this.idpUser = idpUser;
     }
 
@@ -60,7 +60,7 @@ public class Session {
         this.eidasUser = Optional.of(eidasUser);
     }
 
-    public Optional<IdpUser> getIdpUser() {
+    public Optional<DatabaseIdpUser> getIdpUser() {
         return idpUser;
     }
 

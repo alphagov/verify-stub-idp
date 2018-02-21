@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.saml.core.domain.Gender;
-import uk.gov.ida.stub.idp.domain.IdpUser;
+import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 
 import javax.inject.Inject;
@@ -29,27 +29,27 @@ public class AllIdpsUserRepository {
 
     public void createHardcodedTestUsersForIdp(String idpFriendlyId, String assetId){
         LOG.debug("Creating hard coded users for IDP: " + idpFriendlyId);
-        List<IdpUser> sacredUsers = HardCodedTestUserList.getHardCodedTestUsers(assetId);
+        List<DatabaseIdpUser> sacredUsers = HardCodedTestUserList.getHardCodedTestUsers(assetId);
 
-        for (IdpUser sacredUser : sacredUsers) {
+        for (DatabaseIdpUser sacredUser : sacredUsers) {
             addUserForIdp(idpFriendlyId, sacredUser);
         }
     }
 
-    public IdpUser createUserForIdp(String idpFriendlyName,
-                                    String persistentId,
-                                    List<MatchingDatasetValue<String>> firstnames,
-                                    List<MatchingDatasetValue<String>> middleNames,
-                                    List<MatchingDatasetValue<String>> surnames,
-                                    Optional<MatchingDatasetValue<Gender>> gender,
-                                    List<MatchingDatasetValue<LocalDate>> dateOfBirths,
-                                    List<Address> addresses,
-                                    String username,
-                                    String password,
-                                    AuthnContext levelOfAssurance) {
+    public DatabaseIdpUser createUserForIdp(String idpFriendlyName,
+                                            String persistentId,
+                                            List<MatchingDatasetValue<String>> firstnames,
+                                            List<MatchingDatasetValue<String>> middleNames,
+                                            List<MatchingDatasetValue<String>> surnames,
+                                            Optional<MatchingDatasetValue<Gender>> gender,
+                                            List<MatchingDatasetValue<LocalDate>> dateOfBirths,
+                                            List<Address> addresses,
+                                            String username,
+                                            String password,
+                                            AuthnContext levelOfAssurance) {
 
 
-        IdpUser user = new IdpUser(
+        DatabaseIdpUser user = new DatabaseIdpUser(
                 username,
                 persistentId,
                 password,
@@ -66,12 +66,12 @@ public class AllIdpsUserRepository {
         return user;
     }
 
-    public Collection<IdpUser> getAllUsersForIdp(String idpFriendlyName) {
+    public Collection<DatabaseIdpUser> getAllUsersForIdp(String idpFriendlyName) {
         return userRepository.getUsersForIdp(idpFriendlyName);
     }
 
-    public Optional<IdpUser> getUserForIdp(String idpFriendlyName, String username) {
-        final List<IdpUser> matchingUsers = userRepository.getUsersForIdp(idpFriendlyName)
+    public Optional<DatabaseIdpUser> getUserForIdp(String idpFriendlyName, String username) {
+        final List<DatabaseIdpUser> matchingUsers = userRepository.getUsersForIdp(idpFriendlyName)
                 .stream()
                 .filter(u -> u.getUsername().equalsIgnoreCase(username))
                 .collect(Collectors.toList());
@@ -85,7 +85,7 @@ public class AllIdpsUserRepository {
         return getUserForIdp(idpFriendlyName, username).isPresent();
     }
 
-    private void addUserForIdp(String idpFriendlyName, IdpUser user) {
+    private void addUserForIdp(String idpFriendlyName, DatabaseIdpUser user) {
         LOG.debug("Creating user " + user.getUsername() + " for IDP " + idpFriendlyName);
         userRepository.addOrUpdateUserForIdp(idpFriendlyName, user);
    }

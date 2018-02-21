@@ -6,7 +6,7 @@ import uk.gov.ida.saml.core.domain.IdentityProviderAssertion;
 import uk.gov.ida.saml.core.domain.IpAddress;
 import uk.gov.ida.saml.core.domain.MatchingDataset;
 import uk.gov.ida.saml.core.domain.PersistentId;
-import uk.gov.ida.stub.idp.domain.IdpUser;
+import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 
 import javax.inject.Inject;
 
@@ -29,7 +29,7 @@ public class AssertionFactory {
 
     public IdentityProviderAssertion createFraudAuthnStatementAssertion(
             String issuerId,
-            IdpUser user,
+            DatabaseIdpUser user,
             String inResponseToId,
             String idpName,
             String indicator,
@@ -43,7 +43,7 @@ public class AssertionFactory {
         );
     }
 
-    public IdentityProviderAssertion createMatchingDatasetAssertion(String issuerId, IdpUser user, String requestId) {
+    public IdentityProviderAssertion createMatchingDatasetAssertion(String issuerId, DatabaseIdpUser user, String requestId) {
         MatchingDataset matchingDataset = MatchingDatasetFactory.create(user);
         return identityProviderAssertionFactory.createMatchingDatasetAssertion(
             createPersistentId(user.getPersistentId()),

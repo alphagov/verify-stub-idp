@@ -1,7 +1,7 @@
 package uk.gov.ida.stub.idp.repositories.jdbc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import uk.gov.ida.stub.idp.domain.IdpUser;
+import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.repositories.jdbc.json.IdpUserJson;
 
 import javax.inject.Singleton;
@@ -17,7 +17,7 @@ public class UserMapper {
         this.mapper = mapper;
     }
 
-    public User mapFrom(String idpFriendlyName, IdpUser idpUser) {
+    public User mapFrom(String idpFriendlyName, DatabaseIdpUser idpUser) {
         String idpUserAsJson = uncheck(() -> mapper.writeValueAsString(idpUser));
 
         return new User(
@@ -29,10 +29,10 @@ public class UserMapper {
         );
     }
 
-    public IdpUser mapTo(User user) {
+    public DatabaseIdpUser mapTo(User user) {
         IdpUserJson idpUserJson = uncheck(() -> mapper.readValue(user.getData(), IdpUserJson.class));
 
-        return new IdpUser(
+        return new DatabaseIdpUser(
             idpUserJson.getUsername(),
             idpUserJson.getPersistentId(),
             idpUserJson.getPassword(),

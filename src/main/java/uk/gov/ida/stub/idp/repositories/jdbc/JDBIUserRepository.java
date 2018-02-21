@@ -1,7 +1,7 @@
 package uk.gov.ida.stub.idp.repositories.jdbc;
 
 import org.jdbi.v3.core.Jdbi;
-import uk.gov.ida.stub.idp.domain.IdpUser;
+import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.repositories.UserRepository;
 import uk.gov.ida.stub.idp.repositories.jdbc.rowmappers.UserRowMapper;
 
@@ -28,7 +28,7 @@ public class JDBIUserRepository implements UserRepository {
     }
 
     @Override
-    public Collection<IdpUser> getUsersForIdp(String idpFriendlyName) {
+    public Collection<DatabaseIdpUser> getUsersForIdp(String idpFriendlyName) {
         List<User> users = jdbi.withHandle(handle ->
             handle.createQuery(
                 "select * from users " +
@@ -44,7 +44,7 @@ public class JDBIUserRepository implements UserRepository {
     }
 
     @Override
-    public void addOrUpdateUserForIdp(String idpFriendlyId, IdpUser idpUser) {
+    public void addOrUpdateUserForIdp(String idpFriendlyId, DatabaseIdpUser idpUser) {
         deleteUserFromIdp(idpFriendlyId, idpUser.getUsername());
 
         User user = userMapper.mapFrom(idpFriendlyId, idpUser);
