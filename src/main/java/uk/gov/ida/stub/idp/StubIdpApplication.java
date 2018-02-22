@@ -14,6 +14,7 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.views.ViewBundle;
 import io.dropwizard.views.freemarker.FreemarkerViewRenderer;
+import org.flywaydb.core.Flyway;
 import uk.gov.ida.bundles.LoggingBundle;
 import uk.gov.ida.bundles.MonitoringBundle;
 import uk.gov.ida.bundles.ServiceStatusBundle;
@@ -28,7 +29,9 @@ import uk.gov.ida.stub.idp.exceptions.mappers.IdpUserNotFoundExceptionMapper;
 import uk.gov.ida.stub.idp.filters.NoCacheResponseFilter;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASessionFeature;
 import uk.gov.ida.stub.idp.filters.StubIdpCacheControlFilter;
+import uk.gov.ida.stub.idp.healthcheck.DatabaseHealthCheck;
 import uk.gov.ida.stub.idp.healthcheck.StubIdpHealthCheck;
+import uk.gov.ida.stub.idp.repositories.jdbc.migrations.DatabaseMigrationRunner;
 import uk.gov.ida.stub.idp.resources.ConsentResource;
 import uk.gov.ida.stub.idp.resources.CountryMetadataResource;
 import uk.gov.ida.stub.idp.resources.DebugPageResource;
@@ -77,9 +80,9 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
 
         // Enable variable substitution with environment variables
         bootstrap.setConfigurationSourceProvider(
-                new SubstitutingSourceProvider(bootstrap.getConfigurationSourceProvider(),
-                        new EnvironmentVariableSubstitutor(false)
-                )
+            new SubstitutingSourceProvider(bootstrap.getConfigurationSourceProvider(),
+                new EnvironmentVariableSubstitutor(false)
+            )
         );
 
         final InfinispanBundle infinispanBundle = new InfinispanBundle();
@@ -87,10 +90,10 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
         bootstrap.addBundle(infinispanBundle);
 
         GuiceBundle<StubIdpConfiguration> guiceBundle = GuiceBundle
-                .defaultBuilder(getConfigurationClass())
-                .modules(new StubIdpModule(infinispanBundle.getInfinispanCacheManagerProvider(), bootstrap),
-                        new DropwizardModule())
-                .build();
+            .defaultBuilder(getConfigurationClass())
+            .modules(new StubIdpModule(infinispanBundle.getInfinispanCacheManagerProvider(), bootstrap),
+                new DropwizardModule())
+            .build();
         bootstrap.addBundle(guiceBundle);
 
         bootstrap.addBundle(new ServiceStatusBundle());
@@ -99,9 +102,9 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
             public Map<String, Map<String, String>> getViewConfiguration(StubIdpConfiguration config) {
                 // beware: this is to force enable escaping of unsanitised user input
                 return ImmutableMap.of(new FreemarkerViewRenderer().getSuffix(),
-                        ImmutableMap.of(
-                                "output_format", "HTMLOutputFormat"
-                                ));
+                    ImmutableMap.of(
+                        "output_format", "HTMLOutputFormat"
+                    ));
             }
         });
         bootstrap.addBundle(new LoggingBundle());
@@ -145,5 +148,16 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
         //health checks
         StubIdpHealthCheck healthCheck = new StubIdpHealthCheck();
         environment.healthChecks().register(healthCheck.getName(), healthCheck);
+
+        if (configuration.getDatabaseConfiguration() != null &&
+            configuration.getDatabaseConfiguration().getUrl() != null
+            ) {
+            environment.healthChecks().unregister("Infinispan Health Check");
+
+            DatabaseHealthCheck dbHealthCheck = new DatabaseHealthCheck(configuration.getDatabaseConfiguration().getUrl());
+            environment.healthChecks().register("database", dbHealthCheck);
+
+            new DatabaseMigrationRunner().runMigration(configuration.getDatabaseConfiguration().getUrl());
+        }
     }
 }

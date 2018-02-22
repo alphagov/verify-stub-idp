@@ -139,7 +139,8 @@ dependencies {
             "uk.gov.ida:ida-saml-extensions:$dependencyVersions.ida_saml_extensions",
             "uk.gov.verify:saml-utils:$dependencyVersions.saml_utils",
             "org.jdbi:jdbi3-core:3.0.0",
-            "org.postgresql:postgresql:42.1.4"
+            "org.postgresql:postgresql:42.1.4",
+            "org.flywaydb:flyway-core:4.2.0"
 
     runtime 'joda-time:joda-time:2.3',
             'net.logstash.logback:logstash-logback-encoder:4.9'
