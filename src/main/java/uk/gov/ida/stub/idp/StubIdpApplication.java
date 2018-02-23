@@ -14,13 +14,13 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.views.ViewBundle;
 import io.dropwizard.views.freemarker.FreemarkerViewRenderer;
-import org.flywaydb.core.Flyway;
 import uk.gov.ida.bundles.LoggingBundle;
 import uk.gov.ida.bundles.MonitoringBundle;
 import uk.gov.ida.bundles.ServiceStatusBundle;
 import uk.gov.ida.filters.AcceptLanguageFilter;
 import uk.gov.ida.saml.core.IdaSamlBootstrap;
 import uk.gov.ida.shared.dropwizard.infinispan.util.InfinispanBundle;
+import uk.gov.ida.stub.idp.bundles.DatabaseMigrationBundle;
 import uk.gov.ida.stub.idp.configuration.StubIdpConfiguration;
 import uk.gov.ida.stub.idp.exceptions.mappers.CatchAllExceptionMapper;
 import uk.gov.ida.stub.idp.exceptions.mappers.FileNotFoundExceptionMapper;
@@ -31,7 +31,6 @@ import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASessionFeature;
 import uk.gov.ida.stub.idp.filters.StubIdpCacheControlFilter;
 import uk.gov.ida.stub.idp.healthcheck.DatabaseHealthCheck;
 import uk.gov.ida.stub.idp.healthcheck.StubIdpHealthCheck;
-import uk.gov.ida.stub.idp.repositories.jdbc.migrations.DatabaseMigrationRunner;
 import uk.gov.ida.stub.idp.resources.ConsentResource;
 import uk.gov.ida.stub.idp.resources.CountryMetadataResource;
 import uk.gov.ida.stub.idp.resources.DebugPageResource;
@@ -84,6 +83,8 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
                 new EnvironmentVariableSubstitutor(false)
             )
         );
+
+        bootstrap.addBundle(new DatabaseMigrationBundle());
 
         final InfinispanBundle infinispanBundle = new InfinispanBundle();
         // the infinispan cache manager needs to be lazy loaded because it is not initialized at this point.
@@ -156,8 +157,6 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
 
             DatabaseHealthCheck dbHealthCheck = new DatabaseHealthCheck(configuration.getDatabaseConfiguration().getUrl());
             environment.healthChecks().register("database", dbHealthCheck);
-
-            new DatabaseMigrationRunner().runMigration(configuration.getDatabaseConfiguration().getUrl());
         }
     }
 }
