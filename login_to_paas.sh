@@ -25,10 +25,7 @@ cfLogin() {
     rm -rf "$CF_HOME"
     mkdir -p "$CF_HOME"
     echo "Authenticating to CloudFoundry at '$CF_API' ($CF_ORG/$CF_SPACE) as '$CF_USER'" >&2
-    cf api "$CF_API"
-    # Like 'cf login' but for noninteractive use
-    cf auth "$CF_USER" "$CF_PASS"
-    cf target -o "$CF_ORG" -s "$CF_SPACE"
+    cf login -a "$CF_API" -u "$CF_USER" -o "$CF_ORG" -s "$CF_SPACE" -p "$CF_PASS"
   fi
 }
 
