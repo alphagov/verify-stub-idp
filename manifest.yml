@@ -3,7 +3,6 @@ applications:
   - name: ida-stub-idp
     memory: 1G
     buildpack: java_buildpack
-    path: ../build/distributions/ida-stub-idp.zip
     env:
       LOG_PATH: /app/ida-stub-idp/logs
       LOG_LEVEL: DEBUG

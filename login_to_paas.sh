@@ -1,14 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-ROOT_DIR="$(dirname "$0")"
-cd "$ROOT_DIR"
-
-function cleanup {
-  rm -rf "$ROOT_DIR/work"
-}
-trap cleanup EXIT
-
+ROOT_DIR="$1"
 
 cfLogin() {
   if [ -z "${CF_USER:-}" ]; then
