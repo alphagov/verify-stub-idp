@@ -80,6 +80,14 @@ publishing {
     }
 }
 
+if (project.hasProperty('includeConfigDirectories')) {
+    distZip {
+        into(project.name + '/resources') {
+            from includeConfigDirectories
+        }
+    }
+}
+
 if (project.hasProperty('includeDirectories')) {
     distZip {
         includeDirectories.split(',').each {

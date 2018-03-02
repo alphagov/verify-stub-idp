@@ -15,6 +15,7 @@ cfSetEnvironmentVariables() {
   cf set-env ida-stub-idp STUB_IDP_SIGNING_PRIVATE_KEY $STUB_IDP_SIGNING_PRIVATE_KEY
   cf set-env ida-stub-idp STUB_IDP_SIGNING_CERT $STUB_IDP_SIGNING_CERT
   cf set-env ida-stub-idp METADATA_TRUSTSTORE $METADATA_TRUSTSTORE
+  cf set-env ida-stub-idp STUB_IDPS_FILE_PATH /app/ida-stub-idp/resources/$ENVIRONMENT/paas-stub-idps.yml
   # Required by eidas even though its disabled in PAAS.
   cf set-env ida-stub-idp STUB_COUNTRY_SIGNING_PRIVATE_KEY $STUB_COUNTRY_SIGNING_PRIVATE_KEY
   cf set-env ida-stub-idp STUB_COUNTRY_SIGNING_CERT $STUB_COUNTRY_SIGNING_CERT
