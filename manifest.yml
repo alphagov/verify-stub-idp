@@ -13,9 +13,6 @@ applications:
       CERT_TYPE: encoded
       TRUSTSTORE_TYPE: encoded
       TRUSTSTORE_PASSWORD: puppet
-      METADATA_URL: https://verify-integration-metadata.cloudapps.digital/metadata.xml
-      TRUSTSTORE_PATH: /app/ida-stub-idp/resources
-      TRUSTSTORE_PASSWORD: puppet
       STUB_IDP_BASIC_AUTH: true
       STUB_COUNTRY_METADATA_URL: empty
       SIGNIN_DOMAIN: empty
