@@ -1,6 +1,5 @@
 package uk.gov.ida.saml.idp.test.builders;
 
-import com.google.common.base.Optional;
 import org.joda.time.DateTime;
 import uk.gov.ida.saml.core.domain.AssertionRestrictions;
 import uk.gov.ida.saml.core.domain.IdentityProviderAssertion;
@@ -8,10 +7,8 @@ import uk.gov.ida.saml.core.domain.PersistentId;
 import uk.gov.ida.saml.core.domain.IdentityProviderAuthnStatement;
 import uk.gov.ida.saml.core.domain.MatchingDataset;
 
+import java.util.Optional;
 import java.util.UUID;
-
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.fromNullable;
 
 public class IdentityProviderAssertionBuilder {
 
@@ -20,8 +17,8 @@ public class IdentityProviderAssertionBuilder {
     private DateTime issueInstant = DateTime.now();
     private PersistentId persistentId = PersistentIdBuilder.aPersistentId().build();
     private AssertionRestrictions assertionRestrictions = AssertionRestrictionsBuilder.anAssertionRestrictions().build();
-    private Optional<MatchingDataset> matchingDataset = absent();
-    private Optional<IdentityProviderAuthnStatement> authnStatement = absent();
+    private Optional<MatchingDataset> matchingDataset = Optional.empty();
+    private Optional<IdentityProviderAuthnStatement> authnStatement = Optional.empty();
 
     public static IdentityProviderAssertionBuilder anIdentityProviderAssertion() {
         return new IdentityProviderAssertionBuilder();
@@ -64,12 +61,12 @@ public class IdentityProviderAssertionBuilder {
     }
 
     public IdentityProviderAssertionBuilder withAuthnStatement(IdentityProviderAuthnStatement idaAuthnStatement) {
-        this.authnStatement = fromNullable(idaAuthnStatement);
+        this.authnStatement = Optional.ofNullable(idaAuthnStatement);
         return this;
     }
 
     public IdentityProviderAssertionBuilder withMatchingDataset(MatchingDataset matchingDataset) {
-        this.matchingDataset = fromNullable(matchingDataset);
+        this.matchingDataset = Optional.ofNullable(matchingDataset);
         return this;
     }
 }

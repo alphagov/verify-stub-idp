@@ -1,6 +1,7 @@
 package uk.gov.ida.saml.idp.stub.transformers.outbound;
 
-import com.google.inject.Inject;
+import javax.inject.Inject;
+
 import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.Attribute;
 import org.opensaml.saml.saml2.core.AttributeStatement;

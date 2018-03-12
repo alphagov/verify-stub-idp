@@ -18,7 +18,6 @@ import uk.gov.ida.saml.idp.stub.transformers.inbound.IdaAuthnRequestFromHubUnmar
 
 import java.util.Arrays;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.opensaml.saml.saml2.core.AuthnContextComparisonTypeEnumeration.EXACT;
@@ -44,7 +43,7 @@ public class IdaAuthnRequestFromHubUnmarshallerTest {
         when(authnRequest.getIssuer()).thenReturn(issuer);
         when(authnRequest.getRequestedAuthnContext()).thenReturn(requestedAuthnContext);
         when(authnRequest.getConditions()).thenReturn(conditions);
-        when(requestedAuthnContext.getAuthnContextClassRefs()).thenReturn(newArrayList(authnContextClassRef, authnContextClassRef));
+        when(requestedAuthnContext.getAuthnContextClassRefs()).thenReturn(Arrays.asList(authnContextClassRef, authnContextClassRef));
         when(requestedAuthnContext.getComparison()).thenReturn(EXACT);
         when(authnContextClassRef.getAuthnContextClassRef()).thenReturn(IdaAuthnContext.LEVEL_2_AUTHN_CTX, IdaAuthnContext.LEVEL_1_AUTHN_CTX);
     }
