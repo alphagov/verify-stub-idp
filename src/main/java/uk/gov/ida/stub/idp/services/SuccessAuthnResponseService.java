@@ -7,6 +7,7 @@ import uk.gov.ida.stub.idp.StubIdpModule;
 import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.OutboundResponseFromIdp;
 import uk.gov.ida.stub.idp.domain.SamlResponse;
+import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
 import uk.gov.ida.stub.idp.domain.factories.AssertionRestrictionsFactory;
 import uk.gov.ida.stub.idp.domain.factories.IdentityProviderAssertionFactory;
 import uk.gov.ida.stub.idp.domain.factories.MatchingDatasetFactory;
@@ -46,7 +47,7 @@ public class SuccessAuthnResponseService {
         this.outboundResponseFromIdpTransformerProvider = outboundResponseFromIdpTransformerProvider;
     }
 
-    public SamlResponse getSuccessResponse(boolean randomisePid, String remoteIpAddress, String idpName, Session session) {
+    public SamlResponseFromValue<OutboundResponseFromIdp> getSuccessResponse(boolean randomisePid, String remoteIpAddress, String idpName, Session session) {
         URI hubUrl = metadataProvider.getAssertionConsumerServiceLocation();
         Idp idp = idpStubsRepository.getIdpWithFriendlyId(idpName);
 
@@ -76,9 +77,8 @@ public class SuccessAuthnResponseService {
                 matchingDatasetAssertion,
                 authnStatementAssertion,
                 hubUrl);
-        String idpResponse = outboundResponseFromIdpTransformerProvider.get(idp).apply(idaResponse);
 
-        return new SamlResponse(idpResponse, session.getRelayState(), hubUrl);
+        return new SamlResponseFromValue<OutboundResponseFromIdp>(idaResponse, outboundResponseFromIdpTransformerProvider.get(idp), session.getRelayState(), hubUrl);
     }
 
 }

@@ -38,14 +38,13 @@ public class EidasResponseBuilderTest {
 
     @Test
     public void shouldCreateEidasResponseWithRequiredFields() throws Exception {
-        EidasResponseBuilder eidasResponseBuilder = new EidasResponseBuilder("connectorNodeIssuerId");
         List<Attribute> attributes = Collections.emptyList();
         DateTime issueInstant = DateTime.now().minusSeconds(2);
         DateTime assertionIssueInstant = DateTime.now().minusSeconds(1);
         DateTime authnStatementIssueInstant = DateTime.now();
 
-        Response response = eidasResponseBuilder.createEidasResponse("responseIssuerId", "statusCodeValue",
-                "pid", "loa", attributes, "inResponseTo", issueInstant, assertionIssueInstant, authnStatementIssueInstant, "destinationUrl");
+        Response response = EidasResponseBuilder.createEidasResponse("responseIssuerId", "statusCodeValue",
+                "pid", "loa", attributes, "inResponseTo", issueInstant, assertionIssueInstant, authnStatementIssueInstant, "destinationUrl", "connectorNodeIssuerId");
         Assertion assertion = response.getAssertions().get(0);
         AuthnStatement authnStatement = assertion.getAuthnStatements().get(0);
 

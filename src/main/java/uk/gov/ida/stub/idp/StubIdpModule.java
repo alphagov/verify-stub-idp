@@ -355,15 +355,6 @@ public class StubIdpModule extends AbstractModule {
     }
 
     @Provides
-    @Singleton
-    public EidasResponseBuilder getEidasResponseBuilder(StubIdpConfiguration configuration, @Named("HubConnectorEntityId") String hubConnectorEntityId) {
-        if (configuration.getEuropeanIdentityConfiguration().isEnabled()) {
-            return new EidasResponseBuilder(hubConnectorEntityId);
-        }
-        return null;
-    }
-
-    @Provides
     @Named(HUB_ENCRYPTION_KEY_STORE)
     @Singleton
     public EncryptionKeyStore getHubEncryptionKeyStore(@Named(HUB_METADATA_REPOSITORY) MetadataRepository metadataRepository, PublicKeyFactory publicKeyFactory) {

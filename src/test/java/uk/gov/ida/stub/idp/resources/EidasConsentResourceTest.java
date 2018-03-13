@@ -11,7 +11,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.stub.idp.domain.EidasAuthnRequest;
 import uk.gov.ida.stub.idp.domain.EidasUser;
-import uk.gov.ida.stub.idp.domain.SamlResponse;
+import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
 import uk.gov.ida.stub.idp.repositories.Session;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.services.EidasSuccessAuthnResponseService;
@@ -22,8 +22,7 @@ import javax.ws.rs.core.Response;
 
 import java.util.Collections;
 import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -70,7 +69,7 @@ public class EidasConsentResourceTest {
 
     @Test
     public void postShouldReturnASuccessfulResponseWhenSessionIsValid() {
-        SamlResponse samlResponse = new SamlResponse(null, null, null);
+        SamlResponseFromValue<org.opensaml.saml.saml2.core.Response> samlResponse = new SamlResponseFromValue<org.opensaml.saml.saml2.core.Response>(null, (r) -> null, null, null);
         when(successAuthnResponseService.getEidasSuccessResponse(session, SCHEME_NAME)).thenReturn(samlResponse);
         when(samlResponseRedirectViewFactory.sendSamlMessage(samlResponse)).thenReturn(Response.ok().build());
 

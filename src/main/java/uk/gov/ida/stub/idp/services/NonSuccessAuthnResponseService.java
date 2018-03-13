@@ -7,6 +7,7 @@ import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.FraudIndicator;
 import uk.gov.ida.stub.idp.domain.OutboundResponseFromIdp;
 import uk.gov.ida.stub.idp.domain.SamlResponse;
+import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
 import uk.gov.ida.stub.idp.domain.factories.AssertionFactory;
 import uk.gov.ida.stub.idp.repositories.Idp;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
@@ -117,9 +118,8 @@ public class NonSuccessAuthnResponseService {
         return generateResponse(idp, requesterErrorResponse, hubUrl, relayState);
     }
 
-    private SamlResponse generateResponse(Idp idp, OutboundResponseFromIdp outboundResponseFromIdp, URI hubUrl, String relayState) {
-        String samlResponse = outboundResponseFromIdpTransformerProvider.get(idp).apply(outboundResponseFromIdp);
-        return new SamlResponse(samlResponse, relayState, hubUrl);
+    private SamlResponseFromValue<OutboundResponseFromIdp> generateResponse(Idp idp, OutboundResponseFromIdp outboundResponseFromIdp, URI hubUrl, String relayState) {
+        return new SamlResponseFromValue<OutboundResponseFromIdp>(outboundResponseFromIdp, outboundResponseFromIdpTransformerProvider.get(idp), relayState, hubUrl);
     }
 
 }

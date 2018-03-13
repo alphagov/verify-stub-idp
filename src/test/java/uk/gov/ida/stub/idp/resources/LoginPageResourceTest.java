@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.saml.hub.domain.IdaAuthnRequestFromHub;
-import uk.gov.ida.stub.idp.domain.SamlResponse;
+import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
 import uk.gov.ida.stub.idp.domain.SubmitButtonValue;
 import uk.gov.ida.stub.idp.exceptions.InvalidSessionIdException;
 import uk.gov.ida.stub.idp.exceptions.InvalidUsernameOrPasswordException;
@@ -23,6 +23,7 @@ import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyString;
@@ -74,7 +75,7 @@ public class LoginPageResourceTest {
 
     @Test
     public void shouldBuildNoAuthnContext(){
-        when(nonSuccessAuthnResponseService.generateNoAuthnContext(anyString(), anyString(), eq(RELAY_STATE))).thenReturn(new SamlResponse("saml", RELAY_STATE, URI.create("uri")));
+        when(nonSuccessAuthnResponseService.generateNoAuthnContext(anyString(), anyString(), eq(RELAY_STATE))).thenReturn(new SamlResponseFromValue<String>("saml", Function.identity(), RELAY_STATE, URI.create("uri")));
 
         resource.postNoAuthnContext(IDP_NAME, SESSION_ID);
 
@@ -83,7 +84,7 @@ public class LoginPageResourceTest {
 
     @Test
     public void shouldBuildUpliftFailed(){
-        when(nonSuccessAuthnResponseService.generateUpliftFailed(anyString(), anyString(), eq(RELAY_STATE))).thenReturn(new SamlResponse("saml", RELAY_STATE, URI.create("uri")));
+        when(nonSuccessAuthnResponseService.generateUpliftFailed(anyString(), anyString(), eq(RELAY_STATE))).thenReturn(new SamlResponseFromValue<String>("saml", Function.identity(), RELAY_STATE, URI.create("uri")));
 
         resource.postUpliftFailed(IDP_NAME, SESSION_ID);
 
@@ -92,7 +93,7 @@ public class LoginPageResourceTest {
 
     @Test
     public void shouldBuildNoAuthnCancel(){
-        when(nonSuccessAuthnResponseService.generateAuthnCancel(anyString(), anyString(), eq(RELAY_STATE))).thenReturn(new SamlResponse("saml", RELAY_STATE, URI.create("uri")));
+        when(nonSuccessAuthnResponseService.generateAuthnCancel(anyString(), anyString(), eq(RELAY_STATE))).thenReturn(new SamlResponseFromValue<String>("saml", Function.identity(), RELAY_STATE, URI.create("uri")));
 
         resource.post(IDP_NAME, USERNAME, PASSWORD, SubmitButtonValue.Cancel, SESSION_ID);
 
@@ -109,7 +110,7 @@ public class LoginPageResourceTest {
 
     @Test
     public void shouldBuildAuthnPending(){
-        when(nonSuccessAuthnResponseService.generateAuthnPending(anyString(), anyString(), eq(RELAY_STATE))).thenReturn(new SamlResponse("saml", RELAY_STATE, URI.create("uri")));
+        when(nonSuccessAuthnResponseService.generateAuthnPending(anyString(), anyString(), eq(RELAY_STATE))).thenReturn(new SamlResponseFromValue<String>("saml", Function.identity(), RELAY_STATE, URI.create("uri")));
 
         resource.postAuthnPending(IDP_NAME, SESSION_ID);
 

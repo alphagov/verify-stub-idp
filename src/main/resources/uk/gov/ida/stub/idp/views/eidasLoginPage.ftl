@@ -24,4 +24,12 @@
             </div>
         </fieldset>
     </form>
+    <form action="/eidas/${idpId}/login/authn-failure" method="post">
+        <fieldset>
+            <legend>Submit Login Authn Failure</legend>
+            <div class="submit">
+                <input id="authnFailureSubmit" class="button color-ok" type="submit" name="submit" value="Authn Failure"/>
+            </div>
+        </fieldset>
+    </form>
 </div>
