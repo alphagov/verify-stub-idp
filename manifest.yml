@@ -8,7 +8,6 @@ applications:
       LOG_LEVEL: INFO
       CONFIG_FILE: /app/ida-stub-idp/stub-idp.yml
       ENTITY_ID: "http://stub_idp.paas.org/%s/SSO/POST"
-      METADATA_ENTITY_ID: https://signin.service.gov.uk
       KEY_TYPE: encoded
       CERT_TYPE: encoded
       TRUSTSTORE_TYPE: encoded
