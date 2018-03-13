@@ -3,6 +3,7 @@
 set -eu
 ROOT_DIR="$(dirname "$0")"
 cd "$ROOT_DIR"
+export CF_HOME="$ROOT_DIR/work"
 
 function cleanup {
   rm -rf "$ROOT_DIR/work"
