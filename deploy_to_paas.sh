@@ -3,7 +3,6 @@
 set -eu
 ROOT_DIR="$(dirname "$0")"
 cd "$ROOT_DIR"
-export CF_HOME="$ROOT_DIR/work"
 
 function cleanup {
   rm -rf "$ROOT_DIR/work"
@@ -16,7 +15,7 @@ cfSetEnvironmentVariables() {
   cf set-env ida-stub-idp STUB_IDP_SIGNING_CERT $STUB_IDP_SIGNING_CERT
   cf set-env ida-stub-idp METADATA_TRUSTSTORE $METADATA_TRUSTSTORE
   cf set-env ida-stub-idp STUB_IDPS_FILE_PATH /app/ida-stub-idp/resources/$ENVIRONMENT/stub-idps.yml
-  cf set-env ida-stub-idp METADATA_URL $PAAS_METADATA_URL/metadata.xml
+  cf set-env ida-stub-idp METADATA_URL $PAAS_METADATA_URL
 
   # Required by eidas even though its disabled in PAAS.
   cf set-env ida-stub-idp STUB_COUNTRY_SIGNING_PRIVATE_KEY $STUB_COUNTRY_SIGNING_PRIVATE_KEY
