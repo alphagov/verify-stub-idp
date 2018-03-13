@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.Attribute;
 import uk.gov.ida.saml.core.domain.FraudAuthnDetails;
-import uk.gov.ida.saml.core.test.builders.MatchingDatasetBuilder;
 import uk.gov.ida.saml.core.OpenSamlXmlObjectFactory;
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.AddressFactory;
@@ -18,12 +17,14 @@ import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.saml.core.domain.Gender;
 import uk.gov.ida.saml.core.domain.IdentityProviderAssertion;
 import uk.gov.ida.saml.core.domain.IdentityProviderAuthnStatement;
+import uk.gov.ida.saml.core.domain.IpAddress;
 import uk.gov.ida.saml.core.domain.MatchingDataset;
 import uk.gov.ida.saml.core.domain.SimpleMdsValue;
 import uk.gov.ida.saml.core.test.OpenSAMLMockitoRunner;
-import uk.gov.ida.saml.core.test.builders.SimpleMdsValueBuilder;
 import uk.gov.ida.saml.core.transformers.outbound.OutboundAssertionToSubjectTransformer;
 import uk.gov.ida.saml.hub.factories.AttributeFactory;
+import uk.gov.ida.saml.idp.builders.MatchingDatasetBuilder;
+import uk.gov.ida.saml.idp.builders.SimpleMdsValueBuilder;
 import uk.gov.ida.saml.idp.stub.transformers.outbound.IdentityProviderAssertionToAssertionTransformer;
 import uk.gov.ida.saml.idp.stub.transformers.outbound.IdentityProviderAuthnStatementToAuthnStatementTransformer;
 
@@ -36,10 +37,9 @@ import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.ida.saml.idp.builders.IdentityProviderAuthnStatementBuilder.anIdentityProviderAuthnStatement;
 import static uk.gov.ida.saml.idp.test.builders.IPAddressAttributeBuilder.anIPAddress;
 import static uk.gov.ida.saml.idp.test.builders.IdentityProviderAssertionBuilder.anIdentityProviderAssertion;
-import static uk.gov.ida.saml.core.test.builders.IdentityProviderAuthnStatementBuilder.anIdentityProviderAuthnStatement;
-import static uk.gov.ida.saml.core.test.builders.IpAddressBuilder.anIpAddress;
 
 @RunWith(OpenSAMLMockitoRunner.class)
 public class IdentityProviderAssertionToAssertionTransformerTest {
@@ -79,7 +79,8 @@ public class IdentityProviderAssertionToAssertionTransformerTest {
     @Test
     public void transform_shouldTransformAssertionSubjectsFirstName() throws Exception {
         SimpleMdsValue<String> firstname = SimpleMdsValueBuilder.<String>aSimpleMdsValue().withValue("Bob").build();
-        IdentityProviderAssertion assertion = anIdentityProviderAssertion().withMatchingDataset(MatchingDatasetBuilder.aMatchingDataset().addFirstname(firstname).build()).build();
+        IdentityProviderAssertion assertion = anIdentityProviderAssertion().withMatchingDataset(
+                MatchingDatasetBuilder.aMatchingDataset().addFirstname(firstname).build()).build();
 
         transformer.transform(assertion);
 
@@ -311,7 +312,7 @@ public class IdentityProviderAssertionToAssertionTransformerTest {
     public void transform_shouldTransformIpAddress() throws Exception {
         String ipAddressValue = "9.9.8.8";
         IdentityProviderAssertion assertion = anIdentityProviderAssertion()
-                .withAuthnStatement(anIdentityProviderAuthnStatement().withUserIpAddress(anIpAddress().withValue(ipAddressValue).build()).build())
+                .withAuthnStatement(anIdentityProviderAuthnStatement().withUserIpAddress(new IpAddress(ipAddressValue)).build())
                 .build();
         final Attribute attribute = anIPAddress().withValue("4.5.6.7").build();
         when(attributeFactory.createUserIpAddressAttribute(ipAddressValue)).thenReturn(attribute);

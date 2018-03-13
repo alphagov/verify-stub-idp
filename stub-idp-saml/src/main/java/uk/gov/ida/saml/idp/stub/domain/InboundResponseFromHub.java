@@ -1,6 +1,6 @@
 package uk.gov.ida.saml.idp.stub.domain;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 import org.joda.time.DateTime;
 import org.opensaml.saml.saml2.core.Attribute;
 import uk.gov.ida.saml.core.domain.PersistentId;

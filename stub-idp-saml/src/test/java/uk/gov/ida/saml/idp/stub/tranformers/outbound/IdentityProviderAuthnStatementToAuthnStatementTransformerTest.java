@@ -1,5 +1,9 @@
 package uk.gov.ida.saml.idp.stub.tranformers.outbound;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.jodatime.api.Assertions.assertThat;
+import static uk.gov.ida.saml.idp.builders.IdentityProviderAuthnStatementBuilder.anIdentityProviderAuthnStatement;
+
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
@@ -13,10 +17,6 @@ import uk.gov.ida.saml.core.extensions.IdaAuthnContext;
 import uk.gov.ida.saml.core.test.OpenSAMLRunner;
 import uk.gov.ida.saml.idp.stub.transformers.outbound.IdentityProviderAuthnStatementToAuthnStatementTransformer;
 import uk.gov.ida.shared.utils.datetime.DateTimeFreezer;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.jodatime.api.Assertions.assertThat;
-import static uk.gov.ida.saml.core.test.builders.IdentityProviderAuthnStatementBuilder.anIdentityProviderAuthnStatement;
 
 @RunWith(OpenSAMLRunner.class)
 public class IdentityProviderAuthnStatementToAuthnStatementTransformerTest {

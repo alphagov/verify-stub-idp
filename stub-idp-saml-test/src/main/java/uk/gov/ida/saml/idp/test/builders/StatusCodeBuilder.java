@@ -1,18 +1,15 @@
 package uk.gov.ida.saml.idp.test.builders;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 import org.opensaml.saml.saml2.core.StatusCode;
 import uk.gov.ida.saml.core.OpenSamlXmlObjectFactory;
 import uk.gov.ida.saml.core.domain.SamlStatusCode;
 
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.fromNullable;
-
 public class StatusCodeBuilder {
 
     private static OpenSamlXmlObjectFactory openSamlXmlObjectFactory = new OpenSamlXmlObjectFactory();
-    private Optional<String> value = fromNullable(StatusCode.SUCCESS);
-    private Optional<StatusCode> subStatus = absent();
+    private Optional<String> value = Optional.ofNullable(StatusCode.SUCCESS);
+    private Optional<StatusCode> subStatus = Optional.empty();
 
     public static StatusCodeBuilder aStatusCode() {
         return new StatusCodeBuilder();
@@ -33,12 +30,12 @@ public class StatusCodeBuilder {
     }
 
     public StatusCodeBuilder withValue(String value) {
-        this.value = fromNullable(value);
+        this.value = Optional.ofNullable(value);
         return this;
     }
 
     public StatusCodeBuilder withSubStatusCode(StatusCode subStatusCode){
-        this.subStatus = fromNullable(subStatusCode);
+        this.subStatus = Optional.ofNullable(subStatusCode);
         return this;
     }
 

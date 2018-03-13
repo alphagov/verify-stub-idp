@@ -1,18 +1,15 @@
 package uk.gov.ida.saml.idp.test.builders;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 import org.opensaml.saml.saml2.core.Attribute;
 import uk.gov.ida.saml.core.OpenSamlXmlObjectFactory;
 import uk.gov.ida.saml.core.extensions.StringBasedMdsAttributeValue;
 
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.fromNullable;
-
 public class SimpleStringAttributeBuilder {
 
     private OpenSamlXmlObjectFactory openSamlXmlObjectFactory = new OpenSamlXmlObjectFactory();
-    private Optional<String> name = Optional.absent();
-    private Optional<String> simpleStringValue = absent();
+    private Optional<String> name = Optional.empty();
+    private Optional<String> simpleStringValue = Optional.empty();
 
     public static SimpleStringAttributeBuilder aSimpleStringAttribute() {
         return new SimpleStringAttributeBuilder();
@@ -33,12 +30,12 @@ public class SimpleStringAttributeBuilder {
     }
 
     public SimpleStringAttributeBuilder withName(String name) {
-        this.name = fromNullable(name);
+        this.name = Optional.ofNullable(name);
         return this;
     }
 
     public SimpleStringAttributeBuilder withSimpleStringValue(String value){
-        this.simpleStringValue = fromNullable(value);
+        this.simpleStringValue = Optional.ofNullable(value);
         return this;
     }
 }

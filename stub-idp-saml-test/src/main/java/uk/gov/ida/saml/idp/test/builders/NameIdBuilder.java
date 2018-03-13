@@ -1,20 +1,17 @@
 package uk.gov.ida.saml.idp.test.builders;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 import org.opensaml.saml.saml2.core.NameID;
 import org.opensaml.saml.saml2.core.NameIDType;
 import uk.gov.ida.saml.core.OpenSamlXmlObjectFactory;
-
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.fromNullable;
 
 public class NameIdBuilder {
 
     private OpenSamlXmlObjectFactory openSamlXmlObjectFactory = new OpenSamlXmlObjectFactory();
     private String value;
-    private Optional<String> format = fromNullable(NameIDType.PERSISTENT);
-    private Optional<String> nameQualifier = absent();
-    private Optional<String> spNameQualifier = absent();
+    private Optional<String> format = Optional.ofNullable(NameIDType.PERSISTENT);
+    private Optional<String> nameQualifier = Optional.empty();
+    private Optional<String> spNameQualifier = Optional.empty();
 
     public static NameIdBuilder aNameId() {
         return new NameIdBuilder();
@@ -45,17 +42,17 @@ public class NameIdBuilder {
     }
 
     public NameIdBuilder withFormat(String format) {
-        this.format = fromNullable(format);
+        this.format = Optional.ofNullable(format);
         return this;
     }
 
     public NameIdBuilder withNameQualifier(String nameQualifier) {
-        this.nameQualifier = fromNullable(nameQualifier);
+        this.nameQualifier = Optional.ofNullable(nameQualifier);
         return this;
     }
 
     public NameIdBuilder withSpNameQualifier(String spNameQualifier) {
-        this.spNameQualifier = fromNullable(spNameQualifier);
+        this.spNameQualifier = Optional.ofNullable(spNameQualifier);
         return this;
     }
 }

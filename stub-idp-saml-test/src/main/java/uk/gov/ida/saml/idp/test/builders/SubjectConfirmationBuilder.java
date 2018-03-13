@@ -1,17 +1,15 @@
 package uk.gov.ida.saml.idp.test.builders;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 import org.opensaml.saml.saml2.core.SubjectConfirmation;
 import org.opensaml.saml.saml2.core.SubjectConfirmationData;
 import uk.gov.ida.saml.core.OpenSamlXmlObjectFactory;
 
-import static com.google.common.base.Optional.fromNullable;
-
 public class SubjectConfirmationBuilder {
 
     private OpenSamlXmlObjectFactory openSamlXmlObjectFactory = new OpenSamlXmlObjectFactory();
-    private Optional<String> method = fromNullable(SubjectConfirmation.METHOD_BEARER);
-    private Optional<SubjectConfirmationData> subjectConfirmationData = fromNullable(SubjectConfirmationDataBuilder.aSubjectConfirmationData().build());
+    private Optional<String> method = Optional.ofNullable(SubjectConfirmation.METHOD_BEARER);
+    private Optional<SubjectConfirmationData> subjectConfirmationData = Optional.ofNullable(SubjectConfirmationDataBuilder.aSubjectConfirmationData().build());
 
     public static SubjectConfirmationBuilder aSubjectConfirmation() {
         return new SubjectConfirmationBuilder();
@@ -32,12 +30,12 @@ public class SubjectConfirmationBuilder {
     }
 
     public SubjectConfirmationBuilder withMethod(String method) {
-        this.method = fromNullable(method);
+        this.method = Optional.ofNullable(method);
         return this;
     }
 
     public SubjectConfirmationBuilder withSubjectConfirmationData(SubjectConfirmationData subjectConfirmationData) {
-        this.subjectConfirmationData = fromNullable(subjectConfirmationData);
+        this.subjectConfirmationData = Optional.ofNullable(subjectConfirmationData);
         return this;
     }
 }

@@ -31,12 +31,10 @@ subprojects {
     }
 
     dependencies {
-        common  "uk.gov.verify:saml-utils:$opensaml_version-65",
+        common  "uk.gov.verify:saml-utils:$opensaml_version-70",
                 "org.opensaml:opensaml-core:$opensaml_version",
-                'com.google.guava:guava:18.0',
                 'joda-time:joda-time:2.9',
-                'javax.inject:javax.inject:1',
-                'com.google.inject:guice:4.0'
+                'javax.inject:javax.inject:1'
 
         test_deps "uk.gov.verify:saml-test-utils:$opensaml_version-43",
                 'commons-codec:commons-codec:1.10'

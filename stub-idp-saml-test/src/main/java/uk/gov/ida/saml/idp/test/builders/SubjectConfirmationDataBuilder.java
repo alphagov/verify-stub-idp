@@ -1,6 +1,6 @@
 package uk.gov.ida.saml.idp.test.builders;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 import org.joda.time.DateTime;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.EncryptedAssertion;
@@ -12,19 +12,16 @@ import uk.gov.ida.saml.core.test.builders.ResponseBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.fromNullable;
-
 public class SubjectConfirmationDataBuilder {
 
     public static final int NOT_ON_OR_AFTER_DEFAULT_PERIOD = 15;
 
     private OpenSamlXmlObjectFactory openSamlXmlObjectFactory = new OpenSamlXmlObjectFactory();
-    private Optional<String> recipient = fromNullable(TestEntityIds.HUB_ENTITY_ID);
-    private Optional<DateTime> notOnOrAfter = fromNullable(DateTime.now().plusMinutes(NOT_ON_OR_AFTER_DEFAULT_PERIOD));
-    private Optional<DateTime> notBefore = absent();
-    private Optional<String> address = absent();
-    private Optional<String> inResponseTo = fromNullable(ResponseBuilder.DEFAULT_REQUEST_ID);
+    private Optional<String> recipient = Optional.ofNullable(TestEntityIds.HUB_ENTITY_ID);
+    private Optional<DateTime> notOnOrAfter = Optional.ofNullable(DateTime.now().plusMinutes(NOT_ON_OR_AFTER_DEFAULT_PERIOD));
+    private Optional<DateTime> notBefore = Optional.empty();
+    private Optional<String> address = Optional.empty();
+    private Optional<String> inResponseTo = Optional.ofNullable(ResponseBuilder.DEFAULT_REQUEST_ID);
     private List<Assertion> assertions = new ArrayList<>();
     private List<EncryptedAssertion> encryptedAssertions = new ArrayList<>();
 
@@ -57,27 +54,27 @@ public class SubjectConfirmationDataBuilder {
     }
 
     public SubjectConfirmationDataBuilder withRecipient(String recipient) {
-        this.recipient = fromNullable(recipient);
+        this.recipient = Optional.ofNullable(recipient);
         return this;
     }
 
     public SubjectConfirmationDataBuilder withNotOnOrAfter(DateTime notOnOrAfter) {
-        this.notOnOrAfter = fromNullable(notOnOrAfter);
+        this.notOnOrAfter = Optional.ofNullable(notOnOrAfter);
         return this;
     }
 
     public SubjectConfirmationDataBuilder withNotBefore(DateTime notBefore) {
-        this.notBefore = fromNullable(notBefore);
+        this.notBefore = Optional.ofNullable(notBefore);
         return this;
     }
 
     public SubjectConfirmationDataBuilder withAddress(String address) {
-        this.address = fromNullable(address);
+        this.address = Optional.ofNullable(address);
         return this;
     }
 
     public SubjectConfirmationDataBuilder withInResponseTo(String inResponseTo) {
-        this.inResponseTo = fromNullable(inResponseTo);
+        this.inResponseTo = Optional.ofNullable(inResponseTo);
         return this;
     }
 
