@@ -1,19 +1,16 @@
 package uk.gov.ida.stub.idp.domain;
 
 
-import com.google.common.base.Optional;
 import org.joda.time.LocalDate;
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.saml.core.domain.Gender;
-import uk.gov.ida.saml.core.domain.SimpleMdsValue;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static uk.gov.ida.stub.idp.domain.MatchingDatasetValue.fromSimpleMdsValue;
 
 public class DatabaseIdpUser implements Serializable {
     private final String username;
@@ -22,7 +19,7 @@ public class DatabaseIdpUser implements Serializable {
     private final List<MatchingDatasetValue<String>> firstnames;
     private final List<MatchingDatasetValue<String>> middleNames;
     private final List<MatchingDatasetValue<String>> surnames;
-    private final Optional<MatchingDatasetValue<Gender>> gender;
+    private final MatchingDatasetValue<Gender> gender;
     private final List<MatchingDatasetValue<LocalDate>> dateOfBirths;
     private final List<Address> addresses;
     private final AuthnContext levelOfAssurance;
@@ -45,7 +42,7 @@ public class DatabaseIdpUser implements Serializable {
         this.firstnames = firstnames;
         this.middleNames = middleNames;
         this.surnames = surnames;
-        this.gender = gender;
+        this.gender = gender.orElse(null);
         this.dateOfBirths = dateOfBirths;
         this.addresses = addresses;
         this.levelOfAssurance = levelOfAssurance;
@@ -76,7 +73,7 @@ public class DatabaseIdpUser implements Serializable {
     }
 
     public Optional<MatchingDatasetValue<Gender>> getGender() {
-        return gender;
+        return Optional.ofNullable(gender);
     }
 
     public List<MatchingDatasetValue<LocalDate>> getDateOfBirths() {
@@ -145,7 +142,7 @@ public class DatabaseIdpUser implements Serializable {
                 idpUser.getFirstnames().stream().map(MatchingDatasetValue::fromSimpleMdsValue).collect(Collectors.toList()),
                 idpUser.getMiddleNames().stream().map(MatchingDatasetValue::fromSimpleMdsValue).collect(Collectors.toList()),
                 idpUser.getSurnames().stream().map(MatchingDatasetValue::fromSimpleMdsValue).collect(Collectors.toList()),
-                idpUser.getGender().transform(MatchingDatasetValue::fromSimpleMdsValue),
+                idpUser.getGender().map(MatchingDatasetValue::fromSimpleMdsValue),
                 idpUser.getDateOfBirths().stream().map(MatchingDatasetValue::fromSimpleMdsValue).collect(Collectors.toList()),
                 idpUser.getAddresses(),
                 idpUser.getLevelOfAssurance()

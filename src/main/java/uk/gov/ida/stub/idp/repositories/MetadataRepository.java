@@ -36,7 +36,7 @@ public class MetadataRepository {
         return spssoDescriptor.getAssertionConsumerServices();
     }
 
-    public Iterable<String> getSigningCertificates() {
+    public List<String> getSigningCertificates() {
         return hubEntityDescriptor().getSPSSODescriptor(SUPPORTED_PROTOCOL).getKeyDescriptors().stream()
                 .filter(input -> input.getUse().equals(UsageType.SIGNING))
                 .map(keyDescriptor -> keyDescriptor.getKeyInfo().getX509Datas().get(0).getX509Certificates().get(0).getValue())

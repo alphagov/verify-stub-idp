@@ -3,7 +3,6 @@ package uk.gov.ida.stub.idp.listeners;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.google.common.collect.Lists;
 import io.dropwizard.configuration.ConfigurationFactory;
 import io.dropwizard.configuration.ConfigurationSourceProvider;
 import io.dropwizard.configuration.DefaultConfigurationFactoryFactory;
@@ -18,7 +17,6 @@ import uk.gov.ida.stub.idp.configuration.IdpStubsConfiguration;
 import uk.gov.ida.stub.idp.configuration.SamlConfigurationImpl;
 import uk.gov.ida.stub.idp.configuration.StubIdp;
 import uk.gov.ida.stub.idp.configuration.StubIdpConfiguration;
-import uk.gov.ida.stub.idp.configuration.UserCredentials;
 import uk.gov.ida.stub.idp.repositories.AllIdpsUserRepository;
 import uk.gov.ida.stub.idp.repositories.Idp;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
@@ -32,11 +30,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static org.apache.commons.io.FileUtils.writeStringToFile;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -59,7 +57,7 @@ public class StubIdpsFileListenerTest {
 
     @Before
     public void setup() throws Exception {
-        StubIdp testStubIdp = new TestStubIdp("a", "b", "c", Lists.<UserCredentials>newArrayList());
+        StubIdp testStubIdp = new TestStubIdp("a", "b", "c", Collections.emptyList());
         createYamlFile(testStubIdp);
         final StubIdpConfiguration stubIdpConfiguration = mock(StubIdpConfiguration.class);
         when(stubIdpConfiguration.getStubIdpsYmlFileLocation()).thenReturn(YML_FILE.getAbsolutePath());
@@ -84,7 +82,7 @@ public class StubIdpsFileListenerTest {
     @Test
     public void verifyIdaStubsRepositoryIsUpdatedOnFileChange() throws Exception {
         initializeSynchronizationWithFileMonitor();
-        StubIdp changedTestStubIdp = new TestStubIdp("e", "f", "g", Lists.<UserCredentials>newArrayList());
+        StubIdp changedTestStubIdp = new TestStubIdp("e", "f", "g", Collections.emptyList());
         createYamlFile(changedTestStubIdp);
 
         waitForFileToBeReadByMonitor();
@@ -103,7 +101,7 @@ public class StubIdpsFileListenerTest {
     public void verifyIdaStubsRepositoryIsUpdatedEvenIfPreviousFileChangeWasInvalid() throws Exception {
         ensureInvalidStubIdpsConfigWasProcessed();
         initializeSynchronizationWithFileMonitor();
-        StubIdp changedTestStubIdp = new TestStubIdp("m", "n", "o", Lists.<UserCredentials>newArrayList());
+        StubIdp changedTestStubIdp = new TestStubIdp("m", "n", "o", Collections.emptyList());
         createYamlFile(changedTestStubIdp);
 
         waitForFileToBeReadByMonitor();
@@ -130,7 +128,7 @@ public class StubIdpsFileListenerTest {
     }
 
     private void createYamlFile(StubIdp testStubIdp) throws IOException, InterruptedException {
-        TestIdpStubsConfiguration testIdpStubsConfiguration = new TestIdpStubsConfiguration(newArrayList(testStubIdp));
+        TestIdpStubsConfiguration testIdpStubsConfiguration = new TestIdpStubsConfiguration(Collections.singletonList(testStubIdp));
 
         final String yaml = getYamlAsString(testIdpStubsConfiguration);
         writeStringToFile(YML_FILE, yaml);

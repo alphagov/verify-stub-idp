@@ -5,6 +5,7 @@ import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.repositories.jdbc.json.IdpUserJson;
 
 import javax.inject.Singleton;
+import java.util.Optional;
 
 import static uk.gov.ida.stub.idp.utils.Exceptions.uncheck;
 

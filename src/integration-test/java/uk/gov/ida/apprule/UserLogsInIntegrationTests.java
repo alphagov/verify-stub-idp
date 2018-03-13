@@ -1,6 +1,5 @@
 package uk.gov.ida.apprule;
 
-import net.shibboleth.utilities.java.support.resolver.ResolverException;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.junit.Before;
@@ -16,8 +15,6 @@ import uk.gov.ida.stub.idp.cookies.CookieNames;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.security.cert.CertificateException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.ida.common.HttpHeaders.CACHE_CONTROL_KEY;
@@ -91,7 +88,7 @@ public class UserLogsInIntegrationTests {
     }
 
     @Test
-    public void randomizedPidTest() throws IOException, ResolverException, CertificateException {
+    public void randomizedPidTest() {
         final AuthnRequestSteps.Cookies cookies1 = authnRequestSteps.userPostsAuthnRequestToStubIdp();
         authnRequestSteps.userLogsIn(cookies1);
         final String samlResponse = authnRequestSteps.userConsentsReturnSamlResponse(cookies1, false);

@@ -1,6 +1,5 @@
 package uk.gov.ida.stub.idp.builders;
 
-import com.google.common.base.Optional;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import uk.gov.ida.saml.core.domain.Address;
@@ -10,6 +9,7 @@ import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -32,18 +32,18 @@ public class IdpUserBuilder {
         null,
         true
     ));
-    private List<MatchingDatasetValue<String>> surnames = singletonList(new MatchingDatasetValue<String>(
-        "default-surname",
-        DateTime.now().minusYears(20),
-        null,
-        true
+    private List<MatchingDatasetValue<String>> surnames = singletonList(new MatchingDatasetValue<>(
+            "default-surname",
+            DateTime.now().minusYears(20),
+            null,
+            true
     ));
-    private Optional<MatchingDatasetValue<Gender>> gender = Optional.absent();
-    private List<MatchingDatasetValue<LocalDate>> dateOfBirths = singletonList(new MatchingDatasetValue<LocalDate>(
-        LocalDate.now().minusYears(20),
-        DateTime.now().minusYears(20),
-        null,
-        true
+    private Optional<MatchingDatasetValue<Gender>> gender = Optional.empty();
+    private List<MatchingDatasetValue<LocalDate>> dateOfBirths = singletonList(new MatchingDatasetValue<>(
+            LocalDate.now().minusYears(20),
+            DateTime.now().minusYears(20),
+            null,
+            true
     ));
     private List<Address> addresses = emptyList();
     private AuthnContext levelOfAssurance = LEVEL_1;

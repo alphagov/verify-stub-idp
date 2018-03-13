@@ -2,6 +2,7 @@ package uk.gov.ida.stub.idp.repositories.jdbc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import org.jdbi.v3.core.Jdbi;
 import org.junit.Before;
@@ -36,6 +37,7 @@ public class JDBIUserRepositoryTest {
         ObjectMapper mapper = new ObjectMapper() {{
             registerModule(new JodaModule());
             registerModule(new GuavaModule());
+            registerModule(new Jdk8Module());
         }};
 
         userMapper = new UserMapper(mapper);

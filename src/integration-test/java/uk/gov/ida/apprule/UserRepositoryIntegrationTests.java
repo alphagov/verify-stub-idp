@@ -1,7 +1,6 @@
 package uk.gov.ida.apprule;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.base.Optional;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
@@ -13,10 +12,11 @@ import uk.gov.ida.apprule.support.StubIdpAppRule;
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.saml.core.domain.Gender;
-import uk.gov.ida.stub.idp.builders.SimpleMdsValueBuilder;
 import uk.gov.ida.stub.idp.Urls;
+import uk.gov.ida.stub.idp.builders.MatchingDatasetValueBuilder;
 import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 import uk.gov.ida.stub.idp.dtos.IdpUserDto;
+import uk.gov.ida.stub.idp.utils.TestUserCredentials;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Invocation;
@@ -26,10 +26,8 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
-import uk.gov.ida.stub.idp.utils.TestUserCredentials;
+import java.util.Optional;
 
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.fromNullable;
 import static java.util.Arrays.asList;
 import static javax.ws.rs.client.Entity.entity;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
@@ -68,15 +66,15 @@ public class UserRepositoryIntegrationTests {
     @Test
     public void addedUserShouldBePersisted() throws Exception {
         IdpUserDto user = new IdpUserDto(
-                fromNullable("a pid"),
+                Optional.ofNullable("a pid"),
                 "some test user",
                 "some password",
-                createOptionalMdsValue(fromNullable("some user firstname")),
-                createOptionalMdsValue(fromNullable("some user middlename")),
-                Collections.singletonList(SimpleMdsValueBuilder.<String>aSimpleMdsValue().withValue("some user addSurname").build()),
-                createOptionalMdsValue(fromNullable(Gender.FEMALE)),
-                createOptionalMdsValue(fromNullable(LocalDate.now())),
-                fromNullable(anAddress().withLines(asList("blah", "blah2")).withPostCode("WC1V7AA").withVerified(true).build()),
+                createOptionalMdsValue(Optional.ofNullable("some user firstname")),
+                createOptionalMdsValue(Optional.ofNullable("some user middlename")),
+                Collections.singletonList(MatchingDatasetValueBuilder.<String>aSimpleMdsValue().withValue("some user addSurname").build()),
+                createOptionalMdsValue(Optional.ofNullable(Gender.FEMALE)),
+                createOptionalMdsValue(Optional.ofNullable(LocalDate.now())),
+                Optional.ofNullable(anAddress().withLines(asList("blah", "blah2")).withPostCode("WC1V7AA").withVerified(true).build()),
                 AuthnContext.LEVEL_4.toString()
         );
 
@@ -183,18 +181,18 @@ public class UserRepositoryIntegrationTests {
 
     private static <T> Optional<MatchingDatasetValue<T>> createOptionalMdsValue(Optional<T> value) {
         if (!value.isPresent()) {
-            return absent();
+            return Optional.empty();
         }
 
-        return fromNullable(new MatchingDatasetValue<>(value.get(), null, null, true));
+        return Optional.ofNullable(new MatchingDatasetValue<>(value.get(), null, null, true));
     }
 
     protected static class UserBuilder {
-        private Optional<String> levelOfAssurance = fromNullable(AuthnContext.LEVEL_1.toString());
-        private Optional<String> username = fromNullable("default-username");
-        private Optional<Address> address = fromNullable(anAddress().withLines(asList("line-1", "line-2")).build());
-        private Optional<String> password = fromNullable("default-password");
-        private Optional<String> pid = fromNullable("default-pid");
+        private Optional<String> levelOfAssurance = Optional.ofNullable(AuthnContext.LEVEL_1.toString());
+        private Optional<String> username = Optional.ofNullable("default-username");
+        private Optional<Address> address = Optional.ofNullable(anAddress().withLines(asList("line-1", "line-2")).build());
+        private Optional<String> password = Optional.ofNullable("default-password");
+        private Optional<String> pid = Optional.ofNullable("default-pid");
 
         public static UserBuilder aUser() {
             return new UserBuilder();
@@ -203,34 +201,34 @@ public class UserRepositoryIntegrationTests {
         public IdpUserDto build() {
             return new IdpUserDto(
                     pid,
-                    username.orNull(),
-                    password.orNull(),
-                    Optional.<MatchingDatasetValue<String>>absent(),
-                    Optional.<MatchingDatasetValue<String>>absent(),
-                    Collections.<MatchingDatasetValue<String>>emptyList(),
-                    Optional.<MatchingDatasetValue<Gender>>absent(),
-                    Optional.<MatchingDatasetValue<LocalDate>>absent(),
+                    username.orElse(null),
+                    password.orElse(null),
+                    Optional.empty(),
+                    Optional.empty(),
+                    Collections.emptyList(),
+                    Optional.empty(),
+                    Optional.empty(),
                     address,
-                    levelOfAssurance.orNull());
+                    levelOfAssurance.orElse(null));
         }
 
         public UserBuilder withLevelOfAssurance(String levelOfAssurance) {
-            this.levelOfAssurance = fromNullable(levelOfAssurance);
+            this.levelOfAssurance = Optional.ofNullable(levelOfAssurance);
             return this;
         }
 
         public UserBuilder withUsername(String username) {
-            this.username = fromNullable(username);
+            this.username = Optional.ofNullable(username);
             return this;
         }
 
         public UserBuilder withPassword(String password) {
-            this.password = fromNullable(password);
+            this.password = Optional.ofNullable(password);
             return this;
         }
 
         public UserBuilder withPid(String pid) {
-            this.pid = fromNullable(pid);
+            this.pid = Optional.ofNullable(pid);
             return this;
         }
     }

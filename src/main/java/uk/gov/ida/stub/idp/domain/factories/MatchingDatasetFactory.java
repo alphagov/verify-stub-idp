@@ -20,7 +20,7 @@ public final class MatchingDatasetFactory {
              from(user.getFirstnames()),
              from(user.getMiddleNames()),
              from(user.getSurnames()),
-             user.getGender().transform(MatchingDatasetFactory::from),
+             user.getGender().map(MatchingDatasetValue::asSimpleMdsValue),
              from(user.getDateOfBirths()),
              getCurrentAddresses(
                  user.getAddresses()),

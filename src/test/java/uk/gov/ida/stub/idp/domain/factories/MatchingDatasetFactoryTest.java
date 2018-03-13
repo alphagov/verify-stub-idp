@@ -13,11 +13,11 @@ import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 
 import java.util.Collections;
+import java.util.Optional;
 import java.util.UUID;
 
-import static com.google.common.base.Optional.fromNullable;
 import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 public class MatchingDatasetFactoryTest {
 
@@ -30,7 +30,7 @@ public class MatchingDatasetFactoryTest {
     asList(new MatchingDatasetValue<>("Jack", DateTime.now(), DateTime.now(), true), new MatchingDatasetValue<>("Spud", DateTime.now(), DateTime.now(), true)),
     asList(new MatchingDatasetValue<>("Cornelius", DateTime.now(), DateTime.now(), true), new MatchingDatasetValue<>("Aurelius", DateTime.now(), DateTime.now(), true)),
     asList(new MatchingDatasetValue<>("Bauer", DateTime.now(), DateTime.now(), true), new MatchingDatasetValue<>("Superman", DateTime.now().minusDays(5), DateTime.now().minusDays(3), true)),
-    fromNullable(new MatchingDatasetValue<>(Gender.MALE, DateTime.now(), DateTime.now(), true)),
+    Optional.of(new MatchingDatasetValue<>(Gender.MALE, DateTime.now(), DateTime.now(), true)),
     asList(new MatchingDatasetValue<>(LocalDate.parse("1984-02-29"), DateTime.now(), DateTime.now(), true), new MatchingDatasetValue<>(LocalDate.parse("1984-03-01"), DateTime.now(), DateTime.now(), true)),
     asList(previousAddress,
             currentAddress),

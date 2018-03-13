@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.google.common.base.Optional.fromNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -118,14 +117,14 @@ public class ConsentResourceTest {
     }
 
     private Optional<DatabaseIdpUser> newUser(AuthnContext levelOfAssurance) {
-        return Optional.ofNullable(new DatabaseIdpUser(
+        return Optional.of(new DatabaseIdpUser(
                 idpName + "-new",
                 UUID.randomUUID().toString(),
                 "bar",
                 Collections.singletonList(createMdsValue("Jack")),
                 Collections.emptyList(),
                 Collections.singletonList(createMdsValue("Griffin")),
-                fromNullable(createMdsValue(Gender.NOT_SPECIFIED)),
+                Optional.of(createMdsValue(Gender.NOT_SPECIFIED)),
                 Collections.singletonList(createMdsValue(LocalDate.parse("1983-06-21"))),
                 Collections.singletonList(new AddressFactory().create(Collections.singletonList("Lion's Head Inn"), "1A 2BC", null, null, null, null, true)),
                 levelOfAssurance));

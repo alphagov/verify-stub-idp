@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.google.common.base.Optional.fromNullable;
 import static java.util.Arrays.asList;
 
 public class IdpUserService {
@@ -101,11 +100,11 @@ public class IdpUserService {
 
         return idp.createUser(
                 Optional.empty(),
-                Collections.singletonList(createMdsValue(fromNullable(firstname))),
+                Collections.singletonList(createMdsValue(Optional.ofNullable(firstname))),
                 Collections.emptyList(),
-                Collections.singletonList(createMdsValue(fromNullable(surname))),
-                com.google.common.base.Optional.absent(),
-                Collections.singletonList(createMdsValue(fromNullable(parsedDateOfBirth))),
+                Collections.singletonList(createMdsValue(Optional.ofNullable(surname))),
+                Optional.empty(),
+                Collections.singletonList(createMdsValue(Optional.ofNullable(parsedDateOfBirth))),
                 Collections.singletonList(address),
                 username,
                 password,
@@ -122,7 +121,7 @@ public class IdpUserService {
         return true;
     }
 
-    private static <T> MatchingDatasetValue<T> createMdsValue(com.google.common.base.Optional<T> value) {
+    private static <T> MatchingDatasetValue<T> createMdsValue(Optional<T> value) {
         return new MatchingDatasetValue<>(value.get(), null, null, true);
     }
 
@@ -134,7 +133,7 @@ public class IdpUserService {
                 Collections.singletonList(createSimpleMdsValue2("firstname")),
                 Collections.emptyList(),
                 Collections.singletonList(createSimpleMdsValue2("smith")),
-                fromNullable(createSimpleMdsValue2(Gender.FEMALE)),
+                Optional.of(createSimpleMdsValue2(Gender.FEMALE)),
                 Collections.emptyList(),
                 Collections.singletonList(
                         new Address(asList("line1", "line2"), "KT23 4XD", null, "fhfhf", DateTime.parse("2000-01-01"), DateTime.parse("2013-05-05"), false)
