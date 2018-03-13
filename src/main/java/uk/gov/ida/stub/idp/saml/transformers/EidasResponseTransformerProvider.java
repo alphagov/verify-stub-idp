@@ -43,6 +43,6 @@ public class EidasResponseTransformerProvider {
                 entityToEncryptForLocator,
                 signatureAlgorithm,
                 digestAlgorithm,
-                new EncrypterFactory().withAes256Encryption());
+                new EncrypterFactory().withDataEncryptionAlgorithm(EncryptionConstants.ALGO_ID_BLOCKCIPHER_AES128));
     }
 }

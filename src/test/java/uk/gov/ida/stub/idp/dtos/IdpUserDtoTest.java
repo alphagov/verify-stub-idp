@@ -7,7 +7,7 @@ import org.junit.Test;
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.Gender;
 import uk.gov.ida.stub.idp.builders.AddressBuilder;
-import uk.gov.ida.stub.idp.builders.SimpleMdsValueBuilder;
+import uk.gov.ida.stub.idp.builders.MatchingDatasetValueBuilder;
 import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 
 import java.io.IOException;
@@ -33,7 +33,7 @@ public class IdpUserDtoTest {
                 .addSurname(createSimpleMdsValue("Smith"))
                 .addSurname(createSimpleMdsValue("Henry"))
                 .withGender(
-                        SimpleMdsValueBuilder.<Gender>aSimpleMdsValue()
+                        MatchingDatasetValueBuilder.<Gender>aSimpleMdsValue()
                                 .withValue(Gender.MALE)
                                 .withFrom(parse("1980-01-01"))
                                 .withTo(parse("2013-01-01"))
@@ -41,7 +41,7 @@ public class IdpUserDtoTest {
                                 .build()
                 )
                 .withDateOfBirth(
-                        SimpleMdsValueBuilder.<LocalDate>aSimpleMdsValue()
+                        MatchingDatasetValueBuilder.<LocalDate>aSimpleMdsValue()
                                 .withValue(LocalDate.parse("1970-01-01"))
                                 .withFrom(parse("1980-01-01"))
                                 .withTo(parse("2013-01-01"))
@@ -141,7 +141,7 @@ public class IdpUserDtoTest {
 
 
     private MatchingDatasetValue<String> createSimpleMdsValue(String value) {
-        return SimpleMdsValueBuilder.<String>aSimpleMdsValue()
+        return MatchingDatasetValueBuilder.<String>aSimpleMdsValue()
                 .withValue(value)
                 .withFrom(parse("1980-01-01"))
                 .withTo(parse("2013-01-01"))

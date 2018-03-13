@@ -3,7 +3,7 @@ package uk.gov.ida.stub.idp.builders;
 import org.joda.time.DateTime;
 import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 
-public class SimpleMdsValueBuilder<T> {
+public class MatchingDatasetValueBuilder<T> {
 
     private T value = null;
 
@@ -11,30 +11,30 @@ public class SimpleMdsValueBuilder<T> {
     private DateTime to = DateTime.now().plusDays(5);
     private boolean verified = false;
 
-    public static <T> SimpleMdsValueBuilder<T> aSimpleMdsValue() {
-        return new SimpleMdsValueBuilder<>();
+    public static <T> MatchingDatasetValueBuilder<T> aSimpleMdsValue() {
+        return new MatchingDatasetValueBuilder<>();
     }
 
     public MatchingDatasetValue<T> build() {
         return new MatchingDatasetValue<>(value, from, to, verified);
     }
 
-    public SimpleMdsValueBuilder<T> withValue(T value) {
+    public MatchingDatasetValueBuilder<T> withValue(T value) {
         this.value = value;
         return this;
     }
 
-    public SimpleMdsValueBuilder<T> withFrom(DateTime from) {
+    public MatchingDatasetValueBuilder<T> withFrom(DateTime from) {
         this.from = from;
         return this;
     }
 
-    public SimpleMdsValueBuilder<T> withTo(DateTime to) {
+    public MatchingDatasetValueBuilder<T> withTo(DateTime to) {
         this.to = to;
         return this;
     }
 
-    public SimpleMdsValueBuilder<T> withVerifiedStatus(boolean verified) {
+    public MatchingDatasetValueBuilder<T> withVerifiedStatus(boolean verified) {
         this.verified = verified;
         return this;
     }
