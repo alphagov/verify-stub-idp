@@ -7,7 +7,7 @@ applications:
       LOG_PATH: /app/ida-stub-idp/logs
       LOG_LEVEL: INFO
       CONFIG_FILE: /app/ida-stub-idp/stub-idp.yml
-      ENTITY_ID: "http://stub_idp.paas.org/%s/SSO/POST"
+      ENTITY_ID: "http://stub_idp.acme.org/%s/SSO/POST"
       KEY_TYPE: encoded
       CERT_TYPE: encoded
       TRUSTSTORE_TYPE: encoded
