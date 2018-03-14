@@ -16,7 +16,7 @@ public class SamlResponseFromValue<T> implements SamlResponse {
         this.hubUrl = hubUrl;
     }
 
-    public T getValue() {
+    public T getResponseObject() {
         return response;
     }
 
@@ -24,7 +24,7 @@ public class SamlResponseFromValue<T> implements SamlResponse {
         return relayState;
     }
 
-    public String getResponse() {
+    public String getResponseString() {
         return transformer.apply(response);
     }
 

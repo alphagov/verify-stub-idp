@@ -35,7 +35,15 @@ public class EidasResponseBuilder {
     }
 
     public EidasResponseBuilder withStatus(String statusCodeValue) {
-        eidasResponse.setStatus(createStatus(statusCodeValue));
+        eidasResponse.setStatus(createStatus(buildStatusCode(statusCodeValue)));
+        return this;
+    }
+
+    public EidasResponseBuilder withStatus(String statusCodeValue, String subStatusCodeValue) {
+        StatusCode substatusCode = buildStatusCode(subStatusCodeValue);
+        StatusCode statusCode = buildStatusCode(statusCodeValue);
+        statusCode.setStatusCode(substatusCode);
+        eidasResponse.setStatus(createStatus(statusCode));
         return this;
     }
 
@@ -100,12 +108,16 @@ public class EidasResponseBuilder {
         return idGeneratorStrategy.generateIdentifier(true);
     }
 
-    private Status createStatus(String statusCodeValue) {
+    private Status createStatus(StatusCode statusCode) {
         Status status = build(Status.DEFAULT_ELEMENT_NAME);
-        StatusCode statusCode = build(StatusCode.DEFAULT_ELEMENT_NAME);
-        statusCode.setValue(statusCodeValue);
         status.setStatusCode(statusCode);
         return status;
+    }
+
+    private StatusCode buildStatusCode(String statusCodeValue) {
+        StatusCode statusCode = build(StatusCode.DEFAULT_ELEMENT_NAME);
+        statusCode.setValue(statusCodeValue);
+        return statusCode;
     }
 
     private Issuer createIssuer(String issuerId) {
@@ -117,5 +129,10 @@ public class EidasResponseBuilder {
 
     private static <T extends XMLObject> T build(QName elementName) {
         return (T) XMLObjectSupport.buildXMLObject(elementName);
+    }
+
+    public EidasResponseBuilder withRandomId() {
+        this.withId(generateRandomId());
+        return this;
     }
 }

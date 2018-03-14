@@ -73,7 +73,7 @@ import uk.gov.ida.stub.idp.saml.transformers.OutboundResponseFromIdpTransformerP
 import uk.gov.ida.stub.idp.security.HubEncryptionKeyStore;
 import uk.gov.ida.stub.idp.security.IdaAuthnRequestKeyStore;
 import uk.gov.ida.stub.idp.services.AuthnRequestReceiverService;
-import uk.gov.ida.stub.idp.services.EidasSuccessAuthnResponseService;
+import uk.gov.ida.stub.idp.services.EidasAuthnResponseService;
 import uk.gov.ida.stub.idp.services.GeneratePasswordService;
 import uk.gov.ida.stub.idp.services.IdpUserService;
 import uk.gov.ida.stub.idp.services.NonSuccessAuthnResponseService;
@@ -153,7 +153,7 @@ public class StubIdpModule extends AbstractModule {
 
         bind(AuthnRequestReceiverService.class);
         bind(SuccessAuthnResponseService.class);
-        bind(EidasSuccessAuthnResponseService.class);
+        bind(EidasAuthnResponseService.class);
         bind(GeneratePasswordService.class);
         bind(NonSuccessAuthnResponseService.class);
         bind(IdpUserService.class);

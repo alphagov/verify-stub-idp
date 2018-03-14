@@ -14,7 +14,7 @@ import uk.gov.ida.stub.idp.domain.EidasUser;
 import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
 import uk.gov.ida.stub.idp.repositories.Session;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
-import uk.gov.ida.stub.idp.services.EidasSuccessAuthnResponseService;
+import uk.gov.ida.stub.idp.services.EidasAuthnResponseService;
 import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
 
 import javax.ws.rs.WebApplicationException;
@@ -43,7 +43,7 @@ public class EidasConsentResourceTest {
     private SessionRepository sessionRepository;
 
     @Mock
-    private EidasSuccessAuthnResponseService successAuthnResponseService;
+    private EidasAuthnResponseService successAuthnResponseService;
 
     @Mock
     private SamlResponseRedirectViewFactory samlResponseRedirectViewFactory;
@@ -70,7 +70,7 @@ public class EidasConsentResourceTest {
     @Test
     public void postShouldReturnASuccessfulResponseWhenSessionIsValid() {
         SamlResponseFromValue<org.opensaml.saml.saml2.core.Response> samlResponse = new SamlResponseFromValue<org.opensaml.saml.saml2.core.Response>(null, (r) -> null, null, null);
-        when(successAuthnResponseService.getEidasSuccessResponse(session, SCHEME_NAME)).thenReturn(samlResponse);
+        when(successAuthnResponseService.getSuccessResponse(session, SCHEME_NAME)).thenReturn(samlResponse);
         when(samlResponseRedirectViewFactory.sendSamlMessage(samlResponse)).thenReturn(Response.ok().build());
 
         final Response response = resource.consent(SCHEME_NAME, "submit", SESSION_ID);

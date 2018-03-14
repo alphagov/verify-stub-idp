@@ -35,9 +35,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class EidasSuccessAuthnResponseServiceTest {
+public class EidasAuthnResponseServiceTest {
+    private final String SCHEME_ID = "stub-country";
+    private final String SAML_RESPONSE_AS_STRING = "some response";
 
-    private EidasSuccessAuthnResponseService service;
+    private EidasAuthnResponseService service;
 
     @Mock
     private EidasResponseTransformerProvider eidasResponseTransformerProvider;
@@ -50,7 +52,7 @@ public class EidasSuccessAuthnResponseServiceTest {
     @Before
     public void setUp() {
         IdaSamlBootstrap.bootstrap();
-        service = new EidasSuccessAuthnResponseService(
+        service = new EidasAuthnResponseService(
             "hubEntityId",
             eidasResponseTransformerProvider,
             Optional.of(metadataRepository),
@@ -63,12 +65,11 @@ public class EidasSuccessAuthnResponseServiceTest {
         EidasAuthnRequest request = new EidasAuthnRequest("request-id", "issuer", "destination", "loa", Collections.emptyList());
         Session session = new Session(new SessionId("session-id"), request, "relay-state", Collections.emptyList(), Collections.emptyList(), Optional.empty(), Optional.empty());
         session.setEidasUser(new EidasUser("Firstname", "Familyname", "pid", dateOfBirth, null, null));
-        String samlResponseAsString = "some response";
         when(metadataRepository.getAssertionConsumerServiceLocation()).thenReturn(new URI("http://hub.url"));
-        when(eidasResponseTransformerProvider.getTransformer()).thenReturn(x -> samlResponseAsString);
+        when(eidasResponseTransformerProvider.getTransformer()).thenReturn(x -> SAML_RESPONSE_AS_STRING);
 
-        SamlResponseFromValue<Response> samlResponse = service.getEidasSuccessResponse(session, "stub-country");
-        Response response = samlResponse.getValue();
+        SamlResponseFromValue<Response> samlResponse = service.getSuccessResponse(session, SCHEME_ID);
+        Response response = samlResponse.getResponseObject();
         assertThat(response.getIssuer().getValue()).isEqualTo("http://stub/stub-country/ServiceMetadata");
         assertThat(response.getStatus().getStatusCode().getValue()).isEqualTo(StatusCode.SUCCESS);
         assertThat(response.getInResponseTo()).isEqualTo("request-id");
@@ -78,7 +79,25 @@ public class EidasSuccessAuthnResponseServiceTest {
         assertThat(response.getAssertions().get(0).getAttributeStatements()).hasSize(1);
         assertThatRequiredAssertionsAreIncluded(response.getAssertions().get(0).getAttributeStatements().get(0).getAttributes());
 
-        assertThat(samlResponse.getResponse()).isEqualTo(samlResponseAsString);
+        assertThat(samlResponse.getResponseString()).isEqualTo(SAML_RESPONSE_AS_STRING);
+    }
+
+    @Test
+    public void getAuthnFailResponse() throws URISyntaxException {
+        EidasAuthnRequest request = new EidasAuthnRequest("request-id", "issuer", "destination", "loa", Collections.emptyList());
+        Session session = new Session(new SessionId("session-id"), request, "relay-state", Collections.emptyList(), Collections.emptyList(), Optional.empty(), Optional.empty());
+        when(metadataRepository.getAssertionConsumerServiceLocation()).thenReturn(new URI("http://hub.url"));
+        when(eidasResponseTransformerProvider.getTransformer()).thenReturn(x -> SAML_RESPONSE_AS_STRING);
+
+        SamlResponseFromValue<Response> samlResponse = service.generateAuthnFailed(session, SCHEME_ID);
+        Response response = samlResponse.getResponseObject();
+        assertThat(response.getIssuer().getValue()).isEqualTo("http://stub/stub-country/ServiceMetadata");
+        assertThat(response.getStatus().getStatusCode().getValue()).isEqualTo(StatusCode.RESPONDER);
+        assertThat(response.getStatus().getStatusCode().getStatusCode().getValue()).isEqualTo(StatusCode.AUTHN_FAILED);
+        assertThat(response.getInResponseTo()).isEqualTo("request-id");
+        assertThat(response.getDestination()).isEqualTo("http://hub.url");
+
+        assertThat(samlResponse.getResponseString()).isEqualTo(SAML_RESPONSE_AS_STRING);
     }
 
     private void assertThatRequiredAssertionsAreIncluded(List<Attribute> attributes) {

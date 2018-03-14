@@ -8,11 +8,14 @@ import uk.gov.ida.stub.idp.cookies.CookieNames;
 import uk.gov.ida.stub.idp.domain.EidasAddress;
 import uk.gov.ida.stub.idp.domain.EidasUser;
 import uk.gov.ida.stub.idp.domain.Gender;
+import uk.gov.ida.stub.idp.domain.SamlResponse;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASession;
 import uk.gov.ida.stub.idp.repositories.Session;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
+import uk.gov.ida.stub.idp.services.EidasAuthnResponseService;
 import uk.gov.ida.stub.idp.views.EidasLoginPageView;
 import uk.gov.ida.stub.idp.views.ErrorMessageType;
+import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
@@ -35,16 +38,21 @@ import static java.text.MessageFormat.format;
 import static uk.gov.ida.stub.idp.views.ErrorMessageType.NO_ERROR;
 
 @Path(Urls.EIDAS_LOGIN_RESOURCE)
-@Produces(MediaType.TEXT_HTML)
 @SessionCookieValueMustExistAsASession
 public class EidasLoginPageResource {
 
     private final SessionRepository sessionRepository;
+    private final EidasAuthnResponseService eidasSuccessAuthnResponseRequest;
+    private final SamlResponseRedirectViewFactory samlResponseRedirectViewFactory;
 
     @Inject
     public EidasLoginPageResource(
-            SessionRepository sessionRepository) {
+            SessionRepository sessionRepository,
+            EidasAuthnResponseService eidasSuucessAuthnResponseRequest,
+            SamlResponseRedirectViewFactory samlResponseRedirectViewFactory) {
         this.sessionRepository = sessionRepository;
+        this.eidasSuccessAuthnResponseRequest = eidasSuucessAuthnResponseRequest;
+        this.samlResponseRedirectViewFactory = samlResponseRedirectViewFactory;
     }
 
     @GET
@@ -61,6 +69,7 @@ public class EidasLoginPageResource {
     }
 
     @POST
+    @Produces(MediaType.TEXT_HTML)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response post(
             @PathParam(Urls.SCHEME_ID_PARAM) @NotNull String schemeName,
@@ -79,6 +88,19 @@ public class EidasLoginPageResource {
                 .build();
     }
 
+    @POST
+    @Path(Urls.LOGIN_AUTHN_FAILURE_PATH)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response postAuthnFailure(
+            @PathParam(Urls.SCHEME_ID_PARAM) @NotNull String idpName,
+            @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
+
+            Session session = checkAndDeleteAndGetSession(idpName, sessionCookie);
+
+            final SamlResponse loginFailureResponse = eidasSuccessAuthnResponseRequest.generateAuthnFailed(session, idpName);
+            return samlResponseRedirectViewFactory.sendSamlMessage(loginFailureResponse);
+    }
+
     private Session checkSession(String idpName, SessionId sessionCookie) {
         if (sessionCookie == null || Strings.isNullOrEmpty(sessionCookie.toString())) {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Unable to locate session cookie for " + idpName))).build());
@@ -90,6 +112,19 @@ public class EidasLoginPageResource {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Session is invalid for " + idpName))).build());
         }
 
+        return session.get();
+    }
+
+    private Session checkAndDeleteAndGetSession(String idpName, SessionId sessionCookie) {
+        if (Strings.isNullOrEmpty(sessionCookie.toString())) {
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Unable to locate session cookie for " + idpName))).build());
+        }
+
+        Optional<Session> session = sessionRepository.deleteAndGet(sessionCookie);
+
+        if (!session.isPresent()) {
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Session is invalid for " + idpName))).build());
+        }
         return session.get();
     }
 

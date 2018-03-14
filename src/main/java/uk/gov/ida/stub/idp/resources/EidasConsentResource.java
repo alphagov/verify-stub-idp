@@ -8,7 +8,7 @@ import uk.gov.ida.stub.idp.domain.SamlResponse;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASession;
 import uk.gov.ida.stub.idp.repositories.Session;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
-import uk.gov.ida.stub.idp.services.EidasSuccessAuthnResponseService;
+import uk.gov.ida.stub.idp.services.EidasAuthnResponseService;
 import uk.gov.ida.stub.idp.views.EidasConsentView;
 import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
 
@@ -32,13 +32,13 @@ import java.util.Optional;
 public class EidasConsentResource {
 
     private final SessionRepository sessionRepository;
-    private final EidasSuccessAuthnResponseService successAuthnResponseService;
+    private final EidasAuthnResponseService successAuthnResponseService;
     private final SamlResponseRedirectViewFactory samlResponseRedirectViewFactory;
 
     @Inject
     public EidasConsentResource(
             SessionRepository sessionRepository,
-            EidasSuccessAuthnResponseService successAuthnResponseService,
+            EidasAuthnResponseService successAuthnResponseService,
             SamlResponseRedirectViewFactory samlResponseRedirectViewFactory) {
         this.successAuthnResponseService = successAuthnResponseService;
         this.sessionRepository = sessionRepository;
@@ -62,7 +62,7 @@ public class EidasConsentResource {
 
         Session session = getAndValidateSession(schemeId, sessionCookie, true);
 
-        SamlResponse samlResponse = successAuthnResponseService.getEidasSuccessResponse(session, schemeId);
+        SamlResponse samlResponse = successAuthnResponseService.getSuccessResponse(session, schemeId);
         return samlResponseRedirectViewFactory.sendSamlMessage(samlResponse);
     }
 

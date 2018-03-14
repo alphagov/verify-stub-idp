@@ -2,7 +2,6 @@ package uk.gov.ida.stub.idp.views;
 
 import com.google.common.net.HttpHeaders;
 import uk.gov.ida.stub.idp.domain.SamlResponse;
-import uk.gov.ida.stub.idp.saml.transformers.EidasResponseTransformerProvider;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
@@ -14,7 +13,6 @@ import java.util.Optional;
  */
 public abstract class SamlMessageRedirectViewFactory {
     private final SamlMessageType samlMessageType;
-    private EidasResponseTransformerProvider eidasResponseTransformerProvider;
 
     @Inject
     public SamlMessageRedirectViewFactory(SamlMessageType samlMessageType){
@@ -22,7 +20,7 @@ public abstract class SamlMessageRedirectViewFactory {
     }
 
     public Response sendSamlMessage(SamlResponse samlResponse) {
-        SamlRedirectView samlFormPostingView = getSamlRedirectView(samlResponse.getHubUrl(), samlResponse.getResponse(), samlResponse.getRelayState(), Optional.empty());
+        SamlRedirectView samlFormPostingView = getSamlRedirectView(samlResponse.getHubUrl(), samlResponse.getResponseString(), samlResponse.getRelayState(), Optional.empty());
         return Response.ok(samlFormPostingView)
             .header(HttpHeaders.CACHE_CONTROL, "no-cache, no-store")
             .header(HttpHeaders.PRAGMA, "no-cache")

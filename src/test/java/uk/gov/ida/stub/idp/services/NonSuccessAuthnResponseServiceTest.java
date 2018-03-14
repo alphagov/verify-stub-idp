@@ -80,7 +80,7 @@ public class NonSuccessAuthnResponseServiceTest {
 
     @Test
     public void shouldBuildAuthnPending(){
-        nonSuccessAuthnResponseService.generateAuthnPending(IDP_NAME, REQUEST_ID, RELAY_STATE).getResponse();
+        nonSuccessAuthnResponseService.generateAuthnPending(IDP_NAME, REQUEST_ID, RELAY_STATE).getResponseString();
 
         verify(transformer).apply(captor.capture());
         assertThat(captor.getValue().getStatus()).isEqualTo(IdpIdaStatus.authenticationPending());
@@ -88,7 +88,7 @@ public class NonSuccessAuthnResponseServiceTest {
 
     @Test
     public void shouldBuildNoAuthnContext(){
-        nonSuccessAuthnResponseService.generateNoAuthnContext(IDP_NAME, REQUEST_ID, RELAY_STATE).getResponse();
+        nonSuccessAuthnResponseService.generateNoAuthnContext(IDP_NAME, REQUEST_ID, RELAY_STATE).getResponseString();
 
         verify(transformer).apply(captor.capture());
         assertThat(captor.getValue().getStatus()).isEqualTo(IdpIdaStatus.noAuthenticationContext());
@@ -96,7 +96,7 @@ public class NonSuccessAuthnResponseServiceTest {
 
     @Test
     public void shouldBuildUpliftFailed(){
-        nonSuccessAuthnResponseService.generateUpliftFailed(IDP_NAME, REQUEST_ID, RELAY_STATE).getResponse();
+        nonSuccessAuthnResponseService.generateUpliftFailed(IDP_NAME, REQUEST_ID, RELAY_STATE).getResponseString();
 
         verify(transformer).apply(captor.capture());
         assertThat(captor.getValue().getStatus()).isEqualTo(IdpIdaStatus.upliftFailed());
@@ -104,7 +104,7 @@ public class NonSuccessAuthnResponseServiceTest {
 
     @Test
     public void shouldBuildNoAuthnCancel(){
-        nonSuccessAuthnResponseService.generateAuthnCancel(IDP_NAME, REQUEST_ID, RELAY_STATE).getResponse();
+        nonSuccessAuthnResponseService.generateAuthnCancel(IDP_NAME, REQUEST_ID, RELAY_STATE).getResponseString();
 
         verify(transformer).apply(captor.capture());
         assertThat(captor.getValue().getStatus()).isEqualTo(IdpIdaStatus.authenticationCancelled());
@@ -112,7 +112,7 @@ public class NonSuccessAuthnResponseServiceTest {
 
     @Test
     public void shouldBuildNoAuthnFailed(){
-        nonSuccessAuthnResponseService.generateAuthnFailed(IDP_NAME, REQUEST_ID, RELAY_STATE).getResponse();
+        nonSuccessAuthnResponseService.generateAuthnFailed(IDP_NAME, REQUEST_ID, RELAY_STATE).getResponseString();
 
         verify(transformer).apply(captor.capture());
         assertThat(captor.getValue().getStatus()).isEqualTo(IdpIdaStatus.authenticationFailed());
@@ -120,7 +120,7 @@ public class NonSuccessAuthnResponseServiceTest {
 
     @Test
     public void shouldBuildRequesterError(){
-        nonSuccessAuthnResponseService.generateRequesterError(REQUEST_ID, "error", IDP_NAME, RELAY_STATE).getResponse();
+        nonSuccessAuthnResponseService.generateRequesterError(REQUEST_ID, "error", IDP_NAME, RELAY_STATE).getResponseString();
 
         verify(transformer).apply(captor.capture());
         assertThat(captor.getValue().getStatus()).isEqualTo(IdpIdaStatus.requesterError(Optional.of("error")));
@@ -131,7 +131,7 @@ public class NonSuccessAuthnResponseServiceTest {
         Session session = new Session(SessionId.createNewSessionId(),
                 IdaAuthnRequestFromHub.createRequestReceivedFromHub(REQUEST_ID, HUB_URI.toString(), ImmutableList.of(LEVEL_2), false, DateTime.now(), AuthnContextComparisonTypeEnumeration.EXACT),
                 RELAY_STATE, null, null, null, null);
-        nonSuccessAuthnResponseService.generateFraudResponse(IDP_NAME, REQUEST_ID, FraudIndicator.FI01, "ipAddress", session).getResponse();
+        nonSuccessAuthnResponseService.generateFraudResponse(IDP_NAME, REQUEST_ID, FraudIndicator.FI01, "ipAddress", session).getResponseString();
 
         verify(transformer).apply(captor.capture());
         assertThat(captor.getValue().getStatus()).isEqualTo(IdpIdaStatus.success());
