@@ -6,14 +6,13 @@ import org.junit.runner.RunWith;
 import org.opensaml.saml.saml2.core.Response;
 import uk.gov.ida.saml.core.OpenSamlXmlObjectFactory;
 import uk.gov.ida.saml.core.domain.IdentityProviderAssertion;
+import uk.gov.ida.saml.core.test.builders.MatchingDatasetBuilder;
 import uk.gov.ida.saml.core.transformers.outbound.OutboundAssertionToSubjectTransformer;
 import uk.gov.ida.saml.hub.factories.AttributeFactory_1_1;
 import uk.gov.ida.saml.idp.stub.transformers.outbound.IdentityProviderAssertionToAssertionTransformer;
 import uk.gov.ida.saml.idp.stub.transformers.outbound.IdentityProviderAuthnStatementToAuthnStatementTransformer;
-import uk.gov.ida.stub.idp.builders.MatchingDatasetBuilder;
 import uk.gov.ida.stub.idp.domain.IdpIdaStatusMarshaller;
 import uk.gov.ida.stub.idp.domain.OutboundResponseFromIdp;
-import uk.gov.ida.stub.idp.domain.factories.MatchingDatasetFactory;
 import uk.gov.ida.stub.idp.saml.transformers.OutboundResponseFromIdpToSamlResponseTransformer;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,11 +40,9 @@ public class OutboundResponseFromIdpToSamlResponseTransformerTest {
     }
 
     @Test
-    public void transform_shouldTransformMatchingDataAssertion() {
+    public void transform_shouldTransformMatchingDataAssertion() throws Exception {
         Response response = openSamlXmlObjectFactory.createResponse();
-        IdentityProviderAssertion assertion = anIdentityProviderAssertion().withMatchingDataset(
-                MatchingDatasetBuilder.aMatchingDataset().build()
-        ).build();
+        IdentityProviderAssertion assertion = anIdentityProviderAssertion().withMatchingDataset(MatchingDatasetBuilder.aMatchingDataset().build()).build();
         OutboundResponseFromIdp originalResponse = OutboundResponseFromIdp.createSuccessResponseFromIdp(
                 "in-response-to",
                 "issuer-id",

@@ -98,45 +98,35 @@ public class SamlDecrypter {
         return decoratedSamlResponseToIdaResponseIssuedByIdpTransformer.apply(response);
     }
 
-    public IdaKeyStore createHubKeyStore() {
+    public IdaKeyStore createHubKeyStore() throws IOException {
         PrivateKey privateKey = new PrivateKeyFactory().createPrivateKey(Base64.getDecoder().decode(HUB_TEST_PRIVATE_ENCRYPTION_KEY));
 
         PublicKey publicKey = new PublicKeyFactory(new X509CertificateFactory()).createPublicKey(HUB_TEST_PUBLIC_ENCRYPTION_CERT);
 
-        List<KeyPair> encryptionKeys = Arrays.asList(new KeyPair(publicKey, privateKey));
+        List<KeyPair> encryptionKeys = ImmutableList.of(new KeyPair(publicKey, privateKey));
         return new IdaKeyStore(null, encryptionKeys);
     }
 
 
     private DecoratedSamlResponseToIdaResponseIssuedByIdpTransformer buildDecoratedSamlResponseToIdaResponseIssuedByIdpTransformer(SigningCredentialFactory credentialFactory, IdaKeyStore keyStore) {
-        IdaResponseFromIdpUnmarshaller idaResponseUnmarshaller = new IdaResponseFromIdpUnmarshaller(
-                new IdpIdaStatusUnmarshaller(new IdpIdaStatus.IdpIdaStatusFactory(), new SamlStatusToIdpIdaStatusMappingsFactory()),
-                new PassthroughAssertionUnmarshaller(new XmlObjectToBase64EncodedStringTransformer<>(), new AuthnContextFactory())
-        );
-        SamlResponseSignatureValidator samlResponseSignatureValidator = new SamlResponseSignatureValidator(new SamlMessageSignatureValidator(new CredentialFactorySignatureValidator(credentialFactory)));
-        AssertionDecrypter assertionDecrypter = new AssertionDecrypter(new EncryptionAlgorithmValidator(), new DecrypterFactory().createDecrypter(new IdaKeyStoreCredentialRetriever(keyStore).getDecryptingCredentials()));
-        SamlAssertionsSignatureValidator samlAssertionsSignatureValidator = new SamlAssertionsSignatureValidator(new SamlMessageSignatureValidator(new CredentialFactorySignatureValidator(credentialFactory)));
-        EncryptedResponseFromIdpValidator responseFromIdpValidator = new EncryptedResponseFromIdpValidator(new SamlStatusToIdpIdaStatusMappingsFactory());
-        ResponseAssertionsFromIdpValidator responseAssertionsFromIdpValidator = new ResponseAssertionsFromIdpValidator(
-                new IdentityProviderAssertionValidator(
-                        new IssuerValidator(),
-                        new AssertionSubjectValidator(),
-                        new AssertionAttributeStatementValidator(),
-                        new AssertionSubjectConfirmationValidator()),
-                new MatchingDatasetAssertionValidator(new DuplicateAssertionValidator(new ConcurrentHashMap<>())),
-                new AuthnStatementAssertionValidator(new DuplicateAssertionValidator(new ConcurrentHashMap<>())),
-                new IPAddressValidator(),
-                hubEntityId);
-        DestinationValidator destinationValidator = new DestinationValidator(URI.create("http://foo.com"), "/bar");
-        IdpResponseValidator idpResponseValidator = new IdpResponseValidator(
-                samlResponseSignatureValidator,
-                assertionDecrypter,
-                samlAssertionsSignatureValidator,
-                responseFromIdpValidator,
-                destinationValidator,
-                responseAssertionsFromIdpValidator
-        );
-
-        return new DecoratedSamlResponseToIdaResponseIssuedByIdpTransformer(idpResponseValidator, idaResponseUnmarshaller);
+        return new DecoratedSamlResponseToIdaResponseIssuedByIdpTransformer(
+                new IdaResponseFromIdpUnmarshaller(
+                        new IdpIdaStatusUnmarshaller(new IdpIdaStatus.IdpIdaStatusFactory(), new SamlStatusToIdpIdaStatusMappingsFactory()),
+                        new PassthroughAssertionUnmarshaller(new XmlObjectToBase64EncodedStringTransformer<>(), new AuthnContextFactory())),
+                new SamlResponseSignatureValidator(new SamlMessageSignatureValidator(new CredentialFactorySignatureValidator(credentialFactory))),
+                new AssertionDecrypter(new IdaKeyStoreCredentialRetriever(keyStore), new EncryptionAlgorithmValidator(), new DecrypterFactory()),
+                new SamlAssertionsSignatureValidator(new SamlMessageSignatureValidator(new CredentialFactorySignatureValidator(credentialFactory))),
+                new EncryptedResponseFromIdpValidator(new SamlStatusToIdpIdaStatusMappingsFactory()),
+                new ValidateSamlResponseIssuedByIdpDestination(new DestinationValidator(URI.create("http://foo.com/bar")), "/bar"),
+                new ResponseAssertionsFromIdpValidator(
+                        new IdentityProviderAssertionValidator(
+                                new IssuerValidator(),
+                                new AssertionSubjectValidator(),
+                                new AssertionAttributeStatementValidator(),
+                                new AssertionSubjectConfirmationValidator()),
+                        new MatchingDatasetAssertionValidator(new DuplicateAssertionValidator(new ConcurrentHashMap<>())),
+                        new AuthnStatementAssertionValidator(new DuplicateAssertionValidator(new ConcurrentHashMap<>())),
+                        new IPAddressValidator(),
+                        hubEntityId));
     }
 }
