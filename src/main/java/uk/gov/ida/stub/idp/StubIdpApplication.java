@@ -86,13 +86,9 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
 
         bootstrap.addBundle(new DatabaseMigrationBundle());
 
-        final InfinispanBundle infinispanBundle = new InfinispanBundle();
-        // the infinispan cache manager needs to be lazy loaded because it is not initialized at this point.
-        bootstrap.addBundle(infinispanBundle);
-
         GuiceBundle<StubIdpConfiguration> guiceBundle = GuiceBundle
             .defaultBuilder(getConfigurationClass())
-            .modules(new StubIdpModule(infinispanBundle.getInfinispanCacheManagerProvider(), bootstrap),
+            .modules(new StubIdpModule(bootstrap),
                 new DropwizardModule())
             .build();
         bootstrap.addBundle(guiceBundle);
