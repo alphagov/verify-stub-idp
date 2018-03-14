@@ -1,6 +1,7 @@
 package uk.gov.ida.stub.idp.domain;
 
 
+import com.google.common.base.Optional;
 import org.joda.time.LocalDate;
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.AuthnContext;
@@ -9,7 +10,6 @@ import uk.gov.ida.saml.core.domain.SimpleMdsValue;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class IdpUser implements Serializable{
@@ -104,7 +104,7 @@ public class IdpUser implements Serializable{
                 databaseIdpUser.getFirstnames().stream().map(MatchingDatasetValue::asSimpleMdsValue).collect(Collectors.toList()),
                 databaseIdpUser.getMiddleNames().stream().map(MatchingDatasetValue::asSimpleMdsValue).collect(Collectors.toList()),
                 databaseIdpUser.getSurnames().stream().map(MatchingDatasetValue::asSimpleMdsValue).collect(Collectors.toList()),
-                databaseIdpUser.getGender().map(MatchingDatasetValue::asSimpleMdsValue),
+                databaseIdpUser.getGender().transform(MatchingDatasetValue::asSimpleMdsValue),
                 databaseIdpUser.getDateOfBirths().stream().map(MatchingDatasetValue::asSimpleMdsValue).collect(Collectors.toList()),
                 databaseIdpUser.getAddresses(),
                 databaseIdpUser.getLevelOfAssurance()

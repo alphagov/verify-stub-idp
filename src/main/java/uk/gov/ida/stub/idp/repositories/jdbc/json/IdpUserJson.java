@@ -2,6 +2,7 @@ package uk.gov.ida.stub.idp.repositories.jdbc.json;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.common.base.Optional;
 import org.joda.time.LocalDate;
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.AuthnContext;
@@ -10,7 +11,6 @@ import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import static com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion.NON_NULL;
 
@@ -24,7 +24,7 @@ public class IdpUserJson {
     private List<MatchingDatasetValue<String>> firstnames;
     private List<MatchingDatasetValue<String>> middleNames;
     private List<MatchingDatasetValue<String>> surnames;
-    private MatchingDatasetValue<Gender> gender;
+    private Optional<MatchingDatasetValue<Gender>> gender;
     private List<MatchingDatasetValue<LocalDate>> dateOfBirths;
     private List<Address> addresses;
     private AuthnContext levelOfAssurance;
@@ -50,7 +50,7 @@ public class IdpUserJson {
         this.firstnames = firstnames;
         this.middleNames = middleNames;
         this.surnames = surnames;
-        this.gender = gender.orElse(null);
+        this.gender = gender;
         this.dateOfBirths = dateOfBirths;
         this.addresses = addresses;
         this.levelOfAssurance = levelOfAssurance;
@@ -81,7 +81,7 @@ public class IdpUserJson {
     }
 
     public Optional<MatchingDatasetValue<Gender>> getGender() {
-        return Optional.ofNullable(gender);
+        return gender;
     }
 
     public List<MatchingDatasetValue<LocalDate>> getDateOfBirths() {

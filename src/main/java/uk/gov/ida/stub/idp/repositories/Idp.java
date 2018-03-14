@@ -47,7 +47,7 @@ public class Idp {
     }
 
     public Optional<DatabaseIdpUser> getUser(String username, String password) {
-        Optional<DatabaseIdpUser> userForIdp = allIdpsUserRepository.getUserForIdp(friendlyId, username);
+        Optional<DatabaseIdpUser> userForIdp = allIdpsUserRepository.getUserForIdp(friendlyId, username).toJavaUtil();
         if (userForIdp.isPresent() && userForIdp.get().getPassword().equals(password)) {
             return userForIdp;
         }
@@ -60,7 +60,7 @@ public class Idp {
             List<MatchingDatasetValue<String>> firstnames,
             List<MatchingDatasetValue<String>> middleNames,
             List<MatchingDatasetValue<String>> surnames,
-            Optional<MatchingDatasetValue<Gender>> gender,
+            com.google.common.base.Optional<MatchingDatasetValue<Gender>> gender,
             List<MatchingDatasetValue<LocalDate>> dateOfBirths,
             List<Address> addresses,
             String username,
@@ -68,7 +68,7 @@ public class Idp {
             AuthnContext levelOfAssurance) {
 
         String pidValue = pid.isPresent() ? pid.get() : UUID.randomUUID().toString();
-        return allIdpsUserRepository.createUserForIdp(friendlyId, pidValue, firstnames, middleNames, surnames, gender.orElse(null), dateOfBirths, addresses, username, password, levelOfAssurance);
+        return allIdpsUserRepository.createUserForIdp(friendlyId, pidValue, firstnames, middleNames, surnames, gender, dateOfBirths, addresses, username, password, levelOfAssurance);
     }
 
     public void deleteUser(String username) {
@@ -80,7 +80,7 @@ public class Idp {
     }
 
     public Optional<DatabaseIdpUser> getUser(String username) {
-        return allIdpsUserRepository.getUserForIdp(friendlyId, username);
+        return allIdpsUserRepository.getUserForIdp(friendlyId, username).toJavaUtil();
     }
 
     public Collection<DatabaseIdpUser> getAllUsers() {

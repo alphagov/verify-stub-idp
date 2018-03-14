@@ -1,5 +1,7 @@
 package uk.gov.ida.apprule.steps;
 
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import uk.gov.ida.apprule.support.EidasAuthnRequestBuilder;
@@ -15,9 +17,7 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,11 +51,11 @@ public class AuthnRequestSteps {
     }
 
     public Cookies userPostsAuthnRequestToStubIdp() {
-        return userPostsAuthnRequestToStubIdp(Arrays.asList(), Optional.empty(), Optional.empty());
+        return userPostsAuthnRequestToStubIdp(ImmutableList.of(), Optional.absent(), Optional.absent());
     }
 
     public Cookies userPostsAuthnRequestToStubIdp(String hint) {
-        return userPostsAuthnRequestToStubIdp(Arrays.asList(hint), Optional.empty(), Optional.empty());
+        return userPostsAuthnRequestToStubIdp(ImmutableList.of(hint), Optional.absent(), Optional.absent());
     }
 
     public Cookies userPostsAuthnRequestToStubIdp(List<String> hints, Optional<String> language, Optional<Boolean> registration) {
@@ -74,7 +74,7 @@ public class AuthnRequestSteps {
 
     public Cookies userPostsEidasAuthnRequestToStubIdp() {
         String authnRequest = EidasAuthnRequestBuilder.anAuthnRequest().build();
-        Response response = postAuthnRequest(Arrays.asList(), Optional.empty(), Optional.empty(), authnRequest, Urls.EIDAS_SAML2_SSO_RESOURCE);
+        Response response = postAuthnRequest(ImmutableList.of(), Optional.absent(), Optional.absent(), authnRequest, Urls.EIDAS_SAML2_SSO_RESOURCE);
 
         assertThat(response.getStatus()).isEqualTo(303);
         assertThat(response.getLocation().getPath()).startsWith(getStubIdpUri(Urls.EIDAS_LOGIN_RESOURCE).getPath());

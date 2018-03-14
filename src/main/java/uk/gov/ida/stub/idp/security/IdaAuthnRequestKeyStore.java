@@ -9,7 +9,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.security.PublicKey;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static com.google.common.collect.Lists.newArrayList;
 
 public class IdaAuthnRequestKeyStore implements SigningKeyStore {
     private final MetadataRepository metadataRepository;
@@ -23,8 +24,10 @@ public class IdaAuthnRequestKeyStore implements SigningKeyStore {
 
     @Override
     public List<PublicKey> getVerifyingKeysForEntity(String entityId) {
-        return metadataRepository.getSigningCertificates().stream()
-                .map(publicKeyFactory::createPublicKey)
-                .collect(Collectors.toList());
+        List<PublicKey> keys = newArrayList();
+        for (String encodedCertificate : metadataRepository.getSigningCertificates()) {
+            keys.add(publicKeyFactory.createPublicKey(encodedCertificate));
+        }
+        return keys;
     }
 }

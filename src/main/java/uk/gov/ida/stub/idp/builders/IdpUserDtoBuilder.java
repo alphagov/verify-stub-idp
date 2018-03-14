@@ -1,5 +1,6 @@
 package uk.gov.ida.stub.idp.builders;
 
+import com.google.common.base.Optional;
 import org.joda.time.LocalDate;
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.Gender;
@@ -8,17 +9,19 @@ import uk.gov.ida.stub.idp.dtos.IdpUserDto;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.fromNullable;
 
 public class IdpUserDtoBuilder {
 
-    private Optional<String> pid = Optional.empty();
-    private Optional<MatchingDatasetValue<String>> firstName = Optional.empty();
-    private Optional<MatchingDatasetValue<String>> middleNames = Optional.empty();
+    private Optional<String> pid = absent();
+    private Optional<MatchingDatasetValue<String>> firstName = absent();
+    private Optional<MatchingDatasetValue<String>> middleNames = absent();
     private List<MatchingDatasetValue<String>> surnames = new ArrayList<>();
-    private Optional<MatchingDatasetValue<Gender>> gender = Optional.empty();
-    private Optional<MatchingDatasetValue<LocalDate>> dateOfBirth = Optional.empty();
-    private Optional<Address> address = Optional.empty();
+    private Optional<MatchingDatasetValue<Gender>> gender = absent();
+    private Optional<MatchingDatasetValue<LocalDate>> dateOfBirth = absent();
+    private Optional<Address> address = absent();
     private String userName;
     private String password;
     private String levelOfAssurance;
@@ -43,7 +46,7 @@ public class IdpUserDtoBuilder {
     }
 
     public IdpUserDtoBuilder withPid(String pid) {
-        this.pid = Optional.ofNullable(pid);
+        this.pid = fromNullable(pid);
         return this;
     }
 
@@ -58,12 +61,12 @@ public class IdpUserDtoBuilder {
     }
 
     public IdpUserDtoBuilder withFirsName(final MatchingDatasetValue<String> firstName) {
-        this.firstName = Optional.ofNullable(firstName);
+        this.firstName = fromNullable(firstName);
         return this;
     }
 
     public IdpUserDtoBuilder withMiddleNames(final MatchingDatasetValue<String> middleNames) {
-        this.middleNames = Optional.ofNullable(middleNames);
+        this.middleNames = fromNullable(middleNames);
         return this;
     }
 
@@ -73,17 +76,17 @@ public class IdpUserDtoBuilder {
     }
 
     public IdpUserDtoBuilder withGender(final MatchingDatasetValue<Gender> gender) {
-        this.gender = Optional.ofNullable(gender);
+        this.gender = fromNullable(gender);
         return this;
     }
 
     public IdpUserDtoBuilder withDateOfBirth(final MatchingDatasetValue<LocalDate> dateOfBirth) {
-        this.dateOfBirth = Optional.ofNullable(dateOfBirth);
+        this.dateOfBirth = fromNullable(dateOfBirth);
         return this;
     }
 
     public IdpUserDtoBuilder withAddress(final Address address) {
-        this.address = Optional.ofNullable(address);
+        this.address = fromNullable(address);
         return this;
     }
 

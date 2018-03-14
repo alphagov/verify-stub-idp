@@ -66,7 +66,10 @@ public class ConsentView extends IdpPageView {
     }
 
     public String getGender() {
-        return idpUser.getGender().toString();
+        if (idpUser.getGender().isPresent()) {
+            return idpUser.getGender().get().getValue().getValue();
+        }
+        return "";
     }
 
     public Address getAddress() {

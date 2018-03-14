@@ -1,5 +1,6 @@
 package uk.gov.ida.apprule.support;
 
+import com.google.common.collect.ImmutableList;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.xml.BasicParserPool;
 import org.opensaml.saml.saml2.core.Response;
@@ -27,12 +28,12 @@ import uk.gov.ida.saml.hub.transformers.inbound.IdaResponseFromIdpUnmarshaller;
 import uk.gov.ida.saml.hub.transformers.inbound.IdpIdaStatusUnmarshaller;
 import uk.gov.ida.saml.hub.transformers.inbound.PassthroughAssertionUnmarshaller;
 import uk.gov.ida.saml.hub.transformers.inbound.SamlStatusToIdpIdaStatusMappingsFactory;
+import uk.gov.ida.saml.hub.transformers.inbound.decorators.ResponseSizeValidator;
+import uk.gov.ida.saml.hub.transformers.inbound.decorators.ValidateSamlResponseIssuedByIdpDestination;
 import uk.gov.ida.saml.hub.transformers.inbound.providers.DecoratedSamlResponseToIdaResponseIssuedByIdpTransformer;
 import uk.gov.ida.saml.hub.validators.StringSizeValidator;
-import uk.gov.ida.saml.hub.validators.response.common.ResponseSizeValidator;
-import uk.gov.ida.saml.hub.validators.response.idp.IdpResponseValidator;
-import uk.gov.ida.saml.hub.validators.response.idp.components.EncryptedResponseFromIdpValidator;
-import uk.gov.ida.saml.hub.validators.response.idp.components.ResponseAssertionsFromIdpValidator;
+import uk.gov.ida.saml.hub.validators.response.EncryptedResponseFromIdpValidator;
+import uk.gov.ida.saml.hub.validators.response.ResponseAssertionsFromIdpValidator;
 import uk.gov.ida.saml.metadata.IdpMetadataPublicKeyStore;
 import uk.gov.ida.saml.metadata.JerseyClientMetadataResolver;
 import uk.gov.ida.saml.security.AssertionDecrypter;
@@ -49,11 +50,12 @@ import uk.gov.ida.saml.security.validators.signature.SamlResponseSignatureValida
 import uk.gov.ida.saml.serializers.XmlObjectToBase64EncodedStringTransformer;
 
 import javax.ws.rs.client.Client;
+import java.io.IOException;
 import java.net.URI;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.util.Arrays;
+import java.security.cert.CertificateException;
 import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -73,7 +75,7 @@ public class SamlDecrypter {
         this.hubEntityId = hubEntityId;
     }
 
-    public InboundResponseFromIdp decryptSaml(String samlResponse) {
+    public InboundResponseFromIdp decryptSaml(String samlResponse) throws IOException, CertificateException {
         // Manual Guice injection
         StringToOpenSamlObjectTransformer<Response> stringToOpenSamlObjectTransformer = new StringToOpenSamlObjectTransformer(new NotNullSamlStringValidator(),
                 new Base64StringDecoder(),

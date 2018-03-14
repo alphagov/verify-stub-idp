@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.google.common.collect.Lists.newArrayList;
+
 public class UserService {
 
     public class ResponseMessage {
@@ -44,7 +46,7 @@ public class UserService {
         Optional<DatabaseIdpUser> user = idp.getUser(username);
 
         if (user.isPresent()) {
-            return Optional.of(transform(user.get()));
+            return Optional.ofNullable(transform(user.get()));
         }
         return Optional.empty();
     }
@@ -114,7 +116,7 @@ public class UserService {
 
     private void createIdpUser(Idp idp, IdpUserDto user) {
         idp.createUser(
-                user.getPid(),
+                user.getPid().toJavaUtil(),
                 createListOfValues(user.getFirstName()),
                 createListOfValues(user.getMiddleNames()),
                 user.getSurnames(),
@@ -131,11 +133,11 @@ public class UserService {
         idp.deleteUser(userToDelete.getUsername());
     }
 
-    private <T> List<T> createListOfValues(Optional<T> value) {
+    private <T> List<T> createListOfValues(com.google.common.base.Optional<T> value) {
         if (value.isPresent()) {
             return Collections.singletonList(value.get());
         }
-        return Collections.emptyList();
+        return newArrayList();
     }
 
     private IdpUserDto transform(DatabaseIdpUser idpUser) {

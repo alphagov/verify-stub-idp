@@ -1,20 +1,20 @@
 package uk.gov.ida.stub.idp.builders;
 
+import com.google.common.base.Optional;
 import org.joda.time.DateTime;
 import uk.gov.ida.saml.core.domain.Address;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class AddressBuilder {
 
     private List<String> lines = new ArrayList<>();
-    private Optional<String> postCode = Optional.empty();
-    private Optional<String> internationalPostCode = Optional.empty();
-    private Optional<String> uprn = Optional.empty();
+    private Optional<String> postCode = Optional.absent();
+    private Optional<String> internationalPostCode = Optional.absent();
+    private Optional<String> uprn = Optional.absent();
     private DateTime fromDate = DateTime.parse("2001-01-01");
-    private Optional<DateTime> toDate = Optional.empty();
+    private Optional<DateTime> toDate = Optional.absent();
     private boolean verified = false;
 
     public static AddressBuilder anAddress() {
@@ -38,7 +38,7 @@ public class AddressBuilder {
     }
 
     public AddressBuilder withPostCode(final String postCode) {
-        this.postCode = Optional.ofNullable(postCode);
+        this.postCode = Optional.fromNullable(postCode);
         return this;
     }
 
@@ -48,7 +48,7 @@ public class AddressBuilder {
     }
 
     public AddressBuilder withToDate(final DateTime toDate) {
-        this.toDate = Optional.ofNullable(toDate);
+        this.toDate = Optional.fromNullable(toDate);
         return this;
     }
 

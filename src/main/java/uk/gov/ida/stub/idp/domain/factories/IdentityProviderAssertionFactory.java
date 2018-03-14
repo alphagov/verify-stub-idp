@@ -1,5 +1,6 @@
 package uk.gov.ida.stub.idp.domain.factories;
 
+import com.google.common.base.Optional;
 import org.joda.time.DateTime;
 import uk.gov.ida.common.shared.security.IdGenerator;
 import uk.gov.ida.saml.core.domain.AssertionRestrictions;
@@ -9,7 +10,8 @@ import uk.gov.ida.saml.core.domain.MatchingDataset;
 import uk.gov.ida.saml.core.domain.PersistentId;
 
 import javax.inject.Inject;
-import java.util.Optional;
+
+import static com.google.common.base.Optional.fromNullable;
 
 public class IdentityProviderAssertionFactory {
 
@@ -32,8 +34,8 @@ public class IdentityProviderAssertionFactory {
                 DateTime.now(),
                 persistentId,
                 assertionRestrictions,
-                Optional.ofNullable(matchingDataset),
-                Optional.empty());
+                fromNullable(matchingDataset),
+                Optional.absent());
     }
 
     public IdentityProviderAssertion createAuthnStatementAssertion(
@@ -48,7 +50,7 @@ public class IdentityProviderAssertionFactory {
                 DateTime.now(),
                 persistentId,
                 assertionRestrictions,
-                Optional.empty(),
-                Optional.ofNullable(idaAuthnStatement));
+                Optional.absent(),
+                fromNullable(idaAuthnStatement));
     }
 }
