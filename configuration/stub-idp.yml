@@ -127,4 +127,3 @@ database:
 # Format for DB_URI: jdbc:postgresql://host-name:port/database-name?user=user-name&password=password
 # example: jdbc:postgresql://localhost:5432/postgres?user=postgres&password=password
   url: ${DB_URI:-}
-#  url: ${DB_URI:-jdbc:postgresql://localhost:5432/postgres?user=postgres&password=password}

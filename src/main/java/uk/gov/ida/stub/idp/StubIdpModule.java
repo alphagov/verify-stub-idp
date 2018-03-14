@@ -64,7 +64,6 @@ import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
 import uk.gov.ida.stub.idp.repositories.MetadataRepository;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.repositories.UserRepository;
-import uk.gov.ida.stub.idp.repositories.infinispan.InfinispanUserRepository;
 import uk.gov.ida.stub.idp.repositories.jdbc.JDBIUserRepository;
 import uk.gov.ida.stub.idp.repositories.jdbc.UserMapper;
 import uk.gov.ida.stub.idp.saml.locators.IdpHardCodedEntityToEncryptForLocator;
@@ -100,7 +99,6 @@ import java.util.function.Function;
 
 public class StubIdpModule extends AbstractModule {
 
-    private final Provider<InfinispanCacheManager> infinispanCacheManagerProvider;
     private final Bootstrap<StubIdpConfiguration> bootstrap;
 
     public static final String HUB_CONNECTOR_METADATA_REPOSITORY = "HubConnectorMetadataRepository";
@@ -112,14 +110,12 @@ public class StubIdpModule extends AbstractModule {
     public static final String COUNTRY_SIGNING_KEY_STORE = "CountrySigningKeyStore";
     public static final String IDP_SIGNING_KEY_STORE = "IdpSigningKeyStore";
 
-    public StubIdpModule(final Provider<InfinispanCacheManager> infinispanCacheManagerProvider, Bootstrap<StubIdpConfiguration> bootstrap) {
-        this.infinispanCacheManagerProvider = infinispanCacheManagerProvider;
+    public StubIdpModule(Bootstrap<StubIdpConfiguration> bootstrap) {
         this.bootstrap = bootstrap;
     }
 
     @Override
     protected void configure() {
-        bind(InfinispanCacheManager.class).toProvider(infinispanCacheManagerProvider);
         bind(AssertionLifetimeConfiguration.class).to(StubIdpConfiguration.class).asEagerSingleton();
 
         bind(SigningKeyStore.class).to(IdaAuthnRequestKeyStore.class).asEagerSingleton();
@@ -177,17 +173,9 @@ public class StubIdpModule extends AbstractModule {
     }
 
     @Provides
-    public UserRepository getUserRepository(
-        StubIdpConfiguration configuration,
-        InfinispanCacheManager infinispanCacheManager,
-        UserMapper userMapper
-    ) {
-        if (configuration.getDatabaseConfiguration() != null && configuration.getDatabaseConfiguration().getUrl() != null) {
-            Jdbi jdbi = Jdbi.create(configuration.getDatabaseConfiguration().getUrl());
-            return new JDBIUserRepository(jdbi, userMapper);
-        }
-
-        return new InfinispanUserRepository(infinispanCacheManager);
+    public UserRepository getUserRepository(StubIdpConfiguration configuration, UserMapper userMapper) {
+        Jdbi jdbi = Jdbi.create(configuration.getDatabaseConfiguration().getUrl());
+        return new JDBIUserRepository(jdbi, userMapper);
     }
 
     @Provides
@@ -273,10 +261,10 @@ public class StubIdpModule extends AbstractModule {
 
     @Provides
     public OutboundResponseFromIdpTransformerProvider getOutboundResponseFromIdpTransformerProvider(
-            @Named(StubIdpModule.HUB_ENCRYPTION_KEY_STORE) EncryptionKeyStore encryptionKeyStore,
-            @Named(IDP_SIGNING_KEY_STORE) IdaKeyStore keyStore,
-            EntityToEncryptForLocator entityToEncryptForLocator,
-            StubIdpConfiguration stubIdpConfiguration) {
+        @Named(StubIdpModule.HUB_ENCRYPTION_KEY_STORE) EncryptionKeyStore encryptionKeyStore,
+        @Named(IDP_SIGNING_KEY_STORE) IdaKeyStore keyStore,
+        EntityToEncryptForLocator entityToEncryptForLocator,
+        StubIdpConfiguration stubIdpConfiguration) {
         return new OutboundResponseFromIdpTransformerProvider(
             encryptionKeyStore,
             keyStore,
@@ -290,9 +278,9 @@ public class StubIdpModule extends AbstractModule {
 
     @Provides
     public EidasResponseTransformerProvider getEidasResponseTransformerProvider(
-            @Named(StubIdpModule.HUB_CONNECTOR_ENCRYPTION_KEY_STORE) Optional<EncryptionKeyStore> encryptionKeyStore,
-            @Named(COUNTRY_SIGNING_KEY_STORE) IdaKeyStore keyStore,
-            EntityToEncryptForLocator entityToEncryptForLocator) {
+        @Named(StubIdpModule.HUB_CONNECTOR_ENCRYPTION_KEY_STORE) Optional<EncryptionKeyStore> encryptionKeyStore,
+        @Named(COUNTRY_SIGNING_KEY_STORE) IdaKeyStore keyStore,
+        EntityToEncryptForLocator entityToEncryptForLocator) {
         return new EidasResponseTransformerProvider(
             new CoreTransformersFactory(),
             encryptionKeyStore.orElse(null),
