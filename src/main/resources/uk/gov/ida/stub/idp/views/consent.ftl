@@ -53,6 +53,8 @@
         <form action="/${idpId}/consent" method="post">
             <input id="agree" class="button color-ok" type="submit" name="submit" value="I Agree"/>
             <input id="refuse" class="button color-cancel" type="submit" name="submit" value="I Refuse"/>
+            <!-- this is used by the performance tests and acceptance tests -->
+            <input id="randomPid" name="randomPid" type="hidden" value="false"/>
         </form>
     </div>
 </div>
