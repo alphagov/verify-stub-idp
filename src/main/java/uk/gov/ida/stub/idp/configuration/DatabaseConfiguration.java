@@ -8,7 +8,6 @@ import javax.validation.constraints.NotNull;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DatabaseConfiguration {
 
-    @NotNull
     @JsonProperty("url")
     private String url;
 

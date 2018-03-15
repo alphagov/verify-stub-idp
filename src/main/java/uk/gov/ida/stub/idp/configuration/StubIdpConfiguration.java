@@ -16,6 +16,7 @@ import uk.gov.ida.shared.dropwizard.infinispan.config.InfinispanServiceConfigura
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.net.URI;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class StubIdpConfiguration extends Configuration implements
@@ -92,7 +93,6 @@ public class StubIdpConfiguration extends Configuration implements
     @JsonProperty
     private EuropeanIdentityConfiguration europeanIdentity;
 
-    @NotNull
     @Valid
     @JsonProperty("database")
     private DatabaseConfiguration databaseConfiguration;

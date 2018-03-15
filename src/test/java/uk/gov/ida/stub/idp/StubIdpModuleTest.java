@@ -26,7 +26,7 @@ public class StubIdpModuleTest {
 
     @Test
     public void shouldGetKeyStoreWithDeprecatedConfiguration() throws Exception {
-        StubIdpModule module = new StubIdpModule( null);
+        StubIdpModule module = new StubIdpModule(null, null);
         when(configuration.getSigningKeyPairConfiguration()).thenReturn(signingKeyPairConfiguration);
         when(signingKeyPairConfiguration.getCert()).thenReturn(TestCertificateStrings.HUB_TEST_PUBLIC_SIGNING_CERT);
         assertThat(module.getKeyStore(configuration)).isNotNull();
@@ -34,7 +34,7 @@ public class StubIdpModuleTest {
 
     @Test
     public void shouldGetKeyStoreConfiguration() throws Exception {
-        StubIdpModule module = new StubIdpModule( null);
+        StubIdpModule module = new StubIdpModule(null, null);
         when(configuration.getSigningKeyPairConfiguration()).thenReturn(signingKeyPairConfiguration);
         when(signingKeyPairConfiguration.getCert()).thenReturn(TestCertificateStrings.HUB_TEST_PUBLIC_SIGNING_CERT);
         assertThat(module.getKeyStore(configuration)).isNotNull();

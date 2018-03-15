@@ -22,7 +22,7 @@ import uk.gov.ida.stub.idp.configuration.UserCredentials;
 import uk.gov.ida.stub.idp.repositories.AllIdpsUserRepository;
 import uk.gov.ida.stub.idp.repositories.Idp;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
-import uk.gov.ida.stub.idp.repositories.jdbc.JDBIUserRepository;
+import uk.gov.ida.stub.idp.repositories.infinispan.MapUserRepository;
 import uk.gov.ida.stub.idp.utils.TestIdpStubsConfiguration;
 import uk.gov.ida.stub.idp.utils.TestStubIdp;
 
@@ -68,7 +68,7 @@ public class StubIdpsFileListenerTest {
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         ConfigurationFactory<IdpStubsConfiguration> configurationFactory = new DefaultConfigurationFactoryFactory<IdpStubsConfiguration>().create(IdpStubsConfiguration.class, validator, Jackson.newObjectMapper(), "");
         ConfigurationSourceProvider configurationSourceProvider = path -> new FileInputStream(stubIdpConfiguration.getStubIdpsYmlFileLocation());
-        AllIdpsUserRepository allIdpsUserRepository = new AllIdpsUserRepository(mock(JDBIUserRepository.class));
+        AllIdpsUserRepository allIdpsUserRepository = new AllIdpsUserRepository(new MapUserRepository(new ConcurrentHashMap<>()));
         idpStubsRepository = new IdpStubsRepository(allIdpsUserRepository, stubIdpConfiguration,  configurationFactory, configurationSourceProvider) {
             @Override
             public void load(String yamlFile) {

@@ -136,4 +136,20 @@ public class DatabaseIdpUser implements Serializable {
             ", levelOfAssurance=" + levelOfAssurance +
             '}';
     }
+
+    public static DatabaseIdpUser fromInfinispanUser(IdpUser idpUser) {
+        return new DatabaseIdpUser(
+                idpUser.getUsername(),
+                idpUser.getPersistentId(),
+                idpUser.getPassword(),
+                idpUser.getFirstnames().stream().map(MatchingDatasetValue::fromSimpleMdsValue).collect(Collectors.toList()),
+                idpUser.getMiddleNames().stream().map(MatchingDatasetValue::fromSimpleMdsValue).collect(Collectors.toList()),
+                idpUser.getSurnames().stream().map(MatchingDatasetValue::fromSimpleMdsValue).collect(Collectors.toList()),
+                idpUser.getGender().transform(MatchingDatasetValue::fromSimpleMdsValue),
+                idpUser.getDateOfBirths().stream().map(MatchingDatasetValue::fromSimpleMdsValue).collect(Collectors.toList()),
+                idpUser.getAddresses(),
+                idpUser.getLevelOfAssurance()
+
+        );
+    }
 }
