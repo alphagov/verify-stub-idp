@@ -23,6 +23,7 @@ cfSetEnvironmentVariables() {
   cf set-env ida-stub-idp STUB_COUNTRY_SIGNING_PRIVATE_KEY $STUB_COUNTRY_SIGNING_PRIVATE_KEY
   cf set-env ida-stub-idp STUB_COUNTRY_SIGNING_CERT $STUB_COUNTRY_SIGNING_CERT
   cf set-env ida-stub-idp STUB_IDP_HOSTNAME ${HOSTNAME}.cloudapps.digital
+  cf set-env ida-stub-idp HUB_CONNECTOR_ENTITY_ID https://hub-connector-eidas-${ENVIRONMENT}.cloudapps.digital/metadata.xml
 }
 
 cfSetDatabaseUri() {

@@ -13,8 +13,5 @@ applications:
       TRUSTSTORE_TYPE: encoded
       TRUSTSTORE_PASSWORD: puppet
       STUB_IDP_BASIC_AUTH: true
-      STUB_COUNTRY_METADATA_URL: empty
-      SIGNIN_DOMAIN: empty
-      HUB_CONNECTOR_ENTITY_ID: empty
       GRAPHITE_REPORTING_FREQUENCY: 100days
       EUROPEAN_IDENTITY_ENABLED: true
