@@ -17,3 +17,4 @@ applications:
       SIGNIN_DOMAIN: empty
       HUB_CONNECTOR_ENTITY_ID: empty
       GRAPHITE_REPORTING_FREQUENCY: 100days
+      EUROPEAN_IDENTITY_ENABLED: true
