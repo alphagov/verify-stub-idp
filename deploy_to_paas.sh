@@ -12,18 +12,18 @@ function cleanup {
 trap cleanup EXIT
 
 cfSetEnvironmentVariables() {
-  cf set-env ida-stub-idp STUB_IDP_SIGNING_PRIVATE_KEY $STUB_IDP_SIGNING_PRIVATE_KEY
-  cf set-env ida-stub-idp STUB_IDP_SIGNING_CERT $STUB_IDP_SIGNING_CERT
-  cf set-env ida-stub-idp METADATA_TRUSTSTORE $METADATA_TRUSTSTORE
-  cf set-env ida-stub-idp STUB_IDPS_FILE_PATH /app/ida-stub-idp/resources/$ENVIRONMENT/stub-idps.yml
-  cf set-env ida-stub-idp METADATA_URL $PAAS_METADATA_URL
-  cf set-env ida-stub-idp METADATA_ENTITY_ID $METADATA_ENTITY_ID
+  cf set-env ida-stub-idp STUB_IDP_SIGNING_PRIVATE_KEY "$STUB_IDP_SIGNING_PRIVATE_KEY"
+  cf set-env ida-stub-idp STUB_IDP_SIGNING_CERT "$STUB_IDP_SIGNING_CERT"
+  cf set-env ida-stub-idp METADATA_TRUSTSTORE "$METADATA_TRUSTSTORE"
+  cf set-env ida-stub-idp STUB_IDPS_FILE_PATH "/app/ida-stub-idp/resources/$ENVIRONMENT/stub-idps.yml"
+  cf set-env ida-stub-idp METADATA_URL "$PAAS_METADATA_URL"
+  cf set-env ida-stub-idp METADATA_ENTITY_ID "$METADATA_ENTITY_ID"
 
   # Required by eidas
-  cf set-env ida-stub-idp STUB_COUNTRY_SIGNING_PRIVATE_KEY $STUB_COUNTRY_SIGNING_PRIVATE_KEY
-  cf set-env ida-stub-idp STUB_COUNTRY_SIGNING_CERT $STUB_COUNTRY_SIGNING_CERT
-  cf set-env ida-stub-idp STUB_IDP_HOSTNAME ${HOSTNAME}.cloudapps.digital
-  cf set-env ida-stub-idp HUB_CONNECTOR_ENTITY_ID https://hub-connector-eidas-${ENVIRONMENT}.cloudapps.digital/metadata.xml
+  cf set-env ida-stub-idp STUB_COUNTRY_SIGNING_PRIVATE_KEY "$STUB_COUNTRY_SIGNING_PRIVATE_KEY"
+  cf set-env ida-stub-idp STUB_COUNTRY_SIGNING_CERT "$STUB_COUNTRY_SIGNING_CERT"
+  cf set-env ida-stub-idp STUB_IDP_HOSTNAME "${HOSTNAME}.cloudapps.digital"
+  cf set-env ida-stub-idp HUB_CONNECTOR_ENTITY_ID "https://hub-connector-eidas-${ENVIRONMENT}.cloudapps.digital/metadata.xml"
 }
 
 cfSetDatabaseUri() {
