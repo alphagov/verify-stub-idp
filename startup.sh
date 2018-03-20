@@ -16,6 +16,12 @@ if test ! "$1" == "skip-build"; then
     ./gradlew clean build copyToLib
 fi
 
+if ! docker ps | grep stub-idp-postgres-db
+then
+    printf "$(tput setaf 3)Postgres not running... Attempting to start postgres using docker...\n$(tput sgr0)"
+    docker run --rm -d -p 5432:5432 --name stub-idp-postgres-db postgres
+fi
+
 mkdir -p logs
 start_service stub-idp . configuration/stub-idp.yml $STUB_IDP_PORT
 wait
