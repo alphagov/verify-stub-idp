@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
 if test -e local.env; then
+    set -a
     source local.env
+    set +a
 else
     printf "$(tput setaf 1)No local environment found. Use verify-local-startup or openssl to generate a local.env file\n$(tput sgr0)"
     exit
@@ -15,5 +17,5 @@ if test ! "$1" == "skip-build"; then
 fi
 
 mkdir -p logs
-start_service stub-idp . configuration/local/stub-idp.yml $STUB_IDP_PORT
+start_service stub-idp . configuration/stub-idp.yml $STUB_IDP_PORT
 wait
