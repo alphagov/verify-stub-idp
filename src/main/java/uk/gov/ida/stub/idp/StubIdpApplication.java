@@ -146,13 +146,7 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
         StubIdpHealthCheck healthCheck = new StubIdpHealthCheck();
         environment.healthChecks().register(healthCheck.getName(), healthCheck);
 
-        if (configuration.getDatabaseConfiguration() != null &&
-            configuration.getDatabaseConfiguration().getUrl() != null
-            ) {
-            environment.healthChecks().unregister("Infinispan Health Check");
-
-            DatabaseHealthCheck dbHealthCheck = new DatabaseHealthCheck(configuration.getDatabaseConfiguration().getUrl());
-            environment.healthChecks().register("database", dbHealthCheck);
-        }
+        DatabaseHealthCheck dbHealthCheck = new DatabaseHealthCheck(configuration.getDatabaseConfiguration().getUrl());
+        environment.healthChecks().register("database", dbHealthCheck);
     }
 }

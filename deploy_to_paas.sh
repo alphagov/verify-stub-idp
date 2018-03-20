@@ -5,6 +5,12 @@ ROOT_DIR="$(dirname "$0")"
 cd "$ROOT_DIR"
 export CF_HOME="$ROOT_DIR/work"
 
+APP_NAME='ida-stub-idp'
+TEST_APP_NAME="$APP_NAME-test"
+
+TEST_HOSTNAME=$HOSTNAME-test
+CF_DOMAIN=cloudapps.digital
+
 function cleanup {
   rm -rf "$ROOT_DIR/work"
   unset CF_HOME
@@ -12,48 +18,63 @@ function cleanup {
 trap cleanup EXIT
 
 cfSetEnvironmentVariables() {
-  cf set-env ida-stub-idp STUB_IDP_SIGNING_PRIVATE_KEY "$STUB_IDP_SIGNING_PRIVATE_KEY"
-  cf set-env ida-stub-idp STUB_IDP_SIGNING_CERT "$STUB_IDP_SIGNING_CERT"
-  cf set-env ida-stub-idp METADATA_TRUSTSTORE "$METADATA_TRUSTSTORE"
-  cf set-env ida-stub-idp STUB_IDPS_FILE_PATH "/app/ida-stub-idp/resources/$ENVIRONMENT/stub-idps.yml"
-  cf set-env ida-stub-idp METADATA_URL "$PAAS_METADATA_URL"
-  cf set-env ida-stub-idp METADATA_ENTITY_ID "$METADATA_ENTITY_ID"
+  cf set-env $TEST_APP_NAME STUB_IDP_SIGNING_PRIVATE_KEY "$STUB_IDP_SIGNING_PRIVATE_KEY"
+  cf set-env $TEST_APP_NAME STUB_IDP_SIGNING_CERT "$STUB_IDP_SIGNING_CERT"
+  cf set-env $TEST_APP_NAME METADATA_TRUSTSTORE "$METADATA_TRUSTSTORE"
+  cf set-env $TEST_APP_NAME STUB_IDPS_FILE_PATH "/app/ida-stub-idp/resources/$ENVIRONMENT/stub-idps.yml"
+  cf set-env $TEST_APP_NAME METADATA_URL "$PAAS_METADATA_URL"
+  cf set-env $TEST_APP_NAME METADATA_ENTITY_ID "$METADATA_ENTITY_ID"
 
   # Required by eidas
-  cf set-env ida-stub-idp STUB_COUNTRY_SIGNING_PRIVATE_KEY "$STUB_COUNTRY_SIGNING_PRIVATE_KEY"
-  cf set-env ida-stub-idp STUB_COUNTRY_SIGNING_CERT "$STUB_COUNTRY_SIGNING_CERT"
-  cf set-env ida-stub-idp STUB_IDP_HOSTNAME "${HOSTNAME}.cloudapps.digital"
-  cf set-env ida-stub-idp HUB_CONNECTOR_ENTITY_ID "https://hub-connector-eidas-${ENVIRONMENT}.cloudapps.digital/metadata.xml"
+  cf set-env $TEST_APP_NAME STUB_COUNTRY_SIGNING_PRIVATE_KEY "$STUB_COUNTRY_SIGNING_PRIVATE_KEY"
+  cf set-env $TEST_APP_NAME STUB_COUNTRY_SIGNING_CERT "$STUB_COUNTRY_SIGNING_CERT"
+  cf set-env $TEST_APP_NAME STUB_IDP_HOSTNAME "${HOSTNAME}.${CF_DOMAIN}"
+  cf set-env $TEST_APP_NAME HUB_CONNECTOR_ENTITY_ID "https://hub-connector-eidas-${ENVIRONMENT}.${CF_DOMAIN}/metadata.xml"
 }
 
 cfSetDatabaseUri() {
-   cf unset-env ida-stub-idp DB_URI
-   LOCAL_DB_URI="$(cf env ida-stub-idp | grep -o '"jdbc:postgresql://[^"]*' | tr -d '"' |sed 's/\\u0026/\&/g')"
-   cf set-env ida-stub-idp DB_URI "$LOCAL_DB_URI"
+   LOCAL_DB_URI="$(cf env $TEST_APP_NAME | grep -o '"jdbc:postgresql://[^"]*' | tr -d '"' |sed 's/\\u0026/\&/g')"
+   cf set-env $TEST_APP_NAME DB_URI "$LOCAL_DB_URI"
 }
 
-cfBindWithDatabase() {
-    cf bind-service ida-stub-idp ida-stub-idp-db
+cfBindWithDatabaseAndLogit() {
+  cf bind-service $TEST_APP_NAME ida-stub-idp-db
+  cf bind-service $TEST_APP_NAME ida-stub-idp-logit
 }
 
-cfBindWithLogit() {
-  cf bind-service ida-stub-idp ida-stub-idp-logit
-}
-
-cfDeployStubIDP() {
-  MANIFEST_FILE=manifest.yml
+cfPushArtifact() {
   ARTIFACT_LOCATION="https://artifactory.ida.digital.cabinet-office.gov.uk/artifactory/remote-repos/uk/gov/ida/ida-stub-idp/$ARTIFACT_BUILD_NUMBER/ida-stub-idp-$ARTIFACT_BUILD_NUMBER.zip"
   curl -s ${ARTIFACT_LOCATION} --output "ida-stub-idp-$ARTIFACT_BUILD_NUMBER.zip"
-  cf push -f $MANIFEST_FILE -p "ida-stub-idp-$ARTIFACT_BUILD_NUMBER.zip" --hostname $HOSTNAME
+  cf push $TEST_APP_NAME -f manifest.yml --no-start -p "ida-stub-idp-$ARTIFACT_BUILD_NUMBER.zip" --hostname $TEST_HOSTNAME
+}
+
+cfBlueGreenDeployment() {
+  cf start $TEST_APP_NAME
+  checkServiceStatus "$TEST_HOSTNAME" "$TEST_APP_NAME"
+
+  cf map-route $TEST_APP_NAME $CF_DOMAIN --hostname $HOSTNAME
+  cf unmap-route $TEST_APP_NAME $CF_DOMAIN --hostname $TEST_HOSTNAME
+
+  cf delete -r -f $APP_NAME
+  cf rename $TEST_APP_NAME $APP_NAME
+
+  checkServiceStatus "$HOSTNAME" "$APP_NAME"
+}
+
+checkServiceStatus() {
+  if [ $(curl -sL --retry 5 --retry-delay 10  -w "%{http_code}\\n" https://"$1.$CF_DOMAIN"/service-status) != "200" ] ; then
+    printf "$(tput setaf 1)Zero downtime deployment failed.\nUse 'cf logs $2 --recent' for more information.\n$(tput sgr0)"
+    exit 1;
+  fi
 }
 
 ./login_to_paas.sh "$ROOT_DIR"
+
+cfPushArtifact
 cfSetEnvironmentVariables
-# This step assumes that postgres database service (named 'ida-stub-idp-db') would already be present
-# If it's not present, please use create_database_service_on_pass to create it before running this script
-cfBindWithDatabase
+# This step assumes that postgres service (named 'ida-stub-idp-db') and logit service (named 'ida-stub-idp-logit') would already be present
+# Please use create_database_service_on_pass to create database before running this script
+# Please use create_logit_service to create logit before running this script
+cfBindWithDatabaseAndLogit
 cfSetDatabaseUri
-# This step assumes that logit service (named 'ida-stub-idp-logit') would already be present
-# If it's not present, please use create_logit_service to create it before running this script
-cfBindWithLogit
-cfDeployStubIDP
+cfBlueGreenDeployment
