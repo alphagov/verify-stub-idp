@@ -17,6 +17,6 @@ describe 'User verifies with Stub IDP on PaaS', type: :feature do
     fill_in 'password', with: idp_password
     click_button 'SignIn'
     click_button 'I Agree'
-    has_content?('Your identity has been confirmed')
+    expect(page).to have_content('Your identity has been confirmed')
   end
 end
