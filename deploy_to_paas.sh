@@ -62,8 +62,10 @@ cfBlueGreenDeployment() {
 }
 
 checkServiceStatus() {
-  if [ $(curl -sL --retry 5 --retry-delay 10  -w "%{http_code}\\n" https://"$1.$CF_DOMAIN"/service-status) != "200" ] ; then
-    printf "$(tput setaf 1)Zero downtime deployment failed.\nUse 'cf logs $2 --recent' for more information.\n$(tput sgr0)"
+  local HOST_NAME=$1
+  local APP_NAME=$2
+  if [ $(curl -sL --retry 5 --retry-delay 10  -w "%{http_code}\\n" https://"$HOST_NAME.$CF_DOMAIN"/service-status) != "200" ] ; then
+    printf "$(tput setaf 1)Zero downtime deployment failed.\nUse 'cf logs $APP_NAME --recent' for more information.\n$(tput sgr0)"
     exit 1;
   fi
 }
