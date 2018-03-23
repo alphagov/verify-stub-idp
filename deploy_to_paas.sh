@@ -44,17 +44,21 @@ cfBindWithDatabaseAndLogit() {
 
 cfPushArtifact() {
   ARTIFACT_LOCATION="https://artifactory.ida.digital.cabinet-office.gov.uk/artifactory/remote-repos/uk/gov/ida/ida-stub-idp/$ARTIFACT_BUILD_NUMBER/ida-stub-idp-$ARTIFACT_BUILD_NUMBER.zip"
-  curl -s ${ARTIFACT_LOCATION} --output "ida-stub-idp-$ARTIFACT_BUILD_NUMBER.zip"
-  cf push $TEST_APP_NAME -f manifest.yml --no-start -p "ida-stub-idp-$ARTIFACT_BUILD_NUMBER.zip" --hostname $TEST_HOSTNAME
+  curl -s "${ARTIFACT_LOCATION}" --output "ida-stub-idp-$ARTIFACT_BUILD_NUMBER.zip"
+  cf push $TEST_APP_NAME -f manifest.yml --no-start -p "ida-stub-idp-$ARTIFACT_BUILD_NUMBER.zip" --hostname "$TEST_HOSTNAME"
 }
 
 cfBlueGreenDeployment() {
   cf start $TEST_APP_NAME
   checkServiceStatus "$TEST_HOSTNAME" "$TEST_APP_NAME"
 
-  cf map-route $TEST_APP_NAME $CF_DOMAIN --hostname $HOSTNAME
-  cf unmap-route $TEST_APP_NAME $CF_DOMAIN --hostname $TEST_HOSTNAME
-  cf unmap-route $APP_NAME $CF_DOMAIN --hostname $HOSTNAME
+  cf map-route $TEST_APP_NAME $CF_DOMAIN --hostname "$HOSTNAME"
+  cf unmap-route $TEST_APP_NAME $CF_DOMAIN --hostname "$TEST_HOSTNAME"
+  cf unmap-route $APP_NAME $CF_DOMAIN --hostname "$HOSTNAME"
+  if [ "$CF_SPACE" == "integration-stubs" ]; then
+    echo "Mapping UKCloud stub IDP URL to stub IDP in PaaS"
+    cf map-route $TEST_APP_NAME ida.digital.cabinet-office.gov.uk --hostname idp-stub-integration
+  fi
 
   cf delete -f $APP_NAME
   cf rename $TEST_APP_NAME $APP_NAME
@@ -66,7 +70,7 @@ checkServiceStatus() {
   local HOST_NAME=$1
   local APP_NAME=$2
   if [ "$(curl -sL --retry 5 --retry-delay 10  -w "%{http_code}\\n" https://"$HOST_NAME.$CF_DOMAIN"/service-status)" != "200" ] ; then
-    printf "$(tput setaf 1)Zero downtime deployment failed.\nUse 'cf logs $APP_NAME --recent' for more information.\n$(tput sgr0)"
+    printf "$(tput setaf 1)Zero downtime deployment failed.\\nUse 'cf logs $APP_NAME --recent' for more information.\\n$(tput sgr0)"
     exit 1;
   fi
 }
