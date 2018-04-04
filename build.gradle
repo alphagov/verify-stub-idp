@@ -20,7 +20,7 @@ subprojects {
     ext {
       ida_utils_version = '2.0.0-332'
       opensaml_version = '3.3.0'
-      saml_libs_version = "${opensaml_version}-101"
+      saml_libs_version = "${opensaml_version}-103"
     }
     group = "uk.gov.ida"
     version = "$opensaml_version-${System.env.BUILD_NUMBER ?: 'SNAPSHOT'}"
@@ -37,7 +37,6 @@ subprojects {
                 'joda-time:joda-time:2.9',
                 'javax.inject:javax.inject:1'
 
-        test_deps "uk.gov.ida:saml-test-utils:$saml_libs_version",
-                'commons-codec:commons-codec:1.10'
+        test_deps 'commons-codec:commons-codec:1.10'
     }
 }
