@@ -3,7 +3,7 @@
 . ../verify-build-scripts/check_for_library_updates.sh
 ./gradlew --daemon --parallel clean build test
 
-check_for_library_updates ida-saml-extensions saml-serializers common-utils saml-security
+check_for_library_updates saml-extensions saml-serializers common-utils saml-security
 
 tput setaf 3
 printf "\nOnce you publish a new version of stub-idp-saml "
