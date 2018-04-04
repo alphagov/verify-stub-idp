@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 public final class MatchingDatasetFactory {
 
     private MatchingDatasetFactory() {}
@@ -20,7 +19,7 @@ public final class MatchingDatasetFactory {
              from(user.getFirstnames()),
              from(user.getMiddleNames()),
              from(user.getSurnames()),
-             user.getGender().transform(MatchingDatasetFactory::from),
+             user.getGender().map(MatchingDatasetFactory::from),
              from(user.getDateOfBirths()),
              getCurrentAddresses(
                  user.getAddresses()),

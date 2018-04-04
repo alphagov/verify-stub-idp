@@ -1,19 +1,15 @@
 package uk.gov.ida.stub.idp.domain;
 
 
-import com.google.common.base.Optional;
 import org.joda.time.LocalDate;
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.saml.core.domain.Gender;
-import uk.gov.ida.saml.core.domain.SimpleMdsValue;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
-
-import static uk.gov.ida.stub.idp.domain.MatchingDatasetValue.fromSimpleMdsValue;
+import java.util.Optional;
 
 public class DatabaseIdpUser implements Serializable {
     private final String username;

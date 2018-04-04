@@ -1,6 +1,7 @@
 package uk.gov.ida.stub.idp;
 
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 import com.hubspot.dropwizard.guicier.DropwizardModule;
@@ -108,6 +109,7 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
         bootstrap.addBundle(new MonitoringBundle());
 
         bootstrap.addBundle(new AssetsBundle("/assets/", "/assets/"));
+        bootstrap.getObjectMapper().registerModule(new Jdk8Module());
     }
 
     @Override

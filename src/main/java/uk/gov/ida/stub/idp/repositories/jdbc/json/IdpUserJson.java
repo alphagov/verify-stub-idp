@@ -2,7 +2,6 @@ package uk.gov.ida.stub.idp.repositories.jdbc.json;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.base.Optional;
 import org.joda.time.LocalDate;
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.AuthnContext;
@@ -11,6 +10,7 @@ import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion.NON_NULL;
 

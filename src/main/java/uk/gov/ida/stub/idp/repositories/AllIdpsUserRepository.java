@@ -1,6 +1,5 @@
 package uk.gov.ida.stub.idp.repositories;
 
-import com.google.common.base.Optional;
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,9 +12,8 @@ import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static com.google.common.base.Optional.fromNullable;
 
 public class AllIdpsUserRepository {
 
@@ -76,9 +74,9 @@ public class AllIdpsUserRepository {
                 .filter(u -> u.getUsername().equalsIgnoreCase(username))
                 .collect(Collectors.toList());
         if (!matchingUsers.isEmpty()) {
-            return fromNullable(matchingUsers.get(0));
+            return Optional.ofNullable(matchingUsers.get(0));
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
     public boolean containsUserForIdp(String idpFriendlyName, String username) {

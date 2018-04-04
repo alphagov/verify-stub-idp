@@ -47,7 +47,7 @@ public class Idp {
     }
 
     public Optional<DatabaseIdpUser> getUser(String username, String password) {
-        Optional<DatabaseIdpUser> userForIdp = allIdpsUserRepository.getUserForIdp(friendlyId, username).toJavaUtil();
+        Optional<DatabaseIdpUser> userForIdp = allIdpsUserRepository.getUserForIdp(friendlyId, username);
         if (userForIdp.isPresent() && userForIdp.get().getPassword().equals(password)) {
             return userForIdp;
         }
@@ -60,7 +60,7 @@ public class Idp {
             List<MatchingDatasetValue<String>> firstnames,
             List<MatchingDatasetValue<String>> middleNames,
             List<MatchingDatasetValue<String>> surnames,
-            com.google.common.base.Optional<MatchingDatasetValue<Gender>> gender,
+            Optional<MatchingDatasetValue<Gender>> gender,
             List<MatchingDatasetValue<LocalDate>> dateOfBirths,
             List<Address> addresses,
             String username,
@@ -80,7 +80,7 @@ public class Idp {
     }
 
     public Optional<DatabaseIdpUser> getUser(String username) {
-        return allIdpsUserRepository.getUserForIdp(friendlyId, username).toJavaUtil();
+        return allIdpsUserRepository.getUserForIdp(friendlyId, username);
     }
 
     public Collection<DatabaseIdpUser> getAllUsers() {

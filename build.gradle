@@ -5,7 +5,7 @@ buildscript {
     dependencies {
         classpath 'org.gradle.plugins:gradle-compass:1.0.7',
                 'uk.gov.ida:ida-gradle:1.1.0-15',
-                'com.github.ben-manes:gradle-versions-plugin:0.11.3'
+                'com.github.ben-manes:gradle-versions-plugin:0.17.0'
     }
 }
 
@@ -102,17 +102,16 @@ if (project.hasProperty('includeDirectories')) {
 }
 
 def dependencyVersions = [
-        stub_idp_saml         : "$opensaml_version-64",
-        ida_utils             : 329,
+        stub_idp_saml         : "$opensaml_version-68",
+        ida_utils             : '2.0.0-332',
         dropwizard            : '1.1.4',
-        ida_dev_pki           : '1.1.0-20',
-        saml_metadata_bindings: "$opensaml_version-66",
-        saml_security         : "$opensaml_version-56",
-        ida_test_utils        : '37',
-        hub_saml              : "$opensaml_version-106",
-        saml_utils            : "$opensaml_version-65",
+        dropwizard_saml       : "$opensaml_version-372",
+        ida_dev_pki           : '1.1.0-21',
+        saml_libs             : "$opensaml_version-103",
+        ida_test_utils        : '2.0.0-38',
+        hub_saml              : "$opensaml_version-120",
         hk2_version           : '2.5.0-b05',
-        ida_saml_extensions   : "$opensaml_version-1.2a-41"
+        dropwizard_infinispan : '1.0.5-27'
 ]
 
 repositories {
@@ -123,41 +122,41 @@ dependencies {
     compile 'com.hubspot.dropwizard:dropwizard-guicier:1.0.0.6',
             // 0-jersey2-guice-spi has to be near the top of the dependencies
             'com.squarespace.jersey2-guice:0-jersey2-guice-spi:1.0.6',
-            'org.opensaml:opensaml-core:' + dependencyVersions.opensaml,
-            'uk.gov.ida:saml-metadata-bindings:' + dependencyVersions.saml_metadata_bindings,
-            'uk.gov.ida:stub-idp-saml:' + dependencyVersions.stub_idp_saml,
-            'org.mindrot:jbcrypt:0.3m',
-            'io.dropwizard:dropwizard-core:' + dependencyVersions.dropwizard,
-            'io.dropwizard:dropwizard-client:' + dependencyVersions.dropwizard,
-            'io.dropwizard:dropwizard-auth:' + dependencyVersions.dropwizard,
-            'io.dropwizard:dropwizard-configuration:' + dependencyVersions.dropwizard,
-            'io.dropwizard:dropwizard-metrics-graphite:' + dependencyVersions.dropwizard,
-            'io.dropwizard:dropwizard-assets:' + dependencyVersions.dropwizard,
-            'io.dropwizard:dropwizard-views-freemarker:' + dependencyVersions.dropwizard,
-            'io.dropwizard:dropwizard-views:' + dependencyVersions.dropwizard,
-            'uk.gov.ida:dropwizard-infinispan:' + '1.0.5-27',
             'de.neuland-bfi:jade4j:0.4.0',
+            "io.dropwizard:dropwizard-assets:$dependencyVersions.dropwizard",
+            "io.dropwizard:dropwizard-auth:$dependencyVersions.dropwizard",
+            "io.dropwizard:dropwizard-client:$dependencyVersions.dropwizard",
+            "io.dropwizard:dropwizard-configuration:$dependencyVersions.dropwizard",
+            "io.dropwizard:dropwizard-core:$dependencyVersions.dropwizard",
+            "io.dropwizard:dropwizard-metrics-graphite:$dependencyVersions.dropwizard",
+            "io.dropwizard:dropwizard-views:$dependencyVersions.dropwizard",
+            "io.dropwizard:dropwizard-views-freemarker:$dependencyVersions.dropwizard",
+            "org.flywaydb:flyway-core:4.2.0",
             'org.freemarker:freemarker:2.3.27-incubating',
-            'org.jsoup:jsoup:1.6.1',
-            "uk.gov.ida:common-utils:2.0.0-$dependencyVersions.ida_utils",
-            "uk.gov.ida:rest-utils:2.0.0-$dependencyVersions.ida_utils",
-            "uk.gov.ida:security-utils:2.0.0-$dependencyVersions.ida_utils",
-            "uk.gov.ida:saml-security:$dependencyVersions.saml_security",
-            "uk.gov.ida:dropwizard-saml:$opensaml_version-368",
-            "uk.gov.ida:ida-saml-extensions:$dependencyVersions.ida_saml_extensions",
-            "uk.gov.verify:saml-utils:$dependencyVersions.saml_utils",
             "org.jdbi:jdbi3-core:3.0.0",
+            'org.jsoup:jsoup:1.6.1',
+            'org.mindrot:jbcrypt:0.3m',
+            "org.opensaml:opensaml-core:$dependencyVersions.opensaml",
             "org.postgresql:postgresql:42.1.4",
-            "org.flywaydb:flyway-core:4.2.0"
+            "uk.gov.ida:common-utils:$dependencyVersions.ida_utils",
+            "uk.gov.ida:dropwizard-infinispan:$dependencyVersions.dropwizard_infinispan",
+            "uk.gov.ida:dropwizard-saml:$dependencyVersions.dropwizard_saml",
+            "uk.gov.ida:saml-extensions:$dependencyVersions.saml_libs",
+            "uk.gov.ida:rest-utils:$dependencyVersions.ida_utils",
+            "uk.gov.ida:saml-metadata-bindings:$dependencyVersions.saml_libs",
+            "uk.gov.ida:saml-security:$dependencyVersions.saml_libs",
+            "uk.gov.ida:security-utils:$dependencyVersions.ida_utils",
+            "uk.gov.ida:stub-idp-saml:$dependencyVersions.stub_idp_saml",
+            "uk.gov.ida:saml-utils:$dependencyVersions.saml_libs"
 
     runtime 'joda-time:joda-time:2.3',
             'net.logstash.logback:logstash-logback-encoder:4.9'
 
-    testCompile 'io.dropwizard:dropwizard-testing:' + dependencyVersions.dropwizard,
-            'uk.gov.ida:stub-idp-saml-test:' + dependencyVersions.stub_idp_saml,
-            'uk.gov.ida:ida-dev-pki:' + dependencyVersions.ida_dev_pki,
-            'uk.gov.ida:saml-metadata-bindings-test:' + dependencyVersions.saml_metadata_bindings,
-            'uk.gov.ida:common-test-utils:2.0.0-' + dependencyVersions.ida_test_utils,
+    testCompile "io.dropwizard:dropwizard-testing:$dependencyVersions.dropwizard",
+            "uk.gov.ida:stub-idp-saml-test:$dependencyVersions.stub_idp_saml",
+            "uk.gov.ida:ida-dev-pki:$dependencyVersions.ida_dev_pki",
+            "uk.gov.ida:saml-metadata-bindings-test:$dependencyVersions.saml_libs",
+            "uk.gov.ida:common-test-utils:$dependencyVersions.ida_test_utils",
             "uk.gov.ida:hub-saml:$dependencyVersions.hub_saml",
             "uk.gov.ida:hub-saml-test-utils:$dependencyVersions.hub_saml",
             "com.h2database:h2:1.4.196"

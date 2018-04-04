@@ -28,12 +28,11 @@ import uk.gov.ida.saml.hub.transformers.inbound.IdaResponseFromIdpUnmarshaller;
 import uk.gov.ida.saml.hub.transformers.inbound.IdpIdaStatusUnmarshaller;
 import uk.gov.ida.saml.hub.transformers.inbound.PassthroughAssertionUnmarshaller;
 import uk.gov.ida.saml.hub.transformers.inbound.SamlStatusToIdpIdaStatusMappingsFactory;
-import uk.gov.ida.saml.hub.transformers.inbound.decorators.ResponseSizeValidator;
-import uk.gov.ida.saml.hub.transformers.inbound.decorators.ValidateSamlResponseIssuedByIdpDestination;
 import uk.gov.ida.saml.hub.transformers.inbound.providers.DecoratedSamlResponseToIdaResponseIssuedByIdpTransformer;
 import uk.gov.ida.saml.hub.validators.StringSizeValidator;
-import uk.gov.ida.saml.hub.validators.response.EncryptedResponseFromIdpValidator;
-import uk.gov.ida.saml.hub.validators.response.ResponseAssertionsFromIdpValidator;
+import uk.gov.ida.saml.hub.validators.response.common.ResponseSizeValidator;
+import uk.gov.ida.saml.hub.validators.response.idp.components.EncryptedResponseFromIdpValidator;
+import uk.gov.ida.saml.hub.validators.response.idp.components.ResponseAssertionsFromIdpValidator;
 import uk.gov.ida.saml.metadata.IdpMetadataPublicKeyStore;
 import uk.gov.ida.saml.metadata.JerseyClientMetadataResolver;
 import uk.gov.ida.saml.security.AssertionDecrypter;
@@ -111,15 +110,16 @@ public class SamlDecrypter {
 
 
     private DecoratedSamlResponseToIdaResponseIssuedByIdpTransformer buildDecoratedSamlResponseToIdaResponseIssuedByIdpTransformer(SigningCredentialFactory credentialFactory, IdaKeyStore keyStore) {
+        IdaKeyStoreCredentialRetriever storeCredentialRetriever = new IdaKeyStoreCredentialRetriever(keyStore);
         return new DecoratedSamlResponseToIdaResponseIssuedByIdpTransformer(
                 new IdaResponseFromIdpUnmarshaller(
                         new IdpIdaStatusUnmarshaller(new IdpIdaStatus.IdpIdaStatusFactory(), new SamlStatusToIdpIdaStatusMappingsFactory()),
                         new PassthroughAssertionUnmarshaller(new XmlObjectToBase64EncodedStringTransformer<>(), new AuthnContextFactory())),
                 new SamlResponseSignatureValidator(new SamlMessageSignatureValidator(new CredentialFactorySignatureValidator(credentialFactory))),
-                new AssertionDecrypter(new IdaKeyStoreCredentialRetriever(keyStore), new EncryptionAlgorithmValidator(), new DecrypterFactory()),
+                new AssertionDecrypter(new EncryptionAlgorithmValidator(), new DecrypterFactory().createDecrypter(storeCredentialRetriever.getDecryptingCredentials())),
                 new SamlAssertionsSignatureValidator(new SamlMessageSignatureValidator(new CredentialFactorySignatureValidator(credentialFactory))),
                 new EncryptedResponseFromIdpValidator(new SamlStatusToIdpIdaStatusMappingsFactory()),
-                new ValidateSamlResponseIssuedByIdpDestination(new DestinationValidator(URI.create("http://foo.com/bar")), "/bar"),
+                new DestinationValidator(URI.create("http://foo.com/bar"), "/bar"),
                 new ResponseAssertionsFromIdpValidator(
                         new IdentityProviderAssertionValidator(
                                 new IssuerValidator(),

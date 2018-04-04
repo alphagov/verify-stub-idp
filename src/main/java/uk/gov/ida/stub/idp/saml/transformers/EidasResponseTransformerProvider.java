@@ -3,6 +3,7 @@ package uk.gov.ida.stub.idp.saml.transformers;
 import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.xmlsec.algorithm.DigestAlgorithm;
 import org.opensaml.xmlsec.algorithm.SignatureAlgorithm;
+import org.opensaml.xmlsec.encryption.support.EncryptionConstants;
 import uk.gov.ida.saml.core.api.CoreTransformersFactory;
 import uk.gov.ida.saml.security.EncrypterFactory;
 import uk.gov.ida.saml.security.EncryptionKeyStore;
@@ -42,6 +43,6 @@ public class EidasResponseTransformerProvider {
                 entityToEncryptForLocator,
                 signatureAlgorithm,
                 digestAlgorithm,
-                new EncrypterFactory().withAes256Encryption());
+                new EncrypterFactory().withDataEncryptionAlgorithm(EncryptionConstants.ALGO_ID_BLOCKCIPHER_AES256_GCM));
     }
 }
