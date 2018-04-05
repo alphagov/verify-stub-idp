@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 if test -e local.env; then
     set -a
     source local.env

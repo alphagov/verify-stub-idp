@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
-./gradlew --parallel clean build integrationTest copyToLib 2>&1
+set -e
+
+./gradlew --parallel clean build  copyToLib 2>&1
 
 ./startup.sh skip-build
+
+./kill-all-the-services.sh
+
+echo SUCCESS!
