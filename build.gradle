@@ -101,6 +101,28 @@ if (project.hasProperty('includeDirectories')) {
     }
 }
 
+task copyStubIdpLogos(type: Copy) {
+    description 'Copy stub idp logos from federation config into the main resource dir'
+    if (project.hasProperty('stubidpExtraLogosDirectory')) {
+        project.logger.lifecycle "Copying stub idp logos into the main resource dir using stubidpExtraLogosDirectory property"
+        // make sure the idp logos are in the jar
+        from stubidpExtraLogosDirectory
+        into('src/main/resources/assets/images/providers/')
+        include '*.png'
+    } else {
+        // same as above, but for running locally
+        def stubIdpFederationConfigDir = new File("../verify-stub-idp-federation-config/idp-logos/")
+        project.logger.lifecycle "Copying stub idp logos into the main resource dir from adjacent verify-stub-idp-federation-config"
+        if (stubIdpFederationConfigDir.exists() && stubIdpFederationConfigDir.isDirectory()) {
+            from stubIdpFederationConfigDir.getAbsolutePath()
+            into('src/main/resources/assets/images/providers/')
+            include '*.png'
+        }
+    }
+}
+build.dependsOn copyStubIdpLogos
+build.mustRunAfter copyStubIdpLogos
+
 def dependencyVersions = [
         stub_idp_saml         : "$opensaml_version-68",
         ida_utils             : '2.0.0-332',
