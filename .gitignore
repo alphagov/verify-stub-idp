@@ -1,0 +1,16 @@
+.gradle/
+apps-home/
+artefacts/
+build/
+*.iml
+*.ipr
+*.iws
+*.log
+out/
+apps-local-data
+local.env
+logs/
+.idea
+.classpath
+.project
+.settings

@@ -1,0 +1,92 @@
+server:
+  applicationConnectors:
+    - type: http
+      port: 50140
+  adminConnectors:
+    - type: http
+      port: 50141
+
+  requestLog:
+    type: classic
+    appenders:
+      - type: file
+        currentLogFilename: ${LOG_PATH}/debug/stub-idp_access.log
+        archivedLogFilenamePattern: ${LOG_PATH}/debug/stub-idp_access.log.%d.gz
+        archivedFileCount: 7
+      - type: logstash-file
+        currentLogFilename: ${LOG_PATH}/stub-idp_access.log
+        archivedLogFilenamePattern: ${LOG_PATH}/stub-idp_access.log.%d.gz
+        archivedFileCount: 7
+      - type: logstash-syslog
+        facility: local2
+        tag: stub-idp
+
+assertionLifetime: 60m
+
+saml:
+  entityId: http://stub_idp.acme.org/{0}/SSO/POST
+
+serviceInfo:
+  name: stub-idp
+
+clientTrustStoreConfiguration:
+  path: ${TRUSTSTORE_PATH}/ida_truststore.ts
+  password: ${TRUSTSTORE_PASSWORD}
+
+logging:
+  level: INFO
+  appenders:
+    - type: file
+      currentLogFilename: ${LOG_PATH}/debug/stub-idp.log
+      archivedLogFilenamePattern: ${LOG_PATH}/debug/stub-idp.log.%d.gz
+      archivedFileCount: 7
+    - type: logstash-file
+      currentLogFilename: ${LOG_PATH}/stub-idp.log
+      archivedLogFilenamePattern: ${LOG_PATH}/stub-idp.log.%d.gz
+      archivedFileCount: 7
+    - type: logstash-syslog
+      facility: local2
+      tag: stub-idp
+
+signingKeyPairConfiguration:
+  privateKeyConfiguration:
+    keyFile: ${KEYS_DIRECTORY}/stub_idp_signing.pk8
+  publicKeyConfiguration:
+    certFile: ${CERTS_DIRECTORY}/stub_idp_signing.crt
+    name: idp.signing.cert
+
+basicAuthEnabledForUserResource: ${STUB_IDP_BASIC_AUTH}
+
+stubIdpsYmlFileLocation: /ida/stub-idp/stub-idps.yml
+stubIdpYmlFileRefresh: 10s
+
+metrics:
+  reporters:
+    - type: graphite
+      host: graphite
+      port: 2003
+      prefix: ${GRAPHITE_PREFIX}
+      frequency: 10s
+
+infinispan:
+  type: standalone
+  persistenceToFileEnabled: true
+  persistenceFileLocation: '${APP_LIB_DIR}/stub-idp-v2'
+
+hubEntityId: ${METADATA_ENTITY_ID}
+
+metadata:
+  client:
+    timeout: 60s
+    timeToLive: 10m
+    connectionTimeout: 4s
+    tls:
+      protocol: TLSv1.2
+      verifyHostname: false
+  uri: https://${SIGNIN_DOMAIN}/SAML2/metadata/federation
+  trustStore:
+    path: ${TRUSTSTORE_PATH}/ida_metadata_truststore.ts
+    password: ${TRUSTSTORE_PASSWORD}
+  minRefreshDelay: 30000
+  maxRefreshDelay: 1800000
+  expectedEntityId: ${METADATA_ENTITY_ID}
