@@ -65,5 +65,5 @@ This project is developed under the [Alphagov Code of Conduct](https://github.co
 
 ## Licence
 
-[LICENCE](LICENCE)
+[LICENSE](LICENSE)
 
