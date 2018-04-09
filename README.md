@@ -2,6 +2,17 @@
 
 This microservice is a stub IDP that can be white-labelled to simulate any IDP.
 
+## Note about the history of this repository
+
+Commits made up to and including
+83a97b5157c25f3dad56bc0293ef5e78d8a2b2a4 in this repository may have
+had their history altered as part of the open sourcing process.  That
+means the apparent changesets are incomplete due to removed files, and
+thus the commit messages could not be representative of the changes
+made at the time.
+
+Merge commits were not preserved as part of the open sourcing process.
+
 ## Running
 
 Use [verify-local-startup](https://github.com/alphagov/verify-local-startup) to start the app.  It will also create all the appropriate config/PKI to run the app locally.
