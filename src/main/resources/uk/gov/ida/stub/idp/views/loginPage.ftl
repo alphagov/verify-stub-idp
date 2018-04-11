@@ -74,8 +74,8 @@
         <fieldset>
             <legend>Submit Login Fraud Failure</legend>
             <select name="failureStatus" id="failureStatus">
-                <option value="DF01">False document warning.</option>
-                <option value="FI01">Fraudulent identity warning.</option>
+                <option value="DF01">Document fraud warning.</option>
+                <option value="FI01">False identity warning.</option>
                 <option value="IT01">Identity theft warning.</option>
             </select>
 
