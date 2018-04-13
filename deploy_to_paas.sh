@@ -21,7 +21,7 @@ cfSetEnvironmentVariables() {
   cf set-env $TEST_APP_NAME STUB_IDP_SIGNING_PRIVATE_KEY "$STUB_IDP_SIGNING_PRIVATE_KEY"
   cf set-env $TEST_APP_NAME STUB_IDP_SIGNING_CERT "$STUB_IDP_SIGNING_CERT"
   cf set-env $TEST_APP_NAME METADATA_TRUSTSTORE "$METADATA_TRUSTSTORE"
-  cf set-env $TEST_APP_NAME STUB_IDPS_FILE_PATH "/app/ida-stub-idp/resources/$ENVIRONMENT/stub-idps.yml"
+  cf set-env $TEST_APP_NAME STUB_IDPS_FILE_PATH "/app/verify-stub-idp/resources/$ENVIRONMENT/stub-idps.yml"
   cf set-env $TEST_APP_NAME METADATA_URL "$PAAS_METADATA_URL"
   cf set-env $TEST_APP_NAME METADATA_ENTITY_ID "$METADATA_ENTITY_ID"
 
