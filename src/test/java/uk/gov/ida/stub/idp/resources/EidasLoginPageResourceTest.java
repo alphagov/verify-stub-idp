@@ -13,7 +13,7 @@ import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.EidasAuthnRequest;
 import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
-import uk.gov.ida.stub.idp.repositories.Session;
+import uk.gov.ida.stub.idp.repositories.EidasSession;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.repositories.StubCountry;
 import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
@@ -43,15 +43,15 @@ public class EidasLoginPageResourceTest {
     }
 
     private EidasLoginPageResource resource;
-
+    private EidasSession session;
+    
     private final String SCHEME_NAME = "schemeName";
     private final SessionId SESSION_ID = SessionId.createNewSessionId();
     private final String USERNAME = "username";
     private final String PASSWORD = "password";
-    private Session session;
 
     @Mock
-    private SessionRepository sessionRepository;
+    private SessionRepository<EidasSession> sessionRepository;
 
     @Mock
 	private EidasAuthnResponseService eidasSuccessAuthnResponseService;
@@ -76,7 +76,7 @@ public class EidasLoginPageResourceTest {
         SamlResponseRedirectViewFactory samlResponseRedirectViewFactory = new SamlResponseRedirectViewFactory();
         resource = new EidasLoginPageResource(sessionRepository, eidasSuccessAuthnResponseService, samlResponseRedirectViewFactory, stubCountryRepository, stubCountryService);
         EidasAuthnRequest eidasAuthnRequest = new EidasAuthnRequest("request-id", "issuer", "destination", "loa", Collections.emptyList());
-        session = new Session(SESSION_ID, eidasAuthnRequest, null, null, null, Optional.empty(), Optional.empty());
+        session = new EidasSession(SESSION_ID, eidasAuthnRequest, null, null, null, Optional.empty(), Optional.empty());
         when(sessionRepository.get(SESSION_ID)).thenReturn(Optional.ofNullable(session));
         when(sessionRepository.deleteAndGet(SESSION_ID)).thenReturn(Optional.ofNullable(session), Optional.empty());
         when(eidasSuccessAuthnResponseService.generateAuthnFailed(session, SCHEME_NAME)).thenReturn(samlResponse);

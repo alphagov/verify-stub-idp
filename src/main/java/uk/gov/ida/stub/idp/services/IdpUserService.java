@@ -15,8 +15,8 @@ import uk.gov.ida.stub.idp.exceptions.InvalidSessionIdException;
 import uk.gov.ida.stub.idp.exceptions.InvalidUsernameOrPasswordException;
 import uk.gov.ida.stub.idp.exceptions.UsernameAlreadyTakenException;
 import uk.gov.ida.stub.idp.repositories.Idp;
+import uk.gov.ida.stub.idp.repositories.IdpSession;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
-import uk.gov.ida.stub.idp.repositories.Session;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
 
 import javax.inject.Inject;
@@ -27,13 +27,12 @@ import java.util.UUID;
 import static java.util.Arrays.asList;
 
 public class IdpUserService {
-
-    private final SessionRepository sessionRepository;
+    private final SessionRepository<IdpSession> sessionRepository;
     private final IdpStubsRepository idpStubsRepository;
 
     @Inject
     public IdpUserService(
-            SessionRepository sessionRepository,
+            SessionRepository<IdpSession> sessionRepository,
             IdpStubsRepository idpStubsRepository) {
 
         this.sessionRepository = sessionRepository;
@@ -64,7 +63,7 @@ public class IdpUserService {
             throw new InvalidUsernameOrPasswordException();
         }
 
-        Optional<Session> session = sessionRepository.get(idpSessionId);
+        Optional<IdpSession> session = sessionRepository.get(idpSessionId);
 
         if (!session.isPresent()) {
             throw new InvalidSessionIdException();

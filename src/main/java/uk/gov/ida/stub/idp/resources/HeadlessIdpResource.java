@@ -5,8 +5,8 @@ import uk.gov.ida.saml.hub.domain.IdaAuthnRequestFromHub;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.SamlResponse;
+import uk.gov.ida.stub.idp.repositories.IdpSession;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
-import uk.gov.ida.stub.idp.repositories.Session;
 import uk.gov.ida.stub.idp.services.SuccessAuthnResponseService;
 import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
 
@@ -55,7 +55,7 @@ public class HeadlessIdpResource {
         final IdaAuthnRequestFromHub idaRequestFromHub = samlRequestTransformer.apply(samlRequest);
         final Optional<DatabaseIdpUser> idpUser = idpStubsRepository.getIdpWithFriendlyId(IDP_NAME).getUser(username, "bar");
 
-        final Session session = new Session(SessionId.createNewSessionId(), idaRequestFromHub, relayState, null, null, null, null);
+        final IdpSession session = new IdpSession(SessionId.createNewSessionId(), idaRequestFromHub, relayState, null, null, null, null);
         session.setIdpUser(idpUser);
 
         final SamlResponse successResponse = successAuthnResponseService.getSuccessResponse(false, httpServletRequest.getRemoteAddr(), IDP_NAME, session);

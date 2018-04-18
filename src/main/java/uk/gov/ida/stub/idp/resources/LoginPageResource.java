@@ -11,8 +11,8 @@ import uk.gov.ida.stub.idp.exceptions.InvalidSessionIdException;
 import uk.gov.ida.stub.idp.exceptions.InvalidUsernameOrPasswordException;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASession;
 import uk.gov.ida.stub.idp.repositories.Idp;
+import uk.gov.ida.stub.idp.repositories.IdpSession;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
-import uk.gov.ida.stub.idp.repositories.Session;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.services.IdpUserService;
 import uk.gov.ida.stub.idp.services.NonSuccessAuthnResponseService;
@@ -54,7 +54,7 @@ public class LoginPageResource {
     private final NonSuccessAuthnResponseService nonSuccessAuthnResponseService;
     private final SamlResponseRedirectViewFactory samlResponseRedirectViewFactory;
     private final IdpUserService idpUserService;
-    private final SessionRepository sessionRepository;
+    private final SessionRepository<IdpSession> sessionRepository;
 
     @Inject
     public LoginPageResource(
@@ -62,7 +62,7 @@ public class LoginPageResource {
             NonSuccessAuthnResponseService nonSuccessAuthnResponseService,
             SamlResponseRedirectViewFactory samlResponseRedirectViewFactory,
             IdpUserService idpUserService,
-            SessionRepository sessionRepository) {
+            SessionRepository<IdpSession> sessionRepository) {
         this.nonSuccessAuthnResponseService = nonSuccessAuthnResponseService;
         this.idpStubsRepository = idpStubsRepository;
         this.samlResponseRedirectViewFactory = samlResponseRedirectViewFactory;
@@ -94,7 +94,7 @@ public class LoginPageResource {
             @FormParam(Urls.SUBMIT_PARAM) @NotNull SubmitButtonValue submitButtonValue,
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
 
-        Session session = checkAndGetSession(idpName, sessionCookie);
+        IdpSession session = checkAndGetSession(idpName, sessionCookie);
         final String samlRequestId = session.getIdaAuthnRequestFromHub().getId();
 
         switch (submitButtonValue) {
@@ -128,7 +128,7 @@ public class LoginPageResource {
             @PathParam(Urls.IDP_ID_PARAM) @NotNull String idpName,
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
 
-        Session session = checkAndDeleteAndGetSession(idpName, sessionCookie);
+        IdpSession session = checkAndDeleteAndGetSession(idpName, sessionCookie);
 
         final SamlResponse loginFailureResponse = nonSuccessAuthnResponseService.generateAuthnFailed(idpName, session.getIdaAuthnRequestFromHub().getId(), session.getRelayState());
         return samlResponseRedirectViewFactory.sendSamlMessage(loginFailureResponse);
@@ -141,7 +141,7 @@ public class LoginPageResource {
             @PathParam(Urls.IDP_ID_PARAM) @NotNull String idpName,
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
 
-        Session session = checkAndDeleteAndGetSession(idpName, sessionCookie);
+        IdpSession session = checkAndDeleteAndGetSession(idpName, sessionCookie);
 
         final SamlResponse noAuthnResponse = nonSuccessAuthnResponseService.generateNoAuthnContext(idpName, session.getIdaAuthnRequestFromHub().getId(), session.getRelayState());
         return samlResponseRedirectViewFactory.sendSamlMessage(noAuthnResponse);
@@ -154,7 +154,7 @@ public class LoginPageResource {
             @PathParam(Urls.IDP_ID_PARAM) @NotNull String idpName,
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
 
-        Session session = checkAndDeleteAndGetSession(idpName, sessionCookie);
+        IdpSession session = checkAndDeleteAndGetSession(idpName, sessionCookie);
 
         final SamlResponse upliftFailedResponse = nonSuccessAuthnResponseService.generateUpliftFailed(idpName, session.getIdaAuthnRequestFromHub().getId(), session.getRelayState());
         return samlResponseRedirectViewFactory.sendSamlMessage(upliftFailedResponse);
@@ -172,7 +172,7 @@ public class LoginPageResource {
 
         final String clientIpAddress = httpServletRequest.getRemoteHost();
 
-        Session session = checkAndDeleteAndGetSession(idpName, sessionCookie);
+        IdpSession session = checkAndDeleteAndGetSession(idpName, sessionCookie);
 
         final SamlResponse fraudResponse = nonSuccessAuthnResponseService.generateFraudResponse(idpName, session.getIdaAuthnRequestFromHub().getId(), fraudIndicatorParam, clientIpAddress, session);
         return samlResponseRedirectViewFactory.sendSamlMessage(fraudResponse);
@@ -186,7 +186,7 @@ public class LoginPageResource {
             @FormParam(Urls.REQUESTER_ERROR_MESSAGE_PARAM) String requesterErrorMessage,
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
 
-        Session session = checkAndDeleteAndGetSession(idpName, sessionCookie);
+        IdpSession session = checkAndDeleteAndGetSession(idpName, sessionCookie);
 
         final SamlResponse requesterErrorResponseFromIdp = nonSuccessAuthnResponseService.generateRequesterError(session.getIdaAuthnRequestFromHub().getId(), requesterErrorMessage, idpName, session.getRelayState());
         return samlResponseRedirectViewFactory.sendSamlMessage(requesterErrorResponseFromIdp);
@@ -199,18 +199,18 @@ public class LoginPageResource {
             @PathParam(Urls.IDP_ID_PARAM) @NotNull String idpName,
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
 
-        Session session = checkAndDeleteAndGetSession(idpName, sessionCookie);
+        IdpSession session = checkAndDeleteAndGetSession(idpName, sessionCookie);
 
         final SamlResponse pendingResponse = nonSuccessAuthnResponseService.generateAuthnPending(idpName, session.getIdaAuthnRequestFromHub().getId(), session.getRelayState());
         return samlResponseRedirectViewFactory.sendSamlMessage(pendingResponse);
     }
 
-    private Session checkAndGetSession(String idpName, SessionId sessionCookie) {
+    private IdpSession checkAndGetSession(String idpName, SessionId sessionCookie) {
         if (Strings.isNullOrEmpty(sessionCookie.toString())) {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Unable to locate session cookie for " + idpName))).build());
         }
 
-        Optional<Session> session = sessionRepository.get(sessionCookie);
+        Optional<IdpSession> session = sessionRepository.get(sessionCookie);
 
         if (!session.isPresent() || session.get().getIdaAuthnRequestFromHub() == null) {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Session is invalid for " + idpName))).build());
@@ -218,12 +218,12 @@ public class LoginPageResource {
         return session.get();
     }
 
-    private Session checkAndDeleteAndGetSession(String idpName, SessionId sessionCookie) {
+    private IdpSession checkAndDeleteAndGetSession(String idpName, SessionId sessionCookie) {
         if (Strings.isNullOrEmpty(sessionCookie.toString())) {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Unable to locate session cookie for " + idpName))).build());
         }
 
-        Optional<Session> session = sessionRepository.deleteAndGet(sessionCookie);
+        Optional<IdpSession> session = sessionRepository.deleteAndGet(sessionCookie);
 
         if (!session.isPresent() || session.get().getIdaAuthnRequestFromHub() == null) {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Session is invalid for " + idpName))).build());

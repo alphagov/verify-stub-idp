@@ -1,6 +1,8 @@
 package uk.gov.ida.stub.idp.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.joda.time.LocalDate;
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.AuthnContext;
@@ -23,17 +25,18 @@ public class DatabaseIdpUser implements Serializable {
     private final List<Address> addresses;
     private final AuthnContext levelOfAssurance;
 
+    @JsonCreator
     public DatabaseIdpUser(
-        String username,
-        String persistentId,
-        String password,
-        List<MatchingDatasetValue<String>> firstnames,
-        List<MatchingDatasetValue<String>> middleNames,
-        List<MatchingDatasetValue<String>> surnames,
-        Optional<MatchingDatasetValue<Gender>> gender,
-        List<MatchingDatasetValue<LocalDate>> dateOfBirths,
-        List<Address> addresses,
-        AuthnContext levelOfAssurance) {
+        @JsonProperty("username") String username,
+        @JsonProperty("persistentId") String persistentId,
+        @JsonProperty("password") String password,
+        @JsonProperty("firstnames") List<MatchingDatasetValue<String>> firstnames,
+        @JsonProperty("middleNames") List<MatchingDatasetValue<String>> middleNames,
+        @JsonProperty("surnames") List<MatchingDatasetValue<String>> surnames,
+        @JsonProperty("gender") Optional<MatchingDatasetValue<Gender>> gender,
+        @JsonProperty("dateOfBirths") List<MatchingDatasetValue<LocalDate>> dateOfBirths,
+        @JsonProperty("addresses") List<Address> addresses,
+        @JsonProperty("levelOfAssurance") AuthnContext levelOfAssurance) {
 
         this.username = username;
         this.persistentId = persistentId;

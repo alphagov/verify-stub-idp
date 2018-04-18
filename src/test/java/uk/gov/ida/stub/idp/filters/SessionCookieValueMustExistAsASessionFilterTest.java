@@ -13,7 +13,8 @@ import uk.gov.ida.stub.idp.exceptions.InvalidSecureCookieException;
 import uk.gov.ida.stub.idp.exceptions.SecureCookieNotFoundException;
 import uk.gov.ida.stub.idp.exceptions.SessionIdCookieNotFoundException;
 import uk.gov.ida.stub.idp.exceptions.SessionNotFoundException;
-import uk.gov.ida.stub.idp.repositories.Session;
+import uk.gov.ida.stub.idp.repositories.EidasSession;
+import uk.gov.ida.stub.idp.repositories.IdpSession;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
 
 import javax.ws.rs.container.ContainerRequestContext;
@@ -37,11 +38,11 @@ public class SessionCookieValueMustExistAsASessionFilterTest {
     @Mock
     private HmacValidator hmacValidator;
     @Mock
-    private SessionRepository sessionRepository;
+    private SessionRepository<IdpSession> idpSessionRepository;
+    @Mock
+    private SessionRepository<EidasSession> eidasSessionRepository;
     @Mock
     private ContainerRequestContext containerRequestContext;
-    @Mock
-    private Session session;
 
     @BeforeClass
     public static void doALittleHackToMakeGuicierHappyForSomeReason() {
@@ -52,21 +53,21 @@ public class SessionCookieValueMustExistAsASessionFilterTest {
     public void shouldReturnNullWhenCheckingNotRequiredButNoCookies() throws Exception {
         Map<String, Cookie> cookies = ImmutableMap.of();
         when(containerRequestContext.getCookies()).thenReturn(cookies);
-        new SessionCookieValueMustExistAsASessionFilter(sessionRepository, hmacValidator, isSecureCookieEnabled).filter(containerRequestContext);
+        new SessionCookieValueMustExistAsASessionFilter(idpSessionRepository, eidasSessionRepository, hmacValidator, isSecureCookieEnabled).filter(containerRequestContext);
     }
 
     @Test (expected = SecureCookieNotFoundException.class)
     public void shouldReturnNullWhenCheckingNotRequiredButSecureCookie() throws Exception {
         Map<String, Cookie> cookies = ImmutableMap.of(SESSION_COOKIE_NAME, new NewCookie(SESSION_COOKIE_NAME, "some-session-id"));
         when(containerRequestContext.getCookies()).thenReturn(cookies);
-        new SessionCookieValueMustExistAsASessionFilter(sessionRepository, hmacValidator, isSecureCookieEnabled).filter(containerRequestContext);
+        new SessionCookieValueMustExistAsASessionFilter(idpSessionRepository, eidasSessionRepository, hmacValidator, isSecureCookieEnabled).filter(containerRequestContext);
     }
 
     @Test (expected = InvalidSecureCookieException.class)
     public void shouldReturnNullWhenCheckingNotRequiredButSessionCookieIsSetToNoCurrentValue() throws Exception {
         Map<String, Cookie> cookies = ImmutableMap.of(SESSION_COOKIE_NAME, new NewCookie(SESSION_COOKIE_NAME, "some-session-id"), SECURE_COOKIE_NAME, new NewCookie(SECURE_COOKIE_NAME, NO_CURRENT_SESSION_COOKIE_VALUE));
         when(containerRequestContext.getCookies()).thenReturn(cookies);
-        new SessionCookieValueMustExistAsASessionFilter(sessionRepository, hmacValidator, isSecureCookieEnabled).filter(containerRequestContext);
+        new SessionCookieValueMustExistAsASessionFilter(idpSessionRepository, eidasSessionRepository, hmacValidator, isSecureCookieEnabled).filter(containerRequestContext);
     }
 
     @Test (expected = InvalidSecureCookieException.class)
@@ -75,7 +76,7 @@ public class SessionCookieValueMustExistAsASessionFilterTest {
         Map<String, Cookie> cookies = ImmutableMap.of(SESSION_COOKIE_NAME, new NewCookie(SESSION_COOKIE_NAME, sessionId.toString()), SECURE_COOKIE_NAME, new NewCookie(SECURE_COOKIE_NAME, "secure-cookie"));
         when(hmacValidator.validateHMACSHA256("secure-cookie", sessionId.getSessionId())).thenReturn(false);
         when(containerRequestContext.getCookies()).thenReturn(cookies);
-        new SessionCookieValueMustExistAsASessionFilter(sessionRepository, hmacValidator, isSecureCookieEnabled).filter(containerRequestContext);
+        new SessionCookieValueMustExistAsASessionFilter(idpSessionRepository, eidasSessionRepository, hmacValidator, isSecureCookieEnabled).filter(containerRequestContext);
     }
 
     @Test
@@ -84,8 +85,8 @@ public class SessionCookieValueMustExistAsASessionFilterTest {
         Map<String, Cookie> cookies = ImmutableMap.of(SESSION_COOKIE_NAME, new NewCookie(SESSION_COOKIE_NAME, sessionId.toString()), SECURE_COOKIE_NAME, new NewCookie(SECURE_COOKIE_NAME, "secure-cookie"));
         when(containerRequestContext.getCookies()).thenReturn(cookies);
         when(hmacValidator.validateHMACSHA256("secure-cookie", sessionId.getSessionId())).thenReturn(true);
-        when(sessionRepository.get(sessionId)).thenReturn(Optional.ofNullable(session));
-        new SessionCookieValueMustExistAsASessionFilter(sessionRepository, hmacValidator, isSecureCookieEnabled).filter(containerRequestContext);
+        when(idpSessionRepository.containsSession(sessionId)).thenReturn(true);
+        new SessionCookieValueMustExistAsASessionFilter(idpSessionRepository, eidasSessionRepository, hmacValidator, isSecureCookieEnabled).filter(containerRequestContext);
     }
 
     @Test
@@ -93,7 +94,7 @@ public class SessionCookieValueMustExistAsASessionFilterTest {
         Map<String, Cookie> cookies = ImmutableMap.of();
         when(containerRequestContext.getCookies()).thenReturn(cookies);
         try {
-            new SessionCookieValueMustExistAsASessionFilter(sessionRepository, hmacValidator, isSecureCookieEnabled).filter(containerRequestContext);
+            new SessionCookieValueMustExistAsASessionFilter(idpSessionRepository, eidasSessionRepository, hmacValidator, isSecureCookieEnabled).filter(containerRequestContext);
             fail("we wanted an exception but we got none");
         } catch (SessionIdCookieNotFoundException e) {
             assertThat(e.getMessage()).isEqualTo("Unable to locate session from session cookie");
@@ -105,7 +106,7 @@ public class SessionCookieValueMustExistAsASessionFilterTest {
         Map<String, Cookie> cookies = ImmutableMap.of();
         when(containerRequestContext.getCookies()).thenReturn(cookies);
         try {
-            new SessionCookieValueMustExistAsASessionFilter(sessionRepository, hmacValidator, isSecureCookieEnabled).filter(containerRequestContext);
+            new SessionCookieValueMustExistAsASessionFilter(idpSessionRepository, eidasSessionRepository, hmacValidator, isSecureCookieEnabled).filter(containerRequestContext);
             fail("we wanted an exception but we got none");
         } catch (SessionIdCookieNotFoundException e) {
             assertThat(e.getMessage()).isEqualTo("Unable to locate session from session cookie");
@@ -119,7 +120,7 @@ public class SessionCookieValueMustExistAsASessionFilterTest {
         );
         when(containerRequestContext.getCookies()).thenReturn(cookies);
         try {
-            new SessionCookieValueMustExistAsASessionFilter(sessionRepository, hmacValidator, isSecureCookieEnabled).filter(containerRequestContext);
+            new SessionCookieValueMustExistAsASessionFilter(idpSessionRepository, eidasSessionRepository, hmacValidator, isSecureCookieEnabled).filter(containerRequestContext);
             fail("we wanted an exception but we got none");
         } catch (SecureCookieNotFoundException e) {
             assertThat(e.getMessage()).isEqualTo("Secure cookie not found.");
@@ -134,7 +135,7 @@ public class SessionCookieValueMustExistAsASessionFilterTest {
         );
         when(containerRequestContext.getCookies()).thenReturn(cookies);
         try {
-            new SessionCookieValueMustExistAsASessionFilter(sessionRepository, hmacValidator, isSecureCookieEnabled).filter(containerRequestContext);
+            new SessionCookieValueMustExistAsASessionFilter(idpSessionRepository, eidasSessionRepository, hmacValidator, isSecureCookieEnabled).filter(containerRequestContext);
             fail("we wanted an exception but we got none");
         } catch (InvalidSecureCookieException e) {
             assertThat(e.getMessage()).isEqualTo("Secure cookie was set to deleted session value, indicating a previously completed session.");
@@ -151,7 +152,7 @@ public class SessionCookieValueMustExistAsASessionFilterTest {
         when(containerRequestContext.getCookies()).thenReturn(cookies);
         when(hmacValidator.validateHMACSHA256("secure-cookie", sessionId.getSessionId())).thenReturn(false);
         try {
-            new SessionCookieValueMustExistAsASessionFilter(sessionRepository, hmacValidator, isSecureCookieEnabled).filter(containerRequestContext);
+            new SessionCookieValueMustExistAsASessionFilter(idpSessionRepository, eidasSessionRepository, hmacValidator, isSecureCookieEnabled).filter(containerRequestContext);
             fail("we wanted an exception but we got none");
         } catch (InvalidSecureCookieException e) {
             assertThat(e.getMessage()).isEqualTo("Secure cookie value not valid.");
@@ -167,8 +168,8 @@ public class SessionCookieValueMustExistAsASessionFilterTest {
         );
         when(containerRequestContext.getCookies()).thenReturn(cookies);
         when(hmacValidator.validateHMACSHA256("secure-cookie", sessionId.getSessionId())).thenReturn(true);
-        when(sessionRepository.get(sessionId)).thenReturn(Optional.empty());
-        new SessionCookieValueMustExistAsASessionFilter(sessionRepository, hmacValidator, isSecureCookieEnabled).filter(containerRequestContext);
+        when(idpSessionRepository.get(sessionId)).thenReturn(Optional.empty());
+        new SessionCookieValueMustExistAsASessionFilter(idpSessionRepository, eidasSessionRepository, hmacValidator, isSecureCookieEnabled).filter(containerRequestContext);
     }
 
 
@@ -181,7 +182,7 @@ public class SessionCookieValueMustExistAsASessionFilterTest {
         );
         when(containerRequestContext.getCookies()).thenReturn(cookies);
         when(hmacValidator.validateHMACSHA256("secure-cookies", sessionId.getSessionId())).thenReturn(false);
-        when(sessionRepository.get(sessionId)).thenReturn(Optional.ofNullable(session));
-        new SessionCookieValueMustExistAsASessionFilter(sessionRepository, hmacValidator, false).filter(containerRequestContext);
+        when(idpSessionRepository.containsSession(sessionId)).thenReturn(true);
+        new SessionCookieValueMustExistAsASessionFilter(idpSessionRepository, eidasSessionRepository, hmacValidator, false).filter(containerRequestContext);
     }
 }

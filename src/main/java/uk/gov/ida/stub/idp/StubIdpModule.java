@@ -58,11 +58,17 @@ import uk.gov.ida.stub.idp.domain.factories.IdentityProviderAssertionFactory;
 import uk.gov.ida.stub.idp.domain.factories.StubTransformersFactory;
 import uk.gov.ida.stub.idp.listeners.StubIdpsFileListener;
 import uk.gov.ida.stub.idp.repositories.AllIdpsUserRepository;
+import uk.gov.ida.stub.idp.repositories.EidasSession;
+import uk.gov.ida.stub.idp.repositories.EidasSessionRepository;
+import uk.gov.ida.stub.idp.repositories.IdpSession;
+import uk.gov.ida.stub.idp.repositories.IdpSessionRepository;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
 import uk.gov.ida.stub.idp.repositories.MetadataRepository;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
 import uk.gov.ida.stub.idp.repositories.UserRepository;
+import uk.gov.ida.stub.idp.repositories.jdbc.JDBIEidasSessionRepository;
+import uk.gov.ida.stub.idp.repositories.jdbc.JDBIIdpSessionRepository;
 import uk.gov.ida.stub.idp.repositories.jdbc.JDBIUserRepository;
 import uk.gov.ida.stub.idp.repositories.jdbc.UserMapper;
 import uk.gov.ida.stub.idp.saml.locators.IdpHardCodedEntityToEncryptForLocator;
@@ -121,7 +127,6 @@ public class StubIdpModule extends AbstractModule {
 
         bind(EntityToEncryptForLocator.class).to(IdpHardCodedEntityToEncryptForLocator.class).asEagerSingleton();
         bind(CountryMetadataSigningHelper.class).asEagerSingleton();
-        bind(SessionRepository.class).asEagerSingleton();
         bind(new TypeLiteral<ConcurrentMap<String, Document>>() {
         }).toInstance(new ConcurrentHashMap<>());
 
@@ -155,6 +160,9 @@ public class StubIdpModule extends AbstractModule {
         bind(StubCountryService.class);
         bind(UserService.class);
         bind(SamlResponseRedirectViewFactory.class);
+        
+        bind(new TypeLiteral<SessionRepository<IdpSession>>(){}).to(IdpSessionRepository.class);
+        bind(new TypeLiteral<SessionRepository<EidasSession>>(){}).to(EidasSessionRepository.class);
 
         bind(HmacValidator.class);
         bind(HmacDigest.class);
@@ -176,6 +184,20 @@ public class StubIdpModule extends AbstractModule {
     public UserRepository getUserRepository(StubIdpConfiguration configuration, UserMapper userMapper) {
         Jdbi jdbi = Jdbi.create(configuration.getDatabaseConfiguration().getUrl());
         return new JDBIUserRepository(jdbi, userMapper);
+    }
+    
+    @Provides
+    @Singleton
+    public IdpSessionRepository getIdpSessionRepository(StubIdpConfiguration configuration) {
+        Jdbi jdbi = Jdbi.create(configuration.getDatabaseConfiguration().getUrl());
+        return new JDBIIdpSessionRepository(jdbi);
+    }
+
+    @Provides
+    @Singleton
+    public EidasSessionRepository getEidasSessionRepository(StubIdpConfiguration configuration) {
+        Jdbi jdbi = Jdbi.create(configuration.getDatabaseConfiguration().getUrl());
+        return new JDBIEidasSessionRepository(jdbi);
     }
 
     @Provides

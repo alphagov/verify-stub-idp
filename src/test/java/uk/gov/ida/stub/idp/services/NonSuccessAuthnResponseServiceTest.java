@@ -18,10 +18,7 @@ import uk.gov.ida.stub.idp.domain.FraudIndicator;
 import uk.gov.ida.stub.idp.domain.IdpIdaStatus;
 import uk.gov.ida.stub.idp.domain.OutboundResponseFromIdp;
 import uk.gov.ida.stub.idp.domain.factories.AssertionFactory;
-import uk.gov.ida.stub.idp.repositories.Idp;
-import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
-import uk.gov.ida.stub.idp.repositories.MetadataRepository;
-import uk.gov.ida.stub.idp.repositories.Session;
+import uk.gov.ida.stub.idp.repositories.*;
 import uk.gov.ida.stub.idp.saml.transformers.OutboundResponseFromIdpTransformerProvider;
 
 import java.net.URI;
@@ -128,7 +125,7 @@ public class NonSuccessAuthnResponseServiceTest {
 
     @Test
     public void shouldBuildFraudResponse(){
-        Session session = new Session(SessionId.createNewSessionId(),
+        IdpSession session = new IdpSession(SessionId.createNewSessionId(),
                 IdaAuthnRequestFromHub.createRequestReceivedFromHub(REQUEST_ID, HUB_URI.toString(), ImmutableList.of(LEVEL_2), false, DateTime.now(), AuthnContextComparisonTypeEnumeration.EXACT),
                 RELAY_STATE, null, null, null, null);
         nonSuccessAuthnResponseService.generateFraudResponse(IDP_NAME, REQUEST_ID, FraudIndicator.FI01, "ipAddress", session).getResponseString();
