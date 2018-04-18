@@ -18,8 +18,8 @@ import uk.gov.ida.saml.hub.domain.IdaAuthnRequestFromHub;
 import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 import uk.gov.ida.stub.idp.repositories.Idp;
+import uk.gov.ida.stub.idp.repositories.IdpSession;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
-import uk.gov.ida.stub.idp.repositories.Session;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.services.NonSuccessAuthnResponseService;
 import uk.gov.ida.stub.idp.services.SuccessAuthnResponseService;
@@ -47,7 +47,7 @@ public class ConsentResourceTest {
     @Mock
     private IdpStubsRepository idpStubsRepository;
     @Mock
-    private SessionRepository sessionRepository;
+    private SessionRepository<IdpSession> sessionRepository;
     @Mock
     private IdaAuthnRequestFromHub idaAuthnRequestFromHub;
     @Mock
@@ -69,7 +69,7 @@ public class ConsentResourceTest {
     public void shouldWarnUserIfLOAIsTooLow() {
         final SessionId idpSessionId = SessionId.createNewSessionId();
 
-        Session session = new Session(idpSessionId, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null);
+        IdpSession session = new IdpSession(idpSessionId, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null);
         session.setIdpUser(newUser(AuthnContext.LEVEL_1));
         when(sessionRepository.get(idpSessionId)).thenReturn(Optional.ofNullable(session));
 
@@ -86,7 +86,7 @@ public class ConsentResourceTest {
     public void shouldWarnUserIfLOAIsTooLowWhenMultipleValuesPresent() {
         final SessionId idpSessionId = SessionId.createNewSessionId();
 
-        Session session = new Session(idpSessionId, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null);
+        IdpSession session = new IdpSession(idpSessionId, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null);
         session.setIdpUser(newUser(AuthnContext.LEVEL_1));
         when(sessionRepository.get(idpSessionId)).thenReturn(Optional.ofNullable(session));
 
@@ -103,7 +103,7 @@ public class ConsentResourceTest {
     public void shouldNotWarnUserIfLOAIsOk() {
         final SessionId idpSessionId = SessionId.createNewSessionId();
 
-        Session session = new Session(idpSessionId, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null);
+        IdpSession session = new IdpSession(idpSessionId, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null);
         session.setIdpUser(newUser(AuthnContext.LEVEL_2));
         when(sessionRepository.get(idpSessionId)).thenReturn(Optional.ofNullable(session));
 

@@ -7,7 +7,7 @@ import uk.gov.ida.stub.idp.cookies.CookieNames;
 import uk.gov.ida.stub.idp.domain.EidasUser;
 import uk.gov.ida.stub.idp.domain.SamlResponse;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASession;
-import uk.gov.ida.stub.idp.repositories.Session;
+import uk.gov.ida.stub.idp.repositories.EidasSession;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.repositories.StubCountry;
 import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
@@ -34,14 +34,14 @@ import java.util.Optional;
 @SessionCookieValueMustExistAsASession
 public class EidasConsentResource {
 
+    private final SessionRepository<EidasSession> sessionRepository;
     private final StubCountryRepository stubCountryRepository;
-    private final SessionRepository sessionRepository;
     private final EidasAuthnResponseService successAuthnResponseService;
     private final SamlResponseRedirectViewFactory samlResponseRedirectViewFactory;
 
     @Inject
     public EidasConsentResource(
-            SessionRepository sessionRepository,
+            SessionRepository<EidasSession> sessionRepository,
             EidasAuthnResponseService successAuthnResponseService,
             SamlResponseRedirectViewFactory samlResponseRedirectViewFactory,
             StubCountryRepository stubCountryRepository) {
@@ -56,7 +56,7 @@ public class EidasConsentResource {
             @PathParam(Urls.SCHEME_ID_PARAM) @NotNull String schemeId,
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
 
-        Session session = getAndValidateSession(schemeId, sessionCookie, false);
+		EidasSession session = getAndValidateSession(schemeId, sessionCookie, false);
 
         EidasUser eidasUser = session.getEidasUser().get();
         StubCountry stubCountry = stubCountryRepository.getStubCountryWithFriendlyId(schemeId);
@@ -70,18 +70,18 @@ public class EidasConsentResource {
             @FormParam(Urls.SUBMIT_PARAM) @NotNull String submitButtonValue,
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
 
-        Session session = getAndValidateSession(schemeId, sessionCookie, true);
+        EidasSession session = getAndValidateSession(schemeId, sessionCookie, true);
 
         SamlResponse samlResponse = successAuthnResponseService.getSuccessResponse(session, schemeId);
         return samlResponseRedirectViewFactory.sendSamlMessage(samlResponse);
     }
 
-    private Session getAndValidateSession(String schemeId, SessionId sessionCookie, boolean shouldDelete) {
+    private EidasSession getAndValidateSession(String schemeId, SessionId sessionCookie, boolean shouldDelete) {
         if (sessionCookie == null || Strings.isNullOrEmpty(sessionCookie.toString())) {
             throw errorResponse("Unable to locate session cookie for " + schemeId);
         }
 
-        Optional<Session> session = shouldDelete ? sessionRepository.deleteAndGet(sessionCookie) : sessionRepository.get(sessionCookie);
+        Optional<EidasSession> session = shouldDelete ? sessionRepository.deleteAndGet(sessionCookie) : sessionRepository.get(sessionCookie);
 
         if (!session.isPresent() || !session.get().getEidasUser().isPresent() || session.get().getEidasAuthnRequest() == null) {
             throw errorResponse("Session is invalid for " + schemeId);

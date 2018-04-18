@@ -12,7 +12,7 @@ import uk.gov.ida.common.SessionId;
 import uk.gov.ida.stub.idp.domain.EidasAuthnRequest;
 import uk.gov.ida.stub.idp.domain.EidasUser;
 import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
-import uk.gov.ida.stub.idp.repositories.Session;
+import uk.gov.ida.stub.idp.repositories.EidasSession;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.repositories.StubCountry;
 import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
@@ -21,9 +21,9 @@ import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-
 import java.util.Collections;
 import java.util.Optional;
+
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -39,10 +39,10 @@ public class EidasConsentResourceTest {
 
     private final String SCHEME_NAME = "schemeName";
     private final SessionId SESSION_ID = SessionId.createNewSessionId();
-    private Session session;
+    private EidasSession session;
 
     @Mock
-    private SessionRepository sessionRepository;
+    private SessionRepository<EidasSession> sessionRepository;
 
     @Mock
     private EidasAuthnResponseService successAuthnResponseService;
@@ -61,7 +61,7 @@ public class EidasConsentResourceTest {
         resource = new EidasConsentResource(sessionRepository, successAuthnResponseService, samlResponseRedirectViewFactory, stubCountryRepository);
 
         EidasAuthnRequest eidasAuthnRequest = new EidasAuthnRequest("request-id", "issuer", "destination", "loa", Collections.emptyList());
-        session = new Session(SESSION_ID, eidasAuthnRequest, null, null, null, null, null);
+        session = new EidasSession(SESSION_ID, eidasAuthnRequest, null, null, null, null, null);
         EidasUser user = new EidasUser("Jane", "Doe", "pid", new LocalDate(1990, 1, 2), null, null);
         session.setEidasUser(user);
         when(sessionRepository.get(SESSION_ID)).thenReturn(Optional.of(session));

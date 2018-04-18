@@ -8,8 +8,8 @@ import uk.gov.ida.stub.idp.cookies.CookieNames;
 import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASession;
 import uk.gov.ida.stub.idp.repositories.Idp;
+import uk.gov.ida.stub.idp.repositories.IdpSession;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
-import uk.gov.ida.stub.idp.repositories.Session;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.services.NonSuccessAuthnResponseService;
 import uk.gov.ida.stub.idp.services.SuccessAuthnResponseService;
@@ -18,14 +18,7 @@ import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.CookieParam;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -37,7 +30,7 @@ import java.util.Optional;
 public class ConsentResource {
 
     private final IdpStubsRepository idpStubsRepository;
-    private final SessionRepository sessionRepository;
+    private final SessionRepository<IdpSession> sessionRepository;
     private final SuccessAuthnResponseService successAuthnResponseService;
     private final NonSuccessAuthnResponseService nonSuccessAuthnResponseService;
     private final SamlResponseRedirectViewFactory samlResponseRedirectViewFactory;
@@ -48,7 +41,7 @@ public class ConsentResource {
     @Inject
     public ConsentResource(
             IdpStubsRepository idpStubsRepository,
-            SessionRepository sessionRepository,
+            SessionRepository<IdpSession> sessionRepository,
             SuccessAuthnResponseService successAuthnResponseService,
             NonSuccessAuthnResponseService nonSuccessAuthnResponseService,
             SamlResponseRedirectViewFactory samlResponseRedirectViewFactory) {
@@ -64,7 +57,7 @@ public class ConsentResource {
             @PathParam(Urls.IDP_ID_PARAM) @NotNull String idpName,
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
 
-        Session session = getAndValidateSession(idpName, sessionCookie);
+        IdpSession session = getAndValidateSession(idpName, sessionCookie);
 
         DatabaseIdpUser idpUser = session.getIdpUser().get();
 
@@ -86,9 +79,9 @@ public class ConsentResource {
             @FormParam(Urls.SUBMIT_PARAM) @NotNull String submitButtonValue,
             @FormParam(Urls.RANDOMISE_PID_PARAM) boolean randomisePid,
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
-
-        getAndValidateSession(idpName, sessionCookie);
-        Session session = sessionRepository.deleteAndGet(sessionCookie).get();
+        
+        IdpSession session = getAndValidateSession(idpName, sessionCookie);
+        sessionRepository.deleteSession(sessionCookie);
 
         switch (submitButtonValue) {
             case I_AGREE_SUBMIT_VALUE:
@@ -101,16 +94,17 @@ public class ConsentResource {
         }
     }
 
-    private Session getAndValidateSession(String idpName, SessionId sessionCookie) {
+    private IdpSession getAndValidateSession(String idpName, SessionId sessionCookie) {
         if (Strings.isNullOrEmpty(sessionCookie.toString())) {
             throw errorResponse("Unable to locate session cookie for " + idpName);
         }
 
-        Optional<Session> session = sessionRepository.get(sessionCookie);
-
+        Optional<IdpSession> session = sessionRepository.get(sessionCookie);
+        
         if (!session.isPresent() || !session.get().getIdpUser().isPresent() || session.get().getIdaAuthnRequestFromHub() == null) {
             throw errorResponse("Session is invalid for " + idpName);
         }
+        
         return session.get();
     }
 }

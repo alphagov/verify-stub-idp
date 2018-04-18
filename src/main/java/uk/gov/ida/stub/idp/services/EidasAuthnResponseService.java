@@ -23,8 +23,8 @@ import uk.gov.ida.stub.idp.builders.EidasResponseBuilder;
 import uk.gov.ida.stub.idp.domain.EidasAddress;
 import uk.gov.ida.stub.idp.domain.EidasUser;
 import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
+import uk.gov.ida.stub.idp.repositories.EidasSession;
 import uk.gov.ida.stub.idp.repositories.MetadataRepository;
-import uk.gov.ida.stub.idp.repositories.Session;
 import uk.gov.ida.stub.idp.saml.transformers.EidasResponseTransformerProvider;
 
 import javax.inject.Inject;
@@ -55,7 +55,7 @@ public class EidasAuthnResponseService {
         this.stubCountryMetadataUrl = stubCountryMetadataUrl;
     }
 
-    public SamlResponseFromValue<Response> getSuccessResponse(Session session, String schemeId) {
+    public SamlResponseFromValue<Response> getSuccessResponse(EidasSession session, String schemeId) {
         String issuerId = UriBuilder.fromUri(stubCountryMetadataUrl).build(schemeId).toString();
         URI hubUrl = metadataProvider.getAssertionConsumerServiceLocation();
         String requestId = session.getEidasAuthnRequest().getRequestId();
@@ -79,7 +79,7 @@ public class EidasAuthnResponseService {
         return new SamlResponseFromValue<Response>(response, eidasResponseTransformerProvider.getTransformer(), session.getRelayState(), hubUrl);
     }
 
-    public SamlResponseFromValue<Response> generateAuthnFailed(Session session, String schemeId) {
+    public SamlResponseFromValue<Response> generateAuthnFailed(EidasSession session, String schemeId) {
         String issuerId = UriBuilder.fromUri(stubCountryMetadataUrl).build(schemeId).toString();
         String requestId = session.getEidasAuthnRequest().getRequestId();
         URI hubUrl = metadataProvider.getAssertionConsumerServiceLocation();
@@ -96,7 +96,7 @@ public class EidasAuthnResponseService {
         return new SamlResponseFromValue<Response>(eidasInvalidResponse, eidasResponseTransformerProvider.getTransformer(), session.getRelayState(), hubUrl);
     }
 
-    private List<Attribute> getEidasAttributes(Session session) {
+    private List<Attribute> getEidasAttributes(EidasSession session) {
         List<RequestedAttribute> requestedAttributes = session.getEidasAuthnRequest().getAttributes();
         EidasUser user = session.getEidasUser().get();
 

@@ -14,8 +14,8 @@ import uk.gov.ida.stub.idp.exceptions.InvalidUsernameOrPasswordException;
 import uk.gov.ida.stub.idp.exceptions.UsernameAlreadyTakenException;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASession;
 import uk.gov.ida.stub.idp.repositories.Idp;
+import uk.gov.ida.stub.idp.repositories.IdpSession;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
-import uk.gov.ida.stub.idp.repositories.Session;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.services.IdpUserService;
 import uk.gov.ida.stub.idp.services.NonSuccessAuthnResponseService;
@@ -58,7 +58,7 @@ public class RegistrationPageResource {
     private final IdpUserService idpUserService;
     private final SamlResponseRedirectViewFactory samlResponseRedirectViewFactory;
     private final NonSuccessAuthnResponseService nonSuccessAuthnResponseService;
-    private final SessionRepository sessionRepository;
+    private final SessionRepository<IdpSession> sessionRepository;
 
     @Inject
     public RegistrationPageResource(
@@ -66,7 +66,7 @@ public class RegistrationPageResource {
             IdpUserService idpUserService,
             SamlResponseRedirectViewFactory samlResponseRedirectViewFactory,
             NonSuccessAuthnResponseService nonSuccessAuthnResponseService,
-            SessionRepository sessionRepository) {
+            SessionRepository<IdpSession> sessionRepository) {
         this.idpUserService = idpUserService;
         this.idpStubsRepository = idpStubsRepository;
         this.samlResponseRedirectViewFactory = samlResponseRedirectViewFactory;
@@ -84,9 +84,7 @@ public class RegistrationPageResource {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Unable to locate session cookie for " + idpName))).build());
         }
 
-        Optional<Session> session = sessionRepository.get(sessionCookie);
-
-        if (!session.isPresent()) {
+        if (!sessionRepository.containsSession(sessionCookie)) {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Session is invalid for " + idpName))).build());
         }
 
@@ -115,7 +113,7 @@ public class RegistrationPageResource {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Unable to locate session cookie for " + idpName))).build());
         }
 
-        Optional<Session> session = sessionRepository.get(sessionCookie);
+        Optional<IdpSession> session = sessionRepository.get(sessionCookie);
 
         if (!session.isPresent()) {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Session is invalid for " + idpName))).build());
@@ -138,15 +136,15 @@ public class RegistrationPageResource {
                             .build(idpName))
                             .build();
                 } catch (InvalidSessionIdException e) {
-                    return createErrorResponse(samlRequestId, INVALID_SESSION_ID, idpName);
+                    return createErrorResponse(INVALID_SESSION_ID, idpName);
                 } catch (IncompleteRegistrationException e) {
-                    return createErrorResponse(samlRequestId, INCOMPLETE_REGISTRATION, idpName);
+                    return createErrorResponse(INCOMPLETE_REGISTRATION, idpName);
                 } catch (InvalidDateException e) {
-                    return createErrorResponse(samlRequestId, INVALID_DATE, idpName);
+                    return createErrorResponse(INVALID_DATE, idpName);
                 } catch (UsernameAlreadyTakenException e) {
-                    return createErrorResponse(samlRequestId, USERNAME_ALREADY_TAKEN, idpName);
+                    return createErrorResponse(USERNAME_ALREADY_TAKEN, idpName);
                 } catch (InvalidUsernameOrPasswordException e) {
-                    return createErrorResponse(samlRequestId, INVALID_USERNAME_OR_PASSWORD, idpName);
+                    return createErrorResponse(INVALID_USERNAME_OR_PASSWORD, idpName);
                 }
             }
             default: {
@@ -155,7 +153,7 @@ public class RegistrationPageResource {
         }
     }
 
-    private Response createErrorResponse(String samlRequestId, ErrorMessageType errorMessage, String idpName) {
+    private Response createErrorResponse(ErrorMessageType errorMessage, String idpName) {
         URI uri = UriBuilder.fromPath(Urls.REGISTER_RESOURCE)
                 .queryParam(Urls.ERROR_MESSAGE_PARAM, errorMessage)
                 .build(idpName);

@@ -6,15 +6,14 @@ import uk.gov.ida.saml.core.domain.PersistentId;
 import uk.gov.ida.stub.idp.StubIdpModule;
 import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.OutboundResponseFromIdp;
-import uk.gov.ida.stub.idp.domain.SamlResponse;
 import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
 import uk.gov.ida.stub.idp.domain.factories.AssertionRestrictionsFactory;
 import uk.gov.ida.stub.idp.domain.factories.IdentityProviderAssertionFactory;
 import uk.gov.ida.stub.idp.domain.factories.MatchingDatasetFactory;
 import uk.gov.ida.stub.idp.repositories.Idp;
+import uk.gov.ida.stub.idp.repositories.IdpSession;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
 import uk.gov.ida.stub.idp.repositories.MetadataRepository;
-import uk.gov.ida.stub.idp.repositories.Session;
 import uk.gov.ida.stub.idp.saml.transformers.OutboundResponseFromIdpTransformerProvider;
 
 import javax.inject.Inject;
@@ -47,7 +46,7 @@ public class SuccessAuthnResponseService {
         this.outboundResponseFromIdpTransformerProvider = outboundResponseFromIdpTransformerProvider;
     }
 
-    public SamlResponseFromValue<OutboundResponseFromIdp> getSuccessResponse(boolean randomisePid, String remoteIpAddress, String idpName, Session session) {
+    public SamlResponseFromValue<OutboundResponseFromIdp> getSuccessResponse(boolean randomisePid, String remoteIpAddress, String idpName, IdpSession session) {
         URI hubUrl = metadataProvider.getAssertionConsumerServiceLocation();
         Idp idp = idpStubsRepository.getIdpWithFriendlyId(idpName);
 

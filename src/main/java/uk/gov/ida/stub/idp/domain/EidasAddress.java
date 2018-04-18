@@ -1,5 +1,7 @@
 package uk.gov.ida.stub.idp.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.glassfish.jersey.internal.util.Base64;
 
 import java.text.MessageFormat;
@@ -15,7 +17,8 @@ public class EidasAddress {
     private final String adminunitSecondLine;
     private final String postCode;
 
-    public EidasAddress(String poBox, String locatorDesignator, String locatorName, String cvAddressArea, String thoroughfare, String postName, String adminunitFirstLine, String adminunitSecondLine, String postCode) {
+    @JsonCreator
+    public EidasAddress(@JsonProperty("poBox") String poBox, @JsonProperty("locatorDesignator") String locatorDesignator, @JsonProperty("locatorName") String locatorName, @JsonProperty("cvAddressArea") String cvAddressArea, @JsonProperty("thoroughfare") String thoroughfare, @JsonProperty("postName") String postName, @JsonProperty("adminunitFirstLine") String adminunitFirstLine, @JsonProperty("adminunitSecondLine") String adminunitSecondLine, @JsonProperty("postCode") String postCode) {
         this.poBox = poBox;
         this.locatorDesignator = locatorDesignator;
         this.locatorName = locatorName;

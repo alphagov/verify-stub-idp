@@ -8,7 +8,7 @@ import uk.gov.ida.stub.idp.domain.SamlResponse;
 import uk.gov.ida.stub.idp.exceptions.InvalidSessionIdException;
 import uk.gov.ida.stub.idp.exceptions.InvalidUsernameOrPasswordException;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASession;
-import uk.gov.ida.stub.idp.repositories.Session;
+import uk.gov.ida.stub.idp.repositories.EidasSession;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.repositories.StubCountry;
 import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
@@ -20,16 +20,7 @@ import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.CookieParam;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
@@ -45,7 +36,7 @@ import static uk.gov.ida.stub.idp.views.ErrorMessageType.NO_ERROR;
 @SessionCookieValueMustExistAsASession
 public class EidasLoginPageResource {
 
-    private final SessionRepository sessionRepository;
+    private final SessionRepository<EidasSession> sessionRepository;
     private final EidasAuthnResponseService eidasSuccessAuthnResponseRequest;
     private final SamlResponseRedirectViewFactory samlResponseRedirectViewFactory;
     private final StubCountryRepository stubCountryRepository;
@@ -53,7 +44,7 @@ public class EidasLoginPageResource {
 
     @Inject
     public EidasLoginPageResource(
-            SessionRepository sessionRepository,
+            SessionRepository<EidasSession> sessionRepository,
             EidasAuthnResponseService eidasSuucessAuthnResponseRequest,
             SamlResponseRedirectViewFactory samlResponseRedirectViewFactory,
             StubCountryRepository stubCountryRepository,
@@ -89,7 +80,7 @@ public class EidasLoginPageResource {
             @FormParam(Urls.PASSWORD_PARAM) String password,
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
 
-        Session session = checkSession(schemeName, sessionCookie);
+        EidasSession session = checkSession(schemeName, sessionCookie);
 
         try {
             stubCountryService.attachStubCountryToSession(schemeName, username, password, session);
@@ -111,18 +102,18 @@ public class EidasLoginPageResource {
             @PathParam(Urls.SCHEME_ID_PARAM) @NotNull String idpName,
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
 
-            Session session = checkAndDeleteAndGetSession(idpName, sessionCookie);
+            EidasSession session = checkAndDeleteAndGetSession(idpName, sessionCookie);
 
             final SamlResponse loginFailureResponse = eidasSuccessAuthnResponseRequest.generateAuthnFailed(session, idpName);
             return samlResponseRedirectViewFactory.sendSamlMessage(loginFailureResponse);
     }
 
-    private Session checkSession(String idpName, SessionId sessionCookie) {
+    private EidasSession checkSession(String idpName, SessionId sessionCookie) {
         if (sessionCookie == null || Strings.isNullOrEmpty(sessionCookie.toString())) {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Unable to locate session cookie for " + idpName))).build());
         }
 
-        Optional<Session> session = sessionRepository.get(sessionCookie);
+        Optional<EidasSession> session = sessionRepository.get(sessionCookie);
 
         if (!session.isPresent()) {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Session is invalid for " + idpName))).build());
@@ -131,12 +122,12 @@ public class EidasLoginPageResource {
         return session.get();
     }
 
-    private Session checkAndDeleteAndGetSession(String idpName, SessionId sessionCookie) {
+    private EidasSession checkAndDeleteAndGetSession(String idpName, SessionId sessionCookie) {
         if (Strings.isNullOrEmpty(sessionCookie.toString())) {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Unable to locate session cookie for " + idpName))).build());
         }
 
-        Optional<Session> session = sessionRepository.deleteAndGet(sessionCookie);
+        Optional<EidasSession> session = sessionRepository.deleteAndGet(sessionCookie);
 
         if (!session.isPresent()) {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Session is invalid for " + idpName))).build());

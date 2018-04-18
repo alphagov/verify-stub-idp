@@ -1,5 +1,7 @@
 package uk.gov.ida.stub.idp.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.joda.time.LocalDate;
 import uk.gov.ida.saml.core.domain.Gender;
 
@@ -14,8 +16,9 @@ public class EidasUser {
     private EidasAddress address;
     private Gender gender;
 
-    public EidasUser(String firstName, String familyName, String persistentId,
-                     LocalDate dateOfBirth, EidasAddress address, Gender gender) {
+    @JsonCreator
+    public EidasUser(@JsonProperty("firstName") String firstName, @JsonProperty("familyName") String familyName, @JsonProperty("persistentId") String persistentId,
+                     @JsonProperty("dateOfBirth") LocalDate dateOfBirth, @JsonProperty("address") EidasAddress address, @JsonProperty("gender") Gender gender) {
         this.firstName = firstName;
         this.familyName = familyName;
         this.persistentId = persistentId;
@@ -54,5 +57,23 @@ public class EidasUser {
 
     public void setGender(Gender gender) {
         this.gender = gender;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof EidasUser)) return false;
+
+        EidasUser eidasUser = (EidasUser) o;
+
+        if (firstName != null ? !firstName.equals(eidasUser.firstName) : eidasUser.firstName != null) return false;
+        if (familyName != null ? !familyName.equals(eidasUser.familyName) : eidasUser.familyName != null) return false;
+        if (persistentId != null ? !persistentId.equals(eidasUser.persistentId) : eidasUser.persistentId != null)
+            return false;
+        if (dateOfBirth != null ? !dateOfBirth.equals(eidasUser.dateOfBirth) : eidasUser.dateOfBirth != null)
+            return false;
+        if (address != null ? !address.equals(eidasUser.address) : eidasUser.address != null) return false;
+        
+        return gender == eidasUser.gender;
     }
 }

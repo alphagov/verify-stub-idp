@@ -169,6 +169,7 @@ dependencies {
 
     runtime 'joda-time:joda-time:2.3',
             'net.logstash.logback:logstash-logback-encoder:4.9'
+            'com.fasterxml.jackson.datatype:jackson-datatype-joda:2.9.5'
 
     testCompile "io.dropwizard:dropwizard-testing:$dependencyVersions.dropwizard",
             "uk.gov.ida:stub-idp-saml-test:$dependencyVersions.stub_idp_saml",

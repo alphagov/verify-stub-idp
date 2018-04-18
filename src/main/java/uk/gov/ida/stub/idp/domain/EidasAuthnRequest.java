@@ -1,5 +1,7 @@
 package uk.gov.ida.stub.idp.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import uk.gov.ida.saml.core.extensions.RequestedAttribute;
@@ -18,7 +20,8 @@ public class EidasAuthnRequest {
     private final String requestedLoa;
     private final List<RequestedAttribute> attributes;
 
-    public EidasAuthnRequest(String requestId, String issuer, String destination, String requestedLoa, List<RequestedAttribute> attributes) {
+    @JsonCreator
+    public EidasAuthnRequest(@JsonProperty("requestId") String requestId, @JsonProperty("issuer") String issuer, @JsonProperty("destination") String destination, @JsonProperty("requestedLoa") String requestedLoa, @JsonProperty("attributes") List<RequestedAttribute> attributes) {
         this.requestId = requestId;
         this.issuer = issuer;
         this.destination = destination;
