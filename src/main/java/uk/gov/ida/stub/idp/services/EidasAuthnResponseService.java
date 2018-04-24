@@ -22,7 +22,6 @@ import uk.gov.ida.stub.idp.StubIdpModule;
 import uk.gov.ida.stub.idp.builders.EidasResponseBuilder;
 import uk.gov.ida.stub.idp.domain.EidasAddress;
 import uk.gov.ida.stub.idp.domain.EidasUser;
-import uk.gov.ida.stub.idp.domain.SamlResponse;
 import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
 import uk.gov.ida.stub.idp.repositories.MetadataRepository;
 import uk.gov.ida.stub.idp.repositories.Session;

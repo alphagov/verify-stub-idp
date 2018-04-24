@@ -61,6 +61,7 @@ import uk.gov.ida.stub.idp.repositories.AllIdpsUserRepository;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
 import uk.gov.ida.stub.idp.repositories.MetadataRepository;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
+import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
 import uk.gov.ida.stub.idp.repositories.UserRepository;
 import uk.gov.ida.stub.idp.repositories.jdbc.JDBIUserRepository;
 import uk.gov.ida.stub.idp.repositories.jdbc.UserMapper;
@@ -126,6 +127,7 @@ public class StubIdpModule extends AbstractModule {
         bind(AllIdpsUserRepository.class).asEagerSingleton();
 
         bind(IdpStubsRepository.class).asEagerSingleton();
+        bind(StubCountryRepository.class).asEagerSingleton();
         bind(KeyStore.class).toProvider(EmptyKeyStoreProvider.class).asEagerSingleton();
 
         bind(PublicKeyFactory.class);
