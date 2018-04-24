@@ -7,4 +7,4 @@ ADD build/distributions/verify-stub-idp-local.zip verify-stub-idp.zip
 
 RUN unzip verify-stub-idp.zip
 
-CMD verify-stub-idp-local/bin/verify-stub-idp server stub-idp.yml 
+CMD verify-stub-idp/bin/verify-stub-idp server stub-idp.yml 
