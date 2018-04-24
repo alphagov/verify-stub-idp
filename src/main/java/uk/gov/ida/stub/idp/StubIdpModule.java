@@ -43,10 +43,8 @@ import uk.gov.ida.saml.security.IdaKeyStore;
 import uk.gov.ida.saml.security.IdaKeyStoreCredentialRetriever;
 import uk.gov.ida.saml.security.SignatureFactory;
 import uk.gov.ida.saml.security.SigningKeyStore;
-import uk.gov.ida.shared.dropwizard.infinispan.util.InfinispanCacheManager;
 import uk.gov.ida.stub.idp.auth.ManagedAuthFilterInstaller;
 import uk.gov.ida.stub.idp.builders.CountryMetadataBuilder;
-import uk.gov.ida.stub.idp.builders.EidasResponseBuilder;
 import uk.gov.ida.stub.idp.builders.CountryMetadataSigningHelper;
 import uk.gov.ida.stub.idp.configuration.AssertionLifetimeConfiguration;
 import uk.gov.ida.stub.idp.configuration.IdpStubsConfiguration;
@@ -82,7 +80,6 @@ import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
 import uk.gov.ida.truststore.EmptyKeyStoreProvider;
 
 import javax.inject.Named;
-import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.validation.Validator;
 import java.io.PrintWriter;

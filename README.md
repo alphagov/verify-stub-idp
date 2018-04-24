@@ -38,8 +38,6 @@ The friendlyId can be used to enable multiple IDPs but using the same displayNam
 
 Header images for IDPs should be placed into `ida-stub-idp/src/main/resources/assets/images/providers/` and are referenced as `assetId` e.g. stub-idp-one.png is referenced as `stub-idp-one`
 
-Persistence can be enabled in the yml config file by modifying `infinispan.persistenceToFileEnabled`
-
 ## Connecting to a hub/using as an IDP
 
 You need to use the entityId `http://stub_idp.acme.org/{friendlyId}/SSO/POST` or as the template configured in the main config file, with the shared key/cert configured in the main config file (`stub-idp.yml`)
