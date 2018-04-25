@@ -1,18 +1,19 @@
 package uk.gov.ida.stub.idp.resources;
 
 import com.google.common.base.Strings;
-import org.joda.time.LocalDate;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.cookies.CookieNames;
-import uk.gov.ida.stub.idp.domain.EidasAddress;
-import uk.gov.ida.stub.idp.domain.EidasUser;
-import uk.gov.ida.stub.idp.domain.Gender;
 import uk.gov.ida.stub.idp.domain.SamlResponse;
+import uk.gov.ida.stub.idp.exceptions.InvalidSessionIdException;
+import uk.gov.ida.stub.idp.exceptions.InvalidUsernameOrPasswordException;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASession;
 import uk.gov.ida.stub.idp.repositories.Session;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
+import uk.gov.ida.stub.idp.repositories.StubCountry;
+import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
 import uk.gov.ida.stub.idp.services.EidasAuthnResponseService;
+import uk.gov.ida.stub.idp.services.StubCountryService;
 import uk.gov.ida.stub.idp.views.EidasLoginPageView;
 import uk.gov.ida.stub.idp.views.ErrorMessageType;
 import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
@@ -32,9 +33,12 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+import java.net.URI;
 import java.util.Optional;
 
 import static java.text.MessageFormat.format;
+import static uk.gov.ida.stub.idp.views.ErrorMessageType.INVALID_SESSION_ID;
+import static uk.gov.ida.stub.idp.views.ErrorMessageType.INVALID_USERNAME_OR_PASSWORD;
 import static uk.gov.ida.stub.idp.views.ErrorMessageType.NO_ERROR;
 
 @Path(Urls.EIDAS_LOGIN_RESOURCE)
@@ -44,27 +48,35 @@ public class EidasLoginPageResource {
     private final SessionRepository sessionRepository;
     private final EidasAuthnResponseService eidasSuccessAuthnResponseRequest;
     private final SamlResponseRedirectViewFactory samlResponseRedirectViewFactory;
+    private final StubCountryRepository stubCountryRepository;
+    private final StubCountryService stubCountryService;
 
     @Inject
     public EidasLoginPageResource(
             SessionRepository sessionRepository,
             EidasAuthnResponseService eidasSuucessAuthnResponseRequest,
-            SamlResponseRedirectViewFactory samlResponseRedirectViewFactory) {
+            SamlResponseRedirectViewFactory samlResponseRedirectViewFactory,
+            StubCountryRepository stubCountryRepository,
+            StubCountryService stubCountryService) {
         this.sessionRepository = sessionRepository;
         this.eidasSuccessAuthnResponseRequest = eidasSuucessAuthnResponseRequest;
         this.samlResponseRedirectViewFactory = samlResponseRedirectViewFactory;
+        this.stubCountryRepository = stubCountryRepository;
+        this.stubCountryService = stubCountryService;
     }
 
     @GET
     public Response get(
-            @PathParam(Urls.SCHEME_ID_PARAM) @NotNull String schemeId,
+            @PathParam(Urls.SCHEME_ID_PARAM) @NotNull String schemeName,
             @QueryParam(Urls.ERROR_MESSAGE_PARAM) java.util.Optional<ErrorMessageType> errorMessage,
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
 
-        checkSession(schemeId, sessionCookie);
+        checkSession(schemeName, sessionCookie);
+
+        StubCountry stubCountry = stubCountryRepository.getStubCountryWithFriendlyId(schemeName);
 
         return Response.ok()
-                .entity(new EidasLoginPageView("European ID Scheme", schemeId, errorMessage.orElse(NO_ERROR).getMessage(), schemeId))
+                .entity(new EidasLoginPageView(stubCountry.getDisplayName(), stubCountry.getFriendlyId(), errorMessage.orElse(NO_ERROR).getMessage(), stubCountry.getAssetId()))
                 .build();
     }
 
@@ -79,9 +91,13 @@ public class EidasLoginPageResource {
 
         Session session = checkSession(schemeName, sessionCookie);
 
-        EidasAddress address = new EidasAddress("","22","","",
-                "Arcacia Avenue","London", "","","SW1A 1AA");
-        session.setEidasUser(new EidasUser("Bob", "Smith", "pid", new LocalDate(1988, 10, 10), address, Gender.MALE));
+        try {
+            stubCountryService.attachStubCountryToSession(schemeName, username, password, session);
+        } catch (InvalidUsernameOrPasswordException e) {
+            return createErrorResponse(INVALID_USERNAME_OR_PASSWORD, schemeName);
+        } catch (InvalidSessionIdException e) {
+            return createErrorResponse(INVALID_SESSION_ID, schemeName);
+        }
 
         return Response.seeOther(UriBuilder.fromPath(Urls.EIDAS_CONSENT_RESOURCE)
                 .build(schemeName))
@@ -126,6 +142,13 @@ public class EidasLoginPageResource {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Session is invalid for " + idpName))).build());
         }
         return session.get();
+    }
+
+    private Response createErrorResponse(ErrorMessageType errorMessage, String stubCountry) {
+        URI uri = UriBuilder.fromPath(Urls.EIDAS_LOGIN_RESOURCE)
+                .queryParam(Urls.ERROR_MESSAGE_PARAM, errorMessage)
+                .build(stubCountry);
+        return Response.seeOther(uri).build();
     }
 
 }

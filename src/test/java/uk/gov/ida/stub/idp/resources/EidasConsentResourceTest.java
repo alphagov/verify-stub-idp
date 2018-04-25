@@ -14,6 +14,8 @@ import uk.gov.ida.stub.idp.domain.EidasUser;
 import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
 import uk.gov.ida.stub.idp.repositories.Session;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
+import uk.gov.ida.stub.idp.repositories.StubCountry;
+import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
 import uk.gov.ida.stub.idp.services.EidasAuthnResponseService;
 import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
 
@@ -48,9 +50,15 @@ public class EidasConsentResourceTest {
     @Mock
     private SamlResponseRedirectViewFactory samlResponseRedirectViewFactory;
 
+    @Mock
+    private StubCountryRepository stubCountryRepository;
+
+    @Mock
+    private StubCountry stubCountry;
+
     @Before
     public void setUp(){
-        resource = new EidasConsentResource(sessionRepository, successAuthnResponseService, samlResponseRedirectViewFactory);
+        resource = new EidasConsentResource(sessionRepository, successAuthnResponseService, samlResponseRedirectViewFactory, stubCountryRepository);
 
         EidasAuthnRequest eidasAuthnRequest = new EidasAuthnRequest("request-id", "issuer", "destination", "loa", Collections.emptyList());
         session = new Session(SESSION_ID, eidasAuthnRequest, null, null, null, null, null);
@@ -62,6 +70,8 @@ public class EidasConsentResourceTest {
 
     @Test
     public void getShouldReturnASuccessfulResponseWhenSessionIsValid(){
+        when(stubCountryRepository.getStubCountryWithFriendlyId(SCHEME_NAME)).thenReturn(stubCountry);
+
         final Response response = resource.get(SCHEME_NAME, SESSION_ID);
 
         assertThat(response.getStatus()).isEqualTo(Response.Status.OK.getStatusCode());

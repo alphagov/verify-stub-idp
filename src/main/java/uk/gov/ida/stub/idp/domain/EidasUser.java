@@ -1,6 +1,7 @@
 package uk.gov.ida.stub.idp.domain;
 
 import org.joda.time.LocalDate;
+import uk.gov.ida.saml.core.domain.Gender;
 
 import java.util.Optional;
 

@@ -2,7 +2,6 @@ package uk.gov.ida.stub.idp.resources;
 
 import com.squarespace.jersey2.guice.JerseyGuiceUtils;
 
-import org.glassfish.jersey.server.wadl.WadlApplicationContext;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -11,12 +10,15 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.stub.idp.Urls;
+import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.EidasAuthnRequest;
-import uk.gov.ida.stub.idp.domain.SamlResponse;
 import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
 import uk.gov.ida.stub.idp.repositories.Session;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
+import uk.gov.ida.stub.idp.repositories.StubCountry;
+import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
 import uk.gov.ida.stub.idp.services.EidasAuthnResponseService;
+import uk.gov.ida.stub.idp.services.StubCountryService;
 import uk.gov.ida.stub.idp.views.SamlRedirectView;
 import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
 import javax.ws.rs.WebApplicationException;
@@ -57,12 +59,24 @@ public class EidasLoginPageResourceTest {
     @Mock
     private SamlResponseFromValue<org.opensaml.saml.saml2.core.Response> samlResponse;
 
+    @Mock
+    private StubCountryRepository stubCountryRepository;
+
+    @Mock
+    private StubCountry stubCountry;
+
+    @Mock
+    private DatabaseIdpUser user;
+
+    @Mock
+    private StubCountryService stubCountryService;
+
     @Before
     public void setUp() throws URISyntaxException {
         SamlResponseRedirectViewFactory samlResponseRedirectViewFactory = new SamlResponseRedirectViewFactory();
-        resource = new EidasLoginPageResource(sessionRepository, eidasSuccessAuthnResponseService, samlResponseRedirectViewFactory);
+        resource = new EidasLoginPageResource(sessionRepository, eidasSuccessAuthnResponseService, samlResponseRedirectViewFactory, stubCountryRepository, stubCountryService);
         EidasAuthnRequest eidasAuthnRequest = new EidasAuthnRequest("request-id", "issuer", "destination", "loa", Collections.emptyList());
-        session = new Session(null, eidasAuthnRequest, null, null, null, Optional.empty(), Optional.empty());
+        session = new Session(SESSION_ID, eidasAuthnRequest, null, null, null, Optional.empty(), Optional.empty());
         when(sessionRepository.get(SESSION_ID)).thenReturn(Optional.ofNullable(session));
         when(sessionRepository.deleteAndGet(SESSION_ID)).thenReturn(Optional.ofNullable(session), Optional.empty());
         when(eidasSuccessAuthnResponseService.generateAuthnFailed(session, SCHEME_NAME)).thenReturn(samlResponse);
@@ -71,10 +85,9 @@ public class EidasLoginPageResourceTest {
     }
 
     @Test
-    public void loginShouldRedirectToEidasConsentResource(){
+    public void loginShouldRedirectToEidasConsentResource() {
         final Response response = resource.post(SCHEME_NAME, USERNAME, PASSWORD, SESSION_ID);
 
-        assertThat(session.getEidasUser().isPresent()).isTrue();
         assertThat(response.getLocation()).isEqualTo(UriBuilder.fromPath(Urls.EIDAS_CONSENT_RESOURCE)
                 .build(SCHEME_NAME));
         assertThat(response.getStatus()).isEqualTo(Response.Status.SEE_OTHER.getStatusCode());
@@ -82,6 +95,8 @@ public class EidasLoginPageResourceTest {
 
     @Test
     public void loginShouldReturnASuccessfulResponse(){
+        when(stubCountryRepository.getStubCountryWithFriendlyId(SCHEME_NAME)).thenReturn(stubCountry);
+
         final Response response = resource.get(SCHEME_NAME, Optional.empty(), SESSION_ID);
 
         assertThat(response.getStatus()).isEqualTo(Response.Status.OK.getStatusCode());

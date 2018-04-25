@@ -4,10 +4,13 @@ import com.google.common.base.Strings;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.cookies.CookieNames;
+import uk.gov.ida.stub.idp.domain.EidasUser;
 import uk.gov.ida.stub.idp.domain.SamlResponse;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASession;
 import uk.gov.ida.stub.idp.repositories.Session;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
+import uk.gov.ida.stub.idp.repositories.StubCountry;
+import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
 import uk.gov.ida.stub.idp.services.EidasAuthnResponseService;
 import uk.gov.ida.stub.idp.views.EidasConsentView;
 import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
@@ -31,6 +34,7 @@ import java.util.Optional;
 @SessionCookieValueMustExistAsASession
 public class EidasConsentResource {
 
+    private final StubCountryRepository stubCountryRepository;
     private final SessionRepository sessionRepository;
     private final EidasAuthnResponseService successAuthnResponseService;
     private final SamlResponseRedirectViewFactory samlResponseRedirectViewFactory;
@@ -39,10 +43,12 @@ public class EidasConsentResource {
     public EidasConsentResource(
             SessionRepository sessionRepository,
             EidasAuthnResponseService successAuthnResponseService,
-            SamlResponseRedirectViewFactory samlResponseRedirectViewFactory) {
+            SamlResponseRedirectViewFactory samlResponseRedirectViewFactory,
+            StubCountryRepository stubCountryRepository) {
         this.successAuthnResponseService = successAuthnResponseService;
         this.sessionRepository = sessionRepository;
         this.samlResponseRedirectViewFactory = samlResponseRedirectViewFactory;
+        this.stubCountryRepository = stubCountryRepository;
     }
 
     @GET
@@ -51,7 +57,11 @@ public class EidasConsentResource {
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
 
         Session session = getAndValidateSession(schemeId, sessionCookie, false);
-        return Response.ok(new EidasConsentView("Stub Country", schemeId, schemeId, session.getEidasUser().get())).build();
+
+        EidasUser eidasUser = session.getEidasUser().get();
+        StubCountry stubCountry = stubCountryRepository.getStubCountryWithFriendlyId(schemeId);
+
+        return Response.ok(new EidasConsentView(stubCountry.getDisplayName(), stubCountry.getFriendlyId(), stubCountry.getAssetId(), eidasUser)).build();
     }
 
     @POST

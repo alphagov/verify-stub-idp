@@ -1,5 +1,9 @@
 package uk.gov.ida.stub.idp.repositories;
 
+import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
+
+import java.util.Optional;
+
 public class StubCountry {
 
     private final String friendlyId;
@@ -14,6 +18,15 @@ public class StubCountry {
         this.assetId = assetId;
         this.issuerId = issuerId;
         this.allIdpsUserRepository = allIdpsUserRepository;
+    }
+
+    public Optional<DatabaseIdpUser> getUser(String username, String password) {
+        Optional<DatabaseIdpUser> userForStubCountry = allIdpsUserRepository.getUserForIdp(friendlyId, username);
+        if (userForStubCountry.isPresent() && userForStubCountry.get().getPassword().equals(password)) {
+            return userForStubCountry;
+        }
+
+        return Optional.empty();
     }
 
     public String getFriendlyId() {

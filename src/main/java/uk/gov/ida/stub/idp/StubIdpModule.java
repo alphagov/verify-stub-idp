@@ -75,6 +75,7 @@ import uk.gov.ida.stub.idp.services.EidasAuthnResponseService;
 import uk.gov.ida.stub.idp.services.GeneratePasswordService;
 import uk.gov.ida.stub.idp.services.IdpUserService;
 import uk.gov.ida.stub.idp.services.NonSuccessAuthnResponseService;
+import uk.gov.ida.stub.idp.services.StubCountryService;
 import uk.gov.ida.stub.idp.services.SuccessAuthnResponseService;
 import uk.gov.ida.stub.idp.services.UserService;
 import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
@@ -152,6 +153,7 @@ public class StubIdpModule extends AbstractModule {
         bind(GeneratePasswordService.class);
         bind(NonSuccessAuthnResponseService.class);
         bind(IdpUserService.class);
+        bind(StubCountryService.class);
         bind(UserService.class);
         bind(SamlResponseRedirectViewFactory.class);
 
