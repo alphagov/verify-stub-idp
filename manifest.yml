@@ -15,3 +15,6 @@ applications:
       STUB_IDP_BASIC_AUTH: true
       GRAPHITE_REPORTING_FREQUENCY: 100days
       EUROPEAN_IDENTITY_ENABLED: true
+    services:
+      - ida-stub-idp-db
+      - ida-stub-idp-logit

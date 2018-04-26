@@ -37,11 +37,6 @@ cfSetDatabaseUri() {
    cf set-env $TEST_APP_NAME DB_URI "$LOCAL_DB_URI"
 }
 
-cfBindWithDatabaseAndLogit() {
-  cf bind-service $TEST_APP_NAME ida-stub-idp-db
-  cf bind-service $TEST_APP_NAME ida-stub-idp-logit
-}
-
 cfPushArtifact() {
   ARTIFACT_LOCATION="https://artifactory.ida.digital.cabinet-office.gov.uk/artifactory/remote-repos/uk/gov/ida/ida-stub-idp/$ARTIFACT_BUILD_NUMBER/ida-stub-idp-$ARTIFACT_BUILD_NUMBER.zip"
   curl -s "${ARTIFACT_LOCATION}" --output "ida-stub-idp-$ARTIFACT_BUILD_NUMBER.zip"
@@ -79,9 +74,5 @@ checkServiceStatus() {
 
 cfPushArtifact
 cfSetEnvironmentVariables
-# This step assumes that postgres service (named 'ida-stub-idp-db') and logit service (named 'ida-stub-idp-logit') would already be present
-# Please use create_database_service_on_pass to create database before running this script
-# Please use create_logit_service to create logit before running this script
-cfBindWithDatabaseAndLogit
 cfSetDatabaseUri
 cfBlueGreenDeployment
