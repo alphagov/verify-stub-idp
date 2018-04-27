@@ -26,7 +26,6 @@ public class StubIdpConfigurationTest {
         expectedException.expectMessage(containsString("assertionLifetime may not be null"));
         expectedException.expectMessage(containsString("databaseConfiguration may not be null"));
         expectedException.expectMessage(containsString("europeanIdentity may not be null"));
-        expectedException.expectMessage(containsString("infinispan may not be null"));
         expectedException.expectMessage(containsString("metadata may not be null"));
         expectedException.expectMessage(containsString("saml may not be null"));
         expectedException.expectMessage(containsString("serviceInfo may not be null"));

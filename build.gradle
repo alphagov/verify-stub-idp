@@ -131,8 +131,7 @@ def dependencyVersions = [
         saml_libs             : "$opensaml_version-103",
         ida_test_utils        : '2.0.0-38',
         hub_saml              : "$opensaml_version-120",
-        hk2_version           : '2.5.0-b05',
-        dropwizard_infinispan : '1.0.5-27'
+        hk2_version           : '2.5.0-b05'
 ]
 
 repositories {
@@ -160,7 +159,6 @@ dependencies {
             "org.opensaml:opensaml-core:$dependencyVersions.opensaml",
             "org.postgresql:postgresql:42.1.4",
             "uk.gov.ida:common-utils:$dependencyVersions.ida_utils",
-            "uk.gov.ida:dropwizard-infinispan:$dependencyVersions.dropwizard_infinispan",
             "uk.gov.ida:saml-extensions:$dependencyVersions.saml_libs",
             "uk.gov.ida:rest-utils:$dependencyVersions.ida_utils",
             "uk.gov.ida:saml-metadata-bindings:$dependencyVersions.saml_libs",

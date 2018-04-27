@@ -46,7 +46,6 @@ public class StubIdpAppRule extends DropwizardAppRule<StubIdpConfiguration> {
                 .add(ConfigOverride.config("metadata.uri", "http://localhost:" + metadataServer.getPort() + METADATA_PATH))
                 .add(ConfigOverride.config("hubEntityId", HUB_ENTITY_ID))
                 .add(ConfigOverride.config("basicAuthEnabledForUserResource", "true"))
-                .add(ConfigOverride.config("infinispan.persistenceToFileEnabled", "false"))
                 .add(ConfigOverride.config("server.requestLog.appenders[0].type", "console"))
                 .add(ConfigOverride.config("server.requestLog.appenders[1].type", "console"))
                 .add(ConfigOverride.config("server.requestLog.appenders[2].type", "console"))

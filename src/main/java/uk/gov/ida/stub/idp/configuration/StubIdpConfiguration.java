@@ -11,8 +11,6 @@ import uk.gov.ida.configuration.ServiceNameConfiguration;
 import uk.gov.ida.saml.idp.configuration.SamlConfiguration;
 import uk.gov.ida.saml.metadata.MetadataResolverConfiguration;
 import uk.gov.ida.saml.metadata.TrustStoreBackedMetadataConfiguration;
-import uk.gov.ida.shared.dropwizard.infinispan.config.InfinispanConfiguration;
-import uk.gov.ida.shared.dropwizard.infinispan.config.InfinispanServiceConfiguration;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -20,7 +18,6 @@ import javax.validation.constraints.NotNull;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class StubIdpConfiguration extends Configuration implements
         AssertionLifetimeConfiguration,
-        InfinispanServiceConfiguration,
         AssetCacheConfiguration,
         ServiceNameConfiguration {
 
@@ -36,11 +33,6 @@ public class StubIdpConfiguration extends Configuration implements
     @NotNull
     @JsonProperty
     protected Duration assertionLifetime;
-
-    @Valid
-    @NotNull
-    @JsonProperty
-    protected InfinispanConfiguration infinispan;
 
     @JsonProperty
     @NotNull
@@ -107,11 +99,6 @@ public class StubIdpConfiguration extends Configuration implements
     @Override
     public Duration getAssertionLifetime() {
         return assertionLifetime;
-    }
-
-    @Override
-    public InfinispanConfiguration getInfinispan() {
-        return infinispan;
     }
 
     @Override

@@ -20,7 +20,6 @@ import uk.gov.ida.bundles.MonitoringBundle;
 import uk.gov.ida.bundles.ServiceStatusBundle;
 import uk.gov.ida.filters.AcceptLanguageFilter;
 import uk.gov.ida.saml.core.IdaSamlBootstrap;
-import uk.gov.ida.shared.dropwizard.infinispan.util.InfinispanBundle;
 import uk.gov.ida.stub.idp.bundles.DatabaseMigrationBundle;
 import uk.gov.ida.stub.idp.configuration.StubIdpConfiguration;
 import uk.gov.ida.stub.idp.exceptions.mappers.CatchAllExceptionMapper;
