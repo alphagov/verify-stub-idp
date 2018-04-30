@@ -2,7 +2,7 @@
 
 set -e
 
-./gradlew --parallel clean build  copyToLib 2>&1
+./gradlew --parallel clean build test intTest copyToLib 2>&1
 
 ./startup.sh skip-build
 

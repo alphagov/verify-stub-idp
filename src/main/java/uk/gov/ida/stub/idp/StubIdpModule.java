@@ -128,7 +128,6 @@ public class StubIdpModule extends AbstractModule {
         bind(AllIdpsUserRepository.class).asEagerSingleton();
 
         bind(IdpStubsRepository.class).asEagerSingleton();
-        bind(StubCountryRepository.class).asEagerSingleton();
         bind(KeyStore.class).toProvider(EmptyKeyStoreProvider.class).asEagerSingleton();
 
         bind(PublicKeyFactory.class);
@@ -240,6 +239,11 @@ public class StubIdpModule extends AbstractModule {
     @Named("countryMetadataSignatureFactory")
     private SignatureFactory getSignatureFactoryWithKeyInfo(@Named(COUNTRY_SIGNING_KEY_STORE) IdaKeyStore keyStore, DigestAlgorithm digestAlgorithm, SignatureAlgorithm signatureAlgorithm) {
         return new SignatureFactory(true, new IdaKeyStoreCredentialRetriever(keyStore), signatureAlgorithm, digestAlgorithm);
+    }
+
+    @Provides
+    public StubCountryRepository getStubCountryRepository(AllIdpsUserRepository allIdpsUserRepository, @Named("StubCountryMetadataUrl")String stubCountryMetadataUrl){
+        return new StubCountryRepository(allIdpsUserRepository, stubCountryMetadataUrl);
     }
 
     @Provides

@@ -14,6 +14,7 @@ public class StubCountryRepository {
 
     private final AllIdpsUserRepository allIdpsUserRepository;
     private final String stubCountryMetadataUrl;
+    public static final String STUB_COUNTRY_FRIENDLY_ID = "stub-country";
     private StubCountry stubCountry;
 
     @Inject
@@ -25,14 +26,14 @@ public class StubCountryRepository {
 
     private void load() {
 
-        String issuerId = UriBuilder.fromUri(stubCountryMetadataUrl).build("stub-country").toString();
+        String issuerId = UriBuilder.fromUri(stubCountryMetadataUrl).build(STUB_COUNTRY_FRIENDLY_ID).toString();
 
         LOG.info("Loading into StubCountryRepository.");
 
         stubCountry = new StubCountry(
-                "stub-country",
+                STUB_COUNTRY_FRIENDLY_ID,
                 "Stub Country",
-                "stub-country",
+                STUB_COUNTRY_FRIENDLY_ID,
                 issuerId,
                 allIdpsUserRepository
         );
