@@ -20,7 +20,7 @@ subprojects {
     ext {
       ida_utils_version = '2.0.0-332'
       opensaml_version = '3.3.0'
-      saml_libs_version = "${opensaml_version}-103"
+      saml_libs_version = "${opensaml_version}-126"
     }
     group = "uk.gov.ida"
     version = "$opensaml_version-${System.env.BUILD_NUMBER ?: 'SNAPSHOT'}"
