@@ -86,4 +86,27 @@ public class EidasAddress {
         }
         return "";
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof EidasAddress)) return false;
+
+        EidasAddress that = (EidasAddress) o;
+
+        if (poBox != null ? !poBox.equals(that.poBox) : that.poBox != null) return false;
+        if (locatorDesignator != null ? !locatorDesignator.equals(that.locatorDesignator) : that.locatorDesignator != null)
+            return false;
+        if (locatorName != null ? !locatorName.equals(that.locatorName) : that.locatorName != null) return false;
+        if (cvAddressArea != null ? !cvAddressArea.equals(that.cvAddressArea) : that.cvAddressArea != null)
+            return false;
+        if (thoroughfare != null ? !thoroughfare.equals(that.thoroughfare) : that.thoroughfare != null) return false;
+        if (postName != null ? !postName.equals(that.postName) : that.postName != null) return false;
+        if (adminunitFirstLine != null ? !adminunitFirstLine.equals(that.adminunitFirstLine) : that.adminunitFirstLine != null)
+            return false;
+        if (adminunitSecondLine != null ? !adminunitSecondLine.equals(that.adminunitSecondLine) : that.adminunitSecondLine != null)
+            return false;
+        return postCode != null ? postCode.equals(that.postCode) : that.postCode == null;
+
+    }
 }

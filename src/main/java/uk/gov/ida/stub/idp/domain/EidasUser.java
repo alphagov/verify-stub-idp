@@ -73,7 +73,6 @@ public class EidasUser {
         if (dateOfBirth != null ? !dateOfBirth.equals(eidasUser.dateOfBirth) : eidasUser.dateOfBirth != null)
             return false;
         if (address != null ? !address.equals(eidasUser.address) : eidasUser.address != null) return false;
-        
-        return gender == eidasUser.gender;
+        return gender != null ? gender.equals(eidasUser.gender) : eidasUser.gender == null;
     }
 }

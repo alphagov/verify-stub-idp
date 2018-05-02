@@ -6,14 +6,17 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import org.jdbi.v3.core.Jdbi;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.saml2.core.AuthnContextComparisonTypeEnumeration;
 import uk.gov.ida.common.SessionId;
+import uk.gov.ida.saml.core.domain.Gender;
 import uk.gov.ida.saml.hub.domain.IdaAuthnRequestFromHub;
 import uk.gov.ida.stub.idp.exceptions.SessionSerializationException;
 import uk.gov.ida.stub.idp.repositories.jdbc.mixins.AuthnContextComparisonTypeMixin;
+import uk.gov.ida.stub.idp.repositories.jdbc.mixins.GenderMixin;
 import uk.gov.ida.stub.idp.repositories.jdbc.mixins.IdaAuthnRequestFromHubMixin;
 import uk.gov.ida.stub.idp.repositories.jdbc.mixins.XmlObjectMixin;
 
@@ -125,7 +128,9 @@ public abstract class SessionRepositoryBase<T extends Session> implements Sessio
         objectMapper.addMixIn(XMLObject.class, XmlObjectMixin.class);
         objectMapper.addMixIn(IdaAuthnRequestFromHub.class, IdaAuthnRequestFromHubMixin.class);
         objectMapper.addMixIn(AuthnContextComparisonTypeEnumeration.class, AuthnContextComparisonTypeMixin.class);
+        objectMapper.addMixIn(Gender.class, GenderMixin.class);
         objectMapper.registerModule(new JodaModule());
+        objectMapper.registerModule(new Jdk8Module());
         objectMapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         return objectMapper;

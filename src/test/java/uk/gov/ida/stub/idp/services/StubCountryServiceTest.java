@@ -16,6 +16,7 @@ import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 import uk.gov.ida.stub.idp.exceptions.InvalidSessionIdException;
 import uk.gov.ida.stub.idp.exceptions.InvalidUsernameOrPasswordException;
 import uk.gov.ida.stub.idp.repositories.EidasSession;
+import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.repositories.StubCountry;
 import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
 
@@ -42,6 +43,9 @@ public class StubCountryServiceTest {
     private EidasSession session;
 
     private EidasAuthnRequest eidasAuthnRequest;
+    
+    @Mock
+    private SessionRepository<EidasSession> sessionRepository;
 
     @Mock
     private StubCountryRepository stubCountryRepository;
@@ -52,7 +56,7 @@ public class StubCountryServiceTest {
     @Before
     public void setUp(){
         when(stubCountryRepository.getStubCountryWithFriendlyId(SCHEME_ID)).thenReturn(stubCountry);
-        stubCountryService = new StubCountryService(stubCountryRepository);
+        stubCountryService = new StubCountryService(stubCountryRepository, sessionRepository);
         eidasAuthnRequest = new EidasAuthnRequest("request-id", "issuer", "destination", "loa", Collections.emptyList());
         session = new EidasSession(SESSION_ID, eidasAuthnRequest, null, null, null, Optional.empty(), Optional.empty());
         user = newUser();

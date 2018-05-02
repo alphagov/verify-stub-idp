@@ -25,7 +25,7 @@ public class EidasSession extends Session {
 	public EidasAuthnRequest getEidasAuthnRequest() {
 		return eidasAuthnRequest;
 	}
-
+	
 	public Optional<EidasUser> getEidasUser() {
 		return eidasUser;
 	}

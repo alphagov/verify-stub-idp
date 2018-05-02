@@ -110,4 +110,25 @@ public class IdpUser implements Serializable{
                 databaseIdpUser.getLevelOfAssurance()
         );
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof IdpUser)) return false;
+
+        IdpUser idpUser = (IdpUser) o;
+
+        if (username != null ? !username.equals(idpUser.username) : idpUser.username != null) return false;
+        if (persistentId != null ? !persistentId.equals(idpUser.persistentId) : idpUser.persistentId != null)
+            return false;
+        if (password != null ? !password.equals(idpUser.password) : idpUser.password != null) return false;
+        if (firstnames != null ? !firstnames.equals(idpUser.firstnames) : idpUser.firstnames != null) return false;
+        if (middleNames != null ? !middleNames.equals(idpUser.middleNames) : idpUser.middleNames != null) return false;
+        if (surnames != null ? !surnames.equals(idpUser.surnames) : idpUser.surnames != null) return false;
+        if (gender != null ? !gender.equals(idpUser.gender) : idpUser.gender != null) return false;
+        if (dateOfBirths != null ? !dateOfBirths.equals(idpUser.dateOfBirths) : idpUser.dateOfBirths != null)
+            return false;
+        if (addresses != null ? !addresses.equals(idpUser.addresses) : idpUser.addresses != null) return false;
+        return levelOfAssurance == idpUser.levelOfAssurance;
+    }
 }
