@@ -31,6 +31,6 @@ public class EidasSession extends Session {
 	}
 
 	public void setEidasUser(EidasUser eidasUser) {
-		this.eidasUser = Optional.of(eidasUser);
+		this.eidasUser = Optional.ofNullable(eidasUser);
 	}
 }
