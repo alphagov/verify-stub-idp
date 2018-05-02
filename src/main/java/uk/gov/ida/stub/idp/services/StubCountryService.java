@@ -1,7 +1,6 @@
 package uk.gov.ida.stub.idp.services;
 
 import org.joda.time.LocalDate;
-import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.Gender;
 import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.EidasAddress;
@@ -78,24 +77,26 @@ public class StubCountryService {
         return user.get().getDateOfBirths().get(0).getValue();
     }
 
-    private EidasAddress getEidasAddress(Optional<DatabaseIdpUser> user) {
-        Address address = user.get().getAddresses().get(0);
+    private Optional<EidasAddress> getEidasAddress(Optional<DatabaseIdpUser> user) {
 
-        EidasAddress eidasAddress = new EidasAddress(
+        return user.get().getAddresses()
+                .stream()
+                .map(Optional::ofNullable)
+                .findFirst()
+                .map(t -> new EidasAddress(
                 "",
                 "",
                 "",
                 "",
                 "",
                 "",
-                address.getLines().get(0),
+                t.get().getLines().get(0),
                 "",
-                address.getPostCode().get());
-
-        return eidasAddress;
+                t.get().getPostCode().get()
+                ));
     }
 
-    private Gender getGender(Optional<DatabaseIdpUser> user) {
-        return user.get().getGender().get().getValue();
+    private Optional<Gender> getGender(Optional<DatabaseIdpUser> user) {
+        return user.flatMap(m -> m.getGender()).flatMap(m -> Optional.ofNullable(m.getValue()));
     }
 }

@@ -77,6 +77,18 @@ public final class HardCodedTestUserList {
                 AuthnContext.LEVEL_2));
 
         sacredUsers.add(new DatabaseIdpUser(
+                idpFriendlyId + "-ec3",
+                UUID.randomUUID().toString(),
+                "bar",
+                Collections.singletonList(createMdsValue("Martin")),
+                Collections.emptyList(),
+                Collections.singletonList(createMdsValue("Riggs")),
+                Optional.empty(),
+                Collections.singletonList(createMdsValue(LocalDate.parse("1970-04-12"))),
+                Collections.emptyList(),
+                AuthnContext.LEVEL_2));
+
+        sacredUsers.add(new DatabaseIdpUser(
                 idpFriendlyId + "-complete",
                 UUID.randomUUID().toString(),
                 "bar",

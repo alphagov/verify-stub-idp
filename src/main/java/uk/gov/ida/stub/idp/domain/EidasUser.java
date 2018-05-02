@@ -13,12 +13,16 @@ public class EidasUser {
     private String familyName;
     private String persistentId;
     private LocalDate dateOfBirth;
-    private EidasAddress address;
-    private Gender gender;
+    private Optional<EidasAddress> address;
+    private Optional<Gender> gender;
 
     @JsonCreator
-    public EidasUser(@JsonProperty("firstName") String firstName, @JsonProperty("familyName") String familyName, @JsonProperty("persistentId") String persistentId,
-                     @JsonProperty("dateOfBirth") LocalDate dateOfBirth, @JsonProperty("address") EidasAddress address, @JsonProperty("gender") Gender gender) {
+    public EidasUser(@JsonProperty("firstName") String firstName,
+                     @JsonProperty("familyName") String familyName,
+                     @JsonProperty("persistentId") String persistentId,
+                     @JsonProperty("dateOfBirth") LocalDate dateOfBirth,
+                     @JsonProperty("address") Optional<EidasAddress> address,
+                     @JsonProperty("gender") Optional<Gender> gender) {
         this.firstName = firstName;
         this.familyName = familyName;
         this.persistentId = persistentId;
@@ -40,7 +44,7 @@ public class EidasUser {
     }
 
     public Optional<EidasAddress> getAddress() {
-        return Optional.ofNullable(address);
+        return address;
     }
 
     public LocalDate getDateOfBirth() {
@@ -48,14 +52,14 @@ public class EidasUser {
     }
 
     public Optional<Gender> getGender() {
-        return Optional.ofNullable(gender);
+        return gender;
     }
 
-    public void setAddress(EidasAddress address) {
+    public void setAddress(Optional<EidasAddress> address) {
         this.address = address;
     }
 
-    public void setGender(Gender gender) {
+    public void setGender(Optional<Gender> gender) {
         this.gender = gender;
     }
 
