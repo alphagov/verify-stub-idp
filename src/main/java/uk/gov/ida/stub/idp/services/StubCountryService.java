@@ -8,7 +8,8 @@ import uk.gov.ida.stub.idp.domain.EidasAddress;
 import uk.gov.ida.stub.idp.domain.EidasUser;
 import uk.gov.ida.stub.idp.exceptions.InvalidSessionIdException;
 import uk.gov.ida.stub.idp.exceptions.InvalidUsernameOrPasswordException;
-import uk.gov.ida.stub.idp.repositories.Session;
+import uk.gov.ida.stub.idp.repositories.EidasSession;
+import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.repositories.StubCountry;
 import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
 
@@ -18,19 +19,21 @@ import java.util.Optional;
 public class StubCountryService {
 
     private final StubCountryRepository stubCountryRepository;
+    private final SessionRepository<EidasSession> sessionRepository;
 
     @Inject
-    public StubCountryService(StubCountryRepository stubCountryRepository) {
+    public StubCountryService(StubCountryRepository stubCountryRepository, SessionRepository<EidasSession> sessionRepository) {
         this.stubCountryRepository = stubCountryRepository;
+        this.sessionRepository = sessionRepository;
     }
 
-    public void attachStubCountryToSession(String schemeName, String username, String password, Session session) throws InvalidUsernameOrPasswordException, InvalidSessionIdException {
+    public void attachStubCountryToSession(String schemeName, String username, String password, EidasSession session) throws InvalidUsernameOrPasswordException, InvalidSessionIdException {
         StubCountry stubCountry = stubCountryRepository.getStubCountryWithFriendlyId(schemeName);
         Optional<DatabaseIdpUser> user = stubCountry.getUser(username, password);
         attachEidasUserToSession(user, session);
     }
 
-    private void attachEidasUserToSession(Optional<DatabaseIdpUser> user, Session session) throws InvalidUsernameOrPasswordException, InvalidSessionIdException {
+    private void attachEidasUserToSession(Optional<DatabaseIdpUser> user, EidasSession session) throws InvalidUsernameOrPasswordException, InvalidSessionIdException {
         if (!user.isPresent()) {
             throw new InvalidUsernameOrPasswordException();
         }
@@ -41,6 +44,8 @@ public class StubCountryService {
         if (!session.getEidasUser().isPresent()) {
             throw new InvalidSessionIdException();
         }
+        
+        sessionRepository.updateSession(session.getSessionId(), session);
     }
 
     private EidasUser createEidasUser(Optional<DatabaseIdpUser> user) {

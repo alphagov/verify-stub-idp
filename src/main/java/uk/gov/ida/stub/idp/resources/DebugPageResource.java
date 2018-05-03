@@ -5,10 +5,7 @@ import uk.gov.ida.common.SessionId;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.cookies.CookieNames;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASession;
-import uk.gov.ida.stub.idp.repositories.Idp;
-import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
-import uk.gov.ida.stub.idp.repositories.Session;
-import uk.gov.ida.stub.idp.repositories.SessionRepository;
+import uk.gov.ida.stub.idp.repositories.*;
 import uk.gov.ida.stub.idp.views.DebugPageView;
 
 import javax.inject.Inject;
@@ -31,12 +28,12 @@ import static java.text.MessageFormat.format;
 public class DebugPageResource {
 
     private final IdpStubsRepository idpStubsRepository;
-    private final SessionRepository sessionRepository;
+    private final SessionRepository<IdpSession> sessionRepository;
 
     @Inject
     public DebugPageResource(
             IdpStubsRepository idpStubsRepository,
-            SessionRepository sessionRepository) {
+            SessionRepository<IdpSession> sessionRepository) {
         this.idpStubsRepository = idpStubsRepository;
         this.sessionRepository = sessionRepository;
     }
@@ -50,7 +47,7 @@ public class DebugPageResource {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Unable to locate session cookie for " + idpName))).build());
         }
 
-        Optional<Session> session = sessionRepository.get(sessionCookie);
+        Optional<IdpSession> session = sessionRepository.get(sessionCookie);
 
         if (!session.isPresent()) {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Session is invalid for " + idpName))).build());

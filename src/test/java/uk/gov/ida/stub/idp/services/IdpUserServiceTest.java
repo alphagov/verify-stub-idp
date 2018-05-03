@@ -19,10 +19,11 @@ import uk.gov.ida.stub.idp.exceptions.InvalidSessionIdException;
 import uk.gov.ida.stub.idp.exceptions.InvalidUsernameOrPasswordException;
 import uk.gov.ida.stub.idp.exceptions.UsernameAlreadyTakenException;
 import uk.gov.ida.stub.idp.repositories.Idp;
+import uk.gov.ida.stub.idp.repositories.IdpSession;
+import uk.gov.ida.stub.idp.repositories.IdpSessionRepository;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
-import uk.gov.ida.stub.idp.repositories.Session;
-import uk.gov.ida.stub.idp.repositories.SessionRepository;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,7 +51,7 @@ public class IdpUserServiceTest {
     private IdpUserService idpUserService;
 
     @Mock
-    private SessionRepository sessionRepository;
+    private IdpSessionRepository sessionRepository;
     @Mock
     private Idp idp;
     @Mock
@@ -68,26 +69,26 @@ public class IdpUserServiceTest {
         when(idpStubsRepository.getIdpWithFriendlyId(IDP_NAME)).thenReturn(idp);
         Optional<DatabaseIdpUser> idpUserOptional = Optional.ofNullable(MatchingDatasetFactoryTest.completeUser);
         when(idp.getUser(USERNAME, PASSWORD)).thenReturn(idpUserOptional);
-        when(sessionRepository.get(SESSION_ID)).thenReturn(Optional.ofNullable(new Session(SESSION_ID, idaAuthnRequestFromHubOptional, RELAY_STATE, null, null, null, null)));
+        when(sessionRepository.get(SESSION_ID)).thenReturn(Optional.ofNullable(new IdpSession(SESSION_ID, idaAuthnRequestFromHubOptional, RELAY_STATE, null, null, null, null)));
 
         idpUserService.attachIdpUserToSession(IDP_NAME, USERNAME, PASSWORD, SESSION_ID);
 
-        ArgumentCaptor<Session> argumentCaptor = ArgumentCaptor.forClass(Session.class);
+        ArgumentCaptor<IdpSession> argumentCaptor = ArgumentCaptor.forClass(IdpSession.class);
         verify(sessionRepository, times(1)).updateSession(eq(SESSION_ID), argumentCaptor.capture());
         assertThat(argumentCaptor.getValue().getIdpUser()).isEqualTo(idpUserOptional);
     }
 
     @Test
     public void shouldHaveStatusSuccessResponseWhenUserRegisters() throws InvalidSessionIdException, IncompleteRegistrationException, InvalidDateException, UsernameAlreadyTakenException, InvalidUsernameOrPasswordException {
-        when(sessionRepository.get(SESSION_ID)).thenReturn(Optional.ofNullable(new Session(SESSION_ID, idaAuthnRequestFromHubOptional, RELAY_STATE, null, null, null, null)));
+        IdpSession session = new IdpSession(SessionId.createNewSessionId(), idaAuthnRequestFromHubOptional, "test-relay-state", Arrays.asList(), Arrays.asList(), Optional.empty(), Optional.empty());
+        when(sessionRepository.get(SESSION_ID)).thenReturn(Optional.ofNullable(new IdpSession(SESSION_ID, idaAuthnRequestFromHubOptional, RELAY_STATE, null, null, null, null)));
         when(idpStubsRepository.getIdpWithFriendlyId(IDP_NAME)).thenReturn(idp);
         when(idp.userExists(USERNAME)).thenReturn(false);
         when(idp.createUser(any(), any(), any(), any(), any(), any(), any(), eq(USERNAME), eq(PASSWORD), any())).thenReturn(mock(DatabaseIdpUser.class));
-        when(sessionRepository.newSession(idaAuthnRequestFromHubOptional, RELAY_STATE, null, null, null, null)).thenReturn(SESSION_ID);
+        when(sessionRepository.createSession(session)).thenReturn(SESSION_ID);
 
         idpUserService.attachIdpUserToSession(IDP_NAME, "bob", "jones", "address line 1", "address line 2", "address town", "address postcode", AuthnContext.LEVEL_2, "2000-01-01", USERNAME, "password", SESSION_ID);
 
         verify(sessionRepository, times(1)).updateSession(eq(SESSION_ID), any());
     }
-
 }

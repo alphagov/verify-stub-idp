@@ -21,8 +21,8 @@ import uk.gov.ida.saml.core.extensions.eidas.PersonIdentifier;
 import uk.gov.ida.stub.idp.domain.EidasAuthnRequest;
 import uk.gov.ida.stub.idp.domain.EidasUser;
 import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
+import uk.gov.ida.stub.idp.repositories.EidasSession;
 import uk.gov.ida.stub.idp.repositories.MetadataRepository;
-import uk.gov.ida.stub.idp.repositories.Session;
 import uk.gov.ida.stub.idp.saml.transformers.EidasResponseTransformerProvider;
 
 import java.net.URI;
@@ -63,7 +63,7 @@ public class EidasAuthnResponseServiceTest {
     @Test
     public void getEidasSuccessResponse() throws URISyntaxException, MarshallingException, SignatureException {
         EidasAuthnRequest request = new EidasAuthnRequest("request-id", "issuer", "destination", "loa", Collections.emptyList());
-        Session session = new Session(new SessionId("session-id"), request, "relay-state", Collections.emptyList(), Collections.emptyList(), Optional.empty(), Optional.empty());
+        EidasSession session = new EidasSession(new SessionId("session-id"), request, "relay-state", Collections.emptyList(), Collections.emptyList(), Optional.empty(), Optional.empty());
         session.setEidasUser(new EidasUser("Firstname", "Familyname", "pid", dateOfBirth, null, null));
         when(metadataRepository.getAssertionConsumerServiceLocation()).thenReturn(new URI("http://hub.url"));
         when(eidasResponseTransformerProvider.getTransformer()).thenReturn(x -> SAML_RESPONSE_AS_STRING);
@@ -85,7 +85,7 @@ public class EidasAuthnResponseServiceTest {
     @Test
     public void getAuthnFailResponse() throws URISyntaxException {
         EidasAuthnRequest request = new EidasAuthnRequest("request-id", "issuer", "destination", "loa", Collections.emptyList());
-        Session session = new Session(new SessionId("session-id"), request, "relay-state", Collections.emptyList(), Collections.emptyList(), Optional.empty(), Optional.empty());
+        EidasSession session = new EidasSession(new SessionId("session-id"), request, "relay-state", Collections.emptyList(), Collections.emptyList(), Optional.empty(), Optional.empty());
         when(metadataRepository.getAssertionConsumerServiceLocation()).thenReturn(new URI("http://hub.url"));
         when(eidasResponseTransformerProvider.getTransformer()).thenReturn(x -> SAML_RESPONSE_AS_STRING);
 

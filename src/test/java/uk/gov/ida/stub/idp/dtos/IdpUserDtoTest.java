@@ -2,6 +2,8 @@ package uk.gov.ida.stub.idp.dtos;
 
 import io.dropwizard.jackson.Jackson;
 import org.assertj.core.api.Assertions;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import uk.gov.ida.saml.core.domain.Address;
@@ -14,7 +16,6 @@ import java.io.IOException;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.joda.time.DateTime.parse;
 import static uk.gov.ida.stub.idp.builders.IdpUserDtoBuilder.anIdpUserDto;
 
 public class IdpUserDtoTest {
@@ -23,7 +24,7 @@ public class IdpUserDtoTest {
     public void shouldDeSerialiseJsonToObjectWhenAllFieldsArePopulated() throws IOException {
 
         IdpUserDto idpUserDtoFromJson = Jackson.newObjectMapper().readValue("{\"pid\":\"00754148-902f-4d94-b0db-cb1f7eb3fd84\",\"username\":\"user1\",\"password\":\"password\",\"firstName\":{\"value\":\"Fred\",\"from\":315532800000,\"to\":1356998400000,\"verified\":true},\"middleNames\":{\"value\":\"Flintstone\",\"from\":315532800000,\"to\":1356998400000,\"verified\":true},\"gender\":{\"value\":\"MALE\",\"from\":315532800000,\"to\":1356998400000,\"verified\":true},\"dateOfBirth\":{\"value\":[1970,1,1],\"from\":315532800000,\"to\":1356998400000,\"verified\":true},\"address\":{\"verified\":false,\"from\":978307200000,\"to\":1355270400000,\"postCode\":\"WC2B 6NH\",\"lines\":[\"Aviation House\",\"London\"],\"internationalPostCode\":null,\"uprn\":null},\"levelOfAssurance\":\"LEVEL_2\",\"surnames\":[{\"value\":\"Smith\",\"from\":315532800000,\"to\":1356998400000,\"verified\":true},{\"value\":\"Henry\",\"from\":315532800000,\"to\":1356998400000,\"verified\":true}]}", IdpUserDto.class);
-
+        
         IdpUserDto idpuserDto = anIdpUserDto()
                 .withPid("00754148-902f-4d94-b0db-cb1f7eb3fd84")
                 .withUserName("user1")
@@ -35,23 +36,23 @@ public class IdpUserDtoTest {
                 .withGender(
                         SimpleMdsValueBuilder.<Gender>aSimpleMdsValue()
                                 .withValue(Gender.MALE)
-                                .withFrom(parse("1980-01-01"))
-                                .withTo(parse("2013-01-01"))
+                                .withFrom(new DateTime(1980, 1, 1, 0, 0, 0, DateTimeZone.UTC))
+                                .withTo(new DateTime(2013, 1, 1, 0, 0, 0, DateTimeZone.UTC))
                                 .withVerifiedStatus(true)
                                 .build()
                 )
                 .withDateOfBirth(
                         SimpleMdsValueBuilder.<LocalDate>aSimpleMdsValue()
-                                .withValue(LocalDate.parse("1970-01-01"))
-                                .withFrom(parse("1980-01-01"))
-                                .withTo(parse("2013-01-01"))
+                                .withValue(new LocalDate(1970, 1, 1))
+                                .withFrom(new DateTime(1980, 1, 1, 0, 0, 0, DateTimeZone.UTC))
+                                .withTo(new DateTime(2013, 1, 1, 0, 0, 0, DateTimeZone.UTC))
                                 .withVerifiedStatus(true)
                                 .build()
                 )
                 .withAddress(
                         AddressBuilder.anAddress()
-                                .withFromDate(parse("2001-01-01"))
-                                .withToDate(parse("2012-12-12"))
+                                .withFromDate(new DateTime(2001, 1, 1, 0, 0, 0, DateTimeZone.UTC))
+                                .withToDate(new DateTime(2012, 12, 12, 0, 0, 0, DateTimeZone.UTC))
                                 .withVerified(false)
                                 .withPostCode("WC2B 6NH")
                                 .withLines(
@@ -65,10 +66,7 @@ public class IdpUserDtoTest {
                 .withLevelOfAssurance("LEVEL_2")
                 .build();
 
-
         assertThat(compareIdpUserDto(idpUserDtoFromJson,idpuserDto)).isTrue();
-
-
     }
 
     private boolean compareIdpUserDto(final IdpUserDto idpUserDtoFromJson, final IdpUserDto idpuserDto) {
@@ -143,8 +141,8 @@ public class IdpUserDtoTest {
     private MatchingDatasetValue<String> createSimpleMdsValue(String value) {
         return SimpleMdsValueBuilder.<String>aSimpleMdsValue()
                 .withValue(value)
-                .withFrom(parse("1980-01-01"))
-                .withTo(parse("2013-01-01"))
+                .withFrom(new DateTime(1980, 1, 1, 0, 0, 0, DateTimeZone.UTC))
+                .withTo(new DateTime(2013, 1, 1, 0, 0, 0, DateTimeZone.UTC))
                 .withVerifiedStatus(true)
                 .build();
     }

@@ -15,8 +15,8 @@ import uk.gov.ida.stub.idp.exceptions.InvalidDateException;
 import uk.gov.ida.stub.idp.exceptions.InvalidSessionIdException;
 import uk.gov.ida.stub.idp.exceptions.InvalidUsernameOrPasswordException;
 import uk.gov.ida.stub.idp.exceptions.UsernameAlreadyTakenException;
+import uk.gov.ida.stub.idp.repositories.IdpSession;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
-import uk.gov.ida.stub.idp.repositories.Session;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.services.IdpUserService;
 import uk.gov.ida.stub.idp.services.NonSuccessAuthnResponseService;
@@ -58,7 +58,7 @@ public class RegistrationPageResourceTest {
     @Mock
     private NonSuccessAuthnResponseService nonSuccessAuthnResponseService;
     @Mock
-    private SessionRepository sessionRepository;
+    private SessionRepository<IdpSession> sessionRepository;
     @Mock
     private IdaAuthnRequestFromHub idaAuthnRequestFromHub;
 
@@ -72,8 +72,8 @@ public class RegistrationPageResourceTest {
                 sessionRepository
         );
 
-        when(sessionRepository.get(SESSION_ID)).thenReturn(Optional.ofNullable(new Session(SESSION_ID, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null)));
-        when(sessionRepository.deleteAndGet(SESSION_ID)).thenReturn(Optional.ofNullable(new Session(SESSION_ID, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null)));
+        when(sessionRepository.get(SESSION_ID)).thenReturn(Optional.ofNullable(new IdpSession(SESSION_ID, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null)));
+        when(sessionRepository.deleteAndGet(SESSION_ID)).thenReturn(Optional.ofNullable(new IdpSession(SESSION_ID, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null)));
         when(idaAuthnRequestFromHub.getId()).thenReturn(SAML_REQUEST_ID);
     }
 

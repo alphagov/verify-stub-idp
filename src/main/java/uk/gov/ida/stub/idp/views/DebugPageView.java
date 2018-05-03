@@ -2,7 +2,7 @@ package uk.gov.ida.stub.idp.views;
 
 import uk.gov.ida.stub.idp.domain.IdpHint;
 import uk.gov.ida.stub.idp.domain.IdpLanguageHint;
-import uk.gov.ida.stub.idp.repositories.Session;
+import uk.gov.ida.stub.idp.repositories.IdpSession;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
 
 public class DebugPageView extends IdpPageView {
 
-    private final Session session;
+    private final IdpSession session;
 
-    public DebugPageView(String name, String idpId, String assetId, Session session) {
+    public DebugPageView(String name, String idpId, String assetId, IdpSession session) {
         super("debugPage.ftl", name, idpId, null, assetId);
         this.session = session;
     }

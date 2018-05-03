@@ -26,6 +26,7 @@ import uk.gov.ida.stub.idp.exceptions.mappers.CatchAllExceptionMapper;
 import uk.gov.ida.stub.idp.exceptions.mappers.FileNotFoundExceptionMapper;
 import uk.gov.ida.stub.idp.exceptions.mappers.IdpNotFoundExceptionMapper;
 import uk.gov.ida.stub.idp.exceptions.mappers.IdpUserNotFoundExceptionMapper;
+import uk.gov.ida.stub.idp.exceptions.mappers.SessionSerializationExceptionMapper;
 import uk.gov.ida.stub.idp.filters.NoCacheResponseFilter;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASessionFeature;
 import uk.gov.ida.stub.idp.filters.StubIdpCacheControlFilter;
@@ -138,6 +139,7 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
         environment.jersey().register(IdpNotFoundExceptionMapper.class);
         environment.jersey().register(IdpUserNotFoundExceptionMapper.class);
         environment.jersey().register(FileNotFoundExceptionMapper.class);
+        environment.jersey().register(SessionSerializationExceptionMapper.class);
         environment.jersey().register(CatchAllExceptionMapper.class);
 
         //filters

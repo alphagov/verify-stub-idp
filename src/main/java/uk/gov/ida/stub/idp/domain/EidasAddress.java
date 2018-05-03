@@ -1,5 +1,7 @@
 package uk.gov.ida.stub.idp.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.glassfish.jersey.internal.util.Base64;
 
 import java.text.MessageFormat;
@@ -15,7 +17,8 @@ public class EidasAddress {
     private final String adminunitSecondLine;
     private final String postCode;
 
-    public EidasAddress(String poBox, String locatorDesignator, String locatorName, String cvAddressArea, String thoroughfare, String postName, String adminunitFirstLine, String adminunitSecondLine, String postCode) {
+    @JsonCreator
+    public EidasAddress(@JsonProperty("poBox") String poBox, @JsonProperty("locatorDesignator") String locatorDesignator, @JsonProperty("locatorName") String locatorName, @JsonProperty("cvAddressArea") String cvAddressArea, @JsonProperty("thoroughfare") String thoroughfare, @JsonProperty("postName") String postName, @JsonProperty("adminunitFirstLine") String adminunitFirstLine, @JsonProperty("adminunitSecondLine") String adminunitSecondLine, @JsonProperty("postCode") String postCode) {
         this.poBox = poBox;
         this.locatorDesignator = locatorDesignator;
         this.locatorName = locatorName;
@@ -82,5 +85,28 @@ public class EidasAddress {
             return MessageFormat.format("<eidas:{0}>{1}</eidas:{0}>", samlTag, value);
         }
         return "";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof EidasAddress)) return false;
+
+        EidasAddress that = (EidasAddress) o;
+
+        if (poBox != null ? !poBox.equals(that.poBox) : that.poBox != null) return false;
+        if (locatorDesignator != null ? !locatorDesignator.equals(that.locatorDesignator) : that.locatorDesignator != null)
+            return false;
+        if (locatorName != null ? !locatorName.equals(that.locatorName) : that.locatorName != null) return false;
+        if (cvAddressArea != null ? !cvAddressArea.equals(that.cvAddressArea) : that.cvAddressArea != null)
+            return false;
+        if (thoroughfare != null ? !thoroughfare.equals(that.thoroughfare) : that.thoroughfare != null) return false;
+        if (postName != null ? !postName.equals(that.postName) : that.postName != null) return false;
+        if (adminunitFirstLine != null ? !adminunitFirstLine.equals(that.adminunitFirstLine) : that.adminunitFirstLine != null)
+            return false;
+        if (adminunitSecondLine != null ? !adminunitSecondLine.equals(that.adminunitSecondLine) : that.adminunitSecondLine != null)
+            return false;
+        return postCode != null ? postCode.equals(that.postCode) : that.postCode == null;
+
     }
 }
