@@ -1,6 +1,7 @@
 package uk.gov.ida.stub.idp.auth;
 
 import com.google.common.base.Splitter;
+import org.apache.log4j.Logger;
 import org.mindrot.jbcrypt.BCrypt;
 import uk.gov.ida.shared.utils.string.StringEncoding;
 import uk.gov.ida.stub.idp.configuration.UserCredentials;
@@ -18,17 +19,22 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import static java.text.MessageFormat.format;
+
 public class UserResourceBasicAuthFilter implements Filter {
+
+    private final Logger LOG = Logger.getLogger(UserResourceBasicAuthFilter.class);
+
     private final IdpStubsRepository idpStubsRepository;
-    private Splitter splitter = Splitter.on(':').limit(2);
-    private int credOffset = "Basic ".length();
+    private final Splitter splitter = Splitter.on(':').limit(2);
+    private final int credOffset = "Basic ".length();
 
     public UserResourceBasicAuthFilter(IdpStubsRepository idpStubsRepository) {
         this.idpStubsRepository = idpStubsRepository;
     }
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig filterConfig) {
         //do nothing
     }
 
@@ -47,10 +53,12 @@ public class UserResourceBasicAuthFilter implements Filter {
 
             for (UserCredentials userCredentials : userCredentialsList) {
                 if (requestAuthMatchesUsernameAndPassword(userCredentials, usernamePasswordFromRequest)) {
+                    LOG.info(format("Basic auth login success for IDP {0}, user {1}", friendlyId, usernamePasswordFromRequest.getUsername()));
                     chain.doFilter(request, response);
                     return;
                 }
             }
+            LOG.error(format("Basic auth login failure for IDP {0}, user {1}", friendlyId, usernamePasswordFromRequest.getUsername()));
             HttpServletResponse resp = (HttpServletResponse) response;
             resp.setHeader("WWW-Authenticate", "Basic realm=\"Admin\"");
             resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
