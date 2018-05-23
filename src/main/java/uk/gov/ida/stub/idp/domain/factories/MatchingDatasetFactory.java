@@ -23,7 +23,8 @@ public final class MatchingDatasetFactory {
              from(user.getDateOfBirths()),
              getCurrentAddresses(
                  user.getAddresses()),
-             getPreviousAddresses(user.getAddresses())
+             getPreviousAddresses(user.getAddresses()),
+                 user.getPersistentId()
          );
     }
 

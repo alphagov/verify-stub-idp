@@ -128,7 +128,7 @@ def dependencyVersions = [
         ida_utils             : '2.0.0-332',
         dropwizard            : '1.1.4',
         ida_dev_pki           : '1.1.0-21',
-        saml_libs             : "$opensaml_version-126",
+        saml_libs             : "$opensaml_version-140",
         ida_test_utils        : '2.0.0-38',
         hub_saml              : "$opensaml_version-15546",
         hk2_version           : '2.5.0-b05'
