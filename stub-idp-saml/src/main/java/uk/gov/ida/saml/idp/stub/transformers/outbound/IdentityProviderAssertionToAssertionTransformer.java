@@ -1,22 +1,25 @@
 package uk.gov.ida.saml.idp.stub.transformers.outbound;
 
-import javax.inject.Inject;
-
 import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.Attribute;
 import org.opensaml.saml.saml2.core.AttributeStatement;
 import org.opensaml.saml.saml2.core.Issuer;
+import uk.gov.ida.saml.core.OpenSamlXmlObjectFactory;
 import uk.gov.ida.saml.core.domain.FraudAuthnDetails;
 import uk.gov.ida.saml.core.domain.IdentityProviderAssertion;
-import uk.gov.ida.saml.core.OpenSamlXmlObjectFactory;
 import uk.gov.ida.saml.core.domain.IdentityProviderAuthnStatement;
 import uk.gov.ida.saml.core.domain.IpAddress;
 import uk.gov.ida.saml.core.domain.MatchingDataset;
+import uk.gov.ida.saml.core.domain.SimpleMdsValue;
+import uk.gov.ida.saml.core.domain.TransliterableMdsValue;
 import uk.gov.ida.saml.core.transformers.outbound.OutboundAssertionToSubjectTransformer;
 import uk.gov.ida.saml.hub.factories.AttributeFactory;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class IdentityProviderAssertionToAssertionTransformer {
 
@@ -91,7 +94,7 @@ public class IdentityProviderAssertionToAssertionTransformer {
         AttributeStatement attributeStatement = openSamlXmlObjectFactory.createAttributeStatement();
 
         if (!matchingDataset.getFirstNames().isEmpty()) {
-            Attribute firstnameAttribute = attributeFactory.createFirstnameAttribute(matchingDataset.getFirstNames());
+            Attribute firstnameAttribute = attributeFactory.createFirstnameAttribute(getSimpleMdsValues(matchingDataset.getFirstNames()));
             attributeStatement.getAttributes().add(firstnameAttribute);
         }
 
@@ -101,7 +104,7 @@ public class IdentityProviderAssertionToAssertionTransformer {
         }
 
         if (!matchingDataset.getSurnames().isEmpty()) {
-            Attribute surnameAttribute = attributeFactory.createSurnameAttribute(matchingDataset.getSurnames());
+            Attribute surnameAttribute = attributeFactory.createSurnameAttribute(getSimpleMdsValues(matchingDataset.getSurnames()));
             attributeStatement.getAttributes().add(surnameAttribute);
         }
 
@@ -128,4 +131,7 @@ public class IdentityProviderAssertionToAssertionTransformer {
         return attributeStatement;
     }
 
+    private static List<SimpleMdsValue<String>> getSimpleMdsValues(final List<TransliterableMdsValue> transliterableMdsValues) {
+        return transliterableMdsValues.stream().map(t -> (SimpleMdsValue<String>) t).collect(Collectors.toList());
+    }
 }
