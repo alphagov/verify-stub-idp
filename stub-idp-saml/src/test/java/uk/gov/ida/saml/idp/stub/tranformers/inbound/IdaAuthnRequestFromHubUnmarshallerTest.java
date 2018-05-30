@@ -5,12 +5,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.opensaml.saml.saml2.core.AuthnContextClassRef;
-import org.opensaml.saml.saml2.core.AuthnContextComparisonTypeEnumeration;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.core.Conditions;
 import org.opensaml.saml.saml2.core.Issuer;
 import org.opensaml.saml.saml2.core.RequestedAuthnContext;
-import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.saml.core.extensions.IdaAuthnContext;
 import uk.gov.ida.saml.core.test.OpenSAMLMockitoRunner;
 import uk.gov.ida.saml.hub.domain.IdaAuthnRequestFromHub;
@@ -49,7 +47,7 @@ public class IdaAuthnRequestFromHubUnmarshallerTest {
     }
 
     @Test
-    public void shouldMapLevelOfAssurance() throws Exception {
+    public void shouldMapLevelOfAssurance() {
         IdaAuthnRequestFromHubUnmarshaller unmarshaller = new IdaAuthnRequestFromHubUnmarshaller();
 
         IdaAuthnRequestFromHub outputIdaAuthnRequestFromHub = unmarshaller.fromSaml(authnRequest);
@@ -58,7 +56,7 @@ public class IdaAuthnRequestFromHubUnmarshallerTest {
     }
 
     @Test
-    public void shouldKeepComparisonType() throws Exception {
+    public void shouldKeepComparisonType() {
         IdaAuthnRequestFromHubUnmarshaller unmarshaller = new IdaAuthnRequestFromHubUnmarshaller();
 
         IdaAuthnRequestFromHub outputIdaAuthnRequestFromHub = unmarshaller.fromSaml(authnRequest);
