@@ -72,7 +72,7 @@ public class IdentityProviderAssertionToAssertionTransformerTest {
     }
 
     @Test
-    public void transform_shouldTransformAssertionSubjects() {
+    public void shouldTransformAssertionSubjects() {
         IdentityProviderAssertion assertion = anIdentityProviderAssertion().build();
 
         transformer.transform(assertion);
@@ -81,7 +81,7 @@ public class IdentityProviderAssertionToAssertionTransformerTest {
     }
 
     @Test
-    public void transform_shouldTransformAssertionSubjectsFirstName() {
+    public void shouldTransformAssertionSubjectsFirstName() {
         TransliterableMdsValue firstname = TransliterableMdsValueBuilder.asTransliterableMdsValue().withValue("Bob").build();
         IdentityProviderAssertion assertion = anIdentityProviderAssertion().withMatchingDataset(
                 MatchingDatasetBuilder.aMatchingDataset().addFirstName(firstname).build()).build();
@@ -92,7 +92,7 @@ public class IdentityProviderAssertionToAssertionTransformerTest {
     }
 
     @Test
-    public void transform_shouldHandleMissingAssertionSubjectsFirstname() {
+    public void shouldHandleMissingAssertionSubjectsFirstname() {
         MatchingDataset matchingDataset = MatchingDatasetBuilder.aMatchingDataset()
                 .addMiddleNames(TransliterableMdsValueBuilder.asTransliterableMdsValue().withValue("subject-middlename").withVerifiedStatus(true).build())
                 .withSurnameHistory(asList(previousSurname, currentSurname))
@@ -110,7 +110,7 @@ public class IdentityProviderAssertionToAssertionTransformerTest {
     }
 
     @Test
-    public void transform_shouldTransformAssertionSubjectsMiddleNames() {
+    public void shouldTransformAssertionSubjectsMiddleNames() {
         SimpleMdsValue<String> middleNames = SimpleMdsValueBuilder.<String>aSimpleMdsValue().withValue("archibald ferdinand").build();
         IdentityProviderAssertion assertion = anIdentityProviderAssertion().withMatchingDataset(MatchingDatasetBuilder.aMatchingDataset().addMiddleNames(middleNames).build()).build();
 
@@ -120,7 +120,7 @@ public class IdentityProviderAssertionToAssertionTransformerTest {
     }
 
     @Test
-    public void transform_shouldHandleMissingAssertionSubjectsMiddleNames() {
+    public void shouldHandleMissingAssertionSubjectsMiddleNames() {
         MatchingDataset matchingDataset = MatchingDatasetBuilder.aMatchingDataset()
                 .addFirstName(TransliterableMdsValueBuilder.asTransliterableMdsValue().withValue("subject-firstname").withVerifiedStatus(true).build())
                 .withSurnameHistory(asList(previousSurname, currentSurname))
@@ -137,7 +137,7 @@ public class IdentityProviderAssertionToAssertionTransformerTest {
     }
 
     @Test
-    public void transform_shouldTransformAssertionSubjectsSurname() {
+    public void shouldTransformAssertionSubjectsSurname() {
         TransliterableMdsValue surname = TransliterableMdsValueBuilder.asTransliterableMdsValue().withValue("Cratchit").build();
         IdentityProviderAssertion assertion = anIdentityProviderAssertion().withMatchingDataset(MatchingDatasetBuilder.aMatchingDataset().addSurname(surname).build()).build();
 
@@ -147,7 +147,7 @@ public class IdentityProviderAssertionToAssertionTransformerTest {
     }
 
     @Test
-    public void transform_shouldHandleMissingAssertionSubjectsSurname() {
+    public void shouldHandleMissingAssertionSubjectsSurname() {
         IdentityProviderAssertion assertion = anIdentityProviderAssertion().withMatchingDataset(MatchingDatasetBuilder.aFullyPopulatedMatchingDataset().withoutSurname().build()).build();
 
         transformer.transform(assertion);
@@ -156,7 +156,7 @@ public class IdentityProviderAssertionToAssertionTransformerTest {
     }
 
     @Test
-    public void transform_shouldTransformAssertionSubjectsGender() {
+    public void shouldTransformAssertionSubjectsGender() {
         SimpleMdsValue<Gender> gender = SimpleMdsValueBuilder.<Gender>aSimpleMdsValue().withValue(Gender.FEMALE).build();
         IdentityProviderAssertion assertion = anIdentityProviderAssertion().withMatchingDataset(MatchingDatasetBuilder.aMatchingDataset().withGender(gender).build()).build();
 
@@ -166,7 +166,7 @@ public class IdentityProviderAssertionToAssertionTransformerTest {
     }
 
     @Test
-    public void transform_shouldHandleMissingAssertionSubjectsGender() {
+    public void shouldHandleMissingAssertionSubjectsGender() {
         IdentityProviderAssertion assertion = anIdentityProviderAssertion().withMatchingDataset(MatchingDatasetBuilder.aFullyPopulatedMatchingDataset().withGender(null).build()).build();
 
         transformer.transform(assertion);
@@ -175,7 +175,7 @@ public class IdentityProviderAssertionToAssertionTransformerTest {
     }
 
     @Test
-    public void transform_shouldTransformAssertionSubjectsDateOfBirth() {
+    public void shouldTransformAssertionSubjectsDateOfBirth() {
         SimpleMdsValue<LocalDate> dateOfBirth = SimpleMdsValueBuilder.<LocalDate>aSimpleMdsValue().withValue(LocalDate.parse("1986-12-05")).build();
         IdentityProviderAssertion assertion = anIdentityProviderAssertion().withMatchingDataset(MatchingDatasetBuilder.aMatchingDataset().addDateOfBirth(dateOfBirth).build()).build();
 
@@ -185,7 +185,7 @@ public class IdentityProviderAssertionToAssertionTransformerTest {
     }
 
     @Test
-    public void transform_shouldHandleMissingAssertionSubjectsDateOfBirth() {
+    public void shouldHandleMissingAssertionSubjectsDateOfBirth() {
         MatchingDataset matchingDataset = MatchingDatasetBuilder.aMatchingDataset()
                 .addFirstName(TransliterableMdsValueBuilder.asTransliterableMdsValue().withValue("subject-firstname").withVerifiedStatus(true).build())
                 .addMiddleNames(SimpleMdsValueBuilder.<String>aSimpleMdsValue().withValue("subject-middlename").withVerifiedStatus(true).build())
@@ -203,7 +203,7 @@ public class IdentityProviderAssertionToAssertionTransformerTest {
     }
 
     @Test
-    public void transform_shouldTransformAssertionSubjectsCurrentAddress() {
+    public void shouldTransformAssertionSubjectsCurrentAddress() {
         List<Address> address = singletonList(new AddressFactory().create(asList("221b Baker St."), "W4 1SH", "A 1", "4536789", DateTime.parse("2007-09-28"), DateTime.parse("2007-10-29"), true));
         IdentityProviderAssertion assertion = anIdentityProviderAssertion().withMatchingDataset(MatchingDatasetBuilder.aMatchingDataset().withCurrentAddresses(address).build()).build();
 
@@ -213,7 +213,7 @@ public class IdentityProviderAssertionToAssertionTransformerTest {
     }
 
     @Test
-    public void transform_shouldHandleMissingAssertionSubjectsCurrentAddress() {
+    public void shouldHandleMissingAssertionSubjectsCurrentAddress() {
         IdentityProviderAssertion assertion = anIdentityProviderAssertion().withMatchingDataset(MatchingDatasetBuilder.aFullyPopulatedMatchingDataset().withCurrentAddresses(new ArrayList<Address>()).build()).build();
 
         transformer.transform(assertion);
@@ -222,7 +222,7 @@ public class IdentityProviderAssertionToAssertionTransformerTest {
     }
 
     @Test
-    public void transform_shouldTransformAssertionSubjectsPreviousAddresses() {
+    public void shouldTransformAssertionSubjectsPreviousAddresses() {
         Address previousAddressOne = new AddressFactory().create(singletonList("221b Baker St."), "W4 1SH", null, null, DateTime.parse("2007-09-27"), DateTime.parse("2007-09-28"), true);
         Address previousAddressTwo = new AddressFactory().create(singletonList("1 Goose Lane"), "M1 2FG", null, null, DateTime.parse("2006-09-29"), DateTime.parse("2006-09-28"), false);
         IdentityProviderAssertion assertion = anIdentityProviderAssertion().withMatchingDataset(MatchingDatasetBuilder.aMatchingDataset().withPreviousAddresses(asList(previousAddressOne, previousAddressTwo)).build()).build();
@@ -233,7 +233,7 @@ public class IdentityProviderAssertionToAssertionTransformerTest {
     }
 
     @Test
-    public void transform_shouldHandleMissingAssertionSubjectsPreviousAddress() {
+    public void shouldHandleMissingAssertionSubjectsPreviousAddress() {
         IdentityProviderAssertion assertion = anIdentityProviderAssertion().withMatchingDataset(MatchingDatasetBuilder.aFullyPopulatedMatchingDataset().withPreviousAddresses(new ArrayList<Address>()).build()).build();
 
         transformer.transform(assertion);
@@ -242,7 +242,7 @@ public class IdentityProviderAssertionToAssertionTransformerTest {
     }
 
     @Test
-    public void transform_shouldTransformAssertionId() {
+    public void shouldTransformAssertionId() {
         String assertionId = "assertion-id";
         IdentityProviderAssertion assertion = anIdentityProviderAssertion().withId(assertionId).build();
 
@@ -252,7 +252,7 @@ public class IdentityProviderAssertionToAssertionTransformerTest {
     }
 
     @Test
-    public void transform_shouldTransformAssertionIssuer() {
+    public void shouldTransformAssertionIssuer() {
         String assertionIssuerId = "assertion issuer";
         IdentityProviderAssertion assertion = anIdentityProviderAssertion().withIssuer(assertionIssuerId).build();
 
@@ -262,7 +262,7 @@ public class IdentityProviderAssertionToAssertionTransformerTest {
     }
 
     @Test
-    public void transform_shouldTransformAssertionIssuerInstance() {
+    public void shouldTransformAssertionIssuerInstance() {
         DateTime issueInstant = DateTime.parse("2012-12-31T12:34:56Z");
         IdentityProviderAssertion assertion = anIdentityProviderAssertion().withIssueInstant(issueInstant).build();
 
@@ -272,7 +272,7 @@ public class IdentityProviderAssertionToAssertionTransformerTest {
     }
 
     @Test
-    public void transform_shouldTransformLevelOfAssurance() {
+    public void shouldTransformLevelOfAssurance() {
         AuthnContext levelOfAssurance = AuthnContext.LEVEL_2;
         IdentityProviderAuthnStatement authnStatement = anIdentityProviderAuthnStatement()
                 .withAuthnContext(levelOfAssurance)
@@ -287,7 +287,7 @@ public class IdentityProviderAssertionToAssertionTransformerTest {
     }
 
     @Test
-    public void transform_shouldTransformFraudDetailsEventId() {
+    public void shouldTransformFraudDetailsEventId() {
         String reference = "reference";
         FraudAuthnDetails fraudAuthnDetails = new FraudAuthnDetails(reference, "IT01");
         IdentityProviderAssertion assertion = anIdentityProviderAssertion()
@@ -300,7 +300,7 @@ public class IdentityProviderAssertionToAssertionTransformerTest {
     }
 
     @Test
-    public void transform_shouldTransformFraudDetailsIndicatorIfPresent() {
+    public void houldTransformFraudDetailsIndicatorIfPresent() {
         String indicator = "FI01";
         FraudAuthnDetails fraudAuthnDetails = new FraudAuthnDetails("ref", "FI01");
         IdentityProviderAssertion assertion = anIdentityProviderAssertion()
@@ -313,7 +313,7 @@ public class IdentityProviderAssertionToAssertionTransformerTest {
     }
 
     @Test
-    public void transform_shouldTransformIpAddress() {
+    public void shouldTransformIpAddress() {
         String ipAddressValue = "9.9.8.8";
         IdentityProviderAssertion assertion = anIdentityProviderAssertion()
                 .withAuthnStatement(anIdentityProviderAuthnStatement().withUserIpAddress(new IpAddress(ipAddressValue)).build())
