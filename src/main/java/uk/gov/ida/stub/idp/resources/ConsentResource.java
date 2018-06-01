@@ -17,8 +17,10 @@ import uk.gov.ida.stub.idp.views.ConsentView;
 import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -75,6 +77,7 @@ public class ConsentResource {
 
     @POST
     public Response consent(
+            @Context HttpServletRequest httpServletRequest,
             @PathParam(Urls.IDP_ID_PARAM) @NotNull String idpName,
             @FormParam(Urls.SUBMIT_PARAM) @NotNull String submitButtonValue,
             @FormParam(Urls.RANDOMISE_PID_PARAM) boolean randomisePid,
@@ -85,7 +88,7 @@ public class ConsentResource {
 
         switch (submitButtonValue) {
             case I_AGREE_SUBMIT_VALUE:
-                return samlResponseRedirectViewFactory.sendSamlMessage(successAuthnResponseService.getSuccessResponse(randomisePid, "TODO: Get IP ADDRESS from request", idpName, session));
+                return samlResponseRedirectViewFactory.sendSamlMessage(successAuthnResponseService.getSuccessResponse(randomisePid, httpServletRequest.getRemoteAddr(), idpName, session));
             case I_REFUSE_SUBMIT_VALUE:
                 return samlResponseRedirectViewFactory.sendSamlMessage(nonSuccessAuthnResponseService.generateNoAuthnContext(session.getIdaAuthnRequestFromHub().getId(), idpName, session.getRelayState()));
 
