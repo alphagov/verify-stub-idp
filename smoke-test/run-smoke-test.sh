@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 set -eu
 
+trap 'docker-compose down' EXIT
+
 docker-compose up -d selenium-hub
 docker-compose build smoke-tester
 docker-compose run \
@@ -10,5 +12,3 @@ docker-compose run \
                -e IDP_PASSWORD=$IDP_PASSWORD \
                smoke-tester \
                paas_smoke_test.rb
-docker-compose down
-
