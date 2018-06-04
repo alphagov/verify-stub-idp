@@ -90,7 +90,7 @@ metadata:
 europeanIdentity:
   enabled: ${EUROPEAN_IDENTITY_ENABLED:-false}
   hubConnectorEntityId: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}
-  stubCountryBaseUrl: https://${STUB_IDP_HOSTNAME:-DefaultNotUsed}
+  stubCountryBaseUrl: ${STUB_IDP_HOSTNAME:-DefaultNotUsed}
   metadata:
     jerseyClientName: connector-metadata-client
     client:
