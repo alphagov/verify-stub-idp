@@ -10,7 +10,6 @@ describe 'User verifies with Stub IDP on PaaS', type: :feature do
 
     visit rp_url
     click_button 'Start'
-    click_link 'Use GOV.UK Verify'
     choose 'start_form_selection_false'
     click_button 'Continue'
     find("button[name*=#{idp_name}]").click
