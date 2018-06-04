@@ -1,8 +1,0 @@
-version: '3'
-
-services:
-  selenium-hub:
-    image: selenium/standalone-firefox
-
-  smoke-tester:
-    build: .
