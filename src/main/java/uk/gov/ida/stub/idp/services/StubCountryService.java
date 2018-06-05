@@ -1,10 +1,11 @@
 package uk.gov.ida.stub.idp.services;
 
 import org.joda.time.LocalDate;
-import uk.gov.ida.saml.core.domain.Gender;
-import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
-import uk.gov.ida.stub.idp.domain.EidasAddress;
+import org.joda.time.format.DateTimeFormat;
+import uk.gov.ida.saml.core.domain.AuthnContext;
+import uk.gov.ida.stub.idp.domain.DatabaseEidasUser;
 import uk.gov.ida.stub.idp.domain.EidasUser;
+import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 import uk.gov.ida.stub.idp.exceptions.IncompleteRegistrationException;
 import uk.gov.ida.stub.idp.exceptions.InvalidDateException;
 import uk.gov.ida.stub.idp.exceptions.InvalidSessionIdException;
@@ -31,19 +32,47 @@ public class StubCountryService {
 
     public void attachStubCountryToSession(String schemeName, String username, String password, EidasSession session) throws InvalidUsernameOrPasswordException, InvalidSessionIdException {
         StubCountry stubCountry = stubCountryRepository.getStubCountryWithFriendlyId(schemeName);
-        Optional<DatabaseIdpUser> user = stubCountry.getUser(username, password);
+        Optional<DatabaseEidasUser> user = stubCountry.getUser(username, password);
         attachEidasUserToSession(user, session);
     }
 
     public void createAndAttachIdpUserToSession(String countryName,
                                                 String username, String password,
-                                                EidasSession idpSessionId) throws InvalidSessionIdException, IncompleteRegistrationException, InvalidDateException, UsernameAlreadyTakenException, InvalidUsernameOrPasswordException {
-//        StubCountry stubCountry = stubCountryRepository.getStubCountryWithFriendlyId(countryName);
-//        EidasUser user = createUserInIdp(username, password, stubCountry);
-//        attachEidasUserToSession(Optional.ofNullable(user), idpSessionId);
+                                                EidasSession idpSessionId,
+                                                String firstName,
+                                                String surname,
+                                                String dob,
+                                                AuthnContext levelOfAssurance) throws InvalidSessionIdException, InvalidUsernameOrPasswordException, InvalidDateException, IncompleteRegistrationException, UsernameAlreadyTakenException {
+        StubCountry stubCountry = stubCountryRepository.getStubCountryWithFriendlyId(countryName);
+        DatabaseEidasUser user = createEidasUserInStubCountry(username, password, stubCountry, firstName, surname, dob, levelOfAssurance);
+        attachEidasUserToSession(Optional.of(user), idpSessionId);
     }
 
-    private void attachEidasUserToSession(Optional<DatabaseIdpUser> user, EidasSession session) throws InvalidUsernameOrPasswordException, InvalidSessionIdException {
+    private DatabaseEidasUser createEidasUserInStubCountry(String username, String password,
+                                                           StubCountry stubCountry, String firstName, String surname, String dob,
+                                                           AuthnContext levelOfAssurance) throws InvalidDateException, IncompleteRegistrationException, UsernameAlreadyTakenException {
+
+        if (!isMandatoryDataPresent(firstName, surname, dob, username, password)) {
+            throw new IncompleteRegistrationException();
+        }
+
+        LocalDate parsedDateOfBirth;
+        try {
+            parsedDateOfBirth = LocalDate.parse(dob, DateTimeFormat.forPattern("yyyy-MM-dd"));
+        } catch (IllegalArgumentException e) {
+            throw new InvalidDateException();
+        }
+
+        boolean usernameAlreadyTaken = stubCountry.userExists(username);
+        if (usernameAlreadyTaken) {
+            throw new UsernameAlreadyTakenException();
+        }
+
+        return stubCountry.createUser(username, password, createMdsValue(firstName), createMdsValue(surname), createMdsValue(parsedDateOfBirth), levelOfAssurance);
+
+    }
+
+    private void attachEidasUserToSession(Optional<DatabaseEidasUser> user, EidasSession session) throws InvalidUsernameOrPasswordException, InvalidSessionIdException {
         if (!user.isPresent()) {
             throw new InvalidUsernameOrPasswordException();
         }
@@ -54,60 +83,35 @@ public class StubCountryService {
         if (!session.getEidasUser().isPresent()) {
             throw new InvalidSessionIdException();
         }
-        
+
         sessionRepository.updateSession(session.getSessionId(), session);
     }
 
-    private EidasUser createEidasUser(Optional<DatabaseIdpUser> user) {
+    private EidasUser createEidasUser(Optional<DatabaseEidasUser> user) {
 
         EidasUser eidasUser = new EidasUser(
-                getEidasFirstnames(user),
-                getEidasSurnames(user),
-                getPersistentId(user),
-                getEidasDateOfBirths(user),
-                getEidasAddress(user),
-                getGender(user)
+                user.get().getFirstname().getValue(),
+                user.get().getSurname().getValue(),
+                user.get().getPersistentId(),
+                user.get().getDateOfBirth().getValue(),
+                Optional.empty(),
+                Optional.empty()
         );
 
         return eidasUser;
     }
 
-    private String getEidasFirstnames(Optional<DatabaseIdpUser> user) {
-        return user.get().getFirstnames().get(0).getValue();
+    private <T> MatchingDatasetValue<T> createMdsValue(T value) {
+        return new MatchingDatasetValue<>(value, null, null, true);
     }
 
-    private String getEidasSurnames(Optional<DatabaseIdpUser> user) {
-        return user.get().getSurnames().get(0).getValue();
-    }
+    private boolean isMandatoryDataPresent(String... args) {
+        for (String arg : args) {
+            if (arg == null || arg.trim().length() == 0) {
+                return false;
+            }
+        }
 
-    private String getPersistentId(Optional<DatabaseIdpUser> user) {
-        return user.get().getPersistentId();
-    }
-
-    private LocalDate getEidasDateOfBirths(Optional<DatabaseIdpUser> user) {
-        return user.get().getDateOfBirths().get(0).getValue();
-    }
-
-    private Optional<EidasAddress> getEidasAddress(Optional<DatabaseIdpUser> user) {
-
-        return user.get().getAddresses()
-                .stream()
-                .map(Optional::ofNullable)
-                .findFirst()
-                .map(t -> new EidasAddress(
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                t.get().getLines().get(0),
-                "",
-                t.get().getPostCode().get()
-                ));
-    }
-
-    private Optional<Gender> getGender(Optional<DatabaseIdpUser> user) {
-        return user.flatMap(m -> m.getGender()).flatMap(m -> Optional.ofNullable(m.getValue()));
+        return true;
     }
 }

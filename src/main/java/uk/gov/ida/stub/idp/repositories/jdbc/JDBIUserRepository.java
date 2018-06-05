@@ -1,6 +1,7 @@
 package uk.gov.ida.stub.idp.repositories.jdbc;
 
 import org.jdbi.v3.core.Jdbi;
+import uk.gov.ida.stub.idp.domain.DatabaseEidasUser;
 import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.repositories.UserRepository;
 import uk.gov.ida.stub.idp.repositories.jdbc.rowmappers.UserRowMapper;
@@ -39,7 +40,7 @@ public class JDBIUserRepository implements UserRepository {
         );
 
         return users.stream()
-            .map(userMapper::mapTo)
+            .map(userMapper::mapToIdpUser)
             .collect(toList());
     }
 
@@ -62,6 +63,24 @@ public class JDBIUserRepository implements UserRepository {
     }
 
     @Override
+    public void addOrUpdateEidasUserForStubCountry(String stubCountryName, DatabaseEidasUser eidasUser) {
+        deleteUserFromIdp(stubCountryName, eidasUser.getUsername());
+
+        User user = userMapper.mapFrom(stubCountryName, eidasUser);
+
+        jdbi.withHandle(handle ->
+                handle.createUpdate(
+                        "INSERT INTO users(username, password, identity_provider_friendly_id, \"data\") " +
+                                "VALUES (:username, :password, :idpFriendlyId, to_json(:json))")
+                        .bind("username", user.getUsername())
+                        .bind("password", user.getPassword())
+                        .bind("idpFriendlyId", stubCountryName)
+                        .bind("json", user.getData())
+                        .execute()
+        );
+    }
+
+    @Override
     public void deleteUserFromIdp(String idpFriendlyId, String username) {
         jdbi.withHandle(handle ->
             handle.createUpdate(
@@ -72,5 +91,21 @@ public class JDBIUserRepository implements UserRepository {
                 .bind("username", username)
                 .execute()
         );
+    }
+
+    @Override
+    public Collection<DatabaseEidasUser> getUsersForCountry(String friendlyName) {
+        List<User> users = jdbi.withHandle(handle ->
+                handle.createQuery(
+                        "select * from users " +
+                                "where identity_provider_friendly_id = :idpFriendlyName")
+                        .bind("idpFriendlyName", friendlyName)
+                        .map(new UserRowMapper())
+                        .list()
+        );
+
+        return users.stream()
+                .map(userMapper::mapToEidasUser)
+                .collect(toList());
     }
 }

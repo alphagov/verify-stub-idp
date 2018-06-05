@@ -1,8 +1,12 @@
 package uk.gov.ida.stub.idp.repositories;
 
-import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
+import org.joda.time.LocalDate;
+import uk.gov.ida.saml.core.domain.AuthnContext;
+import uk.gov.ida.stub.idp.domain.DatabaseEidasUser;
+import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public class StubCountry {
 
@@ -20,13 +24,17 @@ public class StubCountry {
         this.allIdpsUserRepository = allIdpsUserRepository;
     }
 
-    public Optional<DatabaseIdpUser> getUser(String username, String password) {
-        Optional<DatabaseIdpUser> userForStubCountry = allIdpsUserRepository.getUserForIdp(friendlyId, username);
+    public Optional<DatabaseEidasUser> getUser(String username, String password) {
+        Optional<DatabaseEidasUser> userForStubCountry = allIdpsUserRepository.getUserForCountry(friendlyId, username);
         if (userForStubCountry.isPresent() && userForStubCountry.get().getPassword().equals(password)) {
             return userForStubCountry;
         }
 
         return Optional.empty();
+    }
+
+    public DatabaseEidasUser createUser(String username, String password, MatchingDatasetValue<String> firstName, MatchingDatasetValue<String> surname, MatchingDatasetValue<LocalDate> dateOfBirth, AuthnContext levelOfAssurance){
+        return allIdpsUserRepository.createUserForStubCountry(friendlyId, UUID.randomUUID().toString(), username, password, firstName, surname, dateOfBirth, levelOfAssurance);
     }
 
     public String getFriendlyId() {
@@ -43,5 +51,9 @@ public class StubCountry {
 
     public String getIssuerId() {
         return issuerId;
+    }
+
+    public boolean userExists(String username) {
+        return allIdpsUserRepository.containsUserForIdp(friendlyId, username);
     }
 }

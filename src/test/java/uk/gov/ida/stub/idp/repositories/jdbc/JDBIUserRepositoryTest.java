@@ -5,17 +5,25 @@ import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import org.jdbi.v3.core.Jdbi;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import uk.gov.ida.stub.idp.domain.DatabaseEidasUser;
 import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
+import uk.gov.ida.stub.idp.domain.EidasUser;
 import uk.gov.ida.stub.idp.repositories.jdbc.migrations.DatabaseMigrationRunner;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import static org.apache.commons.lang3.StringEscapeUtils.escapeJson;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static uk.gov.ida.stub.idp.builders.IdpUserBuilder.anIdpUser;
 
 public class JDBIUserRepositoryTest {
@@ -110,6 +118,21 @@ public class JDBIUserRepositoryTest {
         List<DatabaseIdpUser> idpUsers = new ArrayList<>(repository.getUsersForIdp("some-idp-friendly-id"));
 
         assertThat(idpUsers).size().isEqualTo(2);
+    }
+
+    @Test
+    public void addOrUpdateUserForStubCountryShouldAddRecordIfUserDoesNotExist(){
+        ensureNoUserExistsFor("stub-country-friendly-id");
+
+        DatabaseEidasUser eidasUser = new DatabaseEidasUser("some-username",null, "some-password", null, null, null, null);
+
+        repository.addOrUpdateEidasUserForStubCountry("stub-country-friendly-id", eidasUser);
+
+        Collection<DatabaseEidasUser> users = repository.getUsersForCountry("stub-country-friendly-id");
+
+        assertThat(users).size().isEqualTo(1);
+        assertThat(users).contains(eidasUser);
+
     }
 
     private void ensureNoUserExistsFor(String idpFriendlyId) {

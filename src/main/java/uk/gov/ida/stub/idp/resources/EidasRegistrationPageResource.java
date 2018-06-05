@@ -129,8 +129,8 @@ public class EidasRegistrationPageResource {
             }
             case Register: {
                 try {
-                    stubCountryService.createAndAttachIdpUserToSession(countryName, username, password, session.get());
-                    return Response.seeOther(UriBuilder.fromPath(Urls.CONSENT_RESOURCE)
+                    stubCountryService.createAndAttachIdpUserToSession(countryName, username, password, session.get(), firstname, surname, dateOfBirth, levelOfAssurance);
+                    return Response.seeOther(UriBuilder.fromPath(Urls.EIDAS_CONSENT_RESOURCE)
                             .build(countryName))
                             .build();
                 } catch (InvalidSessionIdException e) {
@@ -152,7 +152,7 @@ public class EidasRegistrationPageResource {
     }
 
     private Response createErrorResponse(ErrorMessageType errorMessage, String idpName) {
-        URI uri = UriBuilder.fromPath(Urls.REGISTER_RESOURCE)
+        URI uri = UriBuilder.fromPath(Urls.EIDAS_REGISTER_RESOURCE)
                 .queryParam(Urls.ERROR_MESSAGE_PARAM, errorMessage)
                 .build(idpName);
         return Response.seeOther(uri).build();

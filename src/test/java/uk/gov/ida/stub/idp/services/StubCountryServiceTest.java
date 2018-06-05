@@ -7,14 +7,15 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.ida.common.SessionId;
-import uk.gov.ida.saml.core.domain.AddressFactory;
 import uk.gov.ida.saml.core.domain.AuthnContext;
-import uk.gov.ida.saml.core.domain.Gender;
-import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
+import uk.gov.ida.stub.idp.domain.DatabaseEidasUser;
 import uk.gov.ida.stub.idp.domain.EidasAuthnRequest;
 import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
+import uk.gov.ida.stub.idp.exceptions.IncompleteRegistrationException;
+import uk.gov.ida.stub.idp.exceptions.InvalidDateException;
 import uk.gov.ida.stub.idp.exceptions.InvalidSessionIdException;
 import uk.gov.ida.stub.idp.exceptions.InvalidUsernameOrPasswordException;
+import uk.gov.ida.stub.idp.exceptions.UsernameAlreadyTakenException;
 import uk.gov.ida.stub.idp.repositories.EidasSession;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.repositories.StubCountry;
@@ -26,11 +27,16 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StubCountryServiceTest {
 
+    private final String RELAY_STATE = "relayState";
     private static final String SCHEME_ID = "scheme-id";
     private static final String PASSWORD = "password";
     private static final String USERNAME = "username";
@@ -38,7 +44,7 @@ public class StubCountryServiceTest {
 
     private StubCountryService stubCountryService;
 
-    private Optional<DatabaseIdpUser> user;
+    private Optional<DatabaseEidasUser> user;
 
     private EidasSession session;
 
@@ -79,17 +85,26 @@ public class StubCountryServiceTest {
         stubCountryService.attachStubCountryToSession(SCHEME_ID, USERNAME, PASSWORD, session);
     }
 
-    private Optional<DatabaseIdpUser> newUser() {
-        return Optional.ofNullable(new DatabaseIdpUser(
+    @Test
+    public void shouldHaveStatusSuccessResponseWhenUserRegisters() throws InvalidSessionIdException, IncompleteRegistrationException, InvalidDateException, UsernameAlreadyTakenException, InvalidUsernameOrPasswordException {
+        EidasSession session = new EidasSession(SESSION_ID, eidasAuthnRequest, "test-relay-state", Arrays.asList(), Arrays.asList(), Optional.empty(), Optional.empty());
+        when(sessionRepository.get(SESSION_ID)).thenReturn(Optional.ofNullable(new EidasSession(SESSION_ID, eidasAuthnRequest, RELAY_STATE, null, null, null, null)));
+        when(stubCountryRepository.getStubCountryWithFriendlyId(SCHEME_ID)).thenReturn(stubCountry);
+        when(stubCountry.createUser(eq(USERNAME), eq(PASSWORD), any(), any(), any(), any())).thenReturn(newUser().get());
+
+        stubCountryService.createAndAttachIdpUserToSession(SCHEME_ID, USERNAME, "password", session, "bob", "jones", "2000-01-01", AuthnContext.LEVEL_2);
+
+        verify(sessionRepository, times(1)).updateSession(eq(SESSION_ID), any());
+    }
+
+    private Optional<DatabaseEidasUser> newUser() {
+        return Optional.ofNullable(new DatabaseEidasUser(
                 "stub-country",
                 UUID.randomUUID().toString(),
                 "bar",
-                Collections.singletonList(createMdsValue("Jack")),
-                Collections.emptyList(),
-                Collections.singletonList(createMdsValue("Griffin")),
-                Optional.ofNullable(createMdsValue(Gender.NOT_SPECIFIED)),
-                Collections.singletonList(createMdsValue(LocalDate.parse("1983-06-21"))),
-                Collections.singletonList(new AddressFactory().create(Arrays.asList("10 London Road", "London"), "1A 2BC", null, null, null, null, true)),
+                createMdsValue("Jack"),
+                createMdsValue("Griffin"),
+                createMdsValue(LocalDate.parse("1983-06-21")),
                 AuthnContext.LEVEL_2));
     }
 

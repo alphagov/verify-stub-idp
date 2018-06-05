@@ -100,7 +100,7 @@ public class EidasRegistrationPageResourceTest {
         final Response response = resource.post(IDP_NAME, "bob", "", "jones", "", "2000-01-01", "username", "password", LEVEL_2, Register, SESSION_ID);
 
         assertThat(response.getStatus()).isEqualTo(303);
-        verify(idpUserService).createAndAttachIdpUserToSession(eq(IDP_NAME), anyString(), anyString(), eq(eidasSession));
+        verify(idpUserService).createAndAttachIdpUserToSession(eq(IDP_NAME), anyString(), anyString(), eq(eidasSession), anyString(), anyString(), anyString(), eq(LEVEL_2));
     }
 
 

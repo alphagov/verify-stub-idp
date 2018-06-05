@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.saml.core.domain.Gender;
+import uk.gov.ida.stub.idp.domain.DatabaseEidasUser;
 import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 
@@ -64,12 +65,38 @@ public class AllIdpsUserRepository {
         return user;
     }
 
+    public DatabaseEidasUser createUserForStubCountry(String countryFriendlyName,
+                                                      String persistentId,
+                                                      String username,
+                                                      String password,
+                                                      MatchingDatasetValue<String> firstName,
+                                                      MatchingDatasetValue<String> surname,
+                                                      MatchingDatasetValue<LocalDate> dob,
+                                                      AuthnContext levelOfAssurance){
+        DatabaseEidasUser user = new DatabaseEidasUser(username, persistentId, password, firstName, surname, dob, levelOfAssurance);
+
+        addUserForStubCountry(countryFriendlyName, user);
+
+        return user;
+    }
+
     public Collection<DatabaseIdpUser> getAllUsersForIdp(String idpFriendlyName) {
         return userRepository.getUsersForIdp(idpFriendlyName);
     }
 
     public Optional<DatabaseIdpUser> getUserForIdp(String idpFriendlyName, String username) {
         final List<DatabaseIdpUser> matchingUsers = userRepository.getUsersForIdp(idpFriendlyName)
+                .stream()
+                .filter(u -> u.getUsername().equalsIgnoreCase(username))
+                .collect(Collectors.toList());
+        if (!matchingUsers.isEmpty()) {
+            return Optional.ofNullable(matchingUsers.get(0));
+        }
+        return Optional.empty();
+    }
+
+    public Optional<DatabaseEidasUser> getUserForCountry(String countryFriendlyName, String username) {
+        final List<DatabaseEidasUser> matchingUsers = userRepository.getUsersForCountry(countryFriendlyName)
                 .stream()
                 .filter(u -> u.getUsername().equalsIgnoreCase(username))
                 .collect(Collectors.toList());
@@ -86,6 +113,11 @@ public class AllIdpsUserRepository {
     private void addUserForIdp(String idpFriendlyName, DatabaseIdpUser user) {
         LOG.debug("Creating user " + user.getUsername() + " for IDP " + idpFriendlyName);
         userRepository.addOrUpdateUserForIdp(idpFriendlyName, user);
+   }
+
+   private void addUserForStubCountry(String stubCountryFriendlyName, DatabaseEidasUser user){
+       LOG.debug("Creating user " + user.getUsername() + " for Stub Country " + stubCountryFriendlyName);
+       userRepository.addOrUpdateEidasUserForStubCountry(stubCountryFriendlyName, user);
    }
 
     public void deleteUserFromIdp(String idpFriendlyName, String username) {
