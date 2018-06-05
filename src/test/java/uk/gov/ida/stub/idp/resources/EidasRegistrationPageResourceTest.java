@@ -8,18 +8,24 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.ida.common.SessionId;
+import uk.gov.ida.saml.hub.domain.EidasAuthnRequestFromHub;
 import uk.gov.ida.saml.hub.domain.IdaAuthnRequestFromHub;
+import uk.gov.ida.stub.idp.domain.EidasAuthnRequest;
 import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
 import uk.gov.ida.stub.idp.exceptions.IncompleteRegistrationException;
 import uk.gov.ida.stub.idp.exceptions.InvalidDateException;
 import uk.gov.ida.stub.idp.exceptions.InvalidSessionIdException;
 import uk.gov.ida.stub.idp.exceptions.InvalidUsernameOrPasswordException;
 import uk.gov.ida.stub.idp.exceptions.UsernameAlreadyTakenException;
+import uk.gov.ida.stub.idp.repositories.EidasSession;
+import uk.gov.ida.stub.idp.repositories.EidasSessionRepository;
 import uk.gov.ida.stub.idp.repositories.IdpSession;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
+import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
 import uk.gov.ida.stub.idp.services.IdpUserService;
 import uk.gov.ida.stub.idp.services.NonSuccessAuthnResponseService;
+import uk.gov.ida.stub.idp.services.StubCountryService;
 import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
 
 import javax.ws.rs.core.Response;
@@ -37,34 +43,35 @@ import static uk.gov.ida.stub.idp.domain.SubmitButtonValue.Cancel;
 import static uk.gov.ida.stub.idp.domain.SubmitButtonValue.Register;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RegistrationPageResourceTest {
+public class EidasRegistrationPageResourceTest {
 
     private final String IDP_NAME = "an idp name";
     private final SessionId SESSION_ID = SessionId.createNewSessionId();
     private final String RELAY_STATE = "relayState";
     private final String SAML_REQUEST_ID = "samlRequestId";
+    private EidasSession eidasSession;
 
     @BeforeClass
     public static void doALittleHackToMakeGuicierHappyForSomeReason() {
         JerseyGuiceUtils.reset();
     }
 
-    private RegistrationPageResource resource;
+    private EidasRegistrationPageResource resource;
 
     @Mock
-    private IdpStubsRepository idpStubsRepository;
+    private StubCountryRepository idpStubsRepository;
     @Mock
-    private IdpUserService idpUserService;
+    private StubCountryService idpUserService;
     @Mock
     private NonSuccessAuthnResponseService nonSuccessAuthnResponseService;
     @Mock
-    private SessionRepository<IdpSession> sessionRepository;
+    private EidasSessionRepository sessionRepository;
     @Mock
-    private IdaAuthnRequestFromHub idaAuthnRequestFromHub;
+    private EidasAuthnRequest idaAuthnRequestFromHub;
 
     @Before
     public void createResource() {
-        resource = new RegistrationPageResource(
+        resource = new EidasRegistrationPageResource(
                 idpStubsRepository,
                 idpUserService,
                 new SamlResponseRedirectViewFactory(),
@@ -72,16 +79,17 @@ public class RegistrationPageResourceTest {
                 sessionRepository
         );
 
-        when(sessionRepository.get(SESSION_ID)).thenReturn(Optional.ofNullable(new IdpSession(SESSION_ID, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null)));
-        when(sessionRepository.deleteAndGet(SESSION_ID)).thenReturn(Optional.ofNullable(new IdpSession(SESSION_ID, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null)));
-        when(idaAuthnRequestFromHub.getId()).thenReturn(SAML_REQUEST_ID);
+        eidasSession = new EidasSession(SESSION_ID, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null);
+        when(sessionRepository.get(SESSION_ID)).thenReturn(Optional.ofNullable(eidasSession));
+        when(sessionRepository.deleteAndGet(SESSION_ID)).thenReturn(Optional.ofNullable(new EidasSession(SESSION_ID, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null)));
+        when(idaAuthnRequestFromHub.getRequestId()).thenReturn(SAML_REQUEST_ID);
     }
 
     @Test
     public void shouldHaveStatusAuthnCancelledResponseWhenUserCancels(){
         when(nonSuccessAuthnResponseService.generateAuthnCancel(anyString(), anyString(), eq(RELAY_STATE))).thenReturn(new SamlResponseFromValue<String>("saml", Function.identity(), RELAY_STATE, URI.create("uri")));
 
-        resource.post(IDP_NAME, null, null, null, null, null, null, null, null, null, null, Cancel, SESSION_ID);
+        resource.post(IDP_NAME, null, null, null, null, null, null, null, null, Cancel, SESSION_ID);
 
         verify(nonSuccessAuthnResponseService).generateAuthnCancel(IDP_NAME, SAML_REQUEST_ID, RELAY_STATE);
     }
@@ -89,10 +97,10 @@ public class RegistrationPageResourceTest {
     @Test
     public void shouldHaveStatusSuccessResponseWhenUserRegisters() throws InvalidSessionIdException, IncompleteRegistrationException, InvalidDateException, UsernameAlreadyTakenException, InvalidUsernameOrPasswordException {
 
-        final Response response = resource.post(IDP_NAME, "bob", "jones", "address line 1", "address line 2", "address town", "address postcode", "2000-01-01", "username", "password", LEVEL_2, Register, SESSION_ID);
+        final Response response = resource.post(IDP_NAME, "bob", "", "jones", "", "2000-01-01", "username", "password", LEVEL_2, Register, SESSION_ID);
 
         assertThat(response.getStatus()).isEqualTo(303);
-        verify(idpUserService).createAndAttachIdpUserToSession(eq(IDP_NAME), anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), eq(LEVEL_2), anyString(), anyString(), anyString(), eq(SESSION_ID));
+        verify(idpUserService).createAndAttachIdpUserToSession(eq(IDP_NAME), anyString(), anyString(), eq(eidasSession));
     }
 
 

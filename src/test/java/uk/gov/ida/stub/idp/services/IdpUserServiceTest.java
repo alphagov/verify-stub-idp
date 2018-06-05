@@ -87,7 +87,7 @@ public class IdpUserServiceTest {
         when(idp.createUser(any(), any(), any(), any(), any(), any(), any(), eq(USERNAME), eq(PASSWORD), any())).thenReturn(mock(DatabaseIdpUser.class));
         when(sessionRepository.createSession(session)).thenReturn(SESSION_ID);
 
-        idpUserService.attachIdpUserToSession(IDP_NAME, "bob", "jones", "address line 1", "address line 2", "address town", "address postcode", AuthnContext.LEVEL_2, "2000-01-01", USERNAME, "password", SESSION_ID);
+        idpUserService.createAndAttachIdpUserToSession(IDP_NAME, "bob", "jones", "address line 1", "address line 2", "address town", "address postcode", AuthnContext.LEVEL_2, "2000-01-01", USERNAME, "password", SESSION_ID);
 
         verify(sessionRepository, times(1)).updateSession(eq(SESSION_ID), any());
     }

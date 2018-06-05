@@ -24,7 +24,9 @@ public interface Urls {
     String ADDRESS_LINE2_PARAM = "addressLine2";
     String ADDRESS_LINE1_PARAM = "addressLine1";
     String SURNAME_PARAM = "surname";
+    String NON_LATIN_SURNAME_PARAM = "nonLatinSurname";
     String FIRSTNAME_PARAM = "firstname";
+    String NON_LATIN_FIRSTNAME_PARAM = "nonLatinFirstname";
     String KNOWN_HINTS_PARAM = "known_hint";
     String UNKNOWN_HINTS_PARAM = "unknown_hint";
     String RANDOMISE_PID_PARAM = "randomPid";
@@ -45,6 +47,7 @@ public interface Urls {
     String LOGIN_REQUESTER_ERROR_PATH = "requester-error";
 
     String REGISTER_RESOURCE = "/{"+IDP_ID_PARAM+"}/register";
+    String EIDAS_REGISTER_RESOURCE = "/eidas/{"+IDP_ID_PARAM+"}/register";
     String LOGIN_AUTHN_PENDING_PATH = "authn-pending";
     String DEBUG_RESOURCE = "/{"+IDP_ID_PARAM+"}/debug";
     String CONSENT_RESOURCE = "/{"+IDP_ID_PARAM+"}/consent";

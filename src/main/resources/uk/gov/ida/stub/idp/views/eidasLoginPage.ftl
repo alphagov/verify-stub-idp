@@ -1,5 +1,15 @@
 <#-- @ftlvariable name="" type="uk.gov.ida.stub.idp.views.EidasLoginPageView" -->
 <div class="main">
+    <div class="tabs">
+        <ul>
+            <li class="on">
+                <span id="tab-login" class="tab-text">Login</span>
+            </li>
+            <li>
+                <a id="tab-register" class="tab-text" href="/eidas/${idpId}/register">Register</a>
+            </li>
+        </ul>
+    </div>
     <form action="/eidas/${idpId}/login" class="login" method="post">
         <fieldset>
             <legend>European ID Login</legend>

@@ -5,8 +5,11 @@ import uk.gov.ida.saml.core.domain.Gender;
 import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.EidasAddress;
 import uk.gov.ida.stub.idp.domain.EidasUser;
+import uk.gov.ida.stub.idp.exceptions.IncompleteRegistrationException;
+import uk.gov.ida.stub.idp.exceptions.InvalidDateException;
 import uk.gov.ida.stub.idp.exceptions.InvalidSessionIdException;
 import uk.gov.ida.stub.idp.exceptions.InvalidUsernameOrPasswordException;
+import uk.gov.ida.stub.idp.exceptions.UsernameAlreadyTakenException;
 import uk.gov.ida.stub.idp.repositories.EidasSession;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.repositories.StubCountry;
@@ -30,6 +33,14 @@ public class StubCountryService {
         StubCountry stubCountry = stubCountryRepository.getStubCountryWithFriendlyId(schemeName);
         Optional<DatabaseIdpUser> user = stubCountry.getUser(username, password);
         attachEidasUserToSession(user, session);
+    }
+
+    public void createAndAttachIdpUserToSession(String countryName,
+                                                String username, String password,
+                                                EidasSession idpSessionId) throws InvalidSessionIdException, IncompleteRegistrationException, InvalidDateException, UsernameAlreadyTakenException, InvalidUsernameOrPasswordException {
+//        StubCountry stubCountry = stubCountryRepository.getStubCountryWithFriendlyId(countryName);
+//        EidasUser user = createUserInIdp(username, password, stubCountry);
+//        attachEidasUserToSession(Optional.ofNullable(user), idpSessionId);
     }
 
     private void attachEidasUserToSession(Optional<DatabaseIdpUser> user, EidasSession session) throws InvalidUsernameOrPasswordException, InvalidSessionIdException {
