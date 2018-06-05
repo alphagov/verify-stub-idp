@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  stub-idp:
+    build: .
+    depends_on:
+      - stub-idp-db
+    env_file:
+      - local.env
+
+  stub-idp-db:
+    image: postgres
