@@ -62,7 +62,7 @@ public class EidasConsentResourceTest {
 
         EidasAuthnRequest eidasAuthnRequest = new EidasAuthnRequest("request-id", "issuer", "destination", "loa", Collections.emptyList());
         session = new EidasSession(SESSION_ID, eidasAuthnRequest, null, null, null, null, null);
-        EidasUser user = new EidasUser("Jane", "Doe", "pid", new LocalDate(1990, 1, 2), null, null);
+        EidasUser user = new EidasUser("Jane", Optional.empty(), "Doe", Optional.empty(), "pid", new LocalDate(1990, 1, 2), null, null);
         session.setEidasUser(user);
         when(sessionRepository.get(SESSION_ID)).thenReturn(Optional.of(session));
         when(sessionRepository.deleteAndGet(SESSION_ID)).thenReturn(Optional.of(session));

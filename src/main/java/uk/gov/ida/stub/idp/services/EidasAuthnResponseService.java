@@ -33,6 +33,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.xml.namespace.QName;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -93,7 +94,7 @@ public class EidasAuthnResponseService {
                 .withDestination(hubUrl.toString())
                 .build();
 
-        return new SamlResponseFromValue<Response>(eidasInvalidResponse, eidasResponseTransformerProvider.getTransformer(), session.getRelayState(), hubUrl);
+        return new SamlResponseFromValue<>(eidasInvalidResponse, eidasResponseTransformerProvider.getTransformer(), session.getRelayState(), hubUrl);
     }
 
     private List<Attribute> getEidasAttributes(EidasSession session) {
@@ -101,8 +102,8 @@ public class EidasAuthnResponseService {
         EidasUser user = session.getEidasUser().get();
 
         List<Attribute> attributes = new ArrayList<>();
-        attributes.add(buildCurrentGivenNameAttribute(user.getFirstName()));
-        attributes.add(buildCurrentFamilyNameAttribute(user.getFamilyName()));
+        attributes.add(buildCurrentGivenNameAttribute(user.getFirstName(), user.getFirstNameNonLatin()));
+        attributes.add(buildCurrentFamilyNameAttribute(user.getFamilyName(), user.getFamilyNameNonLatin()));
         attributes.add(buildDateOfBirthAttribute(user.getDateOfBirth()));
         attributes.add(buildPersonIdentifierAttribute(user.getPersistentId()));
 
@@ -115,20 +116,37 @@ public class EidasAuthnResponseService {
         return attributes;
     }
 
-    private Attribute buildCurrentGivenNameAttribute(String name) {
-        XMLObjectBuilder<? extends CurrentGivenName> eidasTypeBuilder = (XMLObjectBuilder<? extends CurrentGivenName>) XMLObjectSupport.getBuilder(CurrentGivenName.TYPE_NAME);
+    private Attribute buildCurrentGivenNameAttribute(String name, Optional<String> givenNameNonLatinOptional) {
+        XMLObjectBuilder<? extends CurrentGivenName> eidasTypeBuilder =
+                (XMLObjectBuilder<? extends CurrentGivenName>) XMLObjectSupport.getBuilder(CurrentGivenName.TYPE_NAME);
         CurrentGivenName givenName = eidasTypeBuilder.buildObject(AttributeValue.DEFAULT_ELEMENT_NAME, CurrentGivenName.TYPE_NAME);
         givenName.setFirstName(name);
 
-        return buildAttribute(givenName, IdaConstants.Eidas_Attributes.FirstName.NAME, IdaConstants.Eidas_Attributes.FirstName.FRIENDLY_NAME);
+        CurrentGivenName[] currentGivenNames = givenNameNonLatinOptional.map(givenNameNonLatinValue -> {
+            CurrentGivenName givenNameNonLatin = eidasTypeBuilder.buildObject(AttributeValue.DEFAULT_ELEMENT_NAME, CurrentGivenName.TYPE_NAME);
+            givenNameNonLatin.setFirstName(givenNameNonLatinValue);
+            givenNameNonLatin.setIsLatinScript(false);
+            return new CurrentGivenName[]{givenName, givenNameNonLatin};
+        }).orElse(new CurrentGivenName[]{givenName});
+
+        return buildAttribute(IdaConstants.Eidas_Attributes.FirstName.NAME, IdaConstants.Eidas_Attributes.FirstName.FRIENDLY_NAME, currentGivenNames);
     }
 
-    private Attribute buildCurrentFamilyNameAttribute(String name) {
-        XMLObjectBuilder<? extends CurrentFamilyName> eidasTypeBuilder = (XMLObjectBuilder<? extends CurrentFamilyName>) XMLObjectSupport.getBuilder(CurrentFamilyName.TYPE_NAME);
+    private Attribute buildCurrentFamilyNameAttribute(String name, Optional<String> familyNameNonLatinOptional) {
+        XMLObjectBuilder<? extends CurrentFamilyName> eidasTypeBuilder =
+                (XMLObjectBuilder<? extends CurrentFamilyName>) XMLObjectSupport.getBuilder(CurrentFamilyName.TYPE_NAME);
         CurrentFamilyName familyName = eidasTypeBuilder.buildObject(AttributeValue.DEFAULT_ELEMENT_NAME, CurrentFamilyName.TYPE_NAME);
         familyName.setFamilyName(name);
 
-        return buildAttribute(familyName, IdaConstants.Eidas_Attributes.FamilyName.NAME, IdaConstants.Eidas_Attributes.FamilyName.FRIENDLY_NAME);
+        CurrentFamilyName[] currentFamilyNames = familyNameNonLatinOptional.map(familyNameNonLatinValue -> {
+            CurrentFamilyName familyNameNonLatin = eidasTypeBuilder.buildObject(AttributeValue.DEFAULT_ELEMENT_NAME, CurrentFamilyName.TYPE_NAME);
+            familyNameNonLatin.setFamilyName(familyNameNonLatinValue);
+            familyNameNonLatin.setIsLatinScript(false);
+            return new CurrentFamilyName[]{familyName, familyNameNonLatin};
+        }).orElse(new CurrentFamilyName[]{familyName});
+
+
+        return buildAttribute(IdaConstants.Eidas_Attributes.FamilyName.NAME, IdaConstants.Eidas_Attributes.FamilyName.FRIENDLY_NAME, currentFamilyNames);
     }
 
     private Attribute buildDateOfBirthAttribute(LocalDate dateOfBirth) {
@@ -136,7 +154,7 @@ public class EidasAuthnResponseService {
         DateOfBirth dateOfBirthAttributeValue = eidasTypeBuilder.buildObject(AttributeValue.DEFAULT_ELEMENT_NAME, DateOfBirth.TYPE_NAME);
         dateOfBirthAttributeValue.setDateOfBirth(dateOfBirth);
 
-        return buildAttribute(dateOfBirthAttributeValue, IdaConstants.Eidas_Attributes.DateOfBirth.NAME, IdaConstants.Eidas_Attributes.DateOfBirth.FRIENDLY_NAME);
+        return buildAttribute(IdaConstants.Eidas_Attributes.DateOfBirth.NAME, IdaConstants.Eidas_Attributes.DateOfBirth.FRIENDLY_NAME, dateOfBirthAttributeValue);
     }
 
     private Attribute buildPersonIdentifierAttribute(String pid) {
@@ -144,7 +162,7 @@ public class EidasAuthnResponseService {
         PersonIdentifier pidAttributeValue = eidasTypeBuilder.buildObject(AttributeValue.DEFAULT_ELEMENT_NAME, PersonIdentifier.TYPE_NAME);
         pidAttributeValue.setPersonIdentifier(pid);
 
-        return buildAttribute(pidAttributeValue, IdaConstants.Eidas_Attributes.PersonIdentifier.NAME, IdaConstants.Eidas_Attributes.PersonIdentifier.FRIENDLY_NAME);
+        return buildAttribute(IdaConstants.Eidas_Attributes.PersonIdentifier.NAME, IdaConstants.Eidas_Attributes.PersonIdentifier.FRIENDLY_NAME, pidAttributeValue);
     }
 
     private Attribute buildGenderAttribute(String value) {
@@ -152,7 +170,7 @@ public class EidasAuthnResponseService {
         Gender gender = eidasTypeBuilder.buildObject(AttributeValue.DEFAULT_ELEMENT_NAME, Gender.TYPE_NAME);
         gender.setValue(value);
 
-        return buildAttribute(gender, IdaConstants.Eidas_Attributes.Gender.NAME, IdaConstants.Eidas_Attributes.Gender.FRIENDLY_NAME);
+        return buildAttribute(IdaConstants.Eidas_Attributes.Gender.NAME, IdaConstants.Eidas_Attributes.Gender.FRIENDLY_NAME, gender);
     }
 
     private Attribute buildAddressAttribute(EidasAddress address) {
@@ -161,16 +179,16 @@ public class EidasAuthnResponseService {
 
         currentAddress.setCurrentAddress(address.toBase64EncodedSaml());
 
-        return buildAttribute(currentAddress, IdaConstants.Eidas_Attributes.CurrentAddress.NAME, IdaConstants.Eidas_Attributes.CurrentAddress.FRIENDLY_NAME);
+        return buildAttribute(IdaConstants.Eidas_Attributes.CurrentAddress.NAME, IdaConstants.Eidas_Attributes.CurrentAddress.FRIENDLY_NAME, (XMLObject) currentAddress);
     }
 
-    private Attribute buildAttribute(XMLObject attributeValue, String attributeName, String attributeFriendlyName) {
+    private Attribute buildAttribute(String attributeName, String attributeFriendlyName, XMLObject... attributeValue) {
         Attribute attribute = build(Attribute.DEFAULT_ELEMENT_NAME);
 
         attribute.setName(attributeName);
         attribute.setFriendlyName(attributeFriendlyName);
         attribute.setNameFormat(Attribute.URI_REFERENCE);
-        attribute.getAttributeValues().add(attributeValue);
+        attribute.getAttributeValues().addAll(Arrays.asList(attributeValue));
 
         return attribute;
     }

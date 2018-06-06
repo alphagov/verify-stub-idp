@@ -35,6 +35,15 @@ public class AllIdpsUserRepository {
         }
     }
 
+    public void createHardcodedTestUsersForCountries(String countryFriendlyId, String assetId){
+        LOG.debug("Creating hard coded users for Country: " + countryFriendlyId);
+        List<DatabaseEidasUser> sacredUsers = HardCodedTestUserList.getHardCodedCountryTestUsers(assetId);
+
+        for (DatabaseEidasUser sacredUser : sacredUsers) {
+            addUserForStubCountry(countryFriendlyId, sacredUser);
+        }
+    }
+
     public DatabaseIdpUser createUserForIdp(String idpFriendlyName,
                                             String persistentId,
                                             List<MatchingDatasetValue<String>> firstnames,
@@ -70,10 +79,16 @@ public class AllIdpsUserRepository {
                                                       String username,
                                                       String password,
                                                       MatchingDatasetValue<String> firstName,
+                                                      Optional<MatchingDatasetValue<String>> nonLatinFirstName,
                                                       MatchingDatasetValue<String> surname,
+                                                      Optional<MatchingDatasetValue<String>> nonLatinSurname,
                                                       MatchingDatasetValue<LocalDate> dob,
                                                       AuthnContext levelOfAssurance){
-        DatabaseEidasUser user = new DatabaseEidasUser(username, persistentId, password, firstName, surname, dob, levelOfAssurance);
+        DatabaseEidasUser user = new DatabaseEidasUser(
+                username, persistentId, password,
+                firstName, nonLatinFirstName, surname, nonLatinSurname,
+                dob, levelOfAssurance
+        );
 
         addUserForStubCountry(countryFriendlyName, user);
 

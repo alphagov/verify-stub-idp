@@ -33,8 +33,21 @@ public class StubCountry {
         return Optional.empty();
     }
 
-    public DatabaseEidasUser createUser(String username, String password, MatchingDatasetValue<String> firstName, MatchingDatasetValue<String> surname, MatchingDatasetValue<LocalDate> dateOfBirth, AuthnContext levelOfAssurance){
-        return allIdpsUserRepository.createUserForStubCountry(friendlyId, UUID.randomUUID().toString(), username, password, firstName, surname, dateOfBirth, levelOfAssurance);
+    public DatabaseEidasUser createUser(String username, String password,
+                                        MatchingDatasetValue<String> firstName,
+                                        Optional<MatchingDatasetValue<String>> nonLatinFirstName,
+                                        MatchingDatasetValue<String> surname,
+                                        Optional<MatchingDatasetValue<String>> nonLatinSurname,
+                                        MatchingDatasetValue<LocalDate> dateOfBirth,
+                                        AuthnContext levelOfAssurance){
+        return allIdpsUserRepository.createUserForStubCountry(
+                friendlyId, UUID.randomUUID().toString(),
+                username, password,
+                firstName, nonLatinFirstName,
+                surname, nonLatinSurname,
+                dateOfBirth,
+                levelOfAssurance
+        );
     }
 
     public String getFriendlyId() {

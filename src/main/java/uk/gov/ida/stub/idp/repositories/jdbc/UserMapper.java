@@ -68,7 +68,9 @@ public class UserMapper {
                 eidasUserJson.getPersistentId(),
                 eidasUserJson.getPassword(),
                 eidasUserJson.getFirstname(),
+                eidasUserJson.getNonLatinFirstname(),
                 eidasUserJson.getSurname(),
+                eidasUserJson.getNonLatinSurname(),
                 eidasUserJson.getDateOfBirth(),
                 eidasUserJson.getLevelOfAssurance()
         );

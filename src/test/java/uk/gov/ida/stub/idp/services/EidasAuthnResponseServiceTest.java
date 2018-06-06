@@ -64,7 +64,7 @@ public class EidasAuthnResponseServiceTest {
     public void getEidasSuccessResponse() throws URISyntaxException, MarshallingException, SignatureException {
         EidasAuthnRequest request = new EidasAuthnRequest("request-id", "issuer", "destination", "loa", Collections.emptyList());
         EidasSession session = new EidasSession(new SessionId("session-id"), request, "relay-state", Collections.emptyList(), Collections.emptyList(), Optional.empty(), Optional.empty());
-        session.setEidasUser(new EidasUser("Firstname", "Familyname", "pid", dateOfBirth, null, null));
+        session.setEidasUser(new EidasUser("Firstname", Optional.empty(), "Familyname", Optional.empty(), "pid", dateOfBirth, null, null));
         when(metadataRepository.getAssertionConsumerServiceLocation()).thenReturn(new URI("http://hub.url"));
         when(eidasResponseTransformerProvider.getTransformer()).thenReturn(x -> SAML_RESPONSE_AS_STRING);
 
@@ -78,6 +78,29 @@ public class EidasAuthnResponseServiceTest {
         assertThat(response.getAssertions()).hasSize(1);
         assertThat(response.getAssertions().get(0).getAttributeStatements()).hasSize(1);
         assertThatRequiredAssertionsAreIncluded(response.getAssertions().get(0).getAttributeStatements().get(0).getAttributes());
+
+        assertThat(samlResponse.getResponseString()).isEqualTo(SAML_RESPONSE_AS_STRING);
+    }
+
+    @Test
+    public void getEidasSuccessWithNonLatinNamesDataResponse() throws URISyntaxException, MarshallingException, SignatureException {
+        EidasAuthnRequest request = new EidasAuthnRequest("request-id", "issuer", "destination", "loa", Collections.emptyList());
+        EidasSession session = new EidasSession(new SessionId("session-id"), request, "relay-state", Collections.emptyList(), Collections.emptyList(), Optional.empty(), Optional.empty());
+        session.setEidasUser(new EidasUser("Firstname", Optional.of("nonLatinFirstname"), "Familyname", Optional.of("nonLatinFamilyname"), "pid", dateOfBirth, null, null));
+        when(metadataRepository.getAssertionConsumerServiceLocation()).thenReturn(new URI("http://hub.url"));
+        when(eidasResponseTransformerProvider.getTransformer()).thenReturn(x -> SAML_RESPONSE_AS_STRING);
+
+        SamlResponseFromValue<Response> samlResponse = service.getSuccessResponse(session, SCHEME_ID);
+        Response response = samlResponse.getResponseObject();
+        assertThat(response.getIssuer().getValue()).isEqualTo("http://stub/stub-country/ServiceMetadata");
+        assertThat(response.getStatus().getStatusCode().getValue()).isEqualTo(StatusCode.SUCCESS);
+        assertThat(response.getInResponseTo()).isEqualTo("request-id");
+        assertThat(response.getDestination()).isEqualTo("http://hub.url");
+
+        assertThat(response.getAssertions()).hasSize(1);
+        assertThat(response.getAssertions().get(0).getAttributeStatements()).hasSize(1);
+        assertThatRequiredAssertionsAreIncluded(response.getAssertions().get(0).getAttributeStatements().get(0).getAttributes());
+        assertThatNonLatinAssertionsAreIncluded(response.getAssertions().get(0).getAttributeStatements().get(0).getAttributes());
 
         assertThat(samlResponse.getResponseString()).isEqualTo(SAML_RESPONSE_AS_STRING);
     }
@@ -115,5 +138,16 @@ public class EidasAuthnResponseServiceTest {
                         && ((DateOfBirth) a.getAttributeValues().get(0)).getDateOfBirth().equals(dateOfBirth)))
                 .isTrue();
 
+    }
+
+    private void assertThatNonLatinAssertionsAreIncluded(List<Attribute> attributes) {
+        assertThat(attributes.stream().anyMatch(a -> a.getName().equals(IdaConstants.Eidas_Attributes.FirstName.NAME)
+                && ((CurrentGivenName) a.getAttributeValues().get(1)).getFirstName().equals("nonLatinFirstname") &&
+                !((CurrentGivenName) a.getAttributeValues().get(1)).isLatinScript()
+        )).isTrue();
+        assertThat(attributes.stream().anyMatch(a -> a.getName().equals(IdaConstants.Eidas_Attributes.FamilyName.NAME)
+                && ((CurrentFamilyName) a.getAttributeValues().get(1)).getFamilyName().equals("nonLatinFamilyname") &&
+                !((CurrentFamilyName) a.getAttributeValues().get(1)).isLatinScript()
+        )).isTrue();
     }
 }

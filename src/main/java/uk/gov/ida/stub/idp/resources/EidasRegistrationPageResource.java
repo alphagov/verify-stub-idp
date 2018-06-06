@@ -129,7 +129,18 @@ public class EidasRegistrationPageResource {
             }
             case Register: {
                 try {
-                    stubCountryService.createAndAttachIdpUserToSession(countryName, username, password, session.get(), firstname, surname, dateOfBirth, levelOfAssurance);
+                    stubCountryService.createAndAttachIdpUserToSession(
+                            countryName,
+                            username,
+                            password,
+                            session.get(),
+                            firstname,
+                            nonLatinFirstname,
+                            surname,
+                            nonLatinSurname,
+                            dateOfBirth,
+                            levelOfAssurance
+                    );
                     return Response.seeOther(UriBuilder.fromPath(Urls.EIDAS_CONSENT_RESOURCE)
                             .build(countryName))
                             .build();

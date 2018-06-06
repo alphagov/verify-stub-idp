@@ -8,6 +8,7 @@ import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Optional;
 
 import static com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion.NON_NULL;
 
@@ -18,7 +19,9 @@ public class EidasUserJson implements Serializable {
     private String persistentId;
     private String password;
     private MatchingDatasetValue<String> firstname;
+    private Optional<MatchingDatasetValue<String>> nonLatinFirstname;
     private MatchingDatasetValue<String> surname;
+    private Optional<MatchingDatasetValue<String>> nonLatinSurname;
     private MatchingDatasetValue<LocalDate> dateOfBirth;
     private AuthnContext levelOfAssurance;
 
@@ -30,7 +33,9 @@ public class EidasUserJson implements Serializable {
         String persistentId,
         String password,
         MatchingDatasetValue<String> firstname,
+        Optional<MatchingDatasetValue<String>> nonLatinFirstname,
         MatchingDatasetValue<String> surname,
+        Optional<MatchingDatasetValue<String>> nonLatinSurname,
         MatchingDatasetValue<LocalDate> dateOfBirth,
         AuthnContext levelOfAssurance) {
 
@@ -38,7 +43,9 @@ public class EidasUserJson implements Serializable {
         this.persistentId = persistentId;
         this.password = password;
         this.firstname = firstname;
+        this.nonLatinFirstname = nonLatinFirstname;
         this.surname = surname;
+        this.nonLatinSurname = nonLatinSurname;
         this.dateOfBirth = dateOfBirth;
         this.levelOfAssurance = levelOfAssurance;
     }
@@ -59,8 +66,16 @@ public class EidasUserJson implements Serializable {
         return firstname;
     }
 
+    public Optional<MatchingDatasetValue<String>> getNonLatinFirstname() {
+        return nonLatinFirstname;
+    }
+
     public MatchingDatasetValue<String> getSurname() {
         return surname;
+    }
+
+    public Optional<MatchingDatasetValue<String>> getNonLatinSurname() {
+        return nonLatinSurname;
     }
 
     public MatchingDatasetValue<LocalDate> getDateOfBirth() {
@@ -74,32 +89,36 @@ public class EidasUserJson implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof EidasUserJson)) return false;
-        EidasUserJson eidasUser = (EidasUserJson) o;
-        return Objects.equals(username, eidasUser.username) &&
-            Objects.equals(persistentId, eidasUser.persistentId) &&
-            Objects.equals(password, eidasUser.password) &&
-            Objects.equals(firstname, eidasUser.firstname) &&
-            Objects.equals(surname, eidasUser.surname) &&
-            Objects.equals(dateOfBirth, eidasUser.dateOfBirth) &&
-            levelOfAssurance == eidasUser.levelOfAssurance;
+        if (o == null || getClass() != o.getClass()) return false;
+        EidasUserJson that = (EidasUserJson) o;
+        return Objects.equals(username, that.username) &&
+                Objects.equals(persistentId, that.persistentId) &&
+                Objects.equals(password, that.password) &&
+                Objects.equals(firstname, that.firstname) &&
+                Objects.equals(nonLatinFirstname, that.nonLatinFirstname) &&
+                Objects.equals(surname, that.surname) &&
+                Objects.equals(nonLatinSurname, that.nonLatinSurname) &&
+                Objects.equals(dateOfBirth, that.dateOfBirth) &&
+                levelOfAssurance == that.levelOfAssurance;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(username, persistentId, password, firstname, surname, dateOfBirth, levelOfAssurance);
+        return Objects.hash(username, persistentId, password, firstname, nonLatinFirstname, surname, nonLatinSurname, dateOfBirth, levelOfAssurance);
     }
 
     @Override
     public String toString() {
-        return "DatabaseEidasUser{" +
-            "username='" + username + '\'' +
-            ", persistentId='" + persistentId + '\'' +
-            ", password='" + password + '\'' +
-            ", firstnames=" + firstname +
-            ", surnames=" + surname +
-            ", dateOfBirths=" + dateOfBirth +
-            ", levelOfAssurance=" + levelOfAssurance +
-            '}';
+        return "EidasUserJson{" +
+                "username='" + username + '\'' +
+                ", persistentId='" + persistentId + '\'' +
+                ", password='" + password + '\'' +
+                ", firstname=" + firstname +
+                ", nonLatinFirstname=" + nonLatinFirstname +
+                ", surname=" + surname +
+                ", nonLatinSurname=" + nonLatinSurname +
+                ", dateOfBirth=" + dateOfBirth +
+                ", levelOfAssurance=" + levelOfAssurance +
+                '}';
     }
 }

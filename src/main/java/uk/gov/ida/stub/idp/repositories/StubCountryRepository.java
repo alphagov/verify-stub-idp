@@ -38,7 +38,7 @@ public class StubCountryRepository {
                 allIdpsUserRepository
         );
             LOG.info("Stub Country user is being created");
-            allIdpsUserRepository.createHardcodedTestUsersForIdp(stubCountry.getFriendlyId(), stubCountry.getAssetId());
+            allIdpsUserRepository.createHardcodedTestUsersForCountries(stubCountry.getFriendlyId(), stubCountry.getAssetId());
             LOG.info("Stub Country user has been created");
     }
 

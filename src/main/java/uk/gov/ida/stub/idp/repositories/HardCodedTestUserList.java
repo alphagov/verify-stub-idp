@@ -6,6 +6,7 @@ import org.joda.time.LocalDate;
 import uk.gov.ida.saml.core.domain.AddressFactory;
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.saml.core.domain.Gender;
+import uk.gov.ida.stub.idp.domain.DatabaseEidasUser;
 import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 
@@ -17,7 +18,8 @@ import java.util.UUID;
 
 public final class HardCodedTestUserList {
 
-    private HardCodedTestUserList() {}
+    private HardCodedTestUserList() {
+    }
 
     public static List<DatabaseIdpUser> getHardCodedTestUsers(String idpFriendlyId) {
 
@@ -171,6 +173,132 @@ public final class HardCodedTestUserList {
                 Optional.of(createMdsValue(Gender.FEMALE)),
                 Collections.singletonList(createMdsValue(LocalDate.parse("1968-06-12"))),
                 Collections.singletonList(new AddressFactory().create(ImmutableList.of("🏠"), "🏘", null, null, null, null, true)),
+                AuthnContext.LEVEL_2));
+
+        return sacredUsers;
+    }
+
+    public static List<DatabaseEidasUser> getHardCodedCountryTestUsers(String idpFriendlyId) {
+
+        List<DatabaseEidasUser> sacredUsers = new ArrayList<>();
+
+        sacredUsers.add(new DatabaseEidasUser(
+                idpFriendlyId,
+                UUID.randomUUID().toString(),
+                "bar",
+                createMdsValue("Jack"),
+                Optional.of(createMdsValue("JackNonLatin")),
+                createMdsValue("Bauer"),
+                Optional.of(createMdsValue("BauerNonLatin")),
+                createMdsValue(LocalDate.parse("1984-02-29")),
+                AuthnContext.LEVEL_2));
+
+        sacredUsers.add(new DatabaseEidasUser(
+                idpFriendlyId + "-other",
+                UUID.randomUUID().toString(),
+                "bar",
+                createMdsValue("Martin"),
+                Optional.of(createMdsValue("MartinNonLatin")),
+                createMdsValue("McFly"),
+                Optional.of(createMdsValue("McFlyNonLatin")),
+                createMdsValue(LocalDate.parse("1968-06-12")),
+                AuthnContext.LEVEL_2));
+
+
+        sacredUsers.add(new DatabaseEidasUser(
+                idpFriendlyId + "-new",
+                UUID.randomUUID().toString(),
+                "bar",
+                createMdsValue("Jack"),
+                Optional.of(createMdsValue("JackNonLatin")),
+                createMdsValue("Griffin"),
+                Optional.of(createMdsValue("GriffinNonLatin")),
+                createMdsValue(LocalDate.parse("1983-06-21")),
+                AuthnContext.LEVEL_2));
+
+        sacredUsers.add(new DatabaseEidasUser(
+                idpFriendlyId + "-c3",
+                UUID.randomUUID().toString(), "bar",
+                createMdsValue("J"),
+                Optional.of(createMdsValue("JNonLatin")),
+                createMdsValue("Surname"),
+                Optional.of(createMdsValue("SurnameNonLatin")),
+                createMdsValue(LocalDate.parse("1822-11-27")),
+                AuthnContext.LEVEL_2));
+
+        sacredUsers.add(new DatabaseEidasUser(
+                idpFriendlyId + "-ec3",
+                 UUID.randomUUID().toString(),
+                "bar",
+                createMdsValue("Martin"),
+                Optional.of(createMdsValue("MartinNonLatin")),
+                createMdsValue("Riggs"),
+                Optional.of(createMdsValue("RiggsNonLatin")),
+                createMdsValue(LocalDate.parse("1970-04-12")),
+                AuthnContext.LEVEL_2));
+
+        sacredUsers.add(new DatabaseEidasUser(
+                idpFriendlyId + "-complete",
+                UUID.randomUUID().toString(),
+                "bar",
+                new MatchingDatasetValue<>("Jack", DateTime.now(), DateTime.now(), true),
+                Optional.of(new MatchingDatasetValue<>("JackNonLatin", DateTime.now(), DateTime.now(), true)),
+                new MatchingDatasetValue<>("Bauer", DateTime.now(), DateTime.now(), true),
+                Optional.of(new MatchingDatasetValue<>("BauerNonLatin", DateTime.now(), DateTime.now(), true)),
+                new MatchingDatasetValue<>(LocalDate.parse("1984-02-29"), DateTime.now(), DateTime.now(), true),
+                AuthnContext.LEVEL_2));
+
+        sacredUsers.add(new DatabaseEidasUser(
+                idpFriendlyId + "-loa1",
+                UUID.randomUUID().toString(),
+                "bar",
+                new MatchingDatasetValue<>("Jessica", DateTime.now(), null, false),
+                Optional.of(new MatchingDatasetValue<>("JessicaNonLatin", DateTime.now(), null, false)),
+                new MatchingDatasetValue<>("Rabbit", DateTime.now(), null, false),
+                Optional.of(new MatchingDatasetValue<>("RabbitNonLatin", DateTime.now(), null, false)),
+                new MatchingDatasetValue<>(LocalDate.parse("1960-03-23"), DateTime.now(), null, false),
+                AuthnContext.LEVEL_1));
+
+        sacredUsers.add(new DatabaseEidasUser(
+                idpFriendlyId + "-loa2",
+                UUID.randomUUID().toString(),
+                "bar",
+                new MatchingDatasetValue<>("Roger", DateTime.now(), DateTime.now(), true),
+                Optional.of(new MatchingDatasetValue<>("RogerNonLatin", DateTime.now(), DateTime.now(), true)),
+                new MatchingDatasetValue<>("Rabbit", DateTime.now(), DateTime.now(), true),
+                Optional.of(new MatchingDatasetValue<>("RabbitNonLatin", DateTime.now(), DateTime.now(), true)),
+                new MatchingDatasetValue<>(LocalDate.parse("1958-04-09"), DateTime.now(), DateTime.now(), true),
+                AuthnContext.LEVEL_2));
+
+        sacredUsers.add(new DatabaseEidasUser(
+                idpFriendlyId + "-loa3",
+                UUID.randomUUID().toString(),
+                "bar",
+                new MatchingDatasetValue<>("Apollo", DateTime.now(), null, true),
+                Optional.of(new MatchingDatasetValue<>("ApolloNonLatin", DateTime.now(), null, true)),
+                new MatchingDatasetValue<>("Eagle", DateTime.now(), null, true), Optional.of(new MatchingDatasetValue<>("EagleNonLatin", DateTime.now(), null, true)),
+                new MatchingDatasetValue<>(LocalDate.parse("1969-07-20"), DateTime.now(), null, true),
+                AuthnContext.LEVEL_3));
+
+        sacredUsers.add(new DatabaseEidasUser(
+                idpFriendlyId + "-loax",
+                UUID.randomUUID().toString(),
+                "bar",
+                new MatchingDatasetValue<>("Bugs", DateTime.now(), DateTime.now(), true),
+                Optional.of(new MatchingDatasetValue<>("BugsNonLatin", DateTime.now(), DateTime.now(), true)),
+                new MatchingDatasetValue<>("Nummy", DateTime.now(), DateTime.now(), true),
+                Optional.of(new MatchingDatasetValue<>("NummyNonLatin", DateTime.now(), DateTime.now(), true)),
+                new MatchingDatasetValue<>(LocalDate.parse("1958-04-09"), DateTime.now(), DateTime.now(), true),
+                AuthnContext.LEVEL_X));
+
+        sacredUsers.add(new DatabaseEidasUser(idpFriendlyId + "-emoji",
+                UUID.randomUUID().toString(),
+                "bar",
+                createMdsValue("😀"),
+                Optional.of(createMdsValue("😀NonLatin")),
+                createMdsValue("🙃"),
+                Optional.of(createMdsValue("🙃NonLatin")),
+                createMdsValue(LocalDate.parse("1968-06-12")),
                 AuthnContext.LEVEL_2));
 
         return sacredUsers;

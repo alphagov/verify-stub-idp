@@ -90,22 +90,15 @@ public class StubCountryServiceTest {
         EidasSession session = new EidasSession(SESSION_ID, eidasAuthnRequest, "test-relay-state", Arrays.asList(), Arrays.asList(), Optional.empty(), Optional.empty());
         when(sessionRepository.get(SESSION_ID)).thenReturn(Optional.ofNullable(new EidasSession(SESSION_ID, eidasAuthnRequest, RELAY_STATE, null, null, null, null)));
         when(stubCountryRepository.getStubCountryWithFriendlyId(SCHEME_ID)).thenReturn(stubCountry);
-        when(stubCountry.createUser(eq(USERNAME), eq(PASSWORD), any(), any(), any(), any())).thenReturn(newUser().get());
+        when(stubCountry.createUser(eq(USERNAME), eq(PASSWORD), any(), any(), any(), any(), any(), any())).thenReturn(newUser().get());
 
-        stubCountryService.createAndAttachIdpUserToSession(SCHEME_ID, USERNAME, "password", session, "bob", "jones", "2000-01-01", AuthnContext.LEVEL_2);
+        stubCountryService.createAndAttachIdpUserToSession(SCHEME_ID, USERNAME, "password", session, "bob", "bobNonLatin", "jones", "jonesNonLatin", "2000-01-01", AuthnContext.LEVEL_2);
 
         verify(sessionRepository, times(1)).updateSession(eq(SESSION_ID), any());
     }
 
     private Optional<DatabaseEidasUser> newUser() {
-        return Optional.ofNullable(new DatabaseEidasUser(
-                "stub-country",
-                UUID.randomUUID().toString(),
-                "bar",
-                createMdsValue("Jack"),
-                createMdsValue("Griffin"),
-                createMdsValue(LocalDate.parse("1983-06-21")),
-                AuthnContext.LEVEL_2));
+        return Optional.of(new DatabaseEidasUser("stub-country", UUID.randomUUID().toString(), "bar", createMdsValue("Jack"), Optional.of(createMdsValue("JackNonLatin")), createMdsValue("Griffin"), Optional.of(createMdsValue("GriffinNonLatin")), createMdsValue(LocalDate.parse("1983-06-21")), AuthnContext.LEVEL_2));
     }
 
     private static <T> MatchingDatasetValue<T> createMdsValue(T value) {
