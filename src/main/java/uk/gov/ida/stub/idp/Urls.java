@@ -53,6 +53,7 @@ public interface Urls {
     String CONSENT_RESOURCE = "/{"+IDP_ID_PARAM+"}/consent";
     String EIDAS_CONSENT_RESOURCE = "/eidas/{"+SCHEME_ID_PARAM+"}/consent";
     String METADATA_RESOURCE = "/{"+IDP_ID_PARAM+"}/ServiceMetadata";
+    String EIDAS_DEBUG_RESOURCE = "/eidas/{"+SCHEME_ID_PARAM+"}/debug";
 
     String USERS_RESOURCE = "/{"+IDP_ID_PARAM+"}/users";
     String DELETE_USER_PATH = "/delete";

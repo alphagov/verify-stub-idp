@@ -56,6 +56,13 @@ public class UserLogsInIntegrationTests {
     }
 
     @Test
+    public void debugPageLoadsTest() {
+        final AuthnRequestSteps.Cookies cookies = authnRequestSteps.userPostsAuthnRequestToStubIdp();
+        authnRequestSteps.userLogsIn(cookies);
+        authnRequestSteps.userViewsTheDebugPage(cookies);
+    }
+
+    @Test
     public void sessionIdRequiredAlsoCheckResponseHeadersTest() {
         Response response = client.target(authnRequestSteps.getStubIdpUri(Urls.LOGIN_RESOURCE))
                 .request()

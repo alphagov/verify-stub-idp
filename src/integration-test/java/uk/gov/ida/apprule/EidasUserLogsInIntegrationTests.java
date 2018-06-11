@@ -38,4 +38,12 @@ public class EidasUserLogsInIntegrationTests {
         authnRequestSteps.eidasUserLogsIn(cookies);
         authnRequestSteps.eidasUserConsentsReturnSamlResponse(cookies, false);
     }
+
+    @Test
+    public void debugPageLoadsTest() {
+        final AuthnRequestSteps.Cookies cookies = authnRequestSteps.userPostsEidasAuthnRequestToStubIdp();
+        authnRequestSteps.eidasUserLogsIn(cookies);
+        authnRequestSteps.eidasUserViewsTheDebugPage(cookies);
+    }
+
 }
