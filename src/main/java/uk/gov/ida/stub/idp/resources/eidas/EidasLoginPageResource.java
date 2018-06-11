@@ -1,4 +1,4 @@
-package uk.gov.ida.stub.idp.resources;
+package uk.gov.ida.stub.idp.resources.eidas;
 
 import com.google.common.base.Strings;
 import uk.gov.ida.common.SessionId;

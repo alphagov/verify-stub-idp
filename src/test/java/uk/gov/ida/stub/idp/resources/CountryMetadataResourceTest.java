@@ -16,6 +16,7 @@ import org.w3c.dom.Document;
 import uk.gov.ida.saml.core.IdaSamlBootstrap;
 import uk.gov.ida.saml.security.IdaKeyStore;
 import uk.gov.ida.stub.idp.builders.CountryMetadataBuilder;
+import uk.gov.ida.stub.idp.resources.eidas.CountryMetadataResource;
 
 import javax.ws.rs.core.Response;
 import java.net.URI;

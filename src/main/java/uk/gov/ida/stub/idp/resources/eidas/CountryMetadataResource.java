@@ -1,4 +1,4 @@
-package uk.gov.ida.stub.idp.resources;
+package uk.gov.ida.stub.idp.resources.eidas;
 import java.net.URI;
 import java.security.cert.CertificateEncodingException;
 

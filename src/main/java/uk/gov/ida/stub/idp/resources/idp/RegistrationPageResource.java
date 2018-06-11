@@ -1,4 +1,4 @@
-package uk.gov.ida.stub.idp.resources;
+package uk.gov.ida.stub.idp.resources.idp;
 
 import com.google.common.base.Strings;
 import uk.gov.ida.common.SessionId;
@@ -13,14 +13,14 @@ import uk.gov.ida.stub.idp.exceptions.InvalidSessionIdException;
 import uk.gov.ida.stub.idp.exceptions.InvalidUsernameOrPasswordException;
 import uk.gov.ida.stub.idp.exceptions.UsernameAlreadyTakenException;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASession;
-import uk.gov.ida.stub.idp.repositories.EidasSession;
-import uk.gov.ida.stub.idp.repositories.EidasSessionRepository;
-import uk.gov.ida.stub.idp.repositories.StubCountry;
-import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
+import uk.gov.ida.stub.idp.repositories.Idp;
+import uk.gov.ida.stub.idp.repositories.IdpSession;
+import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
+import uk.gov.ida.stub.idp.repositories.SessionRepository;
+import uk.gov.ida.stub.idp.services.IdpUserService;
 import uk.gov.ida.stub.idp.services.NonSuccessAuthnResponseService;
-import uk.gov.ida.stub.idp.services.StubCountryService;
-import uk.gov.ida.stub.idp.views.EidasRegistrationPageView;
 import uk.gov.ida.stub.idp.views.ErrorMessageType;
+import uk.gov.ida.stub.idp.views.RegistrationPageView;
 import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
 
 import javax.inject.Inject;
@@ -49,26 +49,26 @@ import static uk.gov.ida.stub.idp.views.ErrorMessageType.INVALID_USERNAME_OR_PAS
 import static uk.gov.ida.stub.idp.views.ErrorMessageType.NO_ERROR;
 import static uk.gov.ida.stub.idp.views.ErrorMessageType.USERNAME_ALREADY_TAKEN;
 
-@Path(Urls.EIDAS_REGISTER_RESOURCE)
+@Path(Urls.REGISTER_RESOURCE)
 @Produces(MediaType.TEXT_HTML)
 @SessionCookieValueMustExistAsASession
-public class EidasRegistrationPageResource {
+public class RegistrationPageResource {
 
-    private final StubCountryRepository stubsCountryRepository;
-    private final StubCountryService stubCountryService;
+    private final IdpStubsRepository idpStubsRepository;
+    private final IdpUserService idpUserService;
     private final SamlResponseRedirectViewFactory samlResponseRedirectViewFactory;
     private final NonSuccessAuthnResponseService nonSuccessAuthnResponseService;
-    private final EidasSessionRepository sessionRepository;
+    private final SessionRepository<IdpSession> sessionRepository;
 
     @Inject
-    public EidasRegistrationPageResource(
-            StubCountryRepository stubsCountryRepository,
-            StubCountryService stubCountryService,
+    public RegistrationPageResource(
+            IdpStubsRepository idpStubsRepository,
+            IdpUserService idpUserService,
             SamlResponseRedirectViewFactory samlResponseRedirectViewFactory,
             NonSuccessAuthnResponseService nonSuccessAuthnResponseService,
-            EidasSessionRepository sessionRepository) {
-        this.stubCountryService = stubCountryService;
-        this.stubsCountryRepository = stubsCountryRepository;
+            SessionRepository<IdpSession> sessionRepository) {
+        this.idpUserService = idpUserService;
+        this.idpStubsRepository = idpStubsRepository;
         this.samlResponseRedirectViewFactory = samlResponseRedirectViewFactory;
         this.nonSuccessAuthnResponseService = nonSuccessAuthnResponseService;
         this.sessionRepository = sessionRepository;
@@ -77,7 +77,7 @@ public class EidasRegistrationPageResource {
     @GET
     public Response get(
             @PathParam(Urls.IDP_ID_PARAM) @NotNull String idpName,
-            @QueryParam(Urls.ERROR_MESSAGE_PARAM) Optional<ErrorMessageType> errorMessage,
+            @QueryParam(Urls.ERROR_MESSAGE_PARAM) java.util.Optional<ErrorMessageType> errorMessage,
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
 
         if (Strings.isNullOrEmpty(sessionCookie.toString())) {
@@ -88,18 +88,20 @@ public class EidasRegistrationPageResource {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Session is invalid for " + idpName))).build());
         }
 
-        StubCountry idp = stubsCountryRepository.getStubCountryWithFriendlyId(idpName);
-        return Response.ok(new EidasRegistrationPageView(idp.getDisplayName(), idp.getFriendlyId(), errorMessage.orElse(NO_ERROR).getMessage(), idp.getAssetId())).build();
+        Idp idp = idpStubsRepository.getIdpWithFriendlyId(idpName);
+        return Response.ok(new RegistrationPageView(idp.getDisplayName(), idp.getFriendlyId(), errorMessage.orElse(NO_ERROR).getMessage(), idp.getAssetId())).build();
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response post(
-            @PathParam(Urls.IDP_ID_PARAM) @NotNull String countryName,
+            @PathParam(Urls.IDP_ID_PARAM) @NotNull String idpName,
             @FormParam(Urls.FIRSTNAME_PARAM) String firstname,
-            @FormParam(Urls.NON_LATIN_FIRSTNAME_PARAM) String nonLatinFirstname,
             @FormParam(Urls.SURNAME_PARAM) String surname,
-            @FormParam(Urls.NON_LATIN_SURNAME_PARAM) String nonLatinSurname,
+            @FormParam(Urls.ADDRESS_LINE1_PARAM) String addressLine1,
+            @FormParam(Urls.ADDRESS_LINE2_PARAM) String addressLine2,
+            @FormParam(Urls.ADDRESS_TOWN_PARAM) String addressTown,
+            @FormParam(Urls.ADDRESS_POST_CODE_PARAM) String addressPostCode,
             @FormParam(Urls.DATE_OF_BIRTH_PARAM) String dateOfBirth,
             @FormParam(Urls.USERNAME_PARAM) String username,
             @FormParam(Urls.PASSWORD_PARAM) String password,
@@ -108,52 +110,41 @@ public class EidasRegistrationPageResource {
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
 
         if (Strings.isNullOrEmpty(sessionCookie.toString())) {
-            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Unable to locate session cookie for " + countryName))).build());
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Unable to locate session cookie for " + idpName))).build());
         }
 
-        Optional<EidasSession> session = sessionRepository.get(sessionCookie);
+        Optional<IdpSession> session = sessionRepository.get(sessionCookie);
 
         if (!session.isPresent()) {
-            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Session is invalid for " + countryName))).build());
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Session is invalid for " + idpName))).build());
         }
 
-        final String samlRequestId = session.get().getEidasAuthnRequest().getRequestId();
+        final String samlRequestId = session.get().getIdaAuthnRequestFromHub().getId();
 
         switch (submitButtonValue) {
             case Cancel: {
 
                 session = sessionRepository.deleteAndGet(sessionCookie);
 
-                final SamlResponse cancelResponse = nonSuccessAuthnResponseService.generateAuthnCancel(countryName, samlRequestId, session.get().getRelayState());
+                final SamlResponse cancelResponse = nonSuccessAuthnResponseService.generateAuthnCancel(idpName, samlRequestId, session.get().getRelayState());
                 return samlResponseRedirectViewFactory.sendSamlMessage(cancelResponse);
             }
             case Register: {
                 try {
-                    stubCountryService.createAndAttachIdpUserToSession(
-                            countryName,
-                            username,
-                            password,
-                            session.get(),
-                            firstname,
-                            nonLatinFirstname,
-                            surname,
-                            nonLatinSurname,
-                            dateOfBirth,
-                            levelOfAssurance
-                    );
-                    return Response.seeOther(UriBuilder.fromPath(Urls.EIDAS_CONSENT_RESOURCE)
-                            .build(countryName))
+                    idpUserService.createAndAttachIdpUserToSession(idpName, firstname, surname, addressLine1, addressLine2, addressTown, addressPostCode, levelOfAssurance, dateOfBirth, username, password, sessionCookie);
+                    return Response.seeOther(UriBuilder.fromPath(Urls.CONSENT_RESOURCE)
+                            .build(idpName))
                             .build();
                 } catch (InvalidSessionIdException e) {
-                    return createErrorResponse(INVALID_SESSION_ID, countryName);
+                    return createErrorResponse(INVALID_SESSION_ID, idpName);
                 } catch (IncompleteRegistrationException e) {
-                    return createErrorResponse(INCOMPLETE_REGISTRATION, countryName);
+                    return createErrorResponse(INCOMPLETE_REGISTRATION, idpName);
                 } catch (InvalidDateException e) {
-                    return createErrorResponse(INVALID_DATE, countryName);
+                    return createErrorResponse(INVALID_DATE, idpName);
                 } catch (UsernameAlreadyTakenException e) {
-                    return createErrorResponse(USERNAME_ALREADY_TAKEN, countryName);
+                    return createErrorResponse(USERNAME_ALREADY_TAKEN, idpName);
                 } catch (InvalidUsernameOrPasswordException e) {
-                    return createErrorResponse(INVALID_USERNAME_OR_PASSWORD, countryName);
+                    return createErrorResponse(INVALID_USERNAME_OR_PASSWORD, idpName);
                 }
             }
             default: {
@@ -163,7 +154,7 @@ public class EidasRegistrationPageResource {
     }
 
     private Response createErrorResponse(ErrorMessageType errorMessage, String idpName) {
-        URI uri = UriBuilder.fromPath(Urls.EIDAS_REGISTER_RESOURCE)
+        URI uri = UriBuilder.fromPath(Urls.REGISTER_RESOURCE)
                 .queryParam(Urls.ERROR_MESSAGE_PARAM, errorMessage)
                 .build(idpName);
         return Response.seeOther(uri).build();

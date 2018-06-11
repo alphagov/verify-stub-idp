@@ -32,17 +32,17 @@ import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASessionFeature;
 import uk.gov.ida.stub.idp.filters.StubIdpCacheControlFilter;
 import uk.gov.ida.stub.idp.healthcheck.DatabaseHealthCheck;
 import uk.gov.ida.stub.idp.healthcheck.StubIdpHealthCheck;
-import uk.gov.ida.stub.idp.resources.ConsentResource;
-import uk.gov.ida.stub.idp.resources.CountryMetadataResource;
-import uk.gov.ida.stub.idp.resources.DebugPageResource;
-import uk.gov.ida.stub.idp.resources.EidasConsentResource;
-import uk.gov.ida.stub.idp.resources.EidasLoginPageResource;
-import uk.gov.ida.stub.idp.resources.EidasRegistrationPageResource;
+import uk.gov.ida.stub.idp.resources.idp.ConsentResource;
+import uk.gov.ida.stub.idp.resources.eidas.CountryMetadataResource;
+import uk.gov.ida.stub.idp.resources.idp.DebugPageResource;
+import uk.gov.ida.stub.idp.resources.eidas.EidasConsentResource;
+import uk.gov.ida.stub.idp.resources.eidas.EidasLoginPageResource;
+import uk.gov.ida.stub.idp.resources.eidas.EidasRegistrationPageResource;
 import uk.gov.ida.stub.idp.resources.GeneratePasswordResource;
-import uk.gov.ida.stub.idp.resources.HeadlessIdpResource;
-import uk.gov.ida.stub.idp.resources.IdpAuthenticationRequestReceiverResource;
-import uk.gov.ida.stub.idp.resources.LoginPageResource;
-import uk.gov.ida.stub.idp.resources.RegistrationPageResource;
+import uk.gov.ida.stub.idp.resources.idp.HeadlessIdpResource;
+import uk.gov.ida.stub.idp.resources.AuthnRequestReceiverResource;
+import uk.gov.ida.stub.idp.resources.idp.LoginPageResource;
+import uk.gov.ida.stub.idp.resources.idp.RegistrationPageResource;
 import uk.gov.ida.stub.idp.resources.UserResource;
 
 import javax.servlet.DispatcherType;
@@ -124,7 +124,7 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
         environment.getObjectMapper().setDateFormat(new ISO8601DateFormat());
 
         //resources
-        environment.jersey().register(IdpAuthenticationRequestReceiverResource.class);
+        environment.jersey().register(AuthnRequestReceiverResource.class);
         environment.jersey().register(LoginPageResource.class);
         environment.jersey().register(EidasLoginPageResource.class);
         environment.jersey().register(EidasConsentResource.class);
