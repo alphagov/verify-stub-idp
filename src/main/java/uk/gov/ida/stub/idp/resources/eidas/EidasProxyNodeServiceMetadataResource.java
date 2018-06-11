@@ -27,21 +27,21 @@ import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.builders.CountryMetadataBuilder;
 
 @Path(Urls.METADATA_RESOURCE)
-@Produces(CountryMetadataResource.SAML_METADATA_MEDIA_TYPE)
-public class CountryMetadataResource {
+@Produces(EidasProxyNodeServiceMetadataResource.SAML_METADATA_MEDIA_TYPE)
+public class EidasProxyNodeServiceMetadataResource {
     public static final String SAML_METADATA_MEDIA_TYPE = "application/samlmetadata+xml";
 
-    private static final Logger LOG = LoggerFactory.getLogger(CountryMetadataResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EidasProxyNodeServiceMetadataResource.class);
     private final IdaKeyStore idaKeyStore;
 	private final CountryMetadataBuilder countryMetadataBuilder;
 	private final String metadataUrlPattern;
 	private final String ssoUrlPattern;
 
 	@Inject
-    public CountryMetadataResource(@Named(StubIdpModule.COUNTRY_SIGNING_KEY_STORE) IdaKeyStore idaKeyStore,
-                                   @Named("StubCountryMetadataUrl") String metadataUrlPattern,
-                                   @Named("StubCountrySsoUrl") String ssoUrlPattern,
-                                   CountryMetadataBuilder countryMetadataBuilder) {
+    public EidasProxyNodeServiceMetadataResource(@Named(StubIdpModule.COUNTRY_SIGNING_KEY_STORE) IdaKeyStore idaKeyStore,
+                                                 @Named("StubCountryMetadataUrl") String metadataUrlPattern,
+                                                 @Named("StubCountrySsoUrl") String ssoUrlPattern,
+                                                 CountryMetadataBuilder countryMetadataBuilder) {
         this.countryMetadataBuilder = countryMetadataBuilder;
         this.idaKeyStore = idaKeyStore;
         this.metadataUrlPattern = metadataUrlPattern;
