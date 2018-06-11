@@ -16,6 +16,7 @@ import org.w3c.dom.Document;
 import uk.gov.ida.saml.core.IdaSamlBootstrap;
 import uk.gov.ida.saml.security.IdaKeyStore;
 import uk.gov.ida.stub.idp.builders.CountryMetadataBuilder;
+import uk.gov.ida.stub.idp.resources.eidas.EidasProxyNodeServiceMetadataResource;
 
 import javax.ws.rs.core.Response;
 import java.net.URI;
@@ -32,14 +33,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CountryMetadataResourceTest {
+public class EidasProxyNodeServiceMetadataResourceTest {
 
     @BeforeClass
     public static void doALittleHackToMakeGuicierHappyForSomeReason() {
         JerseyGuiceUtils.reset();
     }
 
-    private CountryMetadataResource resource;
+    private EidasProxyNodeServiceMetadataResource resource;
     private static final String VALID_COUNTRY = "stub-country-one";
     private static final String METADATA_URL_PATTERN = "https://stub.test/{0}/ServiceMetadata";
     private static final String SSO_URL_PATTERN = "https://stub.test/eidas/{0}/SAML2/SSO";
@@ -63,7 +64,7 @@ public class CountryMetadataResourceTest {
     @Before
     public void setUp() throws CertificateEncodingException, MarshallingException, SecurityException, SignatureException, URISyntaxException {
         validCountryUri = new URI(MessageFormat.format(METADATA_URL_PATTERN, VALID_COUNTRY));
-        resource = new CountryMetadataResource(idaKeyStore, METADATA_URL_PATTERN, SSO_URL_PATTERN, countryMetadataBuilder);
+        resource = new EidasProxyNodeServiceMetadataResource(idaKeyStore, METADATA_URL_PATTERN, SSO_URL_PATTERN, countryMetadataBuilder);
         entityDescriptor = (EntityDescriptor) XMLObjectProviderRegistrySupport.getBuilderFactory()
           .getBuilder(EntityDescriptor.DEFAULT_ELEMENT_NAME).buildObject(EntityDescriptor.DEFAULT_ELEMENT_NAME, EntityDescriptor.TYPE_NAME);
         when(idaKeyStore.getSigningCertificate()).thenReturn(signingCertificate);

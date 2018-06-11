@@ -1,13 +1,9 @@
 package uk.gov.ida.stub.idp.resources;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.mindrot.jbcrypt.BCrypt;
 import uk.gov.ida.stub.idp.services.GeneratePasswordService;
 import uk.gov.ida.stub.idp.views.GeneratePasswordView;
-
-import java.io.IOException;
-import java.io.InputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

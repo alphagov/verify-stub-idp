@@ -28,18 +28,18 @@ import java.util.Set;
 @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 @Produces(MediaType.TEXT_HTML)
 @Path("/")
-public class IdpAuthenticationRequestReceiverResource {
+public class AuthnRequestReceiverResource {
 
-    private static final Logger LOG = LoggerFactory.getLogger(IdpAuthenticationRequestReceiverResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AuthnRequestReceiverResource.class);
 
     private final AuthnRequestReceiverService authnRequestReceiverService;
     private final CookieFactory cookieFactory;
     private final Boolean isSecureCookieEnabled;
 
     @Inject
-    public IdpAuthenticationRequestReceiverResource(AuthnRequestReceiverService authnRequestReceiverService,
-                                                    CookieFactory cookieFactory,
-                                                    @Named("isSecureCookieEnabled") Boolean isSecureCookieEnabled) {
+    public AuthnRequestReceiverResource(AuthnRequestReceiverService authnRequestReceiverService,
+                                        CookieFactory cookieFactory,
+                                        @Named("isSecureCookieEnabled") Boolean isSecureCookieEnabled) {
         this.authnRequestReceiverService = authnRequestReceiverService;
         this.cookieFactory = cookieFactory;
         this.isSecureCookieEnabled = isSecureCookieEnabled;

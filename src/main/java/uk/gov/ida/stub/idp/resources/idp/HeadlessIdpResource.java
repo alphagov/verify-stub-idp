@@ -1,4 +1,4 @@
-package uk.gov.ida.stub.idp.resources;
+package uk.gov.ida.stub.idp.resources.idp;
 
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.saml.hub.domain.IdaAuthnRequestFromHub;

@@ -17,6 +17,7 @@ import uk.gov.ida.stub.idp.repositories.EidasSession;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.repositories.StubCountry;
 import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
+import uk.gov.ida.stub.idp.resources.eidas.EidasLoginPageResource;
 import uk.gov.ida.stub.idp.services.EidasAuthnResponseService;
 import uk.gov.ida.stub.idp.services.StubCountryService;
 import uk.gov.ida.stub.idp.views.SamlRedirectView;
