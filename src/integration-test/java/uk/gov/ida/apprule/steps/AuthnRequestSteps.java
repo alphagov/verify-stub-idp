@@ -186,10 +186,12 @@ public class AuthnRequestSteps {
     }
 
     public void eidasUserViewsTheDebugPage(Cookies cookies) {
-        userViewsTheDebugPage(cookies, getStubIdpUri(Urls.EIDAS_DEBUG_RESOURCE));
+        final String page = userViewsTheDebugPage(cookies, getStubIdpUri(Urls.EIDAS_DEBUG_RESOURCE));
+        assertThat(page).contains("http://eidas.europa.eu/attributes/naturalperson/PersonIdentifier");
+
     }
 
-    private void userViewsTheDebugPage(Cookies cookies, URI debugUrl) {
+    private String userViewsTheDebugPage(Cookies cookies, URI debugUrl) {
         Response response = client.target(debugUrl)
                 .request()
                 .cookie(CookieNames.SESSION_COOKIE_NAME, cookies.getSessionId())
@@ -198,7 +200,9 @@ public class AuthnRequestSteps {
 
         assertThat(response.getStatus()).isEqualTo(200);
         // we shoud probably test more things
-        assertThat(response.readEntity(String.class)).contains(cookies.getSessionId());
+        final String page = response.readEntity(String.class);
+        assertThat(page).contains(cookies.getSessionId());
+        return page;
     }
 
     public URI getStubIdpUri(String path) {

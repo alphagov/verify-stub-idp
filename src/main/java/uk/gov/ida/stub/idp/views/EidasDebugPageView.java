@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.text.MessageFormat.format;
-import static java.util.Optional.ofNullable;
 
 public class EidasDebugPageView extends IdpPageView {
 
@@ -35,7 +34,7 @@ public class EidasDebugPageView extends IdpPageView {
     }
 
     public List<String> getRequestedAttributes() {
-        return session.getEidasAuthnRequest().getAttributes().stream().map(a -> format("attribute: {0}, required: {1}", a.getName(), null!=a.isRequired()?a.isRequired():"null")).collect(Collectors.toList());
+        return session.getEidasAuthnRequest().getAttributes().stream().map(a -> format("attribute: {0}, required: {1}", a.getName(), a.isRequired())).collect(Collectors.toList());
     }
 
     public String getRequestedLevelOfAssurance() {
