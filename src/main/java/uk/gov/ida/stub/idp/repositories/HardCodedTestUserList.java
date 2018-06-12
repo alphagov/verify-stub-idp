@@ -204,6 +204,28 @@ public final class HardCodedTestUserList {
                 createMdsValue(LocalDate.parse("1968-06-12")),
                 AuthnContext.LEVEL_2));
 
+        // These names contain characters from ISO/IEC 8859-15 which we regard as Latin.
+        sacredUsers.add(new DatabaseEidasUser(
+                idpFriendlyId + "-accents",
+                UUID.randomUUID().toString(),
+                "bar",
+                createMdsValue("Šarlota"),
+                Optional.empty(),
+                createMdsValue("Snježana"),
+                Optional.empty(),
+                createMdsValue(LocalDate.parse("1978-06-12")),
+                AuthnContext.LEVEL_2));
+
+        sacredUsers.add(new DatabaseEidasUser(
+                idpFriendlyId + "-nonlatin",
+                UUID.randomUUID().toString(),
+                "bar",
+                createMdsValue("Georgios"),
+                Optional.of(createMdsValue("Γεώργιος")),
+                createMdsValue("Panathinaikos"),
+                Optional.of(createMdsValue("Παναθηναϊκός")),
+                createMdsValue(LocalDate.parse("1967-06-12")),
+                AuthnContext.LEVEL_2));
 
         sacredUsers.add(new DatabaseEidasUser(
                 idpFriendlyId + "-new",
