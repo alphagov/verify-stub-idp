@@ -20,6 +20,8 @@ apply plugin: 'maven-publish'
 
 mainClassName = 'uk.gov.ida.stub.idp.StubIdpApplication'
 
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
 
 archivesBaseName = 'stub-idp'
 
