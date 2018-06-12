@@ -32,6 +32,7 @@ import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASessionFeature;
 import uk.gov.ida.stub.idp.filters.StubIdpCacheControlFilter;
 import uk.gov.ida.stub.idp.healthcheck.DatabaseHealthCheck;
 import uk.gov.ida.stub.idp.healthcheck.StubIdpHealthCheck;
+import uk.gov.ida.stub.idp.resources.eidas.EidasDebugPageResource;
 import uk.gov.ida.stub.idp.resources.idp.ConsentResource;
 import uk.gov.ida.stub.idp.resources.eidas.EidasProxyNodeServiceMetadataResource;
 import uk.gov.ida.stub.idp.resources.idp.DebugPageResource;
@@ -136,6 +137,7 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
         environment.jersey().register(HeadlessIdpResource.class);
         environment.jersey().register(GeneratePasswordResource.class);
         environment.jersey().register(EidasProxyNodeServiceMetadataResource.class);
+        environment.jersey().register(EidasDebugPageResource.class);
 
         //exception mappers
         environment.jersey().register(IdpNotFoundExceptionMapper.class);

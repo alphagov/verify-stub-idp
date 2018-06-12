@@ -8,6 +8,9 @@
             <li class="on" id="tab-register">
                 <span class="tab-text">Register</span>
             </li>
+            <li>
+                <a id="tab-debug" class="tab-text" href="/eidas/${idpId}/debug">System information</a>
+            </li>
         </ul>
     </div>
     <form action="/eidas/${idpId}/register" class="register" method="post" id="registration-form" autocomplete="off">

@@ -181,6 +181,26 @@ public class AuthnRequestSteps {
         return page.getElementsByAttributeValue("name", "SAMLResponse").val();
     }
 
+    public void userViewsTheDebugPage(Cookies cookies) {
+        userViewsTheDebugPage(cookies, getStubIdpUri(Urls.DEBUG_RESOURCE));
+    }
+
+    public void eidasUserViewsTheDebugPage(Cookies cookies) {
+        userViewsTheDebugPage(cookies, getStubIdpUri(Urls.EIDAS_DEBUG_RESOURCE));
+    }
+
+    private void userViewsTheDebugPage(Cookies cookies, URI debugUrl) {
+        Response response = client.target(debugUrl)
+                .request()
+                .cookie(CookieNames.SESSION_COOKIE_NAME, cookies.getSessionId())
+                .cookie(CookieNames.SECURE_COOKIE_NAME, cookies.getSecure())
+                .get();
+
+        assertThat(response.getStatus()).isEqualTo(200);
+        // we shoud probably test more things
+        assertThat(response.readEntity(String.class)).contains(cookies.getSessionId());
+    }
+
     public URI getStubIdpUri(String path) {
         return UriBuilder.fromUri("http://localhost:" + port)
                 .path(path)

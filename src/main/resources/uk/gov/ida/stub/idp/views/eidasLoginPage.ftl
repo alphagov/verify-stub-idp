@@ -8,6 +8,9 @@
             <li>
                 <a id="tab-register" class="tab-text" href="/eidas/${idpId}/register">Register</a>
             </li>
+            <li>
+                <a id="tab-debug" class="tab-text" href="/eidas/${idpId}/debug">System information</a>
+            </li>
         </ul>
     </div>
     <form action="/eidas/${idpId}/login" class="login" method="post">
