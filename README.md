@@ -1,5 +1,6 @@
-
 # Verify Stub IDP SAML
+
+[![Build Status](https://travis-ci.org/alphagov/verify-stub-idp-saml.svg?branch=master)](https://travis-ci.org/alphagov/verify-stub-idp-saml)
 
 Responsible for SAML behaviours which are specific to the domain of IDPs (note that we only stub IDPs internally, hence *stub*-idp-saml). At a high level:
 
