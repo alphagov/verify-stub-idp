@@ -317,10 +317,10 @@ public final class HardCodedTestUserList {
         sacredUsers.add(new DatabaseEidasUser(idpFriendlyId + "-emoji",
                 UUID.randomUUID().toString(),
                 "bar",
-                createMdsValue("GRINNING FACE"),
-                Optional.of(createMdsValue("😀")),
-                createMdsValue("UPSIDE-DOWN FACE"),
-                Optional.of(createMdsValue("🙃")),
+                createMdsValue("😀"),
+                Optional.of(createMdsValue("GRINNING FACE")),
+                createMdsValue("🙃"),
+                Optional.of(createMdsValue("UPSIDE-DOWN FACE")),
                 createMdsValue(LocalDate.parse("1968-06-12")),
                 AuthnContext.LEVEL_2));
 
