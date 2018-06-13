@@ -12,8 +12,6 @@ import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 
-import static uk.gov.ida.stub.idp.builders.StubIdpBuilder.aStubIdp;
-
 public class EidasUserLogsInIntegrationTests {
 
     public static final String DISPLAY_NAME = "User Repository Identity Service";

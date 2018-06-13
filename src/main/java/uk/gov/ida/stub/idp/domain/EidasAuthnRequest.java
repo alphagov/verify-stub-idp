@@ -18,10 +18,10 @@ public class EidasAuthnRequest {
     private final String issuer;
     private final String destination;
     private final String requestedLoa;
-    private final List<RequestedAttribute> attributes;
+    private final List<uk.gov.ida.stub.idp.domain.RequestedAttribute> attributes;
 
     @JsonCreator
-    public EidasAuthnRequest(@JsonProperty("requestId") String requestId, @JsonProperty("issuer") String issuer, @JsonProperty("destination") String destination, @JsonProperty("requestedLoa") String requestedLoa, @JsonProperty("attributes") List<RequestedAttribute> attributes) {
+    public EidasAuthnRequest(@JsonProperty("requestId") String requestId, @JsonProperty("issuer") String issuer, @JsonProperty("destination") String destination, @JsonProperty("requestedLoa") String requestedLoa, @JsonProperty("attributes") List<uk.gov.ida.stub.idp.domain.RequestedAttribute> attributes) {
         this.requestId = requestId;
         this.issuer = issuer;
         this.destination = destination;
@@ -29,7 +29,7 @@ public class EidasAuthnRequest {
         this.attributes = attributes;
     }
 
-    public List<RequestedAttribute> getAttributes() {
+    public List<uk.gov.ida.stub.idp.domain.RequestedAttribute> getAttributes() {
         return attributes;
     }
 
@@ -58,7 +58,7 @@ public class EidasAuthnRequest {
         return new EidasAuthnRequest(requestId, issuer, destination, requestLoa, getRequestAttributes(request));
     }
 
-    private static List<RequestedAttribute> getRequestAttributes(AuthnRequest request){
+    private static List<uk.gov.ida.stub.idp.domain.RequestedAttribute> getRequestAttributes(AuthnRequest request){
 
         Optional<XMLObject> requestedAttributesObj = request.getExtensions().getOrderedChildren()
                 .stream()
@@ -70,6 +70,7 @@ public class EidasAuthnRequest {
                 .orElse(Collections.emptyList())
                 .stream()
                 .map(xmlObject -> (RequestedAttribute) xmlObject)
+                .map(requestedAttribute -> new uk.gov.ida.stub.idp.domain.RequestedAttribute(requestedAttribute.getName(), requestedAttribute.isRequired()))
                 .collect(Collectors.toList());
     }
 }

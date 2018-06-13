@@ -98,7 +98,7 @@ public class EidasAuthnResponseService {
     }
 
     private List<Attribute> getEidasAttributes(EidasSession session) {
-        List<RequestedAttribute> requestedAttributes = session.getEidasAuthnRequest().getAttributes();
+        List<uk.gov.ida.stub.idp.domain.RequestedAttribute> requestedAttributes = session.getEidasAuthnRequest().getAttributes();
         EidasUser user = session.getEidasUser().get();
 
         List<Attribute> attributes = new ArrayList<>();
@@ -197,7 +197,7 @@ public class EidasAuthnResponseService {
         return (T) XMLObjectSupport.buildXMLObject(elementName);
     }
 
-    private boolean isAttributeRequested(List<RequestedAttribute> requestedAttributes, String attributeName) {
+    private boolean isAttributeRequested(List<uk.gov.ida.stub.idp.domain.RequestedAttribute> requestedAttributes, String attributeName) {
         return requestedAttributes.stream().anyMatch(attribute -> attribute.getName().equals(attributeName));
     }
 }
