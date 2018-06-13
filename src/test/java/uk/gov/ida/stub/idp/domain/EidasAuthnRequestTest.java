@@ -2,19 +2,21 @@ package uk.gov.ida.stub.idp.domain;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.saml.saml2.core.Attribute;
 import org.opensaml.saml.saml2.core.AuthnContextClassRef;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.core.Extensions;
 import org.opensaml.saml.saml2.core.RequestedAuthnContext;
+import org.opensaml.saml.saml2.core.impl.ExtensionsBuilder;
 import org.opensaml.saml.saml2.core.impl.RequestedAuthnContextBuilder;
 import uk.gov.ida.saml.core.IdaConstants;
 import uk.gov.ida.saml.core.IdaSamlBootstrap;
 import uk.gov.ida.saml.core.extensions.RequestedAttribute;
-import uk.gov.ida.saml.core.extensions.RequestedAttributes;
 import uk.gov.ida.saml.core.extensions.SPType;
+import uk.gov.ida.saml.core.extensions.impl.RequestedAttributeBuilder;
+import uk.gov.ida.saml.core.extensions.impl.RequestedAttributesBuilder;
 import uk.gov.ida.saml.core.extensions.impl.RequestedAttributesImpl;
+import uk.gov.ida.saml.core.extensions.impl.SPTypeBuilder;
 import uk.gov.ida.saml.core.test.builders.AuthnContextClassRefBuilder;
 import uk.gov.ida.saml.core.test.builders.AuthnRequestBuilder;
 import uk.gov.ida.saml.core.test.builders.IssuerBuilder;
@@ -65,20 +67,20 @@ public class EidasAuthnRequestTest {
 
     // this code is copied from EidasAuthnRequestBuilder
     private Extensions createEidasExtensions() {
-        SPType spType = (SPType) XMLObjectSupport.buildXMLObject(SPType.DEFAULT_ELEMENT_NAME);
+        SPType spType = new SPTypeBuilder().buildObject();
         spType.setValue("public");
 
-        RequestedAttributesImpl requestedAttributes = (RequestedAttributesImpl) XMLObjectSupport.buildXMLObject(RequestedAttributes.DEFAULT_ELEMENT_NAME);
+        RequestedAttributesImpl requestedAttributes = (RequestedAttributesImpl)new RequestedAttributesBuilder().buildObject();
         requestedAttributes.setRequestedAttributes(createRequestedAttribute(IdaConstants.Eidas_Attributes.FamilyName.NAME));
 
-        Extensions extensions = (Extensions) XMLObjectSupport.buildXMLObject(Extensions.DEFAULT_ELEMENT_NAME);
+        Extensions extensions = new ExtensionsBuilder().buildObject();
         extensions.getUnknownXMLObjects().add(spType);
         extensions.getUnknownXMLObjects().add(requestedAttributes);
         return extensions;
     }
 
     private RequestedAttribute createRequestedAttribute(String requestedAttributeName) {
-        RequestedAttribute attr = (RequestedAttribute) XMLObjectSupport.buildXMLObject(RequestedAttribute.DEFAULT_ELEMENT_NAME);
+        RequestedAttribute attr = new RequestedAttributeBuilder().buildObject();
         attr.setName(requestedAttributeName);
         attr.setNameFormat(Attribute.URI_REFERENCE);
         attr.setIsRequired(true);
