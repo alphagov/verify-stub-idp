@@ -218,6 +218,8 @@ task integrationTest(type: Test) {
     classpath += sourceSets.integrationTest.runtimeClasspath
 }
 
+tasks.check.dependsOn(integrationTest)
+
 task copyToLib(dependsOn: jar, type: Copy) {
     into "$buildDir/output/lib"
     from configurations.runtime
