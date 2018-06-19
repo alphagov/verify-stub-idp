@@ -2,6 +2,8 @@
 
 This microservice is a stub IDP that can be white-labelled to simulate any IDP.
 
+[![Build Status](https://travis-ci.org/alphagov/verify-stub-idp.svg?branch=master)](https://travis-ci.org/alphagov/verify-stub-idp)
+
 ## Note about the history of this repository
 
 Commits made up to and including
