@@ -37,7 +37,7 @@ public class UserLogsInIntegrationTests {
             client,
             IDP_NAME,
             applicationRule.getLocalPort());
-    private final SamlDecrypter samlDecrypter = new SamlDecrypter(client, applicationRule.getMetadataPath(), applicationRule.getConfiguration().getHubEntityId());
+    private final SamlDecrypter samlDecrypter = new SamlDecrypter(client, applicationRule.getMetadataPath(), applicationRule.getConfiguration().getHubEntityId(), applicationRule.getLocalPort());
 
     @ClassRule
     public static final StubIdpAppRule applicationRule = new StubIdpAppRule()

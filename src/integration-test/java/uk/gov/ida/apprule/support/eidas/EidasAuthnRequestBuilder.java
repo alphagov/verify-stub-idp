@@ -1,4 +1,4 @@
-package uk.gov.ida.apprule.support;
+package uk.gov.ida.apprule.support.eidas;
 
 import net.shibboleth.utilities.java.support.security.SecureRandomIdentifierGenerationStrategy;
 import org.joda.time.DateTime;
@@ -27,10 +27,14 @@ import uk.gov.ida.saml.core.test.builders.AuthnRequestBuilder;
 import uk.gov.ida.saml.hub.domain.LevelOfAssurance;
 import uk.gov.ida.saml.serializers.XmlObjectToBase64EncodedStringTransformer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class EidasAuthnRequestBuilder {
     private String issuerEntityId = "issuerEntityId";
     private String destination = "destination";
     private DateTime issueInstant = DateTime.now();
+    private List<RequestedAttribute> requestedAttributeList = new ArrayList<>();
 
     public static EidasAuthnRequestBuilder anAuthnRequest() {
         return new EidasAuthnRequestBuilder();
@@ -48,6 +52,11 @@ public class EidasAuthnRequestBuilder {
 
     public EidasAuthnRequestBuilder withIssueInstant(DateTime issueInstant) {
         this.issueInstant = issueInstant;
+        return this;
+    }
+
+    public EidasAuthnRequestBuilder withRequestedAttribute(String requestedAttributeName) {
+        requestedAttributeList.add(createRequestedAttribute(requestedAttributeName));
         return this;
     }
 
@@ -90,10 +99,13 @@ public class EidasAuthnRequestBuilder {
         spType.setValue("public");
 
         RequestedAttributesImpl requestedAttributes = (RequestedAttributesImpl)new RequestedAttributesBuilder().buildObject();
-        requestedAttributes.setRequestedAttributes(createRequestedAttribute(IdaConstants.Eidas_Attributes.PersonIdentifier.NAME),
-                createRequestedAttribute(IdaConstants.Eidas_Attributes.FamilyName.NAME),
-                createRequestedAttribute(IdaConstants.Eidas_Attributes.FirstName.NAME),
-                createRequestedAttribute(IdaConstants.Eidas_Attributes.DateOfBirth.NAME));
+
+        // required attributes
+        requestedAttributeList.add(createRequestedAttribute(IdaConstants.Eidas_Attributes.PersonIdentifier.NAME));
+        requestedAttributeList.add(createRequestedAttribute(IdaConstants.Eidas_Attributes.FamilyName.NAME));
+        requestedAttributeList.add(createRequestedAttribute(IdaConstants.Eidas_Attributes.FirstName.NAME));
+        requestedAttributeList.add(createRequestedAttribute(IdaConstants.Eidas_Attributes.DateOfBirth.NAME));
+        requestedAttributes.setRequestedAttributes(requestedAttributeList.toArray(new RequestedAttribute[] {}));
 
         Extensions extensions = new ExtensionsBuilder().buildObject();
         extensions.getUnknownXMLObjects().add(spType);
