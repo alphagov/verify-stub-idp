@@ -175,6 +175,21 @@ public final class HardCodedTestUserList {
                 Collections.singletonList(new AddressFactory().create(ImmutableList.of("🏠"), "🏘", null, null, null, null, true)),
                 AuthnContext.LEVEL_2));
 
+        // this user matches one user in the example local matching service
+        // https://github.com/alphagov/verify-local-matching-service-example/blob/b135523be4c156b5f6e4fc0b3b3f94bcfbef9f75/src/main/resources/db/migration/V2__Populate_With_Test_Data.sql#L31
+        sacredUsers.add(new DatabaseIdpUser(
+                idpFriendlyId + "-elms",
+                UUID.randomUUID().toString(),
+                "bar",
+                Collections.singletonList(createMdsValue("Joe")),
+                Collections.emptyList(),
+                Collections.singletonList(createMdsValue("Bloggs")),
+                Optional.of(createMdsValue(Gender.NOT_SPECIFIED)),
+                Collections.singletonList(createMdsValue(LocalDate.parse("1970-01-01"))),
+                ImmutableList.of(new AddressFactory().create(ImmutableList.of("The White Chapel Building, 10 Whitechapel High St", "London", "United Kingdom"), "E1 8DX",
+                        null, null, DateTime.now().minusYears(1), null, true)),
+                AuthnContext.LEVEL_2));
+
         return sacredUsers;
     }
 
