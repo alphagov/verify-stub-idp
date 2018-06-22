@@ -4,8 +4,9 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import uk.gov.ida.apprule.support.EidasAuthnRequestBuilder;
 import uk.gov.ida.apprule.support.TestSamlRequestFactory;
+import uk.gov.ida.apprule.support.eidas.EidasAuthnRequestBuilder;
+import uk.gov.ida.saml.core.IdaConstants;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.cookies.CookieNames;
 
@@ -73,7 +74,18 @@ public class AuthnRequestSteps {
     }
 
     public Cookies userPostsEidasAuthnRequestToStubIdp() {
-        String authnRequest = EidasAuthnRequestBuilder.anAuthnRequest().build();
+        return userPostsEidasAuthnRequestToStubIdpWithAttribute(false, false);
+    }
+
+    public Cookies userPostsEidasAuthnRequestToStubIdpWithAttribute(boolean requestAddress, boolean requestGender) {
+        final EidasAuthnRequestBuilder eidasAuthnRequestBuilder = EidasAuthnRequestBuilder.anAuthnRequest();
+        if(requestAddress) {
+            eidasAuthnRequestBuilder.withRequestedAttribute(IdaConstants.Eidas_Attributes.CurrentAddress.NAME);
+        }
+        if(requestGender) {
+            eidasAuthnRequestBuilder.withRequestedAttribute(IdaConstants.Eidas_Attributes.Gender.NAME);
+        }
+        String authnRequest = eidasAuthnRequestBuilder.build();
         Response response = postAuthnRequest(ImmutableList.of(), Optional.absent(), Optional.absent(), authnRequest, Urls.EIDAS_SAML2_SSO_RESOURCE);
 
         assertThat(response.getStatus()).isEqualTo(303);
@@ -185,10 +197,10 @@ public class AuthnRequestSteps {
         userViewsTheDebugPage(cookies, getStubIdpUri(Urls.DEBUG_RESOURCE));
     }
 
-    public void eidasUserViewsTheDebugPage(Cookies cookies) {
+    public String eidasUserViewsTheDebugPage(Cookies cookies) {
         final String page = userViewsTheDebugPage(cookies, getStubIdpUri(Urls.EIDAS_DEBUG_RESOURCE));
         assertThat(page).contains("http://eidas.europa.eu/attributes/naturalperson/PersonIdentifier");
-
+        return page;
     }
 
     private String userViewsTheDebugPage(Cookies cookies, URI debugUrl) {
