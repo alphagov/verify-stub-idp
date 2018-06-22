@@ -11,7 +11,6 @@ import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.saml.saml2.core.StatusCode;
 import uk.gov.ida.saml.core.IdaConstants;
 import uk.gov.ida.saml.core.extensions.EidasAuthnContext;
-import uk.gov.ida.saml.core.extensions.RequestedAttribute;
 import uk.gov.ida.saml.core.extensions.eidas.CurrentAddress;
 import uk.gov.ida.saml.core.extensions.eidas.CurrentFamilyName;
 import uk.gov.ida.saml.core.extensions.eidas.CurrentGivenName;
@@ -22,6 +21,7 @@ import uk.gov.ida.stub.idp.StubIdpModule;
 import uk.gov.ida.stub.idp.builders.EidasResponseBuilder;
 import uk.gov.ida.stub.idp.domain.EidasAddress;
 import uk.gov.ida.stub.idp.domain.EidasUser;
+import uk.gov.ida.stub.idp.domain.RequestedAttribute;
 import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
 import uk.gov.ida.stub.idp.repositories.EidasSession;
 import uk.gov.ida.stub.idp.repositories.MetadataRepository;
@@ -98,7 +98,7 @@ public class EidasAuthnResponseService {
     }
 
     private List<Attribute> getEidasAttributes(EidasSession session) {
-        List<uk.gov.ida.stub.idp.domain.RequestedAttribute> requestedAttributes = session.getEidasAuthnRequest().getAttributes();
+        List<RequestedAttribute> requestedAttributes = session.getEidasAuthnRequest().getAttributes();
         EidasUser user = session.getEidasUser().get();
 
         List<Attribute> attributes = new ArrayList<>();
@@ -197,7 +197,7 @@ public class EidasAuthnResponseService {
         return (T) XMLObjectSupport.buildXMLObject(elementName);
     }
 
-    private boolean isAttributeRequested(List<uk.gov.ida.stub.idp.domain.RequestedAttribute> requestedAttributes, String attributeName) {
+    private boolean isAttributeRequested(List<RequestedAttribute> requestedAttributes, String attributeName) {
         return requestedAttributes.stream().anyMatch(attribute -> attribute.getName().equals(attributeName));
     }
 }
