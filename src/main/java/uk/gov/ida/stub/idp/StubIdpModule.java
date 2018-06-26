@@ -181,6 +181,7 @@ public class StubIdpModule extends AbstractModule {
     }
 
     @Provides
+    @Singleton
     public UserRepository getUserRepository(StubIdpConfiguration configuration, UserMapper userMapper) {
         Jdbi jdbi = Jdbi.create(configuration.getDatabaseConfiguration().getUrl());
         return new JDBIUserRepository(jdbi, userMapper);
@@ -264,6 +265,7 @@ public class StubIdpModule extends AbstractModule {
     }
 
     @Provides
+    @Singleton
     public StubCountryRepository getStubCountryRepository(AllIdpsUserRepository allIdpsUserRepository, @Named("StubCountryMetadataUrl")String stubCountryMetadataUrl){
         return new StubCountryRepository(allIdpsUserRepository, stubCountryMetadataUrl);
     }
