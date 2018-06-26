@@ -9,6 +9,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import uk.gov.ida.apprule.support.IntegrationTestHelper;
 import uk.gov.ida.apprule.support.StubIdpAppRule;
 
 import javax.ws.rs.client.Client;
@@ -20,7 +21,7 @@ import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.ida.stub.idp.builders.StubIdpBuilder.aStubIdp;
 
-public class EidasCountryMetadataIntegrationTests {
+public class EidasCountryMetadataIntegrationTests extends IntegrationTestHelper {
 
     private static final String COUNTRY_NAME = "country1";
     public static final String DISPLAY_NAME = "User Repository Identity Service";

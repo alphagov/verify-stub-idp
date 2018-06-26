@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import uk.gov.ida.apprule.steps.AuthnRequestSteps;
+import uk.gov.ida.apprule.support.IntegrationTestHelper;
 import uk.gov.ida.apprule.support.StubIdpAppRule;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.cookies.CookieNames;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.ida.stub.idp.builders.StubIdpBuilder.aStubIdp;
 
-public class LevelOfAssuranceIntegrationTests {
+public class LevelOfAssuranceIntegrationTests extends IntegrationTestHelper {
 
     public static final String IDP_NAME = "loa-idp";
     public static final String DISPLAY_NAME = "Level Of Assurance Identity Service";
