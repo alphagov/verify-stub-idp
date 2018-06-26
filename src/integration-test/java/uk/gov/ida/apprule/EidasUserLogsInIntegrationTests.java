@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.opensaml.saml.saml2.core.Attribute;
 import org.opensaml.saml.saml2.core.StatusCode;
 import uk.gov.ida.apprule.steps.AuthnRequestSteps;
+import uk.gov.ida.apprule.support.IntegrationTestHelper;
 import uk.gov.ida.apprule.support.SamlDecrypter;
 import uk.gov.ida.apprule.support.StubIdpAppRule;
 import uk.gov.ida.apprule.support.eidas.InboundResponseFromCountry;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class EidasUserLogsInIntegrationTests {
+public class EidasUserLogsInIntegrationTests extends IntegrationTestHelper {
 
     private final Client client = JerseyClientBuilder.createClient().property(ClientProperties.FOLLOW_REDIRECTS, false);
     private final AuthnRequestSteps authnRequestSteps = new AuthnRequestSteps(

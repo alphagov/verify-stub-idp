@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import uk.gov.ida.apprule.steps.AuthnRequestSteps;
+import uk.gov.ida.apprule.support.IntegrationTestHelper;
 import uk.gov.ida.apprule.support.SamlDecrypter;
 import uk.gov.ida.apprule.support.StubIdpAppRule;
 import uk.gov.ida.saml.hub.domain.InboundResponseFromIdp;
@@ -26,7 +27,7 @@ import static uk.gov.ida.common.HttpHeaders.PRAGMA_KEY;
 import static uk.gov.ida.common.HttpHeaders.PRAGMA_NO_CACHE_VALUE;
 import static uk.gov.ida.stub.idp.builders.StubIdpBuilder.aStubIdp;
 
-public class UserLogsInIntegrationTests {
+public class UserLogsInIntegrationTests extends IntegrationTestHelper {
 
     // Use stub-idp-one as it allows us to use the defaultMetadata in MetadataFactory
     private static final String IDP_NAME = "stub-idp-one";

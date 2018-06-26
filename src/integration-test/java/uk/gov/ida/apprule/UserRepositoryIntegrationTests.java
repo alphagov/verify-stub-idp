@@ -8,6 +8,7 @@ import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import uk.gov.ida.apprule.support.IntegrationTestHelper;
 import uk.gov.ida.apprule.support.StubIdpAppRule;
 import uk.gov.ida.saml.core.domain.Address;
 import uk.gov.ida.saml.core.domain.AuthnContext;
@@ -41,7 +42,7 @@ import static uk.gov.ida.common.HttpHeaders.PRAGMA_NO_CACHE_VALUE;
 import static uk.gov.ida.stub.idp.builders.AddressBuilder.anAddress;
 import static uk.gov.ida.stub.idp.builders.StubIdpBuilder.aStubIdp;
 
-public class UserRepositoryIntegrationTests {
+public class UserRepositoryIntegrationTests extends IntegrationTestHelper {
 
     public static final String IDP_NAME = "user-repository-idp";
     public static final String DISPLAY_NAME = "User Repository Identity Service";
