@@ -1,7 +1,6 @@
 package uk.gov.ida.stub.idp.resources;
 
 import com.squarespace.jersey2.guice.JerseyGuiceUtils;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -12,6 +11,7 @@ import uk.gov.ida.common.SessionId;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.EidasAuthnRequest;
+import uk.gov.ida.stub.idp.domain.EidasScheme;
 import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
 import uk.gov.ida.stub.idp.repositories.EidasSession;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
@@ -22,18 +22,18 @@ import uk.gov.ida.stub.idp.services.EidasAuthnResponseService;
 import uk.gov.ida.stub.idp.services.StubCountryService;
 import uk.gov.ida.stub.idp.views.SamlRedirectView;
 import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
+
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EidasLoginPageResourceTest {
@@ -46,7 +46,7 @@ public class EidasLoginPageResourceTest {
     private EidasLoginPageResource resource;
     private EidasSession session;
     
-    private final String SCHEME_NAME = "schemeName";
+    private final String SCHEME_NAME = EidasScheme.stub_country.getEidasSchemeName();
     private final SessionId SESSION_ID = SessionId.createNewSessionId();
     private final String USERNAME = "username";
     private final String PASSWORD = "password";
@@ -96,7 +96,7 @@ public class EidasLoginPageResourceTest {
 
     @Test
     public void loginShouldReturnASuccessfulResponse(){
-        when(stubCountryRepository.getStubCountryWithFriendlyId(SCHEME_NAME)).thenReturn(stubCountry);
+        when(stubCountryRepository.getStubCountryWithFriendlyId(EidasScheme.fromString(SCHEME_NAME).get())).thenReturn(stubCountry);
 
         final Response response = resource.get(SCHEME_NAME, Optional.empty(), SESSION_ID);
 

@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.stub.idp.domain.EidasAuthnRequest;
+import uk.gov.ida.stub.idp.domain.EidasScheme;
 import uk.gov.ida.stub.idp.domain.EidasUser;
 import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
 import uk.gov.ida.stub.idp.repositories.EidasSession;
@@ -38,7 +39,7 @@ public class EidasConsentResourceTest {
 
     private EidasConsentResource resource;
 
-    private final String SCHEME_NAME = "schemeName";
+    private final String SCHEME_NAME = EidasScheme.stub_country.getEidasSchemeName();
     private final SessionId SESSION_ID = SessionId.createNewSessionId();
     private EidasSession session;
 
@@ -71,7 +72,7 @@ public class EidasConsentResourceTest {
 
     @Test
     public void getShouldReturnASuccessfulResponseWhenSessionIsValid(){
-        when(stubCountryRepository.getStubCountryWithFriendlyId(SCHEME_NAME)).thenReturn(stubCountry);
+        when(stubCountryRepository.getStubCountryWithFriendlyId(EidasScheme.fromString(SCHEME_NAME).get())).thenReturn(stubCountry);
 
         final Response response = resource.get(SCHEME_NAME, SESSION_ID);
 
