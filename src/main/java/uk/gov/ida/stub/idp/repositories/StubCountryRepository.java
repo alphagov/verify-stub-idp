@@ -12,7 +12,7 @@ public class StubCountryRepository {
 
     private final AllIdpsUserRepository allIdpsUserRepository;
     private final String stubCountryMetadataUrl;
-    public static final String STUB_COUNTRY_FRIENDLY_ID = "stub-country";
+    public static final String STUB_COUNTRY_FRIENDLY_ID = EidasScheme.stub_country.getEidasSchemeName();
 
     @Inject
     public StubCountryRepository(AllIdpsUserRepository allIdpsUserRepository, @Named("StubCountryMetadataUrl") String stubCountryMetadataUrl) {
@@ -23,7 +23,6 @@ public class StubCountryRepository {
 
     /**
      * This method is a little bit of a hack, to allow stub-country users to be used for multiple stub countries
-     * @param friendlyId ignored
      */
     public StubCountry getStubCountryWithFriendlyId(EidasScheme eidasScheme){
         return new StubCountry(
