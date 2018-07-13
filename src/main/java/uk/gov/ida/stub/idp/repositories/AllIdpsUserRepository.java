@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static uk.gov.ida.stub.idp.repositories.StubCountryRepository.STUB_COUNTRY_FRIENDLY_ID;
+
 public class AllIdpsUserRepository {
 
     private final UserRepository userRepository;
@@ -111,7 +113,7 @@ public class AllIdpsUserRepository {
     }
 
     public Optional<DatabaseEidasUser> getUserForCountry(String countryFriendlyName, String username) {
-        final List<DatabaseEidasUser> matchingUsers = userRepository.getUsersForCountry(countryFriendlyName)
+        final List<DatabaseEidasUser> matchingUsers = userRepository.getUsersForCountry(STUB_COUNTRY_FRIENDLY_ID)
                 .stream()
                 .filter(u -> u.getUsername().equalsIgnoreCase(username))
                 .collect(Collectors.toList());

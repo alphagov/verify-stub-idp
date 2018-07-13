@@ -14,13 +14,12 @@ import uk.gov.ida.apprule.support.StubIdpAppRule;
 import uk.gov.ida.apprule.support.eidas.InboundResponseFromCountry;
 import uk.gov.ida.saml.core.IdaConstants;
 import uk.gov.ida.saml.hub.domain.LevelOfAssurance;
-import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
+import uk.gov.ida.stub.idp.domain.EidasScheme;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
-import java.io.IOException;
-import java.security.cert.CertificateException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,11 +27,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class EidasUserLogsInIntegrationTests extends IntegrationTestHelper {
 
     private final Client client = JerseyClientBuilder.createClient().property(ClientProperties.FOLLOW_REDIRECTS, false);
+    private final String EIDAS_SCHEME_NAME = EidasScheme.stub_cef_reference.getEidasSchemeName();
     private final AuthnRequestSteps authnRequestSteps = new AuthnRequestSteps(
             client,
-            StubCountryRepository.STUB_COUNTRY_FRIENDLY_ID,
+            EIDAS_SCHEME_NAME,
             applicationRule.getLocalPort());
-    private final SamlDecrypter samlDecrypter = new SamlDecrypter(client, applicationRule.getMetadataPath(), applicationRule.getConfiguration().getHubEntityId(), applicationRule.getLocalPort());
+    private final SamlDecrypter samlDecrypter = new SamlDecrypter(client, applicationRule.getMetadataPath(), applicationRule.getConfiguration().getHubEntityId(), applicationRule.getLocalPort(), Optional.ofNullable(EIDAS_SCHEME_NAME));
 
     @ClassRule
     public static final StubIdpAppRule applicationRule = new StubIdpAppRule();
@@ -63,7 +63,7 @@ public class EidasUserLogsInIntegrationTests extends IntegrationTestHelper {
         if (requestGender) { assertThat(page).contains(IdaConstants.Eidas_Attributes.Gender.NAME); }
         final String samlResponse = authnRequestSteps.eidasUserConsentsReturnSamlResponse(cookies, false);
         final InboundResponseFromCountry inboundResponseFromCountry = samlDecrypter.decryptEidasSaml(samlResponse);
-        assertThat(inboundResponseFromCountry.getIssuer()).isEqualTo("http://localhost:0/stub-country/ServiceMetadata");
+        assertThat(inboundResponseFromCountry.getIssuer()).isEqualTo("http://localhost:0/"+EIDAS_SCHEME_NAME+"/ServiceMetadata");
         assertThat(inboundResponseFromCountry.getStatus().getStatusCode().getValue()).isEqualTo(StatusCode.SUCCESS);
         assertThat(inboundResponseFromCountry.getValidatedIdentityAssertion().getAuthnStatements().size()).isEqualTo(1);
         assertThat(LevelOfAssurance.fromString(inboundResponseFromCountry.getValidatedIdentityAssertion().getAuthnStatements().get(0).getAuthnContext().getAuthnContextClassRef().getAuthnContextClassRef())).isEqualTo(LevelOfAssurance.SUBSTANTIAL);

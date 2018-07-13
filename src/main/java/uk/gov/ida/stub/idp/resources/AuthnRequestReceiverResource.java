@@ -4,7 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.cookies.CookieFactory;
+import uk.gov.ida.stub.idp.domain.EidasScheme;
 import uk.gov.ida.stub.idp.domain.IdpLanguageHint;
+import uk.gov.ida.stub.idp.exceptions.InvalidEidasSchemeException;
 import uk.gov.ida.stub.idp.services.AuthnRequestReceiverService;
 import uk.gov.ida.stub.idp.services.AuthnRequestReceiverService.SessionCreated;
 
@@ -71,6 +73,10 @@ public class AuthnRequestReceiverResource {
             @FormParam(Urls.RELAY_STATE_PARAM) String relayState,
             @FormParam(Urls.LANGUAGE_HINT_PARAM) Optional<IdpLanguageHint> languageHint) {
         LOG.debug("Received request for country {} from HUB", schemeId);
+
+        if(!EidasScheme.fromString(schemeId).isPresent()) {
+            throw new InvalidEidasSchemeException();
+        }
 
         final SessionCreated sessionCreated = authnRequestReceiverService.handleEidasAuthnRequest(schemeId, samlRequest, relayState, languageHint);
 

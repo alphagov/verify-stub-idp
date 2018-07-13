@@ -21,6 +21,7 @@ import java.net.URI;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.ida.stub.idp.repositories.StubCountryRepository.STUB_COUNTRY_FRIENDLY_ID;
 
 public class AuthnRequestSteps {
     private final Client client;
@@ -136,7 +137,7 @@ public class AuthnRequestSteps {
     }
 
     public void eidasUserLogsIn(Cookies cookies) {
-        userLogsIn(cookies, idpName, Urls.EIDAS_LOGIN_RESOURCE, Urls.EIDAS_CONSENT_RESOURCE);
+        userLogsIn(cookies, STUB_COUNTRY_FRIENDLY_ID, Urls.EIDAS_LOGIN_RESOURCE, Urls.EIDAS_CONSENT_RESOURCE);
     }
 
     public void userLogsIn(Cookies cookies, String username) {

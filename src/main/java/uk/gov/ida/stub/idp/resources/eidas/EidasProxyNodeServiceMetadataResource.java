@@ -25,6 +25,8 @@ import uk.gov.ida.saml.serializers.XmlObjectToElementTransformer;
 import uk.gov.ida.stub.idp.StubIdpModule;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.builders.CountryMetadataBuilder;
+import uk.gov.ida.stub.idp.domain.EidasScheme;
+import uk.gov.ida.stub.idp.exceptions.InvalidEidasSchemeException;
 
 @Path(Urls.METADATA_RESOURCE)
 @Produces(EidasProxyNodeServiceMetadataResource.SAML_METADATA_MEDIA_TYPE)
@@ -49,14 +51,18 @@ public class EidasProxyNodeServiceMetadataResource {
     }
 
     @GET
-    public Response getMetadata(@PathParam(Urls.IDP_ID_PARAM) @NotNull String idpName) {
+    public Response getMetadata(@PathParam(Urls.SCHEME_ID_PARAM) @NotNull String schemeId) {
 
-        if (idpName == null || idpName.isEmpty()) {
+        if (schemeId == null || schemeId.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        URI ssoEndpoint = UriBuilder.fromUri(ssoUrlPattern).build(idpName);
-        URI metadataUrl = UriBuilder.fromUri(metadataUrlPattern).build(idpName);
+        if(!EidasScheme.fromString(schemeId).isPresent()) {
+            throw new InvalidEidasSchemeException();
+        }
+
+        URI ssoEndpoint = UriBuilder.fromUri(ssoUrlPattern).build(schemeId);
+        URI metadataUrl = UriBuilder.fromUri(metadataUrlPattern).build(schemeId);
 
         try {
             Document metadata = getMetadataDocument(metadataUrl, ssoEndpoint);

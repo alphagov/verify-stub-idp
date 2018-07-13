@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 
+import static java.util.Optional.empty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.ida.common.HttpHeaders.CACHE_CONTROL_KEY;
 import static uk.gov.ida.common.HttpHeaders.CACHE_CONTROL_NO_CACHE_VALUE;
@@ -38,7 +39,7 @@ public class UserLogsInIntegrationTests extends IntegrationTestHelper {
             client,
             IDP_NAME,
             applicationRule.getLocalPort());
-    private final SamlDecrypter samlDecrypter = new SamlDecrypter(client, applicationRule.getMetadataPath(), applicationRule.getConfiguration().getHubEntityId(), applicationRule.getLocalPort());
+    private final SamlDecrypter samlDecrypter = new SamlDecrypter(client, applicationRule.getMetadataPath(), applicationRule.getConfiguration().getHubEntityId(), applicationRule.getLocalPort(), empty());
 
     @ClassRule
     public static final StubIdpAppRule applicationRule = new StubIdpAppRule()

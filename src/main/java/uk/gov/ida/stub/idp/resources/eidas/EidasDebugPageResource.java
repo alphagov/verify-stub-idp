@@ -4,6 +4,8 @@ import com.google.common.base.Strings;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.cookies.CookieNames;
+import uk.gov.ida.stub.idp.domain.EidasScheme;
+import uk.gov.ida.stub.idp.exceptions.InvalidEidasSchemeException;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASession;
 import uk.gov.ida.stub.idp.repositories.EidasSession;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
@@ -46,6 +48,11 @@ public class EidasDebugPageResource {
             @PathParam(Urls.SCHEME_ID_PARAM) @NotNull String schemeId,
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
 
+        final Optional<EidasScheme> eidasScheme = EidasScheme.fromString(schemeId);
+        if(!eidasScheme.isPresent()) {
+            throw new InvalidEidasSchemeException();
+        }
+
         if (Strings.isNullOrEmpty(sessionCookie.toString())) {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Unable to locate session cookie for " + schemeId))).build());
         }
@@ -56,7 +63,7 @@ public class EidasDebugPageResource {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Session is invalid for " + schemeId))).build());
         }
 
-        StubCountry stubCountry = stubCountryRepository.getStubCountryWithFriendlyId(schemeId);
+        StubCountry stubCountry = stubCountryRepository.getStubCountryWithFriendlyId(eidasScheme.get());
         return Response.ok(new EidasDebugPageView(stubCountry.getDisplayName(), stubCountry.getFriendlyId(), stubCountry.getAssetId(), session.get())).build();
     }
 

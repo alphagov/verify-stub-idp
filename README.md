@@ -1,6 +1,6 @@
 # ida-stub-idp
 
-This microservice is a stub IDP that can be white-labelled to simulate any IDP.
+This microservice is a stub IDP that can be white-labelled to simulate any IDP, or used as a Stub eIDAS Proxy Service Node.
 
 [![Build Status](https://travis-ci.org/alphagov/verify-stub-idp.svg?branch=master)](https://travis-ci.org/alphagov/verify-stub-idp)
 
@@ -40,8 +40,6 @@ The friendlyId can be used to enable multiple IDPs but using the same displayNam
 
 Header images for IDPs should be placed into `ida-stub-idp/src/main/resources/assets/images/providers/` and are referenced as `assetId` e.g. stub-idp-one.png is referenced as `stub-idp-one`
 
-Persistence can be enabled in the yml config file by modifying `infinispan.persistenceToFileEnabled`
-
 ## Deploying to PaaS
 
 Before Stub IDP can be deployed to PaaS, you need to provision two services in the space you are deploying to. Make sure you are logged into PaaS Cloudfoundry and then run `./create_paas_services.sh` as follows:
@@ -59,6 +57,12 @@ You need to use the entityId `http://stub_idp.acme.org/{friendlyId}/SSO/POST` or
 The SSO URI for that IDP will be `http://localhost:50140/{friendlyId}/SAML2/SSO` or equivalent.
 
 You need to set the hub (or service) entityId that messages will be received from/sent back to, as well as where the hub/service metadata can be received from -> see the `hubEntityId` and `metadata` configuration blocks.
+
+# Using as a Stub eIDAS Proxy Service Node
+
+Set the values in `europeanIdentity` including HUB_CONNECTOR_ENTITY_ID for the consuming relying party/service provider/hub.
+
+Several countries can be dynamically stubbed at once - see the full list in [EidasScheme](src/main/java/uk/gov/ida/stub/idp/domain/EidasScheme.java) (use the values, not the enum keys).  Once the metadata is retrieved for each stub it can be used by the consuming relying party/service provider/hub.  Metadata is at http://localhost:50140/[scheme]/ServiceMetadata  Test users are all `stub-country*`.
 
 ## Test Users
 

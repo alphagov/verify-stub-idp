@@ -47,21 +47,20 @@ public interface Urls {
     String LOGIN_REQUESTER_ERROR_PATH = "requester-error";
 
     String REGISTER_RESOURCE = "/{"+IDP_ID_PARAM+"}/register";
-    String EIDAS_REGISTER_RESOURCE = "/eidas/{"+IDP_ID_PARAM+"}/register";
     String LOGIN_AUTHN_PENDING_PATH = "authn-pending";
     String DEBUG_RESOURCE = "/{"+IDP_ID_PARAM+"}/debug";
     String CONSENT_RESOURCE = "/{"+IDP_ID_PARAM+"}/consent";
+
+    String EIDAS_REGISTER_RESOURCE = "/eidas/{"+SCHEME_ID_PARAM+"}/register";
     String EIDAS_CONSENT_RESOURCE = "/eidas/{"+SCHEME_ID_PARAM+"}/consent";
-    String METADATA_RESOURCE = "/{"+IDP_ID_PARAM+"}/ServiceMetadata";
+    String METADATA_RESOURCE = "/{"+SCHEME_ID_PARAM+"}/ServiceMetadata";
     String EIDAS_DEBUG_RESOURCE = "/eidas/{"+SCHEME_ID_PARAM+"}/debug";
 
     String USERS_RESOURCE = "/{"+IDP_ID_PARAM+"}/users";
     String DELETE_USER_PATH = "/delete";
     String GET_USER_PATH = "/{" + USERNAME_PARAM + "}";
 
-
     @SuppressWarnings("squid:S2068")
     String PASSWORD_GEN_RESOURCE = "/password-gen";
 
-    String SANITISE_UNKNOWN_HINT_REGEX = "[^A-Za-z0-9_-]+";
 }

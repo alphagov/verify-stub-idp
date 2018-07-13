@@ -5,6 +5,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.stub.idp.domain.DatabaseEidasUser;
+import uk.gov.ida.stub.idp.domain.EidasScheme;
 import uk.gov.ida.stub.idp.domain.EidasUser;
 import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 import uk.gov.ida.stub.idp.exceptions.IncompleteRegistrationException;
@@ -31,13 +32,13 @@ public class StubCountryService {
         this.sessionRepository = sessionRepository;
     }
 
-    public void attachStubCountryToSession(String schemeName, String username, String password, EidasSession session) throws InvalidUsernameOrPasswordException, InvalidSessionIdException {
-        StubCountry stubCountry = stubCountryRepository.getStubCountryWithFriendlyId(schemeName);
+    public void attachStubCountryToSession(EidasScheme eidasScheme, String username, String password, EidasSession session) throws InvalidUsernameOrPasswordException, InvalidSessionIdException {
+        StubCountry stubCountry = stubCountryRepository.getStubCountryWithFriendlyId(eidasScheme);
         Optional<DatabaseEidasUser> user = stubCountry.getUser(username, password);
         attachEidasUserToSession(user, session);
     }
 
-    public void createAndAttachIdpUserToSession(String countryName,
+    public void createAndAttachIdpUserToSession(EidasScheme eidasScheme,
                                                 String username, String password,
                                                 EidasSession idpSessionId,
                                                 String firstName,
@@ -46,7 +47,7 @@ public class StubCountryService {
                                                 String nonLatinSurname,
                                                 String dob,
                                                 AuthnContext levelOfAssurance) throws InvalidSessionIdException, InvalidUsernameOrPasswordException, InvalidDateException, IncompleteRegistrationException, UsernameAlreadyTakenException {
-        StubCountry stubCountry = stubCountryRepository.getStubCountryWithFriendlyId(countryName);
+        StubCountry stubCountry = stubCountryRepository.getStubCountryWithFriendlyId(eidasScheme);
         DatabaseEidasUser user = createEidasUserInStubCountry(
                 username, password, stubCountry, firstName, nonLatinFirstname,
                 surname, nonLatinSurname, dob, levelOfAssurance

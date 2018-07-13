@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.stub.idp.domain.EidasAuthnRequest;
+import uk.gov.ida.stub.idp.domain.EidasScheme;
 import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
 import uk.gov.ida.stub.idp.exceptions.IncompleteRegistrationException;
 import uk.gov.ida.stub.idp.exceptions.InvalidDateException;
@@ -95,7 +96,7 @@ public class EidasRegistrationPageResourceTest {
         final Response response = resource.post(STUB_COUNTRY, "bob", "", "jones", "", "2000-01-01", "username", "password", LEVEL_2, Register, SESSION_ID);
 
         assertThat(response.getStatus()).isEqualTo(303);
-        verify(stubCountryService).createAndAttachIdpUserToSession(eq(STUB_COUNTRY), anyString(), anyString(), eq(eidasSession), anyString(), anyString(), anyString(), anyString(), anyString(), eq(LEVEL_2));
+        verify(stubCountryService).createAndAttachIdpUserToSession(eq(EidasScheme.fromString(STUB_COUNTRY).get()), anyString(), anyString(), eq(eidasSession), anyString(), anyString(), anyString(), anyString(), anyString(), eq(LEVEL_2));
     }
 
 

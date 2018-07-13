@@ -5,10 +5,12 @@ import uk.gov.ida.common.SessionId;
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.cookies.CookieNames;
+import uk.gov.ida.stub.idp.domain.EidasScheme;
 import uk.gov.ida.stub.idp.domain.SamlResponse;
 import uk.gov.ida.stub.idp.domain.SubmitButtonValue;
 import uk.gov.ida.stub.idp.exceptions.IncompleteRegistrationException;
 import uk.gov.ida.stub.idp.exceptions.InvalidDateException;
+import uk.gov.ida.stub.idp.exceptions.InvalidEidasSchemeException;
 import uk.gov.ida.stub.idp.exceptions.InvalidSessionIdException;
 import uk.gov.ida.stub.idp.exceptions.InvalidUsernameOrPasswordException;
 import uk.gov.ida.stub.idp.exceptions.UsernameAlreadyTakenException;
@@ -76,26 +78,31 @@ public class EidasRegistrationPageResource {
 
     @GET
     public Response get(
-            @PathParam(Urls.IDP_ID_PARAM) @NotNull String idpName,
+            @PathParam(Urls.SCHEME_ID_PARAM) @NotNull String schemeId,
             @QueryParam(Urls.ERROR_MESSAGE_PARAM) Optional<ErrorMessageType> errorMessage,
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
 
+        final Optional<EidasScheme> eidasScheme = EidasScheme.fromString(schemeId);
+        if(!eidasScheme.isPresent()) {
+            throw new InvalidEidasSchemeException();
+        }
+
         if (Strings.isNullOrEmpty(sessionCookie.toString())) {
-            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Unable to locate session cookie for " + idpName))).build());
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Unable to locate session cookie for " + schemeId))).build());
         }
 
         if (!sessionRepository.containsSession(sessionCookie)) {
-            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Session is invalid for " + idpName))).build());
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Session is invalid for " + schemeId))).build());
         }
 
-        StubCountry idp = stubsCountryRepository.getStubCountryWithFriendlyId(idpName);
-        return Response.ok(new EidasRegistrationPageView(idp.getDisplayName(), idp.getFriendlyId(), errorMessage.orElse(NO_ERROR).getMessage(), idp.getAssetId())).build();
+        StubCountry stubCountry = stubsCountryRepository.getStubCountryWithFriendlyId(eidasScheme.get());
+        return Response.ok(new EidasRegistrationPageView(stubCountry.getDisplayName(), stubCountry.getFriendlyId(), errorMessage.orElse(NO_ERROR).getMessage(), stubCountry.getAssetId())).build();
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response post(
-            @PathParam(Urls.IDP_ID_PARAM) @NotNull String countryName,
+            @PathParam(Urls.SCHEME_ID_PARAM) @NotNull String schemeId,
             @FormParam(Urls.FIRSTNAME_PARAM) String firstname,
             @FormParam(Urls.NON_LATIN_FIRSTNAME_PARAM) String nonLatinFirstname,
             @FormParam(Urls.SURNAME_PARAM) String surname,
@@ -107,14 +114,19 @@ public class EidasRegistrationPageResource {
             @FormParam(Urls.SUBMIT_PARAM) @NotNull SubmitButtonValue submitButtonValue,
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
 
+        final Optional<EidasScheme> eidasScheme = EidasScheme.fromString(schemeId);
+        if(!eidasScheme.isPresent()) {
+            throw new InvalidEidasSchemeException();
+        }
+
         if (Strings.isNullOrEmpty(sessionCookie.toString())) {
-            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Unable to locate session cookie for " + countryName))).build());
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Unable to locate session cookie for " + schemeId))).build());
         }
 
         Optional<EidasSession> session = sessionRepository.get(sessionCookie);
 
         if (!session.isPresent()) {
-            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Session is invalid for " + countryName))).build());
+            throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Session is invalid for " + schemeId))).build());
         }
 
         final String samlRequestId = session.get().getEidasAuthnRequest().getRequestId();
@@ -124,13 +136,13 @@ public class EidasRegistrationPageResource {
 
                 session = sessionRepository.deleteAndGet(sessionCookie);
 
-                final SamlResponse cancelResponse = nonSuccessAuthnResponseService.generateAuthnCancel(countryName, samlRequestId, session.get().getRelayState());
+                final SamlResponse cancelResponse = nonSuccessAuthnResponseService.generateAuthnCancel(schemeId, samlRequestId, session.get().getRelayState());
                 return samlResponseRedirectViewFactory.sendSamlMessage(cancelResponse);
             }
             case Register: {
                 try {
                     stubCountryService.createAndAttachIdpUserToSession(
-                            countryName,
+                            eidasScheme.get(),
                             username,
                             password,
                             session.get(),
@@ -142,18 +154,18 @@ public class EidasRegistrationPageResource {
                             levelOfAssurance
                     );
                     return Response.seeOther(UriBuilder.fromPath(Urls.EIDAS_CONSENT_RESOURCE)
-                            .build(countryName))
+                            .build(schemeId))
                             .build();
                 } catch (InvalidSessionIdException e) {
-                    return createErrorResponse(INVALID_SESSION_ID, countryName);
+                    return createErrorResponse(INVALID_SESSION_ID, schemeId);
                 } catch (IncompleteRegistrationException e) {
-                    return createErrorResponse(INCOMPLETE_REGISTRATION, countryName);
+                    return createErrorResponse(INCOMPLETE_REGISTRATION, schemeId);
                 } catch (InvalidDateException e) {
-                    return createErrorResponse(INVALID_DATE, countryName);
+                    return createErrorResponse(INVALID_DATE, schemeId);
                 } catch (UsernameAlreadyTakenException e) {
-                    return createErrorResponse(USERNAME_ALREADY_TAKEN, countryName);
+                    return createErrorResponse(USERNAME_ALREADY_TAKEN, schemeId);
                 } catch (InvalidUsernameOrPasswordException e) {
-                    return createErrorResponse(INVALID_USERNAME_OR_PASSWORD, countryName);
+                    return createErrorResponse(INVALID_USERNAME_OR_PASSWORD, schemeId);
                 }
             }
             default: {
@@ -162,10 +174,10 @@ public class EidasRegistrationPageResource {
         }
     }
 
-    private Response createErrorResponse(ErrorMessageType errorMessage, String idpName) {
+    private Response createErrorResponse(ErrorMessageType errorMessage, String schemeId) {
         URI uri = UriBuilder.fromPath(Urls.EIDAS_REGISTER_RESOURCE)
                 .queryParam(Urls.ERROR_MESSAGE_PARAM, errorMessage)
-                .build(idpName);
+                .build(schemeId);
         return Response.seeOther(uri).build();
     }
 }

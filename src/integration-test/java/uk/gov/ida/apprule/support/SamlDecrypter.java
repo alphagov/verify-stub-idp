@@ -95,12 +95,14 @@ public class SamlDecrypter {
             new Base64StringDecoder(),
             new ResponseSizeValidator(new StringSizeValidator()),
             new OpenSamlXMLObjectUnmarshaller(new SamlObjectParser()));
+    private final Optional<String> eidasSchemeName;
 
-    public SamlDecrypter(Client client, URI metadataUri, String hubEntityId, int localPort) {
+    public SamlDecrypter(Client client, URI metadataUri, String hubEntityId, int localPort, Optional<String> eidasSchemeName) {
         this.client = client;
         this.metadataUri = metadataUri;
         this.hubEntityId = hubEntityId;
         this.localPort = localPort;
+        this.eidasSchemeName = eidasSchemeName;
     }
 
     /**
@@ -197,7 +199,7 @@ public class SamlDecrypter {
     }
 
     private SamlMessageSignatureValidator getSamlMessageSignatureValidator(String entityId) {
-        return ofNullable(getMetadataResolver(URI.create("http://localhost:"+localPort+"/stub-country/ServiceMetadata")))
+        return ofNullable(getMetadataResolver(URI.create("http://localhost:"+localPort+"/"+eidasSchemeName.get()+"/ServiceMetadata")))
                 .map(m -> {
                     try {
                         return new MetadataSignatureTrustEngineFactory().createSignatureTrustEngine(m);
