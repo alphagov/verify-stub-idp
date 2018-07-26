@@ -1,0 +1,124 @@
+server:
+  applicationConnectors:
+    - type: http
+      port: ${PORT:-50140}
+  adminConnectors:
+    - type: http
+      port: 50141
+
+  requestLog:
+    type: classic
+    appenders:
+      - type: console
+      - type: file
+        currentLogFilename: ${LOG_PATH}/debug/stub-idp_access.log
+        archivedLogFilenamePattern: ${LOG_PATH}/debug/stub-idp_access.log.%d.gz
+        archivedFileCount: 7
+      - type: logstash-file
+        currentLogFilename: ${LOG_PATH}/stub-idp_access.log
+        archivedLogFilenamePattern: ${LOG_PATH}/stub-idp_access.log.%d.gz
+        archivedFileCount: 7
+      - type: logstash-syslog
+        facility: local2
+        tag: stub-idp
+
+assertionLifetime: 60m
+
+saml:
+  entityId: ${ENTITY_ID:-"http://stub_idp.acme.org/%s/SSO/POST"}
+
+serviceInfo:
+  name: stub-idp
+
+logging:
+  level: ${LOG_LEVEL:-INFO}
+  appenders:
+    - type: console
+    - type: file
+      currentLogFilename: ${LOG_PATH}/debug/stub-idp.log
+      archivedLogFilenamePattern: ${LOG_PATH}/debug/stub-idp.log.%d.gz
+      archivedFileCount: 7
+    - type: logstash-file
+      currentLogFilename: ${LOG_PATH}/stub-idp.log
+      archivedLogFilenamePattern: ${LOG_PATH}/stub-idp.log.%d.gz
+      archivedFileCount: 7
+    - type: logstash-syslog
+      facility: local2
+      tag: stub-idp
+
+signingKeyPairConfiguration:
+  privateKeyConfiguration:
+    type: ${KEY_TYPE:-file}
+    key: ${STUB_IDP_SIGNING_PRIVATE_KEY}
+  publicKeyConfiguration:
+    type: ${CERT_TYPE:-file}
+    cert: ${STUB_IDP_SIGNING_CERT}
+    name: idp.signing.cert
+
+basicAuthEnabledForUserResource: ${STUB_IDP_BASIC_AUTH}
+
+stubIdpsYmlFileLocation: ${STUB_IDPS_FILE_PATH:-/ida/stub-idp/stub-idps.yml}
+stubIdpYmlFileRefresh: 10s
+
+metrics:
+  reporters:
+    - type: graphite
+      host: graphite
+      port: 2003
+      prefix: ${GRAPHITE_PREFIX}
+      frequency: ${GRAPHITE_REPORTING_FREQUENCY:-10s}
+
+hubEntityId: ${METADATA_ENTITY_ID}
+
+metadata:
+  client:
+    timeout: 60s
+    timeToLive: 10m
+    connectionTimeout: 4s
+    tls:
+      protocol: TLSv1.2
+      verifyHostname: false
+  uri: ${METADATA_URL}
+  trustStore:
+    type: ${TRUSTSTORE_TYPE:-file}
+    store: ${METADATA_TRUSTSTORE}
+    password: ${TRUSTSTORE_PASSWORD}
+  minRefreshDelay: 30000
+  maxRefreshDelay: 1800000
+  expectedEntityId: ${METADATA_ENTITY_ID}
+
+europeanIdentity:
+  enabled: ${EUROPEAN_IDENTITY_ENABLED:-false}
+  hubConnectorEntityId: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}
+  stubCountryBaseUrl: ${STUB_IDP_HOSTNAME:-DefaultNotUsed}
+  metadata:
+    jerseyClientName: connector-metadata-client
+    client:
+      timeout: 60s
+      timeToLive: 10m
+      connectionTimeout: 4s
+      tls:
+        protocol: TLSv1.2
+        verifyHostname: false
+    uri: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}
+    trustStore:
+      type: ${TRUSTSTORE_TYPE:-file}
+      store: ${METADATA_TRUSTSTORE}
+      password: ${TRUSTSTORE_PASSWORD}
+    minRefreshDelay: 30000
+    maxRefreshDelay: 1800000
+    expectedEntityId: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}
+  signingKeyPairConfiguration:
+    privateKeyConfiguration:
+      type: ${KEY_TYPE:-file}
+      key: ${STUB_COUNTRY_SIGNING_PRIVATE_KEY}
+    publicKeyConfiguration:
+      type: ${CERT_TYPE:-file}
+      cert: ${STUB_COUNTRY_SIGNING_CERT}
+      name: stub_country_signing_cert
+
+database:
+# Ensure to run the application you have DB_URI
+# Format for DB_URI: jdbc:postgresql://host-name:port/database-name?user=user-name&password=password
+# example: jdbc:postgresql://localhost:5432/postgres?user=postgres&password=password
+  url: ${DB_URI:-}

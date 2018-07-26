@@ -1,0 +1,30 @@
+#!/bin/bash -eu
+
+if [ $# -ne 1 ]; then
+  echo "Usage: ./deploy VERSION_MANIFEST_JSON_STRING"
+  exit 1
+fi
+
+stub_idp_version=$(jq -r '.ida_stub_idp_version' <<< "$1")
+if [[ "$stub_idp_version" == "null" ]]; then
+  echo "No stub_idp_version entry in ${1}"
+  exit 1
+fi
+
+verify_stub_idp_federation_config_version=$(jq -r '.verify_stub_idp_federation_config_version' <<< "$1")
+if [[ "$verify_stub_idp_federation_config_version" == "null" ]]; then
+  echo "No verify_stub_idp_federation_config_version entry in ${1}"
+  exit 1
+fi
+
+/usr/bin/apt-get -qq update
+
+for PACKAGE in verify-stub-idp-federation-config stub-idp; do
+  VERSION_VAR=${PACKAGE//-/_}_version
+  VERSION_SPECIFIED=${!VERSION_VAR}
+
+  /usr/bin/apt-get install \
+    -qfy --reinstall --force-yes \
+    -o DPkg::Options::=--force-confnew \
+    $PACKAGE="$VERSION_SPECIFIED"
+done

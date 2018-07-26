@@ -1,0 +1,21 @@
+.gradle/
+apps-home/
+artefacts/
+build/
+*.iml
+*.ipr
+*.iws
+*.log
+out/
+apps-local-data
+local.env
+logs/
+.idea
+.classpath
+.project
+.settings
+# ignore non-stub logos in the path
+src/main/resources/assets/images/providers/*
+!src/main/resources/assets/images/providers/stub*
+*~
+\#*\#

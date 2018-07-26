@@ -1,0 +1,19 @@
+---
+applications:
+  - name: ida-stub-idp
+    memory: 1G
+    buildpack: java_buildpack
+    env:
+      LOG_PATH: /app/verify-stub-idp/logs
+      LOG_LEVEL: INFO
+      CONFIG_FILE: /app/verify-stub-idp/stub-idp.yml
+      ENTITY_ID: "http://stub_idp.acme.org/%s/SSO/POST"
+      KEY_TYPE: encoded
+      CERT_TYPE: encoded
+      TRUSTSTORE_TYPE: encoded
+      TRUSTSTORE_PASSWORD: puppet
+      STUB_IDP_BASIC_AUTH: true
+      GRAPHITE_REPORTING_FREQUENCY: 100days
+    services:
+      - ida-stub-idp-db
+      - ida-stub-idp-logit
