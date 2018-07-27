@@ -1,8 +1,22 @@
 plugins { id "com.jfrog.bintray" version "1.8.0" }
 
-dependencies {
-    compile configurations.common,
-            configurations.test_deps
+apply plugin: 'maven-publish'
+apply plugin: 'java'
+
+publishing {
+    repositories {
+        maven {
+            url "/srv/maven" // change to point to your repo, e.g. http://my.org/repo
+        }
+    }
+
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            groupId = "uk.gov.ida"
+            version = "$build_version"
+        }
+    }
 }
 
 bintray {
@@ -20,5 +34,10 @@ bintray {
             name = "$build_version"
         }
     }
+}
+
+dependencies {
+    compile configurations.stub_idp_saml,
+            configurations.stub_idp_saml_test
 }
 

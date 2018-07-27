@@ -1,14 +1,3 @@
-apply plugin: 'idea'
-apply plugin: 'java'
-apply plugin: 'jacoco'
-apply from: 'idea.gradle'
-apply plugin: 'com.github.ben-manes.versions'
-apply plugin: 'application'
-apply plugin: 'maven-publish'
-
-apply from: 'buildSrc/publish.gradle'
-apply plugin: 'com.github.ben-manes.versions'
-
 buildscript {
     repositories {
         if (System.getenv('VERIFY_USE_PUBLIC_BINARIES') == 'true') {
@@ -21,119 +10,24 @@ buildscript {
         }
     }
     dependencies {
-      'com.github.ben-manes:gradle-versions-plugin:0.17.0'
+      classpath 'com.github.ben-manes:gradle-versions-plugin:0.17.0'
     }
 }
 
-mainClassName = 'uk.gov.ida.stub.idp.StubIdpApplication'
+apply plugin: 'idea'
+apply plugin: 'java'
+apply plugin: 'com.github.ben-manes.versions'
 
 compileJava.options.encoding = "UTF-8"
 compileTestJava.options.encoding = "UTF-8"
 
-archivesBaseName = 'stub-idp'
-
-def buildNumber = "$version"
-
 ext {
-    opensaml_version = '3.3.0'
+  opensaml_version = '3.3.0'
+  build_version = "$opensaml_version-${System.env.BUILD_NUMBER ?: 'SNAPSHOT'}"
 }
-
-task paasManifestFileCheck {
-    doFirst {
-        if (!project.hasProperty('manifestFile')) {
-            def usage = './gradlew pushToPaas -PmanifestFile=<path to file>'
-            println 'Manifest file is missing!!'
-            println "Please run " + usage
-            throw new GradleException("Usage: " + usage)
-        }
-    }
-}
-task pushToPaas(type: Exec, dependsOn: [paasManifestFileCheck, distZip]) {
-    doFirst {
-        commandLine 'cf', 'push', '-f', manifestFile
-    }
-}
-
-distZip {
-    into(project.name) {
-        from 'configuration'
-        include '*.yml'
-    }
-
-    // We want the .zip filename to be "ida-stub-idp-$version.zip",
-    // but it's more convenient if the inner directory is "ida-stub-idp"
-    // because the app needs to refer to its own location (at the moment).
-    // TODO (2018-02-12): Remove the need for the app to know its own location
-    // and remove this workaround.
-    def versionedPath = archivePath
-    version = null
-    doLast {
-        archivePath.renameTo(versionedPath)
-    }
-}
-
-publishing {
-    publications {
-        zipFile(MavenPublication) {
-            artifactId = "ida-stub-idp"
-            version = "$buildNumber"
-            groupId = "uk.gov.ida"
-
-            artifact file("build/distributions/$project.name" + "-$buildNumber" + '.zip')
-        }
-    }
-    repositories {
-        maven {
-            url "/srv/maven"
-        }
-    }
-}
-
-if (project.hasProperty('includeConfigDirectories')) {
-    distZip {
-        into(project.name + '/resources') {
-            from includeConfigDirectories
-        }
-    }
-}
-
-if (project.hasProperty('includeDirectories')) {
-    distZip {
-        includeDirectories.split(',').each {
-            def dir = "${it}"
-            println dir
-            into(project.name + '/resources') {
-                from dir
-                include '*'
-            }
-        }
-    }
-}
-
-task copyStubIdpLogos(type: Copy) {
-    description 'Copy stub idp logos from federation config into the main resource dir'
-    if (project.hasProperty('stubidpExtraLogosDirectory')) {
-        project.logger.lifecycle "Copying stub idp logos into the main resource dir using stubidpExtraLogosDirectory property"
-        // make sure the idp logos are in the jar
-        from stubidpExtraLogosDirectory
-        into('src/main/resources/assets/images/providers/')
-        include '*.png'
-    } else {
-        // same as above, but for running locally
-        def stubIdpFederationConfigDir = new File("../verify-stub-idp-federation-config/idp-logos/")
-        project.logger.lifecycle "Copying stub idp logos into the main resource dir from adjacent verify-stub-idp-federation-config"
-        if (stubIdpFederationConfigDir.exists() && stubIdpFederationConfigDir.isDirectory()) {
-            from stubIdpFederationConfigDir.getAbsolutePath()
-            into('src/main/resources/assets/images/providers/')
-            include '*.png'
-        }
-    }
-}
-build.dependsOn copyStubIdpLogos
-build.mustRunAfter copyStubIdpLogos
 
 def dependencyVersions = [
-        stub_idp_saml         : "$opensaml_version-72",
+        opensaml              : "$opensaml_version",
         ida_utils             : '2.0.0-336',
         dropwizard            : '1.1.4',
         ida_dev_pki           : '1.1.0-34',
@@ -143,125 +37,17 @@ def dependencyVersions = [
         hk2_version           : '2.5.0-b05'
 ]
 
-repositories {
-    if (System.getenv('VERIFY_USE_PUBLIC_BINARIES') == 'true') {
-        logger.warn('Production builds MUST NOT be built with public binaries.\nUse artifactory/whitelisted-repos for production builds.\n\n')
-        maven { url 'https://dl.bintray.com/alphagov/maven' } // For dropwizard-logstash
-        maven { url 'https://dl.bintray.com/alphagov/maven-test' } // For other public verify binaries
-        jcenter()
-    }
-    else {
-        maven { url 'https://artifactory.ida.digital.cabinet-office.gov.uk/artifactory/whitelisted-repos' }
-    }
-}
-
-dependencies {
-    compile 'com.hubspot.dropwizard:dropwizard-guicier:1.0.0.6',
-            // 0-jersey2-guice-spi has to be near the top of the dependencies
-            'com.squarespace.jersey2-guice:0-jersey2-guice-spi:1.0.6',
-            'de.neuland-bfi:jade4j:0.4.0',
-            "io.dropwizard:dropwizard-assets:$dependencyVersions.dropwizard",
-            "io.dropwizard:dropwizard-auth:$dependencyVersions.dropwizard",
-            "io.dropwizard:dropwizard-client:$dependencyVersions.dropwizard",
-            "io.dropwizard:dropwizard-configuration:$dependencyVersions.dropwizard",
-            "io.dropwizard:dropwizard-core:$dependencyVersions.dropwizard",
-            "io.dropwizard:dropwizard-metrics-graphite:$dependencyVersions.dropwizard",
-            "io.dropwizard:dropwizard-views:$dependencyVersions.dropwizard",
-            "io.dropwizard:dropwizard-views-freemarker:$dependencyVersions.dropwizard",
-            "org.flywaydb:flyway-core:4.2.0",
-            'org.freemarker:freemarker:2.3.27-incubating',
-            "org.jdbi:jdbi3-core:3.0.0",
-            'org.jsoup:jsoup:1.6.1',
-            'org.mindrot:jbcrypt:0.3m',
-            "org.opensaml:opensaml-core:$dependencyVersions.opensaml",
-            "org.postgresql:postgresql:42.1.4",
-            "uk.gov.ida:common-utils:$dependencyVersions.ida_utils",
-            "uk.gov.ida:saml-extensions:$dependencyVersions.saml_libs",
-            "uk.gov.ida:rest-utils:$dependencyVersions.ida_utils",
-            "uk.gov.ida:saml-metadata-bindings:$dependencyVersions.saml_libs",
-            "uk.gov.ida:saml-security:$dependencyVersions.saml_libs",
-            "uk.gov.ida:security-utils:$dependencyVersions.ida_utils",
-            "uk.gov.ida:stub-idp-saml:$dependencyVersions.stub_idp_saml",
-            "uk.gov.ida:saml-utils:$dependencyVersions.saml_libs"
-
-    runtime 'joda-time:joda-time:2.3',
-            'net.logstash.logback:logstash-logback-encoder:4.9'
-            'com.fasterxml.jackson.datatype:jackson-datatype-joda:2.9.5'
-
-    testCompile "io.dropwizard:dropwizard-testing:$dependencyVersions.dropwizard",
-            "uk.gov.ida:stub-idp-saml-test:$dependencyVersions.stub_idp_saml",
-            "uk.gov.ida:ida-dev-pki:$dependencyVersions.ida_dev_pki",
-            "uk.gov.ida:saml-metadata-bindings-test:$dependencyVersions.saml_libs",
-            "uk.gov.ida:common-test-utils:$dependencyVersions.ida_test_utils",
-            "uk.gov.ida:hub-saml:$dependencyVersions.hub_saml",
-            "uk.gov.ida:hub-saml-test-utils:$dependencyVersions.hub_saml",
-            "com.h2database:h2:1.4.196"
-
-}
-
-ext.mainclass = 'uk.gov.ida.stub.idp.StubIdpApplication'
-
-sourceSets {
-    integrationTest {
-        java {
-            srcDir 'src/integration-test/java'
-        }
-        resources {
-            srcDir 'configuration'
-        }
-        compileClasspath += sourceSets.main.runtimeClasspath
-        compileClasspath += sourceSets.test.runtimeClasspath
-        compileClasspath += sourceSets.test.output
-    }
-}
-
-task integrationTest(type: Test) {
-    setTestClassesDirs sourceSets.integrationTest.output.classesDirs
-    classpath += sourceSets.integrationTest.runtimeClasspath
-}
-
-tasks.check.dependsOn(integrationTest)
-
-task copyToLib(dependsOn: jar, type: Copy) {
-    into "$buildDir/output/lib"
-    from configurations.runtime
-}
-
-task zip(dependsOn: copyToLib, type: Zip) {
-    from "$buildDir/output"
-}
-
-task(outputDependencies) {
-    doLast {
-        println "saml_lib=" + dependencyVersions.saml_lib
-        println "ida_utils=" + dependencyVersions.ida_utils
-    }
-}
-
-jar {
-    def manifestClasspath = configurations.runtime.collect { 'lib/' + it.getName() }.join(' ')
-    def gitCommit = System.getenv('GIT_COMMIT')
-
-    manifest {
-        attributes(
-                'Main-Class': mainClassName,
-                'Class-Path': manifestClasspath,
-                'Build-Number': buildNumber != null ? buildNumber : '',
-                'Version-Number': project.version,
-                'Git-Commit': gitCommit != null ? gitCommit : '',
-                'Build-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm'Z'"))
-    }
-
-    archiveName = archivesBaseName + '.jar'
-    destinationDir = file("$buildDir/output")
-}
-
 subprojects {
     apply plugin: 'java'
+
+    group = "uk.gov.ida"
+    version = "${version ?: 'SNAPSHOT'}"
+
     repositories {
         if (System.getenv('VERIFY_USE_PUBLIC_BINARIES') == 'true') {
             logger.warn('Production builds MUST NOT be built with public binaries.\nUse artifactory/whitelisted-repos for production builds.\n\n')
-            maven { url 'https://dl.bintray.com/alphagov/maven-test' }
+            maven { url 'https://dl.bintray.com/alphagov/maven' } // For dropwizard-logstash
+            maven { url 'https://dl.bintray.com/alphagov/maven-test' } // For other public verify binaries
             jcenter()
         }
         else {
@@ -269,27 +55,77 @@ subprojects {
         }
     }
 
-    ext {
-      ida_utils_version = '2.0.0-336'
-      opensaml_version = '3.3.0'
-      saml_libs_version = "${opensaml_version}-147"
-      build_version = "$opensaml_version-${System.env.BUILD_NUMBER ?: 'SNAPSHOT'}"
-    }
-    group = "uk.gov.ida"
-    version = "$build_version"
-
     configurations {
-        all*.exclude group: 'org.mockito', module: 'mockito-all'
-        common
-        test_deps
+        stub_idp
+        stub_idp_runtime
+        stub_idp_test
+        stub_idp_saml
+        stub_idp_saml_test
     }
 
     dependencies {
-        common  "uk.gov.ida:saml-utils:$saml_libs_version",
-                "org.opensaml:opensaml-core:$opensaml_version",
-                'joda-time:joda-time:2.9',
-                'javax.inject:javax.inject:1'
+        stub_idp 'com.hubspot.dropwizard:dropwizard-guicier:1.0.0.6',
+                // 0-jersey2-guice-spi has to be near the top of the dependencies
+                'com.squarespace.jersey2-guice:0-jersey2-guice-spi:1.0.6',
+                'de.neuland-bfi:jade4j:0.4.0',
+                "io.dropwizard:dropwizard-assets:$dependencyVersions.dropwizard",
+                "io.dropwizard:dropwizard-auth:$dependencyVersions.dropwizard",
+                "io.dropwizard:dropwizard-client:$dependencyVersions.dropwizard",
+                "io.dropwizard:dropwizard-configuration:$dependencyVersions.dropwizard",
+                "io.dropwizard:dropwizard-core:$dependencyVersions.dropwizard",
+                "io.dropwizard:dropwizard-metrics-graphite:$dependencyVersions.dropwizard",
+                "io.dropwizard:dropwizard-views:$dependencyVersions.dropwizard",
+                "io.dropwizard:dropwizard-views-freemarker:$dependencyVersions.dropwizard",
+                "org.flywaydb:flyway-core:4.2.0",
+                'org.freemarker:freemarker:2.3.27-incubating',
+                "org.jdbi:jdbi3-core:3.0.0",
+                'org.jsoup:jsoup:1.6.1',
+                'org.mindrot:jbcrypt:0.3m',
+                "org.opensaml:opensaml-core:$dependencyVersions.opensaml",
+                "org.postgresql:postgresql:42.1.4",
+                "uk.gov.ida:common-utils:$dependencyVersions.ida_utils",
+                "uk.gov.ida:saml-extensions:$dependencyVersions.saml_libs",
+                "uk.gov.ida:rest-utils:$dependencyVersions.ida_utils",
+                "uk.gov.ida:saml-metadata-bindings:$dependencyVersions.saml_libs",
+                "uk.gov.ida:saml-security:$dependencyVersions.saml_libs",
+                "uk.gov.ida:security-utils:$dependencyVersions.ida_utils",
+                "uk.gov.ida:saml-utils:$dependencyVersions.saml_libs",
+                project(':stub-idp-saml')
 
-        test_deps 'commons-codec:commons-codec:1.10'
+        stub_idp_runtime 'joda-time:joda-time:2.3',
+                'net.logstash.logback:logstash-logback-encoder:4.9',
+                'com.fasterxml.jackson.datatype:jackson-datatype-joda:2.9.5'
+
+        stub_idp_test "io.dropwizard:dropwizard-testing:$dependencyVersions.dropwizard",
+                "uk.gov.ida:ida-dev-pki:$dependencyVersions.ida_dev_pki",
+                "uk.gov.ida:saml-metadata-bindings-test:$dependencyVersions.saml_libs",
+                "uk.gov.ida:common-test-utils:$dependencyVersions.ida_test_utils",
+                "uk.gov.ida:hub-saml:$dependencyVersions.hub_saml",
+                "uk.gov.ida:hub-saml-test-utils:$dependencyVersions.hub_saml",
+                "com.h2database:h2:1.4.196",
+                'commons-codec:commons-codec:1.10',
+                project(':stub-idp-saml-test')
+
+        stub_idp_saml  "uk.gov.ida:saml-utils:$dependencyVersions.saml_libs",
+                "org.opensaml:opensaml-core:$dependencyVersions.opensaml",
+                'joda-time:joda-time:2.9',
+                'javax.inject:javax.inject:1',
+                'javax.validation:validation-api:1.1.0.Final',
+                'com.fasterxml.jackson.core:jackson-annotations:2.6.0',
+                'org.slf4j:slf4j-api:1.7.12',
+                'commons-lang:commons-lang:2.6'
+
+        stub_idp_saml_test 'commons-codec:commons-codec:1.10',
+                "uk.gov.ida:common-utils:$dependencyVersions.ida_utils",
+                'org.assertj:assertj-joda-time:1.1.0'
     }
 }
+
+task(outputDependencies) {
+    doLast {
+        println "saml_lib=" + dependencyVersions.saml_libs
+        println "ida_utils=" + dependencyVersions.ida_utils
+    }
+}
+
+defaultTasks 'clean', 'test', 'jar'

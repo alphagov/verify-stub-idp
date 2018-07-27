@@ -22,9 +22,9 @@ tput sgr0
 tput setaf 3
 printf "to update the following dependent projects:\n"
 
-printf "\n ida-hub"
+printf "\n verify-hub"
+printf "\n verify-test-rp"
 printf "\n ida-compliance-tool"
-printf "\n ida-stub-idp"
 
 tput bold
 printf "\nThank you! :)\n\n"

@@ -15,8 +15,8 @@ logs/
 .project
 .settings
 # ignore non-stub logos in the path
-src/main/resources/assets/images/providers/*
-!src/main/resources/assets/images/providers/stub*
+stub-idp/src/main/resources/assets/images/providers/*
+!stub-idp/src/main/resources/assets/images/providers/stub*
 *~
 \#*\#
 *.class

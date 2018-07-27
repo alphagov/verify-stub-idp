@@ -1,16 +1,22 @@
 plugins { id "com.jfrog.bintray" version "1.8.0" }
 
-dependencies {
-    compile configurations.common,
-            'javax.validation:validation-api:1.1.0.Final',
-            'com.fasterxml.jackson.core:jackson-annotations:2.6.0',
-            'org.slf4j:slf4j-api:1.7.12',
-            'commons-lang:commons-lang:2.6'
+apply plugin: 'maven-publish'
+apply plugin: 'java'
 
-    testCompile configurations.test_deps,
-            project(':stub-idp-saml-test'),
-            "uk.gov.ida:common-utils:$ida_utils_version",
-            'org.assertj:assertj-joda-time:1.1.0'
+publishing {
+    repositories {
+        maven {
+            url "/srv/maven" // change to point to your repo, e.g. http://my.org/repo
+        }
+    }
+
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            groupId = "uk.gov.ida"
+            version = "$build_version"
+        }
+    }
 }
 
 bintray {
@@ -28,5 +34,12 @@ bintray {
             name = "$build_version"
         }
     }
+}
+
+dependencies {
+    compile configurations.stub_idp_saml
+
+    testCompile configurations.stub_idp_saml_test,
+            project(':stub-idp-saml-test')
 }
 
