@@ -19,3 +19,16 @@ src/main/resources/assets/images/providers/*
 !src/main/resources/assets/images/providers/stub*
 *~
 \#*\#
+*.class
+build
+repo
+.DS_Store
+.gradle
+.sass-cache
+out/**
+deploy/perf_graphs
+# Package Files #
+*.jar
+*.swp
+.settings/
+bin/

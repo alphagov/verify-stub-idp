@@ -1,3 +1,14 @@
+apply plugin: 'idea'
+apply plugin: 'java'
+apply plugin: 'jacoco'
+apply from: 'idea.gradle'
+apply plugin: 'com.github.ben-manes.versions'
+apply plugin: 'application'
+apply plugin: 'maven-publish'
+
+apply from: 'buildSrc/publish.gradle'
+apply plugin: 'com.github.ben-manes.versions'
+
 buildscript {
     repositories {
         if (System.getenv('VERIFY_USE_PUBLIC_BINARIES') == 'true') {
@@ -10,18 +21,9 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'uk.gov.ida:ida-gradle:1.1.0-23',
-                'com.github.ben-manes:gradle-versions-plugin:0.17.0'
+      'com.github.ben-manes:gradle-versions-plugin:0.17.0'
     }
 }
-
-apply plugin: 'idea'
-apply plugin: 'java'
-apply plugin: 'jacoco'
-apply from: 'idea.gradle'
-apply plugin: 'com.github.ben-manes.versions'
-apply plugin: 'application'
-apply plugin: 'maven-publish'
 
 mainClassName = 'uk.gov.ida.stub.idp.StubIdpApplication'
 
@@ -252,4 +254,42 @@ jar {
 
     archiveName = archivesBaseName + '.jar'
     destinationDir = file("$buildDir/output")
+}
+
+subprojects {
+    apply plugin: 'java'
+    repositories {
+        if (System.getenv('VERIFY_USE_PUBLIC_BINARIES') == 'true') {
+            logger.warn('Production builds MUST NOT be built with public binaries.\nUse artifactory/whitelisted-repos for production builds.\n\n')
+            maven { url 'https://dl.bintray.com/alphagov/maven-test' }
+            jcenter()
+        }
+        else {
+            maven { url 'https://artifactory.ida.digital.cabinet-office.gov.uk/artifactory/whitelisted-repos' }
+        }
+    }
+
+    ext {
+      ida_utils_version = '2.0.0-336'
+      opensaml_version = '3.3.0'
+      saml_libs_version = "${opensaml_version}-147"
+      build_version = "$opensaml_version-${System.env.BUILD_NUMBER ?: 'SNAPSHOT'}"
+    }
+    group = "uk.gov.ida"
+    version = "$build_version"
+
+    configurations {
+        all*.exclude group: 'org.mockito', module: 'mockito-all'
+        common
+        test_deps
+    }
+
+    dependencies {
+        common  "uk.gov.ida:saml-utils:$saml_libs_version",
+                "org.opensaml:opensaml-core:$opensaml_version",
+                'joda-time:joda-time:2.9',
+                'javax.inject:javax.inject:1'
+
+        test_deps 'commons-codec:commons-codec:1.10'
+    }
 }
