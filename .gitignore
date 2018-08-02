@@ -15,7 +15,20 @@ logs/
 .project
 .settings
 # ignore non-stub logos in the path
-src/main/resources/assets/images/providers/*
-!src/main/resources/assets/images/providers/stub*
+stub-idp/src/main/resources/assets/images/providers/*
+!stub-idp/src/main/resources/assets/images/providers/stub*
 *~
 \#*\#
+*.class
+build
+repo
+.DS_Store
+.gradle
+.sass-cache
+out/**
+deploy/perf_graphs
+# Package Files #
+*.jar
+*.swp
+.settings/
+bin/

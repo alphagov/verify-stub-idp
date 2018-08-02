@@ -1,0 +1,121 @@
+dependencies {
+    testCompile configurations.stub_idp_test
+
+    compile configurations.stub_idp,
+            configurations.stub_idp_runtime
+}
+
+apply plugin: 'application'
+apply plugin: 'maven-publish'
+
+mainClassName = 'uk.gov.ida.hub.stub.idp.StubIdpApplication'
+
+task paasManifestFileCheck {
+    doFirst {
+        if (!project.hasProperty('manifestFile')) {
+            def usage = './gradlew pushToPaas -PmanifestFile=<path to file>'
+            println 'Manifest file is missing!!'
+            println "Please run " + usage
+            throw new GradleException("Usage: " + usage)
+        }
+    }
+}
+task pushToPaas(type: Exec, dependsOn: [paasManifestFileCheck, distZip]) {
+    doFirst {
+        commandLine 'cf', 'push', '-f', manifestFile
+    }
+}
+
+distZip {
+    into(project.name) {
+        from 'configuration'
+        include '*.yml'
+    }
+
+    // We want the .zip filename to be "ida-stub-idp-$version.zip",
+    // but it's more convenient if the inner directory is "ida-stub-idp"
+    // because the app needs to refer to its own location (at the moment).
+    // TODO (2018-02-12): Remove the need for the app to know its own location
+    // and remove this workaround.
+    def versionedPath = archivePath
+    version = null
+    doLast {
+        archivePath.renameTo(versionedPath)
+    }
+}
+
+publishing {
+    publications {
+        zipFile(MavenPublication) {
+            artifactId = "ida-stub-idp"
+            version = "${version ?: 'SNAPSHOT'}"
+            groupId = "uk.gov.ida"
+
+            artifact file("build/distributions/${project.name}-${version}.zip")
+        }
+    }
+    repositories {
+        maven {
+            url "/srv/maven"
+        }
+    }
+}
+
+if (project.hasProperty('includeConfigDirectories')) {
+    distZip {
+        into(project.name + '/resources') {
+            from includeConfigDirectories
+        }
+    }
+}
+
+if (project.hasProperty('includeDirectories')) {
+    distZip {
+        includeDirectories.split(',').each {
+            def dir = "${it}"
+            println dir
+            into(project.name + '/resources') {
+                from dir
+                include '*'
+            }
+        }
+    }
+}
+
+task copyStubIdpLogos(type: Copy) {
+    description 'Copy stub idp logos from federation config into the main resource dir'
+    if (project.hasProperty('stubidpExtraLogosDirectory')) {
+        project.logger.lifecycle "Copying stub idp logos into the main resource dir using stubidpExtraLogosDirectory property"
+        // make sure the idp logos are in the jar
+        from stubidpExtraLogosDirectory
+        into('src/main/resources/assets/images/providers/')
+        include '*.png'
+    } else {
+        // same as above, but for running locally
+        def stubIdpFederationConfigDir = new File("../verify-stub-idp-federation-config/idp-logos/")
+        project.logger.lifecycle "Copying stub idp logos into the main resource dir from adjacent verify-stub-idp-federation-config"
+        if (stubIdpFederationConfigDir.exists() && stubIdpFederationConfigDir.isDirectory()) {
+            from stubIdpFederationConfigDir.getAbsolutePath()
+            into('src/main/resources/assets/images/providers/')
+            include '*.png'
+        }
+    }
+}
+build.dependsOn copyStubIdpLogos
+build.mustRunAfter copyStubIdpLogos
+
+task copyToLib(dependsOn: jar, type: Copy) {
+    into "$buildDir/output/lib"
+    from configurations.runtime
+}
+
+task zip(dependsOn: copyToLib, type: Zip) {
+    from "$buildDir/output"
+}
+
+apply from: "${rootDir}/inttest.gradle"
+apply from: "${rootDir}/shared.gradle"
+
+tasks.publish.dependsOn(distZip)
+tasks.publishToMavenLocal.dependsOn(distZip)
+tasks.check.dependsOn(intTest)
