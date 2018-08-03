@@ -11,10 +11,10 @@ idea {
 sourceSets {
     integrationTest {
         java {
-            srcDir 'src/integration-test/java'
+            srcDir "${rootDir}/src/integration-test/java"
         }
         resources {
-            srcDir 'src/integration-test/resources'
+            srcDir "${rootDir}/src/integration-test/resources"
             srcDir "${rootDir}/configuration"
         }
         compileClasspath += sourceSets.main.runtimeClasspath
