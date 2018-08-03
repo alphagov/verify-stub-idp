@@ -8,7 +8,7 @@ dependencies {
 apply plugin: 'application'
 apply plugin: 'maven-publish'
 
-mainClassName = 'uk.gov.ida.hub.stub.idp.StubIdpApplication'
+mainClassName = 'uk.gov.ida.stub.idp.StubIdpApplication'
 
 task paasManifestFileCheck {
     doFirst {
