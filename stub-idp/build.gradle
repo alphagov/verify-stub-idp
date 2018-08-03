@@ -8,7 +8,10 @@ dependencies {
 apply plugin: 'application'
 apply plugin: 'maven-publish'
 
-mainClassName = 'uk.gov.ida.hub.stub.idp.StubIdpApplication'
+mainClassName = 'uk.gov.ida.stub.idp.StubIdpApplication'
+
+apply from: "${rootDir}/inttest.gradle"
+apply from: "${rootDir}/shared.gradle"
 
 task paasManifestFileCheck {
     doFirst {
@@ -112,9 +115,6 @@ task copyToLib(dependsOn: jar, type: Copy) {
 task zip(dependsOn: copyToLib, type: Zip) {
     from "$buildDir/output"
 }
-
-apply from: "${rootDir}/inttest.gradle"
-apply from: "${rootDir}/shared.gradle"
 
 tasks.publish.dependsOn(distZip)
 tasks.publishToMavenLocal.dependsOn(distZip)
