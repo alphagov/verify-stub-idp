@@ -43,6 +43,7 @@ import uk.gov.ida.saml.security.IdaKeyStore;
 import uk.gov.ida.saml.security.IdaKeyStoreCredentialRetriever;
 import uk.gov.ida.saml.security.SignatureFactory;
 import uk.gov.ida.saml.security.SigningKeyStore;
+import uk.gov.ida.saml.security.signature.SignatureRSASSAPSS;
 import uk.gov.ida.stub.idp.auth.ManagedAuthFilterInstaller;
 import uk.gov.ida.stub.idp.builders.CountryMetadataBuilder;
 import uk.gov.ida.stub.idp.builders.CountryMetadataSigningHelper;
@@ -315,7 +316,7 @@ public class StubIdpModule extends AbstractModule {
             encryptionKeyStore.orElse(null),
             keyStore,
             entityToEncryptForLocator,
-            new SignatureRSASHA256(),
+            new SignatureRSASSAPSS(),
             new DigestSHA256()
         );
     }
