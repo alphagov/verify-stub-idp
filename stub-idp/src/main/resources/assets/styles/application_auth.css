@@ -562,6 +562,7 @@ fieldset.options ul label {
 /* line 412, ../../../../../../../idp-html/app/assets/stylesheets/_global.scss */
 .submit {
   padding: 0.9em 0 0 0;
+  text-align: right;
 }
 
 /* line 416, ../../../../../../../idp-html/app/assets/stylesheets/_global.scss */
@@ -835,7 +836,7 @@ button.text:hover, button.text:active, button.text {
 /* line 195, ../../../../../../../idp-html/app/assets/stylesheets/_auth_sites.scss */
 .submit input[type='submit'] {
   margin-right: 0.5em;
-    float: right;
+  display: inline-block;
 }
 
 /* Smartphones (portrait and landscape) ----------- */

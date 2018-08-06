@@ -10,6 +10,7 @@ import uk.gov.ida.saml.security.EncryptionKeyStore;
 import uk.gov.ida.saml.security.EntityToEncryptForLocator;
 import uk.gov.ida.saml.security.IdaKeyStore;
 
+import javax.inject.Inject;
 import java.util.function.Function;
 
 public class EidasResponseTransformerProvider {

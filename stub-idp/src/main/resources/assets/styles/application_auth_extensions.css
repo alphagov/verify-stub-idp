@@ -6,7 +6,7 @@
     clear: both;
 }
 
-.auth .consent label {
+.auth .consent li label {
     display: block;
     width: 110px;
     text-align: right;
