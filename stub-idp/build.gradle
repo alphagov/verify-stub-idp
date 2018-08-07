@@ -32,7 +32,7 @@ task pushToPaas(type: Exec, dependsOn: [paasManifestFileCheck, distZip]) {
 
 distZip {
     into(project.name) {
-        from 'configuration'
+        from "${rootDir}/configuration"
         include '*.yml'
     }
 
@@ -65,34 +65,13 @@ publishing {
     }
 }
 
-if (project.hasProperty('includeConfigDirectories')) {
-    distZip {
-        into(project.name + '/resources') {
-            from includeConfigDirectories
-        }
-    }
-}
-
-if (project.hasProperty('includeDirectories')) {
-    distZip {
-        includeDirectories.split(',').each {
-            def dir = "${it}"
-            println dir
-            into(project.name + '/resources') {
-                from dir
-                include '*'
-            }
-        }
-    }
-}
-
 task copyStubIdpLogos(type: Copy) {
     description 'Copy stub idp logos from federation config into the main resource dir'
     if (project.hasProperty('stubidpExtraLogosDirectory')) {
-        project.logger.lifecycle "Copying stub idp logos into the main resource dir using stubidpExtraLogosDirectory property"
+        project.logger.lifecycle "Copying stub idp logos from stubidpExtraLogosDirectory=${project.properties['stubidpExtraLogosDirectory']}"
         // make sure the idp logos are in the jar
         from stubidpExtraLogosDirectory
-        into('src/main/resources/assets/images/providers/')
+        into("src/main/resources/assets/images/providers/")
         include '*.png'
     } else {
         // same as above, but for running locally

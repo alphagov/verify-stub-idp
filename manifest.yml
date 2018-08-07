@@ -4,9 +4,9 @@ applications:
     memory: 1G
     buildpack: java_buildpack
     env:
-      LOG_PATH: /app/verify-stub-idp/logs
+      LOG_PATH: /app/stub-idp/logs
       LOG_LEVEL: INFO
-      CONFIG_FILE: /app/verify-stub-idp/stub-idp.yml
+      CONFIG_FILE: /app/stub-idp/stub-idp.yml
       ENTITY_ID: "http://stub_idp.acme.org/%s/SSO/POST"
       KEY_TYPE: encoded
       CERT_TYPE: encoded

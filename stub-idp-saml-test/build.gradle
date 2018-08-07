@@ -29,7 +29,7 @@ bintray {
         name = 'ida-stub-idp-saml'
         userOrg = 'alphagov'
         licenses = ['MIT']
-        vcsUrl = 'https://github.com/alphagov/verify-stub-idp-saml.git'
+        vcsUrl = 'https://github.com/alphagov/verify-stub-idp.git'
         version {
             name = "$build_version"
         }

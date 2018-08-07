@@ -32,3 +32,5 @@ deploy/perf_graphs
 *.swp
 .settings/
 bin/
+
+stub-idp/src/dist
