@@ -18,9 +18,6 @@ apply plugin: 'idea'
 apply plugin: 'java'
 apply plugin: 'com.github.ben-manes.versions'
 
-compileJava.options.encoding = "UTF-8"
-compileTestJava.options.encoding = "UTF-8"
-
 ext {
   opensaml_version = '3.3.0'
   build_version = "$opensaml_version-${System.env.BUILD_NUMBER ?: 'SNAPSHOT'}"
@@ -31,7 +28,7 @@ def dependencyVersions = [
         ida_utils             : '2.0.0-336',
         dropwizard            : '1.1.4',
         ida_dev_pki           : '1.1.0-34',
-        saml_libs             : "$opensaml_version-147",
+        saml_libs             : "$opensaml_version-156",
         ida_test_utils        : '2.0.0-43',
         hub_saml              : "$opensaml_version-15582",
         hk2_version           : '2.5.0-b05'
@@ -42,6 +39,9 @@ subprojects {
 
     group = "uk.gov.ida"
     version = "${version ?: 'SNAPSHOT'}"
+
+    compileJava.options.encoding = "UTF-8"
+    compileTestJava.options.encoding = "UTF-8"
 
     repositories {
         if (System.getenv('VERIFY_USE_PUBLIC_BINARIES') == 'true') {
