@@ -316,7 +316,7 @@ public class StubIdpModule extends AbstractModule {
             encryptionKeyStore.orElse(null),
             keyStore,
             entityToEncryptForLocator,
-            new SignatureRSASSAPSS(),
+            new SignatureRSASHA256(),
             new DigestSHA256()
         );
     }
