@@ -25,10 +25,10 @@ ext {
 
 def dependencyVersions = [
         opensaml              : "$opensaml_version",
-        ida_utils             : '2.0.0-336',
+        ida_utils             : '2.0.0-340',
         dropwizard            : '1.1.4',
         ida_dev_pki           : '1.1.0-34',
-        saml_libs             : "$opensaml_version-156",
+        saml_libs             : "$opensaml_version-157",
         ida_test_utils        : '2.0.0-43',
         hub_saml              : "$opensaml_version-15582",
         hk2_version           : '2.5.0-b05'

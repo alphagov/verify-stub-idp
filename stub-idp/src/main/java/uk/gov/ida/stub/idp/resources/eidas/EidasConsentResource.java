@@ -8,6 +8,7 @@ import uk.gov.ida.stub.idp.domain.EidasScheme;
 import uk.gov.ida.stub.idp.domain.EidasUser;
 import uk.gov.ida.stub.idp.domain.SamlResponse;
 import uk.gov.ida.stub.idp.exceptions.InvalidEidasSchemeException;
+import uk.gov.ida.stub.idp.exceptions.InvalidSigningAlgorithmException;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASession;
 import uk.gov.ida.stub.idp.repositories.EidasSession;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
@@ -18,6 +19,7 @@ import uk.gov.ida.stub.idp.views.EidasConsentView;
 import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.FormParam;
@@ -38,16 +40,19 @@ public class EidasConsentResource {
 
     private final SessionRepository<EidasSession> sessionRepository;
     private final StubCountryRepository stubCountryRepository;
-    private final EidasAuthnResponseService successAuthnResponseService;
+    private final EidasAuthnResponseService rsaSha256AuthnResponseService;
+    private final EidasAuthnResponseService rsaSsaPssAuthnResponseService;
     private final SamlResponseRedirectViewFactory samlResponseRedirectViewFactory;
 
     @Inject
     public EidasConsentResource(
             SessionRepository<EidasSession> sessionRepository,
-            EidasAuthnResponseService successAuthnResponseService,
+            @Named("RSASHA256EidasAuthnResponseService") EidasAuthnResponseService rsaSha256AuthnResponseService,
+            @Named("RSASSAPSSEidasAuthnResponseService") EidasAuthnResponseService rsaSsaPssAuthnResponseService,
             SamlResponseRedirectViewFactory samlResponseRedirectViewFactory,
             StubCountryRepository stubCountryRepository) {
-        this.successAuthnResponseService = successAuthnResponseService;
+        this.rsaSha256AuthnResponseService = rsaSha256AuthnResponseService;
+        this.rsaSsaPssAuthnResponseService = rsaSsaPssAuthnResponseService;
         this.sessionRepository = sessionRepository;
         this.samlResponseRedirectViewFactory = samlResponseRedirectViewFactory;
         this.stubCountryRepository = stubCountryRepository;
@@ -74,11 +79,21 @@ public class EidasConsentResource {
     @POST
     public Response consent(
             @PathParam(Urls.SCHEME_ID_PARAM) @NotNull String schemeId,
+            @FormParam(Urls.SIGNING_ALGORITHM_PARAM) @NotNull String signingAlgorithm,
             @FormParam(Urls.SUBMIT_PARAM) @NotNull String submitButtonValue,
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
 
         if(!EidasScheme.fromString(schemeId).isPresent()) {
             throw new InvalidEidasSchemeException();
+        }
+
+        EidasAuthnResponseService successAuthnResponseService;
+        if (signingAlgorithm.equals("rsasha256")) {
+            successAuthnResponseService = rsaSha256AuthnResponseService;
+        } else if (signingAlgorithm.equals("rsassa-pss")) {
+            successAuthnResponseService = rsaSsaPssAuthnResponseService;
+        } else {
+            throw new InvalidSigningAlgorithmException(signingAlgorithm);
         }
 
         EidasSession session = getAndValidateSession(schemeId, sessionCookie, true);

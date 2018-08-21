@@ -154,7 +154,6 @@ public class StubIdpModule extends AbstractModule {
 
         bind(AuthnRequestReceiverService.class);
         bind(SuccessAuthnResponseService.class);
-        bind(EidasAuthnResponseService.class);
         bind(GeneratePasswordService.class);
         bind(NonSuccessAuthnResponseService.class);
         bind(IdpUserService.class);
@@ -307,6 +306,51 @@ public class StubIdpModule extends AbstractModule {
     }
 
     @Provides
+    @Named("RSASHA256EidasAuthnResponseService")
+    public EidasAuthnResponseService getECDSAEdiasAuthnResponseService(
+       @Named("HubConnectorEntityId") String hubConnectorEntityId,
+       @Named("RSASHA256EidasResponseTransfomerProvider") EidasResponseTransformerProvider eidasResponseTransformerProvider,
+       @Named(StubIdpModule.HUB_CONNECTOR_METADATA_REPOSITORY) Optional<MetadataRepository> metadataProvider,
+       @Named("StubCountryMetadataUrl") String stubCountryMetadataUrl) {
+        return new EidasAuthnResponseService(
+                hubConnectorEntityId,
+                eidasResponseTransformerProvider,
+                metadataProvider,
+                stubCountryMetadataUrl);
+    }
+
+    @Provides
+    @Named("RSASHA256EidasResponseTransfomerProvider")
+    public EidasResponseTransformerProvider getECDSAEidasResponseTransfomerProvider(
+            @Named(StubIdpModule.HUB_CONNECTOR_ENCRYPTION_KEY_STORE) Optional<EncryptionKeyStore> encryptionKeyStore,
+            @Named(COUNTRY_SIGNING_KEY_STORE) IdaKeyStore keyStore,
+            EntityToEncryptForLocator entityToEncryptForLocator) {
+        return new EidasResponseTransformerProvider(
+                new CoreTransformersFactory(),
+                encryptionKeyStore.orElse(null),
+                keyStore,
+                entityToEncryptForLocator,
+                new SignatureRSASHA256(),
+                new DigestSHA256()
+        );
+    }
+
+    @Provides
+    @Named("RSASSAPSSEidasAuthnResponseService")
+    public EidasAuthnResponseService getRSASSAPSSEdiasAuthnResponseService(
+            @Named("HubConnectorEntityId") String hubConnectorEntityId,
+            @Named("RSASSAPSSEidasResponseTransformerProvider") EidasResponseTransformerProvider eidasResponseTransformerProvider,
+            @Named(StubIdpModule.HUB_CONNECTOR_METADATA_REPOSITORY) Optional<MetadataRepository> metadataProvider,
+            @Named("StubCountryMetadataUrl") String stubCountryMetadataUrl) {
+        return new EidasAuthnResponseService(
+                hubConnectorEntityId,
+                eidasResponseTransformerProvider,
+                metadataProvider,
+                stubCountryMetadataUrl);
+    }
+
+    @Named("RSASSAPSSEidasResponseTransformerProvider")
+    @Provides
     public EidasResponseTransformerProvider getEidasResponseTransformerProvider(
         @Named(StubIdpModule.HUB_CONNECTOR_ENCRYPTION_KEY_STORE) Optional<EncryptionKeyStore> encryptionKeyStore,
         @Named(COUNTRY_SIGNING_KEY_STORE) IdaKeyStore keyStore,
@@ -316,7 +360,7 @@ public class StubIdpModule extends AbstractModule {
             encryptionKeyStore.orElse(null),
             keyStore,
             entityToEncryptForLocator,
-            new SignatureRSASHA256(),
+            new SignatureRSASSAPSS(),
             new DigestSHA256()
         );
     }
