@@ -32,6 +32,7 @@ public interface Urls {
     String RANDOMISE_PID_PARAM = "randomPid";
     String CYCLE3_PARAM = "c3";
     String LEVEL_OF_ASSURANCE_PARAM = "loa";
+    String SIGNING_ALGORITHM_PARAM = "signingAlgorithm";
 
     // paths and resources
     String IDP_SAML2_SSO_RESOURCE = "/{"+IDP_ID_PARAM+"}/SAML2/SSO";
