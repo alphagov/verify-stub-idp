@@ -13,6 +13,8 @@ import uk.gov.ida.stub.idp.domain.EidasAuthnRequest;
 import uk.gov.ida.stub.idp.domain.EidasScheme;
 import uk.gov.ida.stub.idp.domain.EidasUser;
 import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
+import uk.gov.ida.stub.idp.exceptions.InvalidSigningAlgorithmException;
+import uk.gov.ida.stub.idp.exceptions.InvalidUsernameOrPasswordException;
 import uk.gov.ida.stub.idp.repositories.EidasSession;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.repositories.StubCountry;
@@ -100,6 +102,16 @@ public class EidasConsentResourceTest {
 
         assertThat(response.getStatus()).isEqualTo(Response.Status.OK.getStatusCode());
     }
+
+    @Test(expected = InvalidSigningAlgorithmException.class)
+    public void postShouldThrowAnExceptionWhenAnInvalidSigningAlgorithmIsUsed() {
+        SamlResponseFromValue<org.opensaml.saml.saml2.core.Response> samlResponse = new SamlResponseFromValue<org.opensaml.saml.saml2.core.Response>(null, (r) -> null, null, null);
+        when(successAuthnResponseService.getSuccessResponse(session, SCHEME_NAME)).thenReturn(samlResponse);
+        when(samlResponseRedirectViewFactory.sendSamlMessage(samlResponse)).thenReturn(Response.ok().build());
+
+        resource.consent(SCHEME_NAME, "rsa-sha384","submit", SESSION_ID);
+    }
+
 
     @Test(expected = WebApplicationException.class)
     public void shouldThrowAWebApplicationExceptionWhenSessionIsEmpty(){
