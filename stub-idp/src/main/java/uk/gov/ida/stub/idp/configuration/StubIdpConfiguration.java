@@ -89,6 +89,11 @@ public class StubIdpConfiguration extends Configuration implements
     @JsonProperty("database")
     private DatabaseConfiguration databaseConfiguration;
 
+    @NotNull
+    @Valid
+    @JsonProperty
+    private SingleIdpConfiguration singleIdpJourney;
+
     protected StubIdpConfiguration() {
     }
 
@@ -149,4 +154,6 @@ public class StubIdpConfiguration extends Configuration implements
     public DatabaseConfiguration getDatabaseConfiguration() {
         return databaseConfiguration;
     }
+
+    public SingleIdpConfiguration getSingleIdpJourneyConfiguration() { return singleIdpJourney; }
 }

@@ -122,3 +122,13 @@ database:
 # Format for DB_URI: jdbc:postgresql://host-name:port/database-name?user=user-name&password=password
 # example: jdbc:postgresql://localhost:5432/postgres?user=postgres&password=password
   url: ${DB_URI:-}
+
+singleIdpJourney:
+  enabled: ${SINGLE_IDP_FEATURE:-false}
+  serviceListUrl: ${SERVICE_LIST_URL:-http://localhost:50300/get-available-services}
+  serviceListClient:
+    timeout: 60s
+    timeToLive: 10m
+    connectionTimeout: 4s
+
+

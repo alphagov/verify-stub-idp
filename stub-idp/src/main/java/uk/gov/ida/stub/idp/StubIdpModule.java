@@ -26,31 +26,24 @@ import uk.gov.ida.common.shared.configuration.KeyConfiguration;
 import uk.gov.ida.common.shared.configuration.SecureCookieConfiguration;
 import uk.gov.ida.common.shared.configuration.SecureCookieKeyConfiguration;
 import uk.gov.ida.common.shared.configuration.SecureCookieKeyStore;
-import uk.gov.ida.common.shared.security.HmacDigest;
-import uk.gov.ida.common.shared.security.IdGenerator;
+import uk.gov.ida.common.shared.security.*;
+import uk.gov.ida.saml.security.signature.SignatureRSASSAPSS;
 import uk.gov.ida.common.shared.security.PublicKeyFactory;
-import uk.gov.ida.common.shared.security.SecureCookieKeyConfigurationKeyStore;
-import uk.gov.ida.common.shared.security.X509CertificateFactory;
+import uk.gov.ida.jerseyclient.ErrorHandlingClient;
+import uk.gov.ida.jerseyclient.JsonClient;
+import uk.gov.ida.jerseyclient.JsonResponseProcessor;
+import uk.gov.ida.restclient.ClientProvider;
 import uk.gov.ida.saml.core.api.CoreTransformersFactory;
 import uk.gov.ida.saml.hub.domain.IdaAuthnRequestFromHub;
 import uk.gov.ida.saml.idp.configuration.SamlConfiguration;
 import uk.gov.ida.saml.metadata.MetadataHealthCheck;
 import uk.gov.ida.saml.metadata.MetadataResolverConfiguration;
 import uk.gov.ida.saml.metadata.factories.DropwizardMetadataResolverFactory;
-import uk.gov.ida.saml.security.EncryptionKeyStore;
-import uk.gov.ida.saml.security.EntityToEncryptForLocator;
-import uk.gov.ida.saml.security.IdaKeyStore;
-import uk.gov.ida.saml.security.IdaKeyStoreCredentialRetriever;
-import uk.gov.ida.saml.security.SignatureFactory;
-import uk.gov.ida.saml.security.SigningKeyStore;
-import uk.gov.ida.saml.security.signature.SignatureRSASSAPSS;
+import uk.gov.ida.saml.security.*;
 import uk.gov.ida.stub.idp.auth.ManagedAuthFilterInstaller;
 import uk.gov.ida.stub.idp.builders.CountryMetadataBuilder;
 import uk.gov.ida.stub.idp.builders.CountryMetadataSigningHelper;
-import uk.gov.ida.stub.idp.configuration.AssertionLifetimeConfiguration;
-import uk.gov.ida.stub.idp.configuration.IdpStubsConfiguration;
-import uk.gov.ida.stub.idp.configuration.SigningKeyPairConfiguration;
-import uk.gov.ida.stub.idp.configuration.StubIdpConfiguration;
+import uk.gov.ida.stub.idp.configuration.*;
 import uk.gov.ida.stub.idp.cookies.CookieFactory;
 import uk.gov.ida.stub.idp.cookies.HmacValidator;
 import uk.gov.ida.stub.idp.domain.factories.AssertionFactory;
@@ -58,16 +51,7 @@ import uk.gov.ida.stub.idp.domain.factories.AssertionRestrictionsFactory;
 import uk.gov.ida.stub.idp.domain.factories.IdentityProviderAssertionFactory;
 import uk.gov.ida.stub.idp.domain.factories.StubTransformersFactory;
 import uk.gov.ida.stub.idp.listeners.StubIdpsFileListener;
-import uk.gov.ida.stub.idp.repositories.AllIdpsUserRepository;
-import uk.gov.ida.stub.idp.repositories.EidasSession;
-import uk.gov.ida.stub.idp.repositories.EidasSessionRepository;
-import uk.gov.ida.stub.idp.repositories.IdpSession;
-import uk.gov.ida.stub.idp.repositories.IdpSessionRepository;
-import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
-import uk.gov.ida.stub.idp.repositories.MetadataRepository;
-import uk.gov.ida.stub.idp.repositories.SessionRepository;
-import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
-import uk.gov.ida.stub.idp.repositories.UserRepository;
+import uk.gov.ida.stub.idp.repositories.*;
 import uk.gov.ida.stub.idp.repositories.jdbc.JDBIEidasSessionRepository;
 import uk.gov.ida.stub.idp.repositories.jdbc.JDBIIdpSessionRepository;
 import uk.gov.ida.stub.idp.repositories.jdbc.JDBIUserRepository;
@@ -77,20 +61,14 @@ import uk.gov.ida.stub.idp.saml.transformers.EidasResponseTransformerProvider;
 import uk.gov.ida.stub.idp.saml.transformers.OutboundResponseFromIdpTransformerProvider;
 import uk.gov.ida.stub.idp.security.HubEncryptionKeyStore;
 import uk.gov.ida.stub.idp.security.IdaAuthnRequestKeyStore;
-import uk.gov.ida.stub.idp.services.AuthnRequestReceiverService;
-import uk.gov.ida.stub.idp.services.EidasAuthnResponseService;
-import uk.gov.ida.stub.idp.services.GeneratePasswordService;
-import uk.gov.ida.stub.idp.services.IdpUserService;
-import uk.gov.ida.stub.idp.services.NonSuccessAuthnResponseService;
-import uk.gov.ida.stub.idp.services.StubCountryService;
-import uk.gov.ida.stub.idp.services.SuccessAuthnResponseService;
-import uk.gov.ida.stub.idp.services.UserService;
+import uk.gov.ida.stub.idp.services.*;
 import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
 import uk.gov.ida.truststore.EmptyKeyStoreProvider;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.validation.Validator;
+import javax.ws.rs.client.Client;
 import java.io.PrintWriter;
 import java.security.KeyPair;
 import java.security.KeyStore;
@@ -168,6 +146,7 @@ public class StubIdpModule extends AbstractModule {
         bind(HmacDigest.class);
         bind(SecureCookieKeyStore.class).to(SecureCookieKeyConfigurationKeyStore.class);
         bind(CookieFactory.class);
+        bind(JsonResponseProcessor.class);
     }
 
     @Provides
@@ -469,6 +448,30 @@ public class StubIdpModule extends AbstractModule {
             return Optional.of(metadataResolver);
         }
         return Optional.empty();
+    }
+
+    @Provides
+    @Singleton
+    public SingleIdpConfiguration getSingleIdpJourneyConfiguration(StubIdpConfiguration configuration) {
+        return configuration.getSingleIdpJourneyConfiguration();
+    }
+
+    @Provides
+    @Singleton
+    public JsonClient getJsonClient(Environment environment, StubIdpConfiguration configuration, JsonResponseProcessor jsonResponseProcessor) {
+        Client client = new ClientProvider(
+                environment,
+                configuration.getSingleIdpJourneyConfiguration().getServiceListClient(),
+                true,
+                "StubIdpJsonClient").get();
+        ErrorHandlingClient errorHandlingClient = new ErrorHandlingClient(client);
+        return new JsonClient(errorHandlingClient, jsonResponseProcessor);
+    }
+
+    @Provides
+    @Singleton
+    public ServiceListService getServiceListService(StubIdpConfiguration configuration, JsonClient jsonClient) {
+        return new ServiceListService(configuration.getSingleIdpJourneyConfiguration(), jsonClient);
     }
 
     private void registerMetadataHealthcheckAndRefresh(Environment environment, MetadataResolver metadataResolver, MetadataResolverConfiguration metadataResolverConfiguration, String name) {
