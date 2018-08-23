@@ -44,6 +44,9 @@ public class EidasConsentResource {
     private final EidasAuthnResponseService rsaSsaPssAuthnResponseService;
     private final SamlResponseRedirectViewFactory samlResponseRedirectViewFactory;
 
+    private static final String RSASHA_256 = "rsasha256";
+    private static final String RSASSA_PSS = "rsassa-pss";
+
     @Inject
     public EidasConsentResource(
             SessionRepository<EidasSession> sessionRepository,
@@ -88,9 +91,9 @@ public class EidasConsentResource {
         }
 
         EidasAuthnResponseService successAuthnResponseService;
-        if (signingAlgorithm.equals("rsasha256")) {
+        if (signingAlgorithm.equals(RSASHA_256)) {
             successAuthnResponseService = rsaSha256AuthnResponseService;
-        } else if (signingAlgorithm.equals("rsassa-pss")) {
+        } else if (signingAlgorithm.equals(RSASSA_PSS)) {
             successAuthnResponseService = rsaSsaPssAuthnResponseService;
         } else {
             throw new InvalidSigningAlgorithmException(signingAlgorithm);
