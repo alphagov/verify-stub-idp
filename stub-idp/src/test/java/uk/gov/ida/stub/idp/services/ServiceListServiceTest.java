@@ -41,7 +41,7 @@ public class ServiceListServiceTest {
 
     @Before
     public void setUp() {
-        when(singleIdpConfiguration.getServiceListUrl()).thenReturn(uri);
+        when(singleIdpConfiguration.getServiceListUri()).thenReturn(uri);
     }
 
     @Test(expected=FeatureNotEnabledException.class)

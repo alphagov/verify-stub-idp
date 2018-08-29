@@ -125,10 +125,10 @@ database:
 
 singleIdpJourney:
   enabled: ${SINGLE_IDP_FEATURE:-false}
-  serviceListUrl: ${SERVICE_LIST_URL:-http://localhost:50300/get-available-services}
+  serviceListUri: ${SERVICE_LIST_URL:-http://localhost:50300/get-available-services}
   serviceListClient:
     timeout: 60s
     timeToLive: 10m
     connectionTimeout: 4s
-
+  verifySubmissionUri: ${VERIFY_SUBMISSION_URL:-http://localhost:50300/initiate-single-idp-journey}
 

@@ -7,8 +7,9 @@ public class Service {
     private String name;
     @JsonProperty
     private String loa;
+
     @JsonProperty
-    private String entityId;
+    private String serviceId;
     @JsonProperty
     private String serviceCategory;
 
@@ -16,10 +17,10 @@ public class Service {
 
     }
 
-    public Service(String name, String loa, String entityId, String serviceCategory) {
+    public Service(String name, String loa, String serviceId, String serviceCategory) {
         this.name = name;
         this.loa = loa;
-        this.entityId = entityId;
+        this.serviceId = serviceId;
         this.serviceCategory = serviceCategory;
     }
 
@@ -31,11 +32,11 @@ public class Service {
         return loa;
     }
 
-    public String getEntityId() {
-        return entityId;
-    }
-
     public String getServiceCategory() {
         return serviceCategory;
+    }
+
+    public String getServiceId() {
+        return serviceId;
     }
 }
