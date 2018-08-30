@@ -37,11 +37,11 @@ public class ServiceListService {
 
     private List<Service> readListFromHub(){
         try {
-            List<Service> services = jsonClient.get(singleIdpConfiguration.getServiceListUrl(), new GenericType<List<Service>>() {});
+            List<Service> services = jsonClient.get(singleIdpConfiguration.getServiceListUri(), new GenericType<List<Service>>() {});
 
             return services;
         } catch (ProcessingException ex) {
-            LOG.error(MessageFormat.format("Error getting service list from {0}", singleIdpConfiguration.getServiceListUrl().toString()), ex);
+            LOG.error(MessageFormat.format("Error getting service list from {0}", singleIdpConfiguration.getServiceListUri().toString()), ex);
         }
         return new ArrayList<Service>() {};
     }
