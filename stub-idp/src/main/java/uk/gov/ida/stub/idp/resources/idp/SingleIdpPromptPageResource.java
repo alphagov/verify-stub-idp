@@ -47,7 +47,6 @@ public class SingleIdpPromptPageResource {
     public Response get(
             @PathParam(Urls.IDP_ID_PARAM) @NotNull String idpName,
             @QueryParam(Urls.ERROR_MESSAGE_PARAM) Optional<ErrorMessageType> errorMessage) throws FeatureNotEnabledException {
-
         if (!singleIdpConfiguration.isEnabled()) throw new FeatureNotEnabledException();
         Idp idp = idpStubsRepository.getIdpWithFriendlyId(idpName);
         UUID uuid = UUID.randomUUID();
@@ -56,7 +55,7 @@ public class SingleIdpPromptPageResource {
         return Response.ok()
             .entity(
                 new SingleIdpPromptPageView(idp.getDisplayName(),
-                    idp.getFriendlyId(),
+                    idp.getIssuerId(),
                     errorMessage.orElse(NO_ERROR).getMessage(),
                     idp.getAssetId(),
                     serviceList,

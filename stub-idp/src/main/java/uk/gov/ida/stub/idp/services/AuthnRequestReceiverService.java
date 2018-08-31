@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 
 public class AuthnRequestReceiverService {
@@ -65,13 +66,15 @@ public class AuthnRequestReceiverService {
         this.stringAuthnRequestTransformer = stringToAuthnRequestTransformer;
     }
 
-    public SessionCreated handleAuthnRequest(String idpName, String samlRequest, Set<String> idpHints, Optional<Boolean> registration, String relayState, Optional<IdpLanguageHint> languageHint) {
+    public SessionCreated handleAuthnRequest(String idpName, String samlRequest, Set<String> idpHints,
+                                             Optional<Boolean> registration, String relayState,
+                                             Optional<IdpLanguageHint> languageHint, Optional<UUID> singleIdpJourneyId) {
         final List<IdpHint> validHints = new ArrayList<>();
         final List<String> invalidHints = new ArrayList<>();
         validateHints(idpHints, validHints, invalidHints);
 
         final IdaAuthnRequestFromHub idaRequestFromHub = samlRequestTransformer.apply(samlRequest);
-        IdpSession session = new IdpSession(SessionId.createNewSessionId(), idaRequestFromHub, relayState, validHints, invalidHints, languageHint, registration);
+        IdpSession session = new IdpSession(SessionId.createNewSessionId(), idaRequestFromHub, relayState, validHints, invalidHints, languageHint, registration, singleIdpJourneyId);
         final SessionId idpSessionId = idpSessionRepository.createSession(session);
 
         UriBuilder uriBuilder;

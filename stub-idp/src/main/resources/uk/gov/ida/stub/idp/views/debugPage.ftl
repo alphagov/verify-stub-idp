@@ -82,4 +82,12 @@
     <p id="relay-state">
         Relay state is "${relayState}".
     </p>
+
+    <p id="single-idp-journey-id">
+        <#if singleIdpJourneyId?has_content>
+            This a single IDP journey and the single IDP UUID is "${singleIdpJourneyId}".
+        <#else>
+            This is not a single IDP journey.
+        </#if>
+    </p>
 </div>
