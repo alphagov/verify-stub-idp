@@ -55,7 +55,7 @@ public class HeadlessIdpResource {
         final IdaAuthnRequestFromHub idaRequestFromHub = samlRequestTransformer.apply(samlRequest);
         final Optional<DatabaseIdpUser> idpUser = idpStubsRepository.getIdpWithFriendlyId(IDP_NAME).getUser(username, "bar");
 
-        final IdpSession session = new IdpSession(SessionId.createNewSessionId(), idaRequestFromHub, relayState, null, null, null, null);
+        final IdpSession session = new IdpSession(SessionId.createNewSessionId(), idaRequestFromHub, relayState, null, null, null, null, null);
         session.setIdpUser(idpUser);
 
         final SamlResponse successResponse = successAuthnResponseService.getSuccessResponse(false, httpServletRequest.getRemoteAddr(), IDP_NAME, session);

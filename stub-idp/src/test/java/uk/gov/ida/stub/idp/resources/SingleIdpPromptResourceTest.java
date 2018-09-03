@@ -97,7 +97,7 @@ public class SingleIdpPromptResourceTest {
         SingleIdpPromptPageView promptView = (SingleIdpPromptPageView) response.getEntity();
         assertThat(promptView.getServices().size()).isEqualTo(3);
         assertThat(promptView.getVerifySubmissionUrl()).isEqualTo(verifySubmissionUri);
-        assertThat(promptView.getIdpId()).isEqualTo(idp.getFriendlyId());
+        assertThat(promptView.getIdpId()).isEqualTo(idp.getIssuerId());
         assertThat(promptView.getUniqueId()).isNotNull();
 
         // List should be sorted by category

@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 @Produces(MediaType.TEXT_HTML)
@@ -55,10 +56,11 @@ public class AuthnRequestReceiverResource {
             @FormParam(Urls.HINTS_PARAM) Set<String> idpHints,
             @FormParam(Urls.REGISTRATION_PARAM) Optional<Boolean> registration,
             @FormParam(Urls.RELAY_STATE_PARAM) String relayState,
-            @FormParam(Urls.LANGUAGE_HINT_PARAM) Optional<IdpLanguageHint> languageHint) {
+            @FormParam(Urls.LANGUAGE_HINT_PARAM) Optional<IdpLanguageHint> languageHint,
+            @FormParam(Urls.SINGLE_IDP_JOURNEY_ID_PARAM) Optional<UUID> singleIdpJourneyId) {
         LOG.debug("Received request for idp {} from HUB", idpName);
 
-        final SessionCreated sessionCreated = authnRequestReceiverService.handleAuthnRequest(idpName, samlRequest, idpHints, registration, relayState, languageHint);
+        final SessionCreated sessionCreated = authnRequestReceiverService.handleAuthnRequest(idpName, samlRequest, idpHints, registration, relayState, languageHint, singleIdpJourneyId);
 
         return Response.seeOther(sessionCreated.getNextLocation())
                 .cookie(getCookies(sessionCreated))
