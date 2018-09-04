@@ -10,6 +10,7 @@ import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.domain.EidasAuthnRequest;
 import uk.gov.ida.stub.idp.domain.IdpHint;
 import uk.gov.ida.stub.idp.domain.IdpLanguageHint;
+import uk.gov.ida.stub.idp.exceptions.InvalidEidasAuthnRequestException;
 import uk.gov.ida.stub.idp.repositories.EidasSession;
 import uk.gov.ida.stub.idp.repositories.EidasSessionRepository;
 import uk.gov.ida.stub.idp.repositories.IdpSession;
@@ -86,6 +87,7 @@ public class AuthnRequestReceiverService {
 
     public SessionCreated handleEidasAuthnRequest(String schemeId, String samlRequest, String relayState, Optional<IdpLanguageHint> languageHint) {
         AuthnRequest authnRequest = stringAuthnRequestTransformer.apply(samlRequest);
+        validateEidasAuthnRequest(authnRequest);
         EidasAuthnRequest eidasAuthnRequest = EidasAuthnRequest.buildFromAuthnRequest(authnRequest);
         EidasSession session = new EidasSession(SessionId.createNewSessionId(), eidasAuthnRequest, relayState, Collections.emptyList(), Collections.emptyList(), languageHint, Optional.empty());
         final SessionId idpSessionId = eidasSessionRepository.createSession(session);
@@ -93,6 +95,18 @@ public class AuthnRequestReceiverService {
         UriBuilder uriBuilder = UriBuilder.fromPath(Urls.EIDAS_LOGIN_RESOURCE);
 
         return new SessionCreated(uriBuilder.build(schemeId), idpSessionId);
+    }
+
+    private void validateEidasAuthnRequest(AuthnRequest request) {
+        if (request.getSignature().getKeyInfo() == null) {
+            throw new InvalidEidasAuthnRequestException("KeyInfo cannot be null");
+        }
+        if (request.getSignature().getKeyInfo().getX509Datas().isEmpty()) {
+            throw new InvalidEidasAuthnRequestException("Must contain X509 data");
+        }
+        if (request.getSignature().getKeyInfo().getX509Datas().get(0).getX509Certificates().isEmpty()) {
+            throw new InvalidEidasAuthnRequestException("Must contain X509 certificate");
+        }
     }
 
     private void validateHints(Set<String> idpHints, List<IdpHint> validHints, List<String> invalidHints) {
