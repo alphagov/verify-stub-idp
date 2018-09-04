@@ -7,7 +7,6 @@ ENV GRADLE_USER_HOME ~/.gradle
 COPY build.gradle build.gradle
 COPY stub-idp/build.gradle stub-idp/build.gradle
 COPY stub-idp-saml/build.gradle stub-idp-saml/build.gradle
-COPY shared.gradle shared.gradle
 COPY settings.gradle settings.gradle
 COPY inttest.gradle inttest.gradle
 # There is an issue running idea.gradle in the container

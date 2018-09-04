@@ -12,7 +12,6 @@ apply plugin: 'idea'
 mainClassName = 'uk.gov.ida.stub.idp.StubIdpApplication'
 
 apply from: "${rootDir}/inttest.gradle"
-apply from: "${rootDir}/shared.gradle"
 
 task paasManifestFileCheck {
     doFirst {

@@ -11,11 +11,11 @@ else
     exit
 fi
 
-source ../ida-hub-acceptance/lib/services.sh
-source ../ida-hub-acceptance/config/env.sh
+source ../ida-hub-acceptance-tests/scripts/services.sh
+source ../ida-hub-acceptance-tests/scripts/env.sh
 
 if test ! "$1" == "skip-build"; then
-    ./gradlew clean build copyToLib
+    ./gradlew clean build installDist
 fi
 
 if ! docker ps | grep stub-idp-postgres-db
@@ -25,5 +25,5 @@ then
 fi
 
 mkdir -p logs
-start_service stub-idp . configuration/stub-idp.yml $STUB_IDP_PORT
+start_service stub-idp stub-idp configuration/stub-idp.yml $STUB_IDP_PORT
 wait
