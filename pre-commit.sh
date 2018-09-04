@@ -6,10 +6,6 @@ set -e
 
 ./gradlew --parallel clean build test intTest copyToLib 2>&1
 
-./startup.sh skip-build
-
-./kill-all-the-services.sh
-
 echo SUCCESS!
 
 check_for_library_updates saml-extensions saml-serializers common-utils saml-security

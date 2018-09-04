@@ -11,8 +11,8 @@ else
     exit
 fi
 
-source ../verify-local-startup/lib/services.sh
-source ../verify-local-startup/config/env.sh
+source ../ida-hub-acceptance/lib/services.sh
+source ../ida-hub-acceptance/config/env.sh
 
 if test ! "$1" == "skip-build"; then
     ./gradlew clean build copyToLib
