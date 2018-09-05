@@ -8,15 +8,12 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 import uk.gov.ida.apprule.support.IntegrationTestHelper;
 import uk.gov.ida.apprule.support.StubIdpAppRule;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.ida.stub.idp.builders.StubIdpBuilder.aStubIdp;
@@ -40,7 +37,7 @@ public class EidasCountryMetadataIntegrationTests extends IntegrationTestHelper 
     }
 
     @Test
-    public void countryMetadataShouldContainCorrectEntityIdAndSsoUrl() throws ParserConfigurationException, IOException, SAXException {
+    public void countryMetadataShouldContainCorrectEntityIdAndSsoUrl() {
         String baseUrl = applicationRule.getConfiguration().getEuropeanIdentityConfiguration().getStubCountryBaseUrl();
         String metadataEndpoint = baseUrl + "/stub-country/ServiceMetadata";
         String expectedSsoUrl = baseUrl + "/eidas/stub-country/SAML2/SSO";
