@@ -294,9 +294,8 @@ figure img {
 ============================================================ */
 /* line 213, ../../../../../../../idp-html/app/assets/stylesheets/_global.scss */
 a {
-  color: #cc5899;
+  color: #005ea5;
   font-size: 100%;
-  text-decoration: none;
 }
 
 /* line 220, ../../../../../../../idp-html/app/assets/stylesheets/_global.scss */
@@ -728,7 +727,7 @@ button.text:hover, button.text:active, button.text {
 }
 /* line 92, ../../../../../../../idp-html/app/assets/stylesheets/_auth_sites.scss */
 .auth a {
-  color: #888888;
+  color: #005ea5;
 }
 /* line 94, ../../../../../../../idp-html/app/assets/stylesheets/_auth_sites.scss */
 .auth a:hover {
