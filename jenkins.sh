@@ -15,7 +15,7 @@ rsync -qrv "$stub_idp_fedconfig/configuration/" stub-idp/src/dist/resources/
 ./gradlew --no-daemon \
   -Pversion=$BUILD_NUMBER \
   -PstubidpExtraLogosDirectory="$stub_idp_fedconfig/idp-logos" \
-  copyToLib distZip publish bintrayUpload
+  copyStubIdpLogos copyToLib distZip publish bintrayUpload
 
 bin/build.rb
 
