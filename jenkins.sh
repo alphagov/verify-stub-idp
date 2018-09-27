@@ -9,7 +9,7 @@ stub_idp_fedconfig="$(pwd)/../verify-stub-idp-federation-config"
 mkdir -p stub-idp/src/dist/resources
 rsync -qrv "$stub_idp_fedconfig/configuration/" stub-idp/src/dist/resources/
 
-./gradlew --parallel --no-daemon \
+./gradlew --no-daemon \
   clean test intTest
 
 ./gradlew --no-daemon \
