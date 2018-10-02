@@ -3,13 +3,12 @@
 
     <h1>Demo services</h1>
     <p>
-        To launch the demo of a journey started from IDP prompt (single IDP journey), use the demo service register for an identity profile.
+        To launch the demo of a journey started from IDP prompt (single IDP journey), use the demo service test GOV.UK Verify user journeys.
     </p>
     <p>
         All services in this environment enabled for a single IDP journey will display in a list below, read from the “get available services” API.<br />
-        The API includes taxon, service name and level of assurance.
+        The API includes service category, service name and level of assurance.
     </p>
-    <h2>Example services for demo</h2>
     <#assign currentCategory = "">
     <#list services as service>
         <#if service.serviceCategory != currentCategory>
