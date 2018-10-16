@@ -12,11 +12,16 @@ public class SecurityHeadersFilter implements ContainerResponseFilter {
         responseContext.getHeaders().add("X-XSS-Protection", "1; mode=block");
         responseContext.getHeaders().add("X-Content-Type-Options", "nosniff");
         final String contentSecurityPolicy = "default-src 'self'; " +
-                "font-src 'data:'; " +
+                "font-src data:; " +
                 "img-src 'self'; " +
                 "object-src 'none'; " +
-                "script-src 'self' 'unsafe-inline'; " + // would be nice to have digests of scripts here, but perhaps too much friction for a test app
-                "style-src 'self' 'unsafe-inline'";
+                "style-src 'self' 'unsafe-inline'; " +
+                "script-src 'self' " +
+                    // to get these digests it's easiest to look in the Chrome console
+                    "'sha256-GDFQ6au49eBmiFsBXl4V2PNvbiwnAe2q9k/P6IzQnpM=' " + // verify registration page - gender picker
+                    "'sha256-NcTnnuOsJVxuYnbVWXTXkuqyLWb8U7ax8Oawo7lPuXU=' " + // verify + eidas registration pages - date picker
+                    "'sha256-0arfqMis/eYHJQcqZkt2lpiQ9wdfDIvE7zFqrWOotZA=' " + // saml redirect page - auto submit
+                    "'unsafe-inline'; ";
         responseContext.getHeaders().add("Content-Security-Policy", contentSecurityPolicy);
     }
 }

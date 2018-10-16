@@ -3,17 +3,7 @@
 <html>
 <head>
     <title>Saml Processing...</title>
-    <script type="text/javascript">
-        function init() {
-            document.forms[0].setAttribute("style", "display: none;");
-
-            window.setTimeout(function () {
-                document.forms[0].removeAttribute("style");
-            }, 5000);
-
-            document.forms[0].submit();
-        }
-    </script>
+    <script type="text/javascript" src="/assets/scripts/saml-redirect-auto-submit.js"></script>
     <style type='text/css'>
       body {
         padding-top: 2em;
