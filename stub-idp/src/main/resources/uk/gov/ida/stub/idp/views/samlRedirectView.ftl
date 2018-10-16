@@ -3,7 +3,6 @@
 <html>
 <head>
     <title>Saml Processing...</title>
-    <script type="text/javascript" src="/assets/scripts/saml-redirect-auto-submit.js"></script>
     <style type='text/css'>
       body {
         padding-top: 2em;
@@ -28,7 +27,6 @@
       }
     </style>
 </head>
-<body onload="init()">
 <form class='verify-saml-form' action="${targetUri}" method="POST">
        <h1>Continue to next step</h1>
        <p>Because Javascript is not enabled on your browser, you must press the continue button</p>
@@ -40,5 +38,6 @@
     <button class='verify-button' id="continue-button">Continue</button>
 </form>
 </body>
+<script type="text/javascript" src="/assets/scripts/saml-redirect-auto-submit.js"></script>
 </html>
 

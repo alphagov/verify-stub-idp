@@ -47,7 +47,7 @@ public class SecurityHeadersFilterTest {
         assertThat(headers.get("X-Content-Type-Options").size()).isEqualTo(1);
         assertThat(headers.containsKey("Content-Security-Policy")).isTrue();
         assertThat(headers.get("Content-Security-Policy").size()).isEqualTo(1);
-        assertThat(headers.get("Content-Security-Policy").get(0).toString()).matches(x -> x.startsWith("default-src 'self'; font-src data:; img-src 'self'; object-src 'none'; style-src 'self' 'unsafe-inline'; script-src 'self' ") && x.endsWith("'unsafe-inline'; "));
+        assertThat(headers.get("Content-Security-Policy").get(0)).isEqualTo("default-src 'self'; font-src data:; img-src 'self'; object-src 'none'; style-src 'self' 'unsafe-inline'; script-src 'self';");
     }
 
 }

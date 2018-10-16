@@ -1,4 +1,4 @@
-function init() {
+function initAutoSubmitSequence() {
     document.forms[0].setAttribute("style", "display: none;");
 
     window.setTimeout(function () {
@@ -7,3 +7,4 @@ function init() {
 
     document.forms[0].submit();
 }
+document.addEventListener('load', initAutoSubmitSequence());

@@ -16,12 +16,7 @@ public class SecurityHeadersFilter implements ContainerResponseFilter {
                 "img-src 'self'; " +
                 "object-src 'none'; " +
                 "style-src 'self' 'unsafe-inline'; " +
-                "script-src 'self' " +
-                    // to get these digests it's easiest to look in the Chrome console
-                    "'sha256-GDFQ6au49eBmiFsBXl4V2PNvbiwnAe2q9k/P6IzQnpM=' " + // verify registration page - gender picker
-                    "'sha256-NcTnnuOsJVxuYnbVWXTXkuqyLWb8U7ax8Oawo7lPuXU=' " + // verify + eidas registration pages - date picker
-                    "'sha256-0arfqMis/eYHJQcqZkt2lpiQ9wdfDIvE7zFqrWOotZA=' " + // saml redirect page - auto submit
-                    "'unsafe-inline'; ";
+                "script-src 'self';";
         responseContext.getHeaders().add("Content-Security-Policy", contentSecurityPolicy);
     }
 }
