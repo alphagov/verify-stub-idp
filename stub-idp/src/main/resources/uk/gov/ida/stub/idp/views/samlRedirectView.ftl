@@ -27,6 +27,7 @@
       }
     </style>
 </head>
+<body>
 <form class='verify-saml-form' action="${targetUri}" method="POST">
        <h1>Continue to next step</h1>
        <p>Because Javascript is not enabled on your browser, you must press the continue button</p>
