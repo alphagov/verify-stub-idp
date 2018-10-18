@@ -37,7 +37,9 @@ public class JDBIIdpSessionRepositoryTest {
 
 	@Test
 	public void testSessionDeletion() {
-		assertThat(repository.countSessionsInDatabase()).isZero();
+		// force clear all sessions from the test database
+		repository.deleteSessionsOlderThan(Duration.ZERO);
+		assertThat(repository.countSessionsInDatabase()).isZero().withFailMessage("found %d sessions in the database when it should be empty", repository.countSessionsInDatabase());
 		repository.createSession(createSession());
 		assertThat(repository.countSessionsInDatabase()).isEqualTo(1);
 		assertThat(repository.countSessionsOlderThan(Duration.standardHours(1))).isEqualTo(0);
