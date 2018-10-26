@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 public class IdpStubsConfiguration{
 
@@ -12,6 +13,14 @@ public class IdpStubsConfiguration{
     protected Collection<StubIdp> stubIdps = null;
 
     public Collection<StubIdp> getStubIdps() {
-        return stubIdps;
+        return stubIdps.stream()
+                .filter(stub -> !stub.isEidasEnabled())
+                .collect(Collectors.toList());
+    }
+
+    public Collection<StubIdp> getStubCountries() {
+        return stubIdps.stream()
+                .filter(StubIdp::isEidasEnabled)
+                .collect(Collectors.toList());
     }
 }

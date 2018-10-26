@@ -6,6 +6,7 @@ import org.mindrot.jbcrypt.BCrypt;
 import uk.gov.ida.shared.utils.string.StringEncoding;
 import uk.gov.ida.stub.idp.configuration.UserCredentials;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
+import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -26,11 +27,13 @@ public class UserResourceBasicAuthFilter implements Filter {
     private final Logger LOG = Logger.getLogger(UserResourceBasicAuthFilter.class);
 
     private final IdpStubsRepository idpStubsRepository;
+    private final StubCountryRepository stubCountryRepository;
     private final Splitter splitter = Splitter.on(':').limit(2);
     private final int credOffset = "Basic ".length();
 
-    public UserResourceBasicAuthFilter(IdpStubsRepository idpStubsRepository) {
+    public UserResourceBasicAuthFilter(IdpStubsRepository idpStubsRepository, StubCountryRepository stubCountryRepository) {
         this.idpStubsRepository = idpStubsRepository;
+        this.stubCountryRepository = stubCountryRepository;
     }
 
     @Override
@@ -44,31 +47,41 @@ public class UserResourceBasicAuthFilter implements Filter {
 
         UsernamePassword usernamePasswordFromRequest = getUsernamePasswordFromRequest(httpServletRequest);
 
-        // Get the friendly id
         String[] requestSegments = ((HttpServletRequest) request).getRequestURI().split("/");
-        if(isUrlWhichNeedsBasicAuth(requestSegments)) {
-            String friendlyId = requestSegments[1];
+        String friendlyId = requestSegments[1];
 
-            List<UserCredentials> userCredentialsList = idpStubsRepository.getUserCredentialsForFriendlyId(friendlyId);
-
-            for (UserCredentials userCredentials : userCredentialsList) {
-                if (requestAuthMatchesUsernameAndPassword(userCredentials, usernamePasswordFromRequest)) {
-                    LOG.info(format("Basic auth login success for IDP {0}, user {1}", friendlyId, usernamePasswordFromRequest.getUsername()));
-                    chain.doFilter(request, response);
-                    return;
-                }
-            }
-            LOG.error(format("Basic auth login failure for IDP {0}, user {1}", friendlyId, usernamePasswordFromRequest.getUsername()));
-            HttpServletResponse resp = (HttpServletResponse) response;
-            resp.setHeader("WWW-Authenticate", "Basic realm=\"Admin\"");
-            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-        } else {
-            chain.doFilter(request, response);
+        List<UserCredentials> userCredentialsList;
+        if (isUrlWhichNeedsBasicAuth(requestSegments)) {
+            userCredentialsList = idpStubsRepository.getUserCredentialsForFriendlyId(friendlyId);
         }
+        else if (isEidasUrlWhichNeedsBasicAuth(requestSegments)) {
+            userCredentialsList = stubCountryRepository.getUserCredentialsForFriendlyId(friendlyId);
+        }
+        else {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        for (UserCredentials userCredentials : userCredentialsList) {
+            if (requestAuthMatchesUsernameAndPassword(userCredentials, usernamePasswordFromRequest)) {
+                LOG.info(format("Basic auth login success for IDP {0}, user {1}", friendlyId, usernamePasswordFromRequest.getUsername()));
+                chain.doFilter(request, response);
+                return;
+            }
+        }
+
+        LOG.error(format("Basic auth login failure for IDP {0}, user {1}", friendlyId, usernamePasswordFromRequest.getUsername()));
+        HttpServletResponse resp = (HttpServletResponse) response;
+        resp.setHeader("WWW-Authenticate", "Basic realm=\"Admin\"");
+        resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
     }
 
     private boolean isUrlWhichNeedsBasicAuth(String[] requestSegments) {
         return requestSegments.length >= 3 && "users".equals(requestSegments[2]);
+    }
+
+    private boolean isEidasUrlWhichNeedsBasicAuth(String[] requestSegments) {
+        return requestSegments.length >= 4 && "eidas".equals(requestSegments[1]) && "users".equals(requestSegments[3]);
     }
 
     @Override

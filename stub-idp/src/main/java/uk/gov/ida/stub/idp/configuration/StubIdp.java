@@ -34,6 +34,10 @@ public class StubIdp {
     @JsonProperty
     protected boolean sendKeyInfo;
 
+    @Valid
+    @JsonProperty
+    protected boolean eidasEnabled;
+
 
     public List<UserCredentials> getIdpUserCredentials() {
         return idpUserCredentials;
@@ -49,5 +53,9 @@ public class StubIdp {
 
     public boolean getSendKeyInfo() {
         return sendKeyInfo;
+    }
+
+    public boolean isEidasEnabled() {
+        return eidasEnabled;
     }
 }

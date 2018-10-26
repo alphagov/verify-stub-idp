@@ -19,6 +19,7 @@ import uk.gov.ida.stub.idp.configuration.SamlConfigurationImpl;
 import uk.gov.ida.stub.idp.configuration.StubIdp;
 import uk.gov.ida.stub.idp.configuration.StubIdpConfiguration;
 import uk.gov.ida.stub.idp.configuration.UserCredentials;
+import uk.gov.ida.stub.idp.domain.factories.IdpStubsConfigurationFactory;
 import uk.gov.ida.stub.idp.repositories.AllIdpsUserRepository;
 import uk.gov.ida.stub.idp.repositories.Idp;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
@@ -32,7 +33,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -68,8 +68,9 @@ public class StubIdpsFileListenerTest {
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         ConfigurationFactory<IdpStubsConfiguration> configurationFactory = new DefaultConfigurationFactoryFactory<IdpStubsConfiguration>().create(IdpStubsConfiguration.class, validator, Jackson.newObjectMapper(), "");
         ConfigurationSourceProvider configurationSourceProvider = path -> new FileInputStream(stubIdpConfiguration.getStubIdpsYmlFileLocation());
+        IdpStubsConfigurationFactory idpStubsConfigurationFactory = new IdpStubsConfigurationFactory(stubIdpConfiguration, configurationFactory, configurationSourceProvider);
         AllIdpsUserRepository allIdpsUserRepository = new AllIdpsUserRepository(mock(JDBIUserRepository.class));
-        idpStubsRepository = new IdpStubsRepository(allIdpsUserRepository, stubIdpConfiguration,  configurationFactory, configurationSourceProvider) {
+        idpStubsRepository = new IdpStubsRepository(allIdpsUserRepository, stubIdpConfiguration,  idpStubsConfigurationFactory) {
             @Override
             public void load(String yamlFile) {
                 super.load(yamlFile);

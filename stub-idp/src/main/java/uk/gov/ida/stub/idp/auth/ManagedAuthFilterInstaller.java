@@ -4,6 +4,7 @@ import io.dropwizard.lifecycle.Managed;
 import io.dropwizard.setup.Environment;
 import uk.gov.ida.stub.idp.configuration.StubIdpConfiguration;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
+import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
 
 import javax.inject.Inject;
 import javax.servlet.DispatcherType;
@@ -18,26 +19,28 @@ public class ManagedAuthFilterInstaller implements Managed {
 
     private final StubIdpConfiguration stubIdpConfiguration;
     private final IdpStubsRepository idpStubsRepository;
+    private final StubCountryRepository stubCountryRepository;
     private final Environment environment;
 
     @Inject
-    public ManagedAuthFilterInstaller(StubIdpConfiguration stubIdpConfiguration, IdpStubsRepository idpStubsRepository, Environment environment) {
+    public ManagedAuthFilterInstaller(StubIdpConfiguration stubIdpConfiguration, IdpStubsRepository idpStubsRepository, StubCountryRepository stubCountryRepository, Environment environment) {
         this.stubIdpConfiguration = stubIdpConfiguration;
         this.idpStubsRepository = idpStubsRepository;
+        this.stubCountryRepository = stubCountryRepository;
         this.environment = environment;
     }
 
     @Override
-    public void start() throws Exception {
+    public void start() {
         if(stubIdpConfiguration.isBasicAuthEnabledForUserResource()) {
             environment.servlets()
-                    .addFilter("Basic Auth Filter for Idps", new UserResourceBasicAuthFilter(idpStubsRepository))
+                    .addFilter("Basic Auth Filter for Idps", new UserResourceBasicAuthFilter(idpStubsRepository, stubCountryRepository))
                     .addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
         }
     }
 
     @Override
-    public void stop() throws Exception {
+    public void stop() {
         // method intentionally left blank
     }
 }
