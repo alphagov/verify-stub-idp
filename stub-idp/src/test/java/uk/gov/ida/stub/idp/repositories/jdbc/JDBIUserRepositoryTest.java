@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import static org.apache.commons.lang3.StringEscapeUtils.escapeJson;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.ida.stub.idp.builders.EidasUserBuilder.anEidasUser;
 import static uk.gov.ida.stub.idp.builders.IdpUserBuilder.anIdpUser;
 
 public class JDBIUserRepositoryTest {
@@ -103,6 +104,21 @@ public class JDBIUserRepositoryTest {
     }
 
     @Test
+    public void deleteEidasUserFromStubCountryShouldDeleteGivenUserFromGivenCountry() {
+        DatabaseEidasUser eidasUser = anEidasUser()
+                .withUsername("some-username")
+                .build();
+
+        ensureEidasUserExistsFor("some-country-friendly-id", eidasUser);
+
+        repository.deleteUserFromIdp("some-country-friendly-id", "some-username");
+
+        List<DatabaseEidasUser> eidasUsers = new ArrayList<>(repository.getUsersForCountry("some-country-friendly-id"));
+
+        assertThat(eidasUsers).size().isEqualTo(0);
+    }
+
+    @Test
     public void getUsersForIdpShouldReturnAllUsersForGivenIdp() {
         ensureNoUserExistsFor("some-idp-friendly-id");
 
@@ -163,8 +179,30 @@ public class JDBIUserRepositoryTest {
         );
     }
 
+    private void ensureEidasUserExistsFor(String countryFriendlyId, DatabaseEidasUser eidasUser) {
+        repository.deleteEidasUserFromStubCountry(countryFriendlyId, eidasUser.getUsername());
+
+        User user = userMapper.mapFrom(countryFriendlyId, eidasUser);
+
+        jdbi.withHandle(handle -> {
+                    String sqlStatementParameter = isPostgresDb ? "to_json(:json)" : ":json";
+
+                    String sqlStatement = String.format("INSERT INTO users(username, password, identity_provider_friendly_id, \"data\") " +
+                            "VALUES (:username, :password, :countryFriendlyId, %s)", sqlStatementParameter);
+
+                    String userData = isPostgresDb ? user.getData() : "\"" + escapeJson(user.getData()) + "\"";
+
+                    return handle.createUpdate(sqlStatement)
+                            .bind("username", user.getUsername())
+                            .bind("password", user.getPassword())
+                            .bind("countryFriendlyId", countryFriendlyId)
+                            .bind("json", userData)
+                            .execute();
+                }
+        );
+    }
+
     private <T> MatchingDatasetValue<T> createMdsValue(T value) {
         return new MatchingDatasetValue<>(value, null, null, true);
     }
-
 }

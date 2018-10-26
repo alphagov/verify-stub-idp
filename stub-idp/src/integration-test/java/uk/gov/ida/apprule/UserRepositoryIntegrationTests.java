@@ -16,6 +16,7 @@ import uk.gov.ida.saml.core.domain.Gender;
 import uk.gov.ida.stub.idp.builders.SimpleMdsValueBuilder;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
+import uk.gov.ida.stub.idp.dtos.EidasUserDto;
 import uk.gov.ida.stub.idp.dtos.IdpUserDto;
 
 import javax.ws.rs.client.Client;
@@ -129,6 +130,18 @@ public class UserRepositoryIntegrationTests extends IntegrationTestHelper {
     }
 
     @Test
+    public void deletedEidasUserShouldBeRemoved() throws IOException {
+        EidasUserDto deletableUser = aUser().withUsername("deletable-user").buildEidasUser();
+        someEidasUsersAreCreatedForCountry(IDP_NAME, deletableUser);
+        EidasUserDto returnedUser1 = readEidasEntity(anEidasUserIsRequestedForCountry(deletableUser.getUsername(), IDP_NAME));
+        assertThat(returnedUser1.getUsername()).isEqualTo(deletableUser.getUsername());
+
+        anEidasUserIsDeletedFromCountry(IDP_NAME, deletableUser);
+        final Response response = anEidasUserIsRequestedForCountry(deletableUser.getUsername(), IDP_NAME);
+        assertThat(response.getStatus()).isEqualTo(Response.Status.NOT_FOUND.getStatusCode());
+    }
+
+    @Test
     public void addedUserShouldHavePidGeneratedWhenNotSpecified() throws Exception {
         IdpUserDto user = aUser().withPid(null).build();
 
@@ -181,6 +194,14 @@ public class UserRepositoryIntegrationTests extends IntegrationTestHelper {
         return applicationRule.getObjectMapper().readValue(response.readEntity(String.class), IdpUserDto.class);
     }
 
+    // convert object from json using apprule's object mapper because it can deserialize guava correctly
+    private EidasUserDto readEidasEntity(Response response) throws IOException {
+        // ensure data not stored by browser
+        assertThat(response.getHeaderString(CACHE_CONTROL_KEY)).isEqualTo(CACHE_CONTROL_NO_CACHE_VALUE);
+        assertThat(response.getHeaderString(PRAGMA_KEY)).isEqualTo(PRAGMA_NO_CACHE_VALUE);
+        return applicationRule.getObjectMapper().readValue(response.readEntity(String.class), EidasUserDto.class);
+    }
+
     private static <T> Optional<MatchingDatasetValue<T>> createOptionalMdsValue(Optional<T> value) {
         if (!value.isPresent()) {
             return Optional.empty();
@@ -211,6 +232,19 @@ public class UserRepositoryIntegrationTests extends IntegrationTestHelper {
                     Optional.<MatchingDatasetValue<Gender>>empty(),
                     Optional.<MatchingDatasetValue<LocalDate>>empty(),
                     address,
+                    levelOfAssurance.orElse(null));
+        }
+
+        public EidasUserDto buildEidasUser() {
+            return new EidasUserDto(
+                    pid,
+                    username.orElse(null),
+                    password.orElse(null),
+                    null,
+                    Optional.empty(),
+                    null,
+                    Optional.empty(),
+                    null,
                     levelOfAssurance.orElse(null));
         }
 
@@ -248,13 +282,26 @@ public class UserRepositoryIntegrationTests extends IntegrationTestHelper {
         createARequest(getAddAllUsersPath(idpFriendlyId)).post(entity(getJson(asList(users)), APPLICATION_JSON_TYPE));
     }
 
+    public void someEidasUsersAreCreatedForCountry(String countryFriendlyId, EidasUserDto... users) throws JsonProcessingException {
+        createARequest(getAddAllEidasUsersPath(countryFriendlyId)).post(entity(getJson(asList(users)), APPLICATION_JSON_TYPE));
+    }
+
     public void aUserIsDeletedFromIdp(String idpFriendlyId, IdpUserDto deletableUser) throws JsonProcessingException {
         final Response response = createARequest(getDeleteUserPath(idpFriendlyId)).post(entity(getJson(deletableUser), APPLICATION_JSON_TYPE));
         assertThat(response.getStatus()).isEqualTo(200);
     }
 
+    public void anEidasUserIsDeletedFromCountry(String countryFriendlyId, EidasUserDto deletableUser) throws JsonProcessingException {
+        final Response response = createARequest(getDeleteEidasUserPath(countryFriendlyId)).post(entity(getJson(deletableUser), APPLICATION_JSON_TYPE));
+        assertThat(response.getStatus()).isEqualTo(200);
+    }
+
     public Response aUserIsRequestedForIdp(String username, String idpFriendlyId) {
         return createARequest(getUserPath(username, idpFriendlyId)).get();
+    }
+
+    public Response anEidasUserIsRequestedForCountry(String username, String countryFriendlyId) {
+        return createARequest(getEidasUserPath(username, countryFriendlyId)).get();
     }
 
     private Invocation.Builder createARequest(String path) {
@@ -269,15 +316,31 @@ public class UserRepositoryIntegrationTests extends IntegrationTestHelper {
         return MessageFormat.format("{0}", getUserResourcePath(idpFriendlyId));
     }
 
+    private String getAddAllEidasUsersPath(String countryFriendlyId) {
+        return MessageFormat.format("{0}", getEidasUserResourcePath(countryFriendlyId));
+    }
+
     private String getUserPath(String username, String idpFriendlyId) {
         return MessageFormat.format("{0}{1}", getUserResourcePath(idpFriendlyId), UriBuilder.fromPath(Urls.GET_USER_PATH).build(username));
+    }
+
+    private String getEidasUserPath(String username, String countryFriendlyId) {
+        return MessageFormat.format("{0}{1}", getEidasUserResourcePath(countryFriendlyId), UriBuilder.fromPath(Urls.GET_USER_PATH).build(username));
     }
 
     private String getDeleteUserPath(String idpFriendlyId) {
         return MessageFormat.format("{0}{1}", getUserResourcePath(idpFriendlyId), UriBuilder.fromPath(Urls.DELETE_USER_PATH).build());
     }
 
+    private String getDeleteEidasUserPath(String countryFriendlyId) {
+        return MessageFormat.format("{0}{1}", getEidasUserResourcePath(countryFriendlyId), UriBuilder.fromPath(Urls.DELETE_USER_PATH).build());
+    }
+
     private String getUserResourcePath(String idpFriendlyId) {
+        return UriBuilder.fromPath("http://localhost:"+applicationRule.getLocalPort()+Urls.USERS_RESOURCE).build(idpFriendlyId).toASCIIString();
+    }
+
+    private String getEidasUserResourcePath(String idpFriendlyId) {
         return UriBuilder.fromPath("http://localhost:"+applicationRule.getLocalPort()+Urls.USERS_RESOURCE).build(idpFriendlyId).toASCIIString();
     }
 }
