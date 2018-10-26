@@ -94,6 +94,19 @@ public class JDBIUserRepository implements UserRepository {
     }
 
     @Override
+    public void deleteEidasUserFromStubCountry(String eidasSchemeName, String username) {
+        jdbi.withHandle(handle ->
+                handle.createUpdate(
+                        "DELETE FROM users " +
+                                "WHERE identity_provider_friendly_id = :eidasSchemeName " +
+                                "AND username = :username")
+                        .bind("eidasSchemeName", eidasSchemeName)
+                        .bind("username", username)
+                        .execute()
+        );
+    }
+
+    @Override
     public Collection<DatabaseEidasUser> getUsersForCountry(String friendlyName) {
         List<User> users = jdbi.withHandle(handle ->
                 handle.createQuery(

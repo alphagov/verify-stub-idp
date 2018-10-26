@@ -63,7 +63,8 @@ public interface Urls {
     String DELETE_USER_PATH = "/delete";
     String GET_USER_PATH = "/{" + USERNAME_PARAM + "}";
 
+    String EIDAS_USERS_RESOURCE = "/eidas/{"+SCHEME_ID_PARAM+"}/users";
+
     @SuppressWarnings("squid:S2068")
     String PASSWORD_GEN_RESOURCE = "/password-gen";
-
 }

@@ -2,7 +2,6 @@ package uk.gov.ida.stub.idp.repositories;
 
 import uk.gov.ida.stub.idp.domain.DatabaseEidasUser;
 import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
-import uk.gov.ida.stub.idp.domain.EidasUser;
 
 import java.util.Collection;
 
@@ -11,5 +10,6 @@ public interface UserRepository {
     void addOrUpdateUserForIdp(String idpFriendlyName, DatabaseIdpUser user);
     void addOrUpdateEidasUserForStubCountry(String stubCountryName, DatabaseEidasUser eidasUser);
     void deleteUserFromIdp(String idpFriendlyName, String username);
+    void deleteEidasUserFromStubCountry(String eidasSchemeName, String username);
     Collection<DatabaseEidasUser> getUsersForCountry(String friendlyName);
 }

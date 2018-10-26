@@ -101,6 +101,10 @@ public class AllIdpsUserRepository {
         return userRepository.getUsersForIdp(idpFriendlyName);
     }
 
+    public Collection<DatabaseEidasUser> getAllUsersForStubCountry(String eidasSchemeName) {
+        return userRepository.getUsersForCountry(eidasSchemeName);
+    }
+
     public Optional<DatabaseIdpUser> getUserForIdp(String idpFriendlyName, String username) {
         final List<DatabaseIdpUser> matchingUsers = userRepository.getUsersForIdp(idpFriendlyName)
                 .stream()
@@ -140,5 +144,10 @@ public class AllIdpsUserRepository {
     public void deleteUserFromIdp(String idpFriendlyName, String username) {
         LOG.debug("Deleting user " + username + " from IDP " + idpFriendlyName);
         userRepository.deleteUserFromIdp(idpFriendlyName, username);
+    }
+
+    public void deleteUserFromStubCountry(String eidasSchemeName, String username) {
+        LOG.debug("Deleting user " + username + " from IDP " + eidasSchemeName);
+        userRepository.deleteEidasUserFromStubCountry(eidasSchemeName, username);
     }
 }

@@ -5,6 +5,7 @@ import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.stub.idp.domain.DatabaseEidasUser;
 import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -68,5 +69,17 @@ public class StubCountry {
 
     public boolean userExists(String username) {
         return allIdpsUserRepository.containsUserForIdp(friendlyId, username);
+    }
+
+    public Optional<DatabaseEidasUser> getUser(String username) {
+        return allIdpsUserRepository.getUserForCountry(friendlyId, username);
+    }
+
+    public Collection<DatabaseEidasUser> getAllUsers() {
+        return allIdpsUserRepository.getAllUsersForStubCountry(friendlyId);
+    }
+
+    public void deleteUser(String username) {
+        allIdpsUserRepository.deleteUserFromStubCountry(friendlyId, username);
     }
 }

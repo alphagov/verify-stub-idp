@@ -137,6 +137,7 @@ public class StubIdpModule extends AbstractModule {
         bind(IdpUserService.class);
         bind(StubCountryService.class);
         bind(UserService.class);
+        bind(EidasUserService.class);
         bind(SamlResponseRedirectViewFactory.class);
         
         bind(new TypeLiteral<SessionRepository<IdpSession>>(){}).to(IdpSessionRepository.class);
