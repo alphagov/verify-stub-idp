@@ -29,3 +29,12 @@
         </div>
     </#list>
 </div>
+<hr>
+<small>Manually initiate the journey</small>
+<form method="post" action="${verifySubmissionUrl}">
+    <input name="serviceId" placeholder="serviceId" />
+    <input name="idpEntityId" placeholder="idpEntityId" />
+    <input name="singleIdpJourneyIdentifier" value="${uniqueId}" />
+    <input type="submit" value="Initiate Single IDP journey" />
+</form>
+
