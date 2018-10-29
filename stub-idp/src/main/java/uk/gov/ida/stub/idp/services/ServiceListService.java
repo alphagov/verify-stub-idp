@@ -40,7 +40,7 @@ public class ServiceListService {
             List<Service> services = jsonClient.get(singleIdpConfiguration.getServiceListUri(), new GenericType<List<Service>>() {});
 
             return services;
-        } catch (ProcessingException ex) {
+        } catch (RuntimeException ex) {
             LOG.error(MessageFormat.format("Error getting service list from {0}", singleIdpConfiguration.getServiceListUri().toString()), ex);
         }
         return new ArrayList<Service>() {};
