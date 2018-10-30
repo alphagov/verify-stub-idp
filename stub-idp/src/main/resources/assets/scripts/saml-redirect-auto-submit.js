@@ -7,4 +7,4 @@ function initAutoSubmitSequence() {
 
     document.forms[0].submit();
 }
-document.addEventListener('load', initAutoSubmitSequence());
+document.addEventListener('load', initAutoSubmitSequence);

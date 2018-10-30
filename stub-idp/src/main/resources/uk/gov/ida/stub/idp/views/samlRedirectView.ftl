@@ -3,6 +3,7 @@
 <html>
 <head>
     <title>Saml Processing...</title>
+    <script type="text/javascript" src="/assets/scripts/saml-redirect-auto-submit.js" defer="true"></script>
     <style type='text/css'>
       body {
         padding-top: 2em;
@@ -39,6 +40,5 @@
     <button class='verify-button' id="continue-button">Continue</button>
 </form>
 </body>
-<script type="text/javascript" src="/assets/scripts/saml-redirect-auto-submit.js"></script>
 </html>
 
