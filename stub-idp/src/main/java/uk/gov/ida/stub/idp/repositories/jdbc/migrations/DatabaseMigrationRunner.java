@@ -15,6 +15,6 @@ public class DatabaseMigrationRunner {
     }
 
     private String getDBSpecificMigration(String dbUrl) {
-        return dbUrl.contains("h2") ? "classpath:db.migrations.h2" : "classpath:db.migrations.postgres";
+        return dbUrl.contains(":h2:") ? "classpath:db.migrations.h2" : "classpath:db.migrations.postgres";
     }
 }
