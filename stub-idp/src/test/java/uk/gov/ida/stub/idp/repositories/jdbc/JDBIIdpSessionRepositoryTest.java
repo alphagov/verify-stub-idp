@@ -36,16 +36,23 @@ public class JDBIIdpSessionRepositoryTest {
 	}
 
 	@Test
-	public void testSessionDeletion() {
+	public void testSessionDeletion() throws InterruptedException {
 		// force clear all sessions from the test database
 		repository.deleteSessionsOlderThan(Duration.ZERO);
+		// this is not ideal - and could be flaky.
+		// DateTimeFreezer could be updated and used but that has proved difficult...
+		final long sleepSeconds = 5;
+
 		assertThat(repository.countSessionsInDatabase()).isZero().withFailMessage("found %d sessions in the database when it should be empty", repository.countSessionsInDatabase());
 		repository.createSession(createSession());
 		assertThat(repository.countSessionsInDatabase()).isEqualTo(1);
+		Thread.sleep(sleepSeconds*1000);
+		repository.createSession(createSession());
+		assertThat(repository.countSessionsInDatabase()).isEqualTo(2);
 		assertThat(repository.countSessionsOlderThan(Duration.standardHours(1))).isEqualTo(0);
-		assertThat(repository.countSessionsOlderThan(Duration.ZERO)).isEqualTo(1);
-		repository.deleteSessionsOlderThan(Duration.ZERO);
-		assertThat(repository.countSessionsInDatabase()).isZero();
+		assertThat(repository.countSessionsOlderThan(Duration.standardSeconds(sleepSeconds/2))).isEqualTo(1);
+		repository.deleteSessionsOlderThan(Duration.standardSeconds(sleepSeconds/2));
+		assertThat(repository.countSessionsInDatabase()).isEqualTo(1);
 	}
 
 	private IdpSession createSession() {
