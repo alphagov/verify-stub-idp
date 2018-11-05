@@ -11,6 +11,7 @@ import uk.gov.ida.configuration.ServiceNameConfiguration;
 import uk.gov.ida.saml.idp.configuration.SamlConfiguration;
 import uk.gov.ida.saml.metadata.MetadataResolverConfiguration;
 import uk.gov.ida.saml.metadata.TrustStoreBackedMetadataConfiguration;
+import uk.gov.ida.stub.idp.repositories.reaper.StaleSessionReaperConfiguration;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -94,6 +95,11 @@ public class StubIdpConfiguration extends Configuration implements
     @JsonProperty
     private SingleIdpConfiguration singleIdpJourney;
 
+    @NotNull
+    @Valid
+    @JsonProperty
+    private StaleSessionReaperConfiguration staleSessionReaperConfiguration = new StaleSessionReaperConfiguration();
+
     protected StubIdpConfiguration() {
     }
 
@@ -156,4 +162,8 @@ public class StubIdpConfiguration extends Configuration implements
     }
 
     public SingleIdpConfiguration getSingleIdpJourneyConfiguration() { return singleIdpJourney; }
+
+    public StaleSessionReaperConfiguration getStaleSessionReaperConfiguration() {
+        return staleSessionReaperConfiguration;
+    }
 }

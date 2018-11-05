@@ -3,6 +3,7 @@ package uk.gov.ida.stub.idp.repositories.jdbc;
 import org.jdbi.v3.core.Jdbi;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.Duration;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,7 +34,33 @@ public class JDBIIdpSessionRepositoryTest {
 		jdbi = Jdbi.create(DATABASE_URL);
 		repository = new JDBIIdpSessionRepository(jdbi);
 	}
-	
+
+	@Test
+	public void testSessionDeletion() throws InterruptedException {
+		// force clear all sessions from the test database
+		repository.deleteSessionsOlderThan(Duration.ZERO);
+		// this is not ideal - and could be flaky.
+		// DateTimeFreezer could be updated and used but that has proved difficult...
+		final long sleepSeconds = 5;
+
+		assertThat(repository.countSessionsInDatabase()).isZero().withFailMessage("found %d sessions in the database when it should be empty", repository.countSessionsInDatabase());
+		repository.createSession(createSession());
+		assertThat(repository.countSessionsInDatabase()).isEqualTo(1);
+		Thread.sleep(sleepSeconds*1000);
+		repository.createSession(createSession());
+		assertThat(repository.countSessionsInDatabase()).isEqualTo(2);
+		assertThat(repository.countSessionsOlderThan(Duration.standardHours(1))).isEqualTo(0);
+		assertThat(repository.countSessionsOlderThan(Duration.standardSeconds(sleepSeconds/2))).isEqualTo(1);
+		repository.deleteSessionsOlderThan(Duration.standardSeconds(sleepSeconds/2));
+		assertThat(repository.countSessionsInDatabase()).isEqualTo(1);
+	}
+
+	private IdpSession createSession() {
+		DateTime authnRequestIssueTime = new DateTime(2018, 4, 25, 11, 24, 0, DateTimeZone.UTC);
+		IdaAuthnRequestFromHub authnRequest = new IdaAuthnRequestFromHub("155a37d3-5a9d-4cd0-b68a-158717b85202", "test-issuer", authnRequestIssueTime, Arrays.asList(), Optional.empty(), null, null, AuthnContextComparisonTypeEnumeration.EXACT);
+		return createSession(authnRequest);
+	}
+
 	@Test
 	public void createSession_shouldCreateIdpSessionAndStoreInDatabase() {
 		DateTime authnRequestIssueTime = new DateTime(2018, 4, 25, 11, 24, 0, DateTimeZone.UTC);
