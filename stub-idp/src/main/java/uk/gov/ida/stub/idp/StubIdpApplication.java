@@ -23,6 +23,7 @@ import uk.gov.ida.saml.core.IdaSamlBootstrap;
 import uk.gov.ida.stub.idp.bundles.DatabaseMigrationBundle;
 import uk.gov.ida.stub.idp.configuration.StubIdpConfiguration;
 import uk.gov.ida.stub.idp.exceptions.mappers.CatchAllExceptionMapper;
+import uk.gov.ida.stub.idp.exceptions.mappers.FeatureNotEnabledExceptionMapper;
 import uk.gov.ida.stub.idp.exceptions.mappers.FileNotFoundExceptionMapper;
 import uk.gov.ida.stub.idp.exceptions.mappers.IdpNotFoundExceptionMapper;
 import uk.gov.ida.stub.idp.exceptions.mappers.IdpUserNotFoundExceptionMapper;
@@ -32,19 +33,20 @@ import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASessionFeature;
 import uk.gov.ida.stub.idp.filters.StubIdpCacheControlFilter;
 import uk.gov.ida.stub.idp.healthcheck.DatabaseHealthCheck;
 import uk.gov.ida.stub.idp.healthcheck.StubIdpHealthCheck;
-import uk.gov.ida.stub.idp.resources.eidas.EidasDebugPageResource;
-import uk.gov.ida.stub.idp.resources.idp.ConsentResource;
-import uk.gov.ida.stub.idp.resources.eidas.EidasProxyNodeServiceMetadataResource;
-import uk.gov.ida.stub.idp.resources.idp.DebugPageResource;
-import uk.gov.ida.stub.idp.resources.eidas.EidasConsentResource;
-import uk.gov.ida.stub.idp.resources.eidas.EidasLoginPageResource;
-import uk.gov.ida.stub.idp.resources.eidas.EidasRegistrationPageResource;
-import uk.gov.ida.stub.idp.resources.GeneratePasswordResource;
-import uk.gov.ida.stub.idp.resources.idp.HeadlessIdpResource;
 import uk.gov.ida.stub.idp.resources.AuthnRequestReceiverResource;
+import uk.gov.ida.stub.idp.resources.GeneratePasswordResource;
+import uk.gov.ida.stub.idp.resources.UserResource;
+import uk.gov.ida.stub.idp.resources.eidas.EidasConsentResource;
+import uk.gov.ida.stub.idp.resources.eidas.EidasDebugPageResource;
+import uk.gov.ida.stub.idp.resources.eidas.EidasLoginPageResource;
+import uk.gov.ida.stub.idp.resources.eidas.EidasProxyNodeServiceMetadataResource;
+import uk.gov.ida.stub.idp.resources.eidas.EidasRegistrationPageResource;
+import uk.gov.ida.stub.idp.resources.idp.ConsentResource;
+import uk.gov.ida.stub.idp.resources.idp.DebugPageResource;
+import uk.gov.ida.stub.idp.resources.idp.HeadlessIdpResource;
 import uk.gov.ida.stub.idp.resources.idp.LoginPageResource;
 import uk.gov.ida.stub.idp.resources.idp.RegistrationPageResource;
-import uk.gov.ida.stub.idp.resources.UserResource;
+import uk.gov.ida.stub.idp.resources.idp.SingleIdpPromptPageResource;
 
 import javax.servlet.DispatcherType;
 import java.util.EnumSet;
@@ -138,12 +140,14 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
         environment.jersey().register(GeneratePasswordResource.class);
         environment.jersey().register(EidasProxyNodeServiceMetadataResource.class);
         environment.jersey().register(EidasDebugPageResource.class);
+        environment.jersey().register(SingleIdpPromptPageResource.class);
 
         //exception mappers
         environment.jersey().register(IdpNotFoundExceptionMapper.class);
         environment.jersey().register(IdpUserNotFoundExceptionMapper.class);
         environment.jersey().register(FileNotFoundExceptionMapper.class);
         environment.jersey().register(SessionSerializationExceptionMapper.class);
+        environment.jersey().register(FeatureNotEnabledExceptionMapper.class);
         environment.jersey().register(CatchAllExceptionMapper.class);
 
         //filters

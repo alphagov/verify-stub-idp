@@ -6,6 +6,7 @@ import uk.gov.ida.stub.idp.repositories.IdpSession;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class DebugPageView extends IdpPageView {
@@ -61,4 +62,7 @@ public class DebugPageView extends IdpPageView {
     public String getAuthnRequestIssuer() {
         return session.getIdaAuthnRequestFromHub().getIssuer();
     }
+
+    public UUID getSingleIdpJourneyId() { return session.getSingleIdpJourneyId().orElse(null); }
+
 }

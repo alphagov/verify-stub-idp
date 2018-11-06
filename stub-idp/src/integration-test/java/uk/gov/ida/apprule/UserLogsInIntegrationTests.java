@@ -5,6 +5,7 @@ import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import uk.gov.ida.apprule.steps.AuthnRequestSteps;
 import uk.gov.ida.apprule.support.IntegrationTestHelper;
@@ -55,6 +56,16 @@ public class UserLogsInIntegrationTests extends IntegrationTestHelper {
         final AuthnRequestSteps.Cookies cookies = authnRequestSteps.userPostsAuthnRequestToStubIdp();
         authnRequestSteps.userLogsIn(cookies);
         authnRequestSteps.userConsentsReturnSamlResponse(cookies, false);
+    }
+
+    @Test
+    @Ignore
+    public void testStaleSessionReaper() throws InterruptedException {
+        // set times in StaleSessionReaperConfiguration to 1s, run this test and check the log lines
+        for(int i=0;i<10;i++) {
+            authnRequestSteps.userPostsAuthnRequestToStubIdp();
+            Thread.sleep(1000);
+        }
     }
 
     @Test

@@ -11,6 +11,7 @@ public interface Urls {
     String REGISTRATION_PARAM = "registration";
     String SUBMIT_PARAM = "submit";
     String ERROR_MESSAGE_PARAM = "errorMessage";
+    String SINGLE_IDP_JOURNEY_ID_PARAM = "singleIdpJourneyIdentifier";
     @SuppressWarnings("squid:S2068")
     String PASSWORD_PARAM = "password";
     String USERNAME_PARAM = "username";
@@ -51,6 +52,7 @@ public interface Urls {
     String LOGIN_AUTHN_PENDING_PATH = "authn-pending";
     String DEBUG_RESOURCE = "/{"+IDP_ID_PARAM+"}/debug";
     String CONSENT_RESOURCE = "/{"+IDP_ID_PARAM+"}/consent";
+    String SINGLE_IDP_PROMPT_RESOURCE = "/{"+IDP_ID_PARAM+"}/start-prompt";
 
     String EIDAS_REGISTER_RESOURCE = "/eidas/{"+SCHEME_ID_PARAM+"}/register";
     String EIDAS_CONSENT_RESOURCE = "/eidas/{"+SCHEME_ID_PARAM+"}/consent";

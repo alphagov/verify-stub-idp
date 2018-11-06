@@ -3,6 +3,7 @@ package uk.gov.ida.stub.idp.views;
 import com.google.common.collect.ImmutableList;
 import io.dropwizard.views.View;
 
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Random;
@@ -11,6 +12,10 @@ public class ErrorPageView extends View {
 
     public ErrorPageView() {
         super("errorPage.ftl", StandardCharsets.UTF_8);
+    }
+
+    public ErrorPageView(String templateName, Charset charset) {
+        super(templateName, charset);
     }
 
     public String getReaction() {

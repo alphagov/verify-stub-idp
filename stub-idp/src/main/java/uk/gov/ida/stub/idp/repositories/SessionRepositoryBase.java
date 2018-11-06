@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import org.jdbi.v3.core.Jdbi;
+import org.joda.time.Duration;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.saml2.core.AuthnContextComparisonTypeEnumeration;
 import uk.gov.ida.common.SessionId;
@@ -97,6 +98,24 @@ public abstract class SessionRepositoryBase<T extends Session> implements Sessio
         deleteSession(sessionToken);
 
         return session;
+    }
+
+    public long countSessionsOlderThan(Duration duration) {
+        return jdbi.withHandle(handle -> handle.select("select count(*) from stub_idp_session where last_modified < :lastModified")
+                .bind("lastModified", Instant.now().minusSeconds(duration.getStandardSeconds()))
+                .mapTo(Long.class)
+                .findOnly());
+    }
+
+    public void deleteSessionsOlderThan(Duration duration) {
+        jdbi.withHandle(handle -> handle.execute("DELETE FROM stub_idp_session where last_modified < ?", Instant.now().minusSeconds(duration.getStandardSeconds())));
+    }
+
+    public long countSessionsInDatabase() {
+        return jdbi.withHandle(handle -> handle.select(
+                "select count(*) from stub_idp_session")
+                .mapTo(Long.class)
+                .findOnly());
     }
     
     protected SessionId insertSession(SessionId sessionToken, T session) {

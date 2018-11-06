@@ -69,7 +69,7 @@ task copyStubIdpLogos(type: Copy) {
     if (project.hasProperty('stubidpExtraLogosDirectory')) {
         project.logger.lifecycle "Copying stub idp logos from stubidpExtraLogosDirectory=${project.properties['stubidpExtraLogosDirectory']}"
         // make sure the idp logos are in the jar
-        from stubidpExtraLogosDirectory
+        from project.properties['stubidpExtraLogosDirectory']
         into("src/main/resources/assets/images/providers/")
         include '*.png'
     } else {

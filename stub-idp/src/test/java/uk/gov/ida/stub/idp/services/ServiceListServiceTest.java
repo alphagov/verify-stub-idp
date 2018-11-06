@@ -31,7 +31,7 @@ public class ServiceListServiceTest {
     private final Service service4 = new Service("Service Description 4", "LEVEL_2", "service-description-4-entity-id", "Service Category B");
     private final Service service5 = new Service("Service Description 5", "LEVEL_1", "service-description-5-entity-id", "Service Category B");
 
-    private final URI uri = URI.create("http://localhost/get-service-list");
+    private final URI uri = URI.create("http://localhost/get-available-services");
 
     @Mock
     private SingleIdpConfiguration singleIdpConfiguration;
@@ -41,7 +41,7 @@ public class ServiceListServiceTest {
 
     @Before
     public void setUp() {
-        when(singleIdpConfiguration.getServiceListUrl()).thenReturn(uri);
+        when(singleIdpConfiguration.getServiceListUri()).thenReturn(uri);
     }
 
     @Test(expected=FeatureNotEnabledException.class)

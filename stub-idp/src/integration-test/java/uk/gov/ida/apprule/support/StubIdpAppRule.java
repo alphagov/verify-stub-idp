@@ -38,7 +38,7 @@ public class StubIdpAppRule extends DropwizardAppRule<StubIdpConfiguration> {
     private final List<StubIdp> stubIdps = new ArrayList<>();
 
     public StubIdpAppRule(ConfigOverride... configOverrides) {
-        super(StubIdpApplication.class, ResourceHelpers.resourceFilePath("stub-idp.yml"), withDefaultOverrides(configOverrides));
+        super(StubIdpApplication.class, "configuration/stub-idp.yml", withDefaultOverrides(configOverrides));
     }
 
     public static ConfigOverride[] withDefaultOverrides(ConfigOverride ... configOverrides) {

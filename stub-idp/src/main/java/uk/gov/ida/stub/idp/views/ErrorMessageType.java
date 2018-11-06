@@ -6,6 +6,7 @@ public enum ErrorMessageType {
     USERNAME_ALREADY_TAKEN("That username is already taken - please choose another."),
     INVALID_DATE("Please enter a date in the format 'yyyy-mm-dd'."),
     INCOMPLETE_REGISTRATION("Incomplete registration, please enter all required information."),
+    FEATURE_NOT_ENABLED("This feature is not currently enabled."),
     NO_ERROR("");
 
     private final String message;

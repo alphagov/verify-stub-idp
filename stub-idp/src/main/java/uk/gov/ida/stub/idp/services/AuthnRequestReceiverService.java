@@ -10,6 +10,7 @@ import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.domain.EidasAuthnRequest;
 import uk.gov.ida.stub.idp.domain.IdpHint;
 import uk.gov.ida.stub.idp.domain.IdpLanguageHint;
+import uk.gov.ida.stub.idp.exceptions.InvalidEidasAuthnRequestException;
 import uk.gov.ida.stub.idp.repositories.EidasSession;
 import uk.gov.ida.stub.idp.repositories.EidasSessionRepository;
 import uk.gov.ida.stub.idp.repositories.IdpSession;
@@ -23,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 
 public class AuthnRequestReceiverService {
@@ -65,13 +67,15 @@ public class AuthnRequestReceiverService {
         this.stringAuthnRequestTransformer = stringToAuthnRequestTransformer;
     }
 
-    public SessionCreated handleAuthnRequest(String idpName, String samlRequest, Set<String> idpHints, Optional<Boolean> registration, String relayState, Optional<IdpLanguageHint> languageHint) {
+    public SessionCreated handleAuthnRequest(String idpName, String samlRequest, Set<String> idpHints,
+                                             Optional<Boolean> registration, String relayState,
+                                             Optional<IdpLanguageHint> languageHint, Optional<UUID> singleIdpJourneyId) {
         final List<IdpHint> validHints = new ArrayList<>();
         final List<String> invalidHints = new ArrayList<>();
         validateHints(idpHints, validHints, invalidHints);
 
         final IdaAuthnRequestFromHub idaRequestFromHub = samlRequestTransformer.apply(samlRequest);
-        IdpSession session = new IdpSession(SessionId.createNewSessionId(), idaRequestFromHub, relayState, validHints, invalidHints, languageHint, registration);
+        IdpSession session = new IdpSession(SessionId.createNewSessionId(), idaRequestFromHub, relayState, validHints, invalidHints, languageHint, registration, singleIdpJourneyId);
         final SessionId idpSessionId = idpSessionRepository.createSession(session);
 
         UriBuilder uriBuilder;
@@ -86,6 +90,7 @@ public class AuthnRequestReceiverService {
 
     public SessionCreated handleEidasAuthnRequest(String schemeId, String samlRequest, String relayState, Optional<IdpLanguageHint> languageHint) {
         AuthnRequest authnRequest = stringAuthnRequestTransformer.apply(samlRequest);
+        validateEidasAuthnRequest(authnRequest);
         EidasAuthnRequest eidasAuthnRequest = EidasAuthnRequest.buildFromAuthnRequest(authnRequest);
         EidasSession session = new EidasSession(SessionId.createNewSessionId(), eidasAuthnRequest, relayState, Collections.emptyList(), Collections.emptyList(), languageHint, Optional.empty());
         final SessionId idpSessionId = eidasSessionRepository.createSession(session);
@@ -93,6 +98,18 @@ public class AuthnRequestReceiverService {
         UriBuilder uriBuilder = UriBuilder.fromPath(Urls.EIDAS_LOGIN_RESOURCE);
 
         return new SessionCreated(uriBuilder.build(schemeId), idpSessionId);
+    }
+
+    private void validateEidasAuthnRequest(AuthnRequest request) {
+        if (request.getSignature().getKeyInfo() == null) {
+            throw new InvalidEidasAuthnRequestException("KeyInfo cannot be null");
+        }
+        if (request.getSignature().getKeyInfo().getX509Datas().isEmpty()) {
+            throw new InvalidEidasAuthnRequestException("Must contain X509 data");
+        }
+        if (request.getSignature().getKeyInfo().getX509Datas().get(0).getX509Certificates().isEmpty()) {
+            throw new InvalidEidasAuthnRequestException("Must contain X509 certificate");
+        }
     }
 
     private void validateHints(Set<String> idpHints, List<IdpHint> validHints, List<String> invalidHints) {

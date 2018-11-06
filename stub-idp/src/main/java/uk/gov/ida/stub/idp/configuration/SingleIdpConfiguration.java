@@ -13,20 +13,32 @@ public class SingleIdpConfiguration {
     @JsonProperty
     private boolean enabled = false;
 
-    @NotNull
     @Valid
     @JsonProperty
     private URI serviceListUri = URI.create("http://NotUsed");
 
-    @NotNull
     @Valid
     @JsonProperty
     private JerseyClientConfiguration serviceListClient = new JerseyClientConfiguration();
 
-    public URI getServiceListUrl() { return serviceListUri; }
+    @Valid
+    @JsonProperty
+    private URI verifySubmissionUri = URI.create("http://NotUsed");
 
-    public JerseyClientConfiguration getServiceListClient() { return serviceListClient; }
+    public URI getServiceListUri() {
+        return serviceListUri;
+    }
 
-    public boolean isEnabled() { return enabled; }
+    public JerseyClientConfiguration getServiceListClient() {
+        return serviceListClient;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public URI getVerifySubmissionUri() {
+        return verifySubmissionUri;
+    }
 }
 

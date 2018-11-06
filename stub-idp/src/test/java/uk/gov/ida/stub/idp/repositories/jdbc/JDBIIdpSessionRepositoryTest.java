@@ -3,6 +3,7 @@ package uk.gov.ida.stub.idp.repositories.jdbc;
 import org.jdbi.v3.core.Jdbi;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.Duration;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,14 +34,40 @@ public class JDBIIdpSessionRepositoryTest {
 		jdbi = Jdbi.create(DATABASE_URL);
 		repository = new JDBIIdpSessionRepository(jdbi);
 	}
-	
+
+	@Test
+	public void testSessionDeletion() throws InterruptedException {
+		// force clear all sessions from the test database
+		repository.deleteSessionsOlderThan(Duration.ZERO);
+		// this is not ideal - and could be flaky.
+		// DateTimeFreezer could be updated and used but that has proved difficult...
+		final long sleepSeconds = 5;
+
+		assertThat(repository.countSessionsInDatabase()).isZero().withFailMessage("found %d sessions in the database when it should be empty", repository.countSessionsInDatabase());
+		repository.createSession(createSession());
+		assertThat(repository.countSessionsInDatabase()).isEqualTo(1);
+		Thread.sleep(sleepSeconds*1000);
+		repository.createSession(createSession());
+		assertThat(repository.countSessionsInDatabase()).isEqualTo(2);
+		assertThat(repository.countSessionsOlderThan(Duration.standardHours(1))).isEqualTo(0);
+		assertThat(repository.countSessionsOlderThan(Duration.standardSeconds(sleepSeconds/2))).isEqualTo(1);
+		repository.deleteSessionsOlderThan(Duration.standardSeconds(sleepSeconds/2));
+		assertThat(repository.countSessionsInDatabase()).isEqualTo(1);
+	}
+
+	private IdpSession createSession() {
+		DateTime authnRequestIssueTime = new DateTime(2018, 4, 25, 11, 24, 0, DateTimeZone.UTC);
+		IdaAuthnRequestFromHub authnRequest = new IdaAuthnRequestFromHub("155a37d3-5a9d-4cd0-b68a-158717b85202", "test-issuer", authnRequestIssueTime, Arrays.asList(), Optional.empty(), null, null, AuthnContextComparisonTypeEnumeration.EXACT);
+		return createSession(authnRequest);
+	}
+
 	@Test
 	public void createSession_shouldCreateIdpSessionAndStoreInDatabase() {
 		DateTime authnRequestIssueTime = new DateTime(2018, 4, 25, 11, 24, 0, DateTimeZone.UTC);
 		IdaAuthnRequestFromHub authnRequest = new IdaAuthnRequestFromHub("155a37d3-5a9d-4cd0-b68a-158717b85202", "test-issuer", authnRequestIssueTime, Arrays.asList(), Optional.empty(), null, null, AuthnContextComparisonTypeEnumeration.EXACT);
 		IdpSession session = createSession(authnRequest);
 		SessionId insertedSessionId = repository.createSession(session);
-		String expectedSerializedSession = "{{\"sessionId\":\""+ insertedSessionId.getSessionId() +"\",\"idaAuthnRequestFromHub\":{\"id\":\"155a37d3-5a9d-4cd0-b68a-158717b85202\",\"issuer\":\"test-issuer\",\"issueInstant\":1524655440000,\"levelsOfAssurance\":[],\"forceAuthentication\":null,\"sessionExpiryTimestamp\":null,\"comparisonType\":{\"comparisonType\":\"exact\"},\"destination\":null},\"relayState\":\"test-relay-state\",\"validHints\":[],\"invalidHints\":[],\"languageHint\":null,\"registration\":null,\"idpUser\":{\"username\":\"jobloggs\",\"persistentId\":\"persistentId\",\"password\":\"12345678\",\"firstnames\":[{\"value\":\"Joe\",\"from\":null,\"to\":null,\"verified\":true}],\"middleNames\":[],\"surnames\":[{\"value\":\"Bloggs\",\"from\":null,\"to\":null,\"verified\":true}],\"gender\":{\"value\":\"MALE\",\"from\":null,\"to\":null,\"verified\":true},\"dateOfBirths\":[{\"value\":[2018,4,25],\"from\":null,\"to\":null,\"verified\":true}],\"addresses\":[],\"levelOfAssurance\":\"LEVEL_1\",\"currentAddress\":null}}}";
+		String expectedSerializedSession = "{{\"sessionId\":\""+ insertedSessionId.getSessionId() +"\",\"idaAuthnRequestFromHub\":{\"id\":\"155a37d3-5a9d-4cd0-b68a-158717b85202\",\"issuer\":\"test-issuer\",\"issueInstant\":1524655440000,\"levelsOfAssurance\":[],\"forceAuthentication\":null,\"sessionExpiryTimestamp\":null,\"comparisonType\":{\"comparisonType\":\"exact\"},\"destination\":null},\"relayState\":\"test-relay-state\",\"validHints\":[],\"invalidHints\":[],\"languageHint\":null,\"registration\":null,\"singleIdpJourneyId\":null,\"idpUser\":{\"username\":\"jobloggs\",\"persistentId\":\"persistentId\",\"password\":\"12345678\",\"firstnames\":[{\"value\":\"Joe\",\"from\":null,\"to\":null,\"verified\":true}],\"middleNames\":[],\"surnames\":[{\"value\":\"Bloggs\",\"from\":null,\"to\":null,\"verified\":true}],\"gender\":{\"value\":\"MALE\",\"from\":null,\"to\":null,\"verified\":true},\"dateOfBirths\":[{\"value\":[2018,4,25],\"from\":null,\"to\":null,\"verified\":true}],\"addresses\":[],\"levelOfAssurance\":\"LEVEL_1\",\"currentAddress\":null}}}";
 		
 		jdbi.useHandle(handle -> {
 			Optional<String> result = handle.select("select session_data from stub_idp_session where session_id = ?", insertedSessionId.toString())
@@ -114,7 +141,7 @@ public class JDBIIdpSessionRepositoryTest {
 	}
 	
 	private IdpSession createSession(IdaAuthnRequestFromHub authnRequestFromHub) {
-		IdpSession session = new IdpSession(SessionId.createNewSessionId(), authnRequestFromHub, "test-relay-state", Arrays.asList(), Arrays.asList(), Optional.empty(), Optional.empty());
+		IdpSession session = new IdpSession(SessionId.createNewSessionId(), authnRequestFromHub, "test-relay-state", Arrays.asList(), Arrays.asList(), Optional.empty(), Optional.empty(),Optional.empty());
 		// TODO: add addresses to IdpUser below once Address has a equals() method implemented.
 		session.setIdpUser(Optional.of(new DatabaseIdpUser("jobloggs", "persistentId", "12345678", Arrays.asList(new MatchingDatasetValue<>("Joe", null, null, true)), Arrays.asList(), Arrays.asList(new MatchingDatasetValue<>("Bloggs", null, null, true)), Optional.of(new MatchingDatasetValue<>(Gender.MALE, null, null, true)), Arrays.asList(new MatchingDatasetValue<>(new LocalDate(authnRequestFromHub.getIssueInstant().getMillis(), DateTimeZone.UTC), null, null, true)), Arrays.asList(), AuthnContext.LEVEL_1)));
 		
