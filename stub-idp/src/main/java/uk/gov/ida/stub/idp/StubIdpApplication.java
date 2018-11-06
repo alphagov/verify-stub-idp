@@ -29,6 +29,7 @@ import uk.gov.ida.stub.idp.exceptions.mappers.IdpNotFoundExceptionMapper;
 import uk.gov.ida.stub.idp.exceptions.mappers.IdpUserNotFoundExceptionMapper;
 import uk.gov.ida.stub.idp.exceptions.mappers.SessionSerializationExceptionMapper;
 import uk.gov.ida.stub.idp.filters.NoCacheResponseFilter;
+import uk.gov.ida.stub.idp.filters.SecurityHeadersFilter;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASessionFeature;
 import uk.gov.ida.stub.idp.filters.StubIdpCacheControlFilter;
 import uk.gov.ida.stub.idp.healthcheck.DatabaseHealthCheck;
@@ -152,6 +153,7 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
 
         //filters
         environment.jersey().register(NoCacheResponseFilter.class);
+        environment.jersey().register(SecurityHeadersFilter.class);
 
         //health checks
         StubIdpHealthCheck healthCheck = new StubIdpHealthCheck();
