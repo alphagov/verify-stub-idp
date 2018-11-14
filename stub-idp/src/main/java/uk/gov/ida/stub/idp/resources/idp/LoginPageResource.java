@@ -3,13 +3,17 @@ package uk.gov.ida.stub.idp.resources.idp;
 import com.google.common.base.Strings;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.stub.idp.Urls;
+import uk.gov.ida.stub.idp.cookies.CookieFactory;
 import uk.gov.ida.stub.idp.cookies.CookieNames;
+
+import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.FraudIndicator;
 import uk.gov.ida.stub.idp.domain.SamlResponse;
 import uk.gov.ida.stub.idp.domain.SubmitButtonValue;
 import uk.gov.ida.stub.idp.exceptions.InvalidSessionIdException;
 import uk.gov.ida.stub.idp.exceptions.InvalidUsernameOrPasswordException;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASession;
+import uk.gov.ida.stub.idp.repositories.AllIdpsUserRepository;
 import uk.gov.ida.stub.idp.repositories.Idp;
 import uk.gov.ida.stub.idp.repositories.IdpSession;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
@@ -38,6 +42,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 import static java.text.MessageFormat.format;
@@ -62,13 +67,14 @@ public class LoginPageResource {
             NonSuccessAuthnResponseService nonSuccessAuthnResponseService,
             SamlResponseRedirectViewFactory samlResponseRedirectViewFactory,
             IdpUserService idpUserService,
-            SessionRepository<IdpSession> sessionRepository) {
+            SessionRepository<IdpSession> sessionRepository)
+    {
         this.nonSuccessAuthnResponseService = nonSuccessAuthnResponseService;
         this.idpStubsRepository = idpStubsRepository;
         this.samlResponseRedirectViewFactory = samlResponseRedirectViewFactory;
         this.idpUserService = idpUserService;
         this.sessionRepository = sessionRepository;
-    }
+     }
 
     @GET
     public Response get(
@@ -76,13 +82,30 @@ public class LoginPageResource {
             @QueryParam(Urls.ERROR_MESSAGE_PARAM) java.util.Optional<ErrorMessageType> errorMessage,
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
 
-        checkAndGetSession(idpName, sessionCookie);
-
         Idp idp = idpStubsRepository.getIdpWithFriendlyId(idpName);
+        Optional<IdpSession> session = sessionRepository.get(sessionCookie);
+        Optional<DatabaseIdpUser> idpUser = Optional.empty();
+        if(session.isPresent()) {
+            idpUser = session.get().getIdpUser();
+        }
 
-        return Response.ok()
-                .entity(new LoginPageView(idp.getDisplayName(), idp.getFriendlyId(), errorMessage.orElse(NO_ERROR).getMessage(), idp.getAssetId()))
-                .build();
+        if (!idpUser.isPresent()) {
+            return Response.ok()
+                    .entity(new LoginPageView(idp.getDisplayName(), idp.getFriendlyId(), errorMessage.orElse(NO_ERROR).getMessage(), idp.getAssetId()))
+                    .build();
+        } else {
+
+            try {
+                idpUserService.attachIdpUserToSession(idpName, idpUser.get().getUsername(), idpUser.get().getPassword(), sessionCookie);
+            } catch (InvalidUsernameOrPasswordException e) {
+                return createErrorResponse(INVALID_USERNAME_OR_PASSWORD, idpName);
+            } catch (InvalidSessionIdException e) {
+                return createErrorResponse(INVALID_SESSION_ID, idpName);
+            }
+            return Response.seeOther(UriBuilder.fromPath(Urls.CONSENT_RESOURCE)
+                    .build(idpName))
+                    .build();
+        }
     }
 
     @POST

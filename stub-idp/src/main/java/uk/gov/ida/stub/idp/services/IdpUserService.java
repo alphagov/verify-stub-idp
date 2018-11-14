@@ -57,6 +57,17 @@ public class IdpUserService {
         attachIdpUserToSession(Optional.ofNullable(user), idpSessionId);
     }
 
+    public DatabaseIdpUser createIdpUser(String idpName,
+                                                String firstname, String surname,
+                                                String addressLine1, String addressLine2, String addressTown, String addressPostCode,
+                                                AuthnContext levelOfAssurance,
+                                                String dateOfBirth,
+                                                String username, String password
+                                                ) throws IncompleteRegistrationException, InvalidDateException, UsernameAlreadyTakenException, InvalidUsernameOrPasswordException {
+        Idp idp = idpStubsRepository.getIdpWithFriendlyId(idpName);
+        return createUserInIdp(firstname, surname, addressLine1, addressLine2, addressTown, addressPostCode, levelOfAssurance, dateOfBirth, username, password, idp);
+    }
+
     public void attachIdpUserToSession(Optional<DatabaseIdpUser> user, SessionId idpSessionId) throws InvalidUsernameOrPasswordException, InvalidSessionIdException {
 
         if (!user.isPresent()) {

@@ -19,7 +19,15 @@ import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.*;
+
+import javax.ws.rs.CookieParam;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -90,7 +98,7 @@ public class ConsentResource {
             case I_AGREE_SUBMIT_VALUE:
                 return samlResponseRedirectViewFactory.sendSamlMessage(successAuthnResponseService.getSuccessResponse(randomisePid, httpServletRequest.getRemoteAddr(), idpName, session));
             case I_REFUSE_SUBMIT_VALUE:
-                return samlResponseRedirectViewFactory.sendSamlMessage(nonSuccessAuthnResponseService.generateNoAuthnContext(session.getIdaAuthnRequestFromHub().getId(), idpName, session.getRelayState()));
+                return samlResponseRedirectViewFactory.sendSamlMessage(nonSuccessAuthnResponseService.generateNoAuthnContext(idpName, session.getIdaAuthnRequestFromHub().getId(), session.getRelayState()));
 
             default:
                 throw errorResponse("Invalid button value " + submitButtonValue);

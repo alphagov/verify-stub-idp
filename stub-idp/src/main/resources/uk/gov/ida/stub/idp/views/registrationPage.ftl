@@ -2,21 +2,28 @@
 <div class="main">
     <div class="tabs">
         <ul>
+        <#if path != "pre-register">
             <li>
                 <a id="tab-login" class="tab-text" href="/${idpId}/login">Login</a>
             </li>
-            <li class="on" id="tab-register">
-                <span class="tab-text">Register</span>
-            </li>
+        </#if>
+        <li class="on" id="tab-register">
+            <span class="tab-text">Register</span>
+        </li>
+        <#if path != "pre-register">
             <li>
                 <a id="tab-debug" class="tab-text" href="/${idpId}/debug">System information</a>
             </li>
+        </#if>
         </ul>
     </div>
-    <form action="/${idpId}/register" class="register" method="post" id="registration-form" autocomplete="off">
+    <form action="/${idpId}/register/" class="register" method="post" id="registration-form" autocomplete="off">
         <fieldset>
+        <#if path == "pre-register">
+            <legend>Pre-Register with ${name}</legend>
+        <#else>
             <legend>Register with ${name}</legend>
-
+        </#if>
             <div class="error-text">${errorMessage}</div>
 
             <hr>

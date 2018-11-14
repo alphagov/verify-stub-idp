@@ -48,7 +48,8 @@ import uk.gov.ida.stub.idp.resources.idp.HeadlessIdpResource;
 import uk.gov.ida.stub.idp.resources.idp.LoginPageResource;
 import uk.gov.ida.stub.idp.resources.idp.RegistrationPageResource;
 import uk.gov.ida.stub.idp.resources.idp.SingleIdpPromptPageResource;
-
+import uk.gov.ida.stub.idp.resources.idp.CancelPreRegistrationPageResource;
+import uk.gov.ida.stub.idp.resources.idp.LogoutPageResource;
 import javax.servlet.DispatcherType;
 import java.util.EnumSet;
 import java.util.Map;
@@ -133,6 +134,7 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
         environment.jersey().register(EidasLoginPageResource.class);
         environment.jersey().register(EidasConsentResource.class);
         environment.jersey().register(RegistrationPageResource.class);
+        environment.jersey().register(CancelPreRegistrationPageResource.class);
         environment.jersey().register(EidasRegistrationPageResource.class);
         environment.jersey().register(DebugPageResource.class);
         environment.jersey().register(ConsentResource.class);
@@ -142,6 +144,7 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
         environment.jersey().register(EidasProxyNodeServiceMetadataResource.class);
         environment.jersey().register(EidasDebugPageResource.class);
         environment.jersey().register(SingleIdpPromptPageResource.class);
+        environment.jersey().register(LogoutPageResource.class);
 
         //exception mappers
         environment.jersey().register(IdpNotFoundExceptionMapper.class);

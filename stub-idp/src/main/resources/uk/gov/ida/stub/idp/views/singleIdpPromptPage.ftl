@@ -1,7 +1,41 @@
 <#-- @ftlvariable name="" type="uk.gov.ida.stub.idp.views.SingleIdpPromptPageView" -->
+<#include "address.ftl">
 <div class="main">
 
     <h1>Demo services</h1>
+    <#if idpUser?? >
+        <div>
+            <h3>Your pre-registered details</h3>
+            <ul>
+                <li>
+                    <label for="firstName">First Name:</label>
+                    <span id="firstName">${firstName}</span>
+                </li>
+                <li>
+                    <label for="surname">Surname:</label>
+                    <span id="surname">${surname}</span>
+                </li>
+                <li>
+                    <label for="dateOfBirth">Date of Birth:</label>
+                    <span id="dateOfBirth">${dateOfBirth}</span>
+                </li>
+                 <li>
+                    <label for="gender">Gender:</label>
+                    <span id="gender">${gender}</span>
+                </li>
+            <#if address??>
+                <li>
+                    <label for="address">Address:</label>
+                    <span id="address"><@addy address></@addy></span>
+                </li>
+            </#if>
+                <li>
+                    <label for="loa">Level of assurance</label>
+                    <span id="loa">${loa}</span>
+                </li>
+            </ul>
+        </div>
+    </#if>
     <p>
         To launch the demo of a journey started from IDP prompt (single IDP journey), use the demo service test GOV.UK Verify user journeys.
     </p>

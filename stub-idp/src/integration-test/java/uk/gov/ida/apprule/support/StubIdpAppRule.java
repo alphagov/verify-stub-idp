@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import httpstub.HttpStubRule;
 import io.dropwizard.testing.ConfigOverride;
-import io.dropwizard.testing.ResourceHelpers;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 import keystore.KeyStoreResource;
 import keystore.builders.KeyStoreResourceBuilder;
@@ -73,6 +72,7 @@ public class StubIdpAppRule extends DropwizardAppRule<StubIdpConfiguration> {
                 .add(ConfigOverride.config("europeanIdentity.signingKeyPairConfiguration.publicKeyConfiguration.type", "x509"))
                 .add(ConfigOverride.config("europeanIdentity.signingKeyPairConfiguration.publicKeyConfiguration.cert", STUB_IDP_PUBLIC_PRIMARY_CERT))
                 .add(ConfigOverride.config("database.url", "jdbc:h2:mem:test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1"))
+                .add(ConfigOverride.config("singleIdpJourney.enabled", "true"))
                 .add(configOverrides)
                 .build();
         return overrides.toArray(new ConfigOverride[overrides.size()]);

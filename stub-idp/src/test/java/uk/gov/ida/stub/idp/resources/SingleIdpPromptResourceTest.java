@@ -11,7 +11,9 @@ import uk.gov.ida.saml.core.test.TestEntityIds;
 import uk.gov.ida.stub.idp.configuration.SingleIdpConfiguration;
 import uk.gov.ida.stub.idp.domain.Service;
 import uk.gov.ida.stub.idp.exceptions.FeatureNotEnabledException;
+import uk.gov.ida.stub.idp.repositories.AllIdpsUserRepository;
 import uk.gov.ida.stub.idp.repositories.Idp;
+import uk.gov.ida.stub.idp.repositories.IdpSessionRepository;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
 import uk.gov.ida.stub.idp.resources.idp.SingleIdpPromptPageResource;
 import uk.gov.ida.stub.idp.services.ServiceListService;
@@ -49,6 +51,12 @@ public class SingleIdpPromptResourceTest {
     @Mock
     private ServiceListService serviceListService;
 
+    @Mock
+    private AllIdpsUserRepository allIdpsUserRepository;
+
+    @Mock
+    private IdpSessionRepository idpSessionRepository;
+
     private SingleIdpPromptPageResource singleIdpPromptPageResource;
 
     private final String idpName = "idpName";
@@ -56,7 +64,7 @@ public class SingleIdpPromptResourceTest {
 
     @Before
     public void setUp() {
-        singleIdpPromptPageResource = new SingleIdpPromptPageResource(idpStubsRepository, serviceListService, singleIdpConfiguration);
+        singleIdpPromptPageResource = new SingleIdpPromptPageResource(idpStubsRepository, serviceListService, singleIdpConfiguration, idpSessionRepository);
         when(singleIdpConfiguration.isEnabled()).thenReturn(true);
         when(singleIdpConfiguration.getVerifySubmissionUri()).thenReturn(verifySubmissionUri);
         when(idpStubsRepository.getIdpWithFriendlyId(idpName)).thenReturn(idp);
@@ -67,7 +75,7 @@ public class SingleIdpPromptResourceTest {
         when(singleIdpConfiguration.isEnabled()).thenReturn(false);
 
         assertThatExceptionOfType(FeatureNotEnabledException.class)
-            .isThrownBy(()->singleIdpPromptPageResource.get(idpName, Optional.empty()));
+            .isThrownBy(()->singleIdpPromptPageResource.get(idpName, Optional.empty(),null));
     }
 
 
@@ -76,7 +84,7 @@ public class SingleIdpPromptResourceTest {
 
         when(serviceListService.getServices()).thenReturn(new ArrayList<>());
 
-        Response response = singleIdpPromptPageResource.get(idpName, Optional.empty());
+        Response response = singleIdpPromptPageResource.get(idpName, Optional.empty(), null);
 
         assertThat(response.getEntity()).isInstanceOf(SingleIdpPromptPageView.class);
 
@@ -90,7 +98,7 @@ public class SingleIdpPromptResourceTest {
 
         when(serviceListService.getServices()).thenReturn(Arrays.asList(service1, service2, service3));
 
-        Response response = singleIdpPromptPageResource.get(idpName, Optional.empty());
+        Response response = singleIdpPromptPageResource.get(idpName, Optional.empty(), null);
 
         assertThat(response.getEntity()).isInstanceOf(SingleIdpPromptPageView.class);
 
