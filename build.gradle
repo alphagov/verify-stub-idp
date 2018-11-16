@@ -90,6 +90,8 @@ subprojects {
                 "uk.gov.ida:saml-security:$dependencyVersions.saml_libs",
                 "uk.gov.ida:security-utils:$dependencyVersions.ida_utils",
                 "uk.gov.ida:saml-utils:$dependencyVersions.saml_libs",
+                "javax.activation:javax.activation-api:1.2.0",
+                "javax.xml.bind:jaxb-api:2.2.3",
                 project(':stub-idp-saml')
 
         stub_idp_runtime 'joda-time:joda-time:2.3',
