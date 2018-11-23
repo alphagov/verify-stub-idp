@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.stub.idp.Urls;
+import uk.gov.ida.stub.idp.cookies.CookieFactory;
 import uk.gov.ida.stub.idp.cookies.CookieNames;
 import uk.gov.ida.stub.idp.domain.SamlResponse;
 import uk.gov.ida.stub.idp.domain.SubmitButtonValue;
@@ -15,6 +16,7 @@ import uk.gov.ida.stub.idp.exceptions.UsernameAlreadyTakenException;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASession;
 import uk.gov.ida.stub.idp.repositories.Idp;
 import uk.gov.ida.stub.idp.repositories.IdpSession;
+import uk.gov.ida.stub.idp.repositories.IdpSessionRepository;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.services.IdpUserService;
@@ -40,6 +42,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.Optional;
+import java.util.UUID;
 
 import static java.text.MessageFormat.format;
 import static uk.gov.ida.stub.idp.views.ErrorMessageType.INCOMPLETE_REGISTRATION;
@@ -51,7 +54,6 @@ import static uk.gov.ida.stub.idp.views.ErrorMessageType.USERNAME_ALREADY_TAKEN;
 
 @Path(Urls.REGISTER_RESOURCE)
 @Produces(MediaType.TEXT_HTML)
-@SessionCookieValueMustExistAsASession
 public class RegistrationPageResource {
 
     private final IdpStubsRepository idpStubsRepository;
@@ -59,6 +61,8 @@ public class RegistrationPageResource {
     private final SamlResponseRedirectViewFactory samlResponseRedirectViewFactory;
     private final NonSuccessAuthnResponseService nonSuccessAuthnResponseService;
     private final SessionRepository<IdpSession> sessionRepository;
+    private final CookieFactory cookieFactory;
+    private final IdpSessionRepository idpSessionRepository;
 
     @Inject
     public RegistrationPageResource(
@@ -66,15 +70,20 @@ public class RegistrationPageResource {
             IdpUserService idpUserService,
             SamlResponseRedirectViewFactory samlResponseRedirectViewFactory,
             NonSuccessAuthnResponseService nonSuccessAuthnResponseService,
-            SessionRepository<IdpSession> sessionRepository) {
+            SessionRepository<IdpSession> sessionRepository,
+            CookieFactory cookieFactory,
+            IdpSessionRepository idpSessionRepository) {
         this.idpUserService = idpUserService;
         this.idpStubsRepository = idpStubsRepository;
         this.samlResponseRedirectViewFactory = samlResponseRedirectViewFactory;
         this.nonSuccessAuthnResponseService = nonSuccessAuthnResponseService;
         this.sessionRepository = sessionRepository;
+        this.cookieFactory = cookieFactory;
+        this.idpSessionRepository = idpSessionRepository;
     }
 
     @GET
+    @SessionCookieValueMustExistAsASession
     public Response get(
             @PathParam(Urls.IDP_ID_PARAM) @NotNull String idpName,
             @QueryParam(Urls.ERROR_MESSAGE_PARAM) java.util.Optional<ErrorMessageType> errorMessage,
@@ -89,7 +98,29 @@ public class RegistrationPageResource {
         }
 
         Idp idp = idpStubsRepository.getIdpWithFriendlyId(idpName);
-        return Response.ok(new RegistrationPageView(idp.getDisplayName(), idp.getFriendlyId(), errorMessage.orElse(NO_ERROR).getMessage(), idp.getAssetId())).build();
+        return Response.ok(new RegistrationPageView(idp.getDisplayName(), idp.getFriendlyId(), errorMessage.orElse(NO_ERROR).getMessage(), idp.getAssetId(), null)).build();
+    }
+
+    @GET
+    @Path(Urls.PRE_REGISTER_PATH)
+    public Response get(
+            @PathParam(Urls.IDP_ID_PARAM) @NotNull String idpName,
+            @QueryParam(Urls.ERROR_MESSAGE_PARAM) Optional<ErrorMessageType> errorMessage) {
+
+        Idp idp = idpStubsRepository.getIdpWithFriendlyId(idpName);
+        IdpSession idpSession = new IdpSession(
+                new SessionId(UUID.randomUUID().toString()),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                Optional.of(UUID.randomUUID()));
+        final SessionId sessionId = idpSessionRepository.createSession(idpSession);
+        return Response.ok(new RegistrationPageView(idp.getDisplayName(), idp.getFriendlyId(), errorMessage.orElse(NO_ERROR).getMessage(), idp.getAssetId(), Urls.PRE_REGISTER_PATH))
+                .cookie(cookieFactory.createSessionIdCookie(sessionId))
+                .build();
     }
 
     @POST
@@ -107,7 +138,11 @@ public class RegistrationPageResource {
             @FormParam(Urls.PASSWORD_PARAM) String password,
             @FormParam(Urls.LEVEL_OF_ASSURANCE_PARAM) AuthnContext levelOfAssurance,
             @FormParam(Urls.SUBMIT_PARAM) @NotNull SubmitButtonValue submitButtonValue,
-            @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
+            @CookieParam(CookieNames.SESSION_COOKIE_NAME) SessionId sessionCookie) {
+
+        if(sessionCookie == null) {
+            return createErrorResponse(INVALID_SESSION_ID, idpName);
+        }
 
         if (Strings.isNullOrEmpty(sessionCookie.toString())) {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Unable to locate session cookie for " + idpName))).build());
@@ -119,6 +154,74 @@ public class RegistrationPageResource {
             throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(format(("Session is invalid for " + idpName))).build());
         }
 
+
+        if (session.get().getIdaAuthnRequestFromHub() == null) {
+            return preRegisterResponse(idpName, firstname, surname, addressLine1, addressLine2, addressTown, addressPostCode, dateOfBirth, username, password, levelOfAssurance, submitButtonValue, sessionCookie);
+        } else {
+            return registerResponse(idpName, firstname, surname, addressLine1, addressLine2, addressTown, addressPostCode, dateOfBirth, username, password, levelOfAssurance, submitButtonValue, sessionCookie, session);
+        }
+    }
+
+    private Response preRegisterResponse(String idpName,
+                                         String firstname,
+                                         String surname,
+                                         String addressLine1,
+                                         String addressLine2,
+                                         String addressTown,
+                                         String addressPostCode,
+                                         String dateOfBirth,
+                                         String username,
+                                         String password,
+                                         AuthnContext levelOfAssurance,
+                                         SubmitButtonValue submitButtonValue,
+                                         SessionId sessionCookie) {
+        switch (submitButtonValue) {
+            case Cancel: {
+                sessionRepository.deleteSession(sessionCookie);
+                return Response.seeOther(UriBuilder.fromPath(Urls.CANCEL_PRE_REGISTER_RESOURCE).build(idpName)).build();
+            }
+            case Register: {
+                try {
+                    idpUserService.createAndAttachIdpUserToSession(idpName,
+                            firstname, surname, addressLine1, addressLine2, addressTown, addressPostCode,
+                            levelOfAssurance, dateOfBirth, username, password, sessionCookie);
+                } catch (InvalidSessionIdException e) {
+                    return createErrorResponse(INVALID_SESSION_ID, idpName);
+                } catch (IncompleteRegistrationException e) {
+                    return createErrorResponse(INCOMPLETE_REGISTRATION, idpName);
+                } catch (InvalidDateException e) {
+                    return createErrorResponse(INVALID_DATE, idpName);
+                } catch (UsernameAlreadyTakenException e) {
+                    return createErrorResponse(USERNAME_ALREADY_TAKEN, idpName);
+                } catch (InvalidUsernameOrPasswordException e) {
+                    return createErrorResponse(INVALID_USERNAME_OR_PASSWORD, idpName);
+                }
+
+                return Response.seeOther(UriBuilder.fromPath(Urls.SINGLE_IDP_PROMPT_RESOURCE)
+                        .build(idpName))
+                        .build();
+            }
+            default: {
+                throw new WebApplicationException(Response.Status.BAD_REQUEST);
+            }
+        }
+
+    }
+
+    private Response registerResponse(String idpName,
+                                  String firstname,
+                                  String surname,
+                                  String addressLine1,
+                                  String addressLine2,
+                                  String addressTown,
+                                  String addressPostCode,
+                                  String dateOfBirth,
+                                  String username,
+                                  String password,
+                                  AuthnContext levelOfAssurance,
+                                  SubmitButtonValue submitButtonValue,
+                                  SessionId sessionCookie,
+                                  Optional<IdpSession> session) {
         final String samlRequestId = session.get().getIdaAuthnRequestFromHub().getId();
 
         switch (submitButtonValue) {

@@ -1,10 +1,15 @@
 package uk.gov.ida.stub.idp.resources.idp;
 
+import uk.gov.ida.common.SessionId;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.configuration.SingleIdpConfiguration;
+import uk.gov.ida.stub.idp.cookies.CookieNames;
+import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.Service;
 import uk.gov.ida.stub.idp.exceptions.FeatureNotEnabledException;
 import uk.gov.ida.stub.idp.repositories.Idp;
+import uk.gov.ida.stub.idp.repositories.IdpSession;
+import uk.gov.ida.stub.idp.repositories.IdpSessionRepository;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
 import uk.gov.ida.stub.idp.services.ServiceListService;
 import uk.gov.ida.stub.idp.views.ErrorMessageType;
@@ -17,6 +22,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.CookieParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -32,26 +38,36 @@ public class SingleIdpPromptPageResource {
     private final IdpStubsRepository idpStubsRepository;
     private final ServiceListService serviceListService;
     private final SingleIdpConfiguration singleIdpConfiguration;
+    private final IdpSessionRepository idpSessionRepository;
 
     @Inject
     public SingleIdpPromptPageResource(
             IdpStubsRepository idpStubsRepository,
             ServiceListService serviceListService,
-            SingleIdpConfiguration singleIdpConfiguration) {
+            SingleIdpConfiguration singleIdpConfiguration,
+            IdpSessionRepository idpSessionRepository) {
         this.idpStubsRepository = idpStubsRepository;
         this.serviceListService = serviceListService;
         this.singleIdpConfiguration = singleIdpConfiguration;
+        this.idpSessionRepository = idpSessionRepository;
     }
 
     @GET
     public Response get(
             @PathParam(Urls.IDP_ID_PARAM) @NotNull String idpName,
-            @QueryParam(Urls.ERROR_MESSAGE_PARAM) Optional<ErrorMessageType> errorMessage) throws FeatureNotEnabledException {
+            @QueryParam(Urls.ERROR_MESSAGE_PARAM) Optional<ErrorMessageType> errorMessage,
+            @CookieParam(CookieNames.SESSION_COOKIE_NAME) SessionId sessionCookie) throws FeatureNotEnabledException {
         if (!singleIdpConfiguration.isEnabled()) throw new FeatureNotEnabledException();
         Idp idp = idpStubsRepository.getIdpWithFriendlyId(idpName);
         UUID uuid = UUID.randomUUID();
+        Optional<DatabaseIdpUser> idpUser = Optional.empty();
 
         List<Service> serviceList = serviceListService.getServices();
+        if (sessionCookie != null) {
+            Optional<IdpSession> idpSession = idpSessionRepository.get(sessionCookie);
+            idpUser = idpSession.get().getIdpUser();
+        }
+
         return Response.ok()
             .entity(
                 new SingleIdpPromptPageView(idp.getDisplayName(),
@@ -60,7 +76,8 @@ public class SingleIdpPromptPageResource {
                     idp.getAssetId(),
                     serviceList,
                     singleIdpConfiguration.getVerifySubmissionUri(),
-                    uuid
+                    uuid,
+                    idpUser.orElse(null)
                 )
             )
             .build();

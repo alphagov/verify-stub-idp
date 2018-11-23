@@ -47,11 +47,15 @@ public interface Urls {
     String LOGIN_FRAUD_FAILURE_PATH = "fraud-failure";
     String LOGIN_UPLIFT_FAILED_PATH = "uplift-failed";
     String LOGIN_REQUESTER_ERROR_PATH = "requester-error";
+    String LOGOUT_RESOURCE = "/{"+IDP_ID_PARAM+"}/logout";
 
     String REGISTER_RESOURCE = "/{"+IDP_ID_PARAM+"}/register";
+    String PRE_REGISTER_RESOURCE = "/{"+IDP_ID_PARAM+"}/register/pre-register";
+    String CANCEL_PRE_REGISTER_RESOURCE = "/{"+IDP_ID_PARAM+"}/cancel-pre-register";
     String LOGIN_AUTHN_PENDING_PATH = "authn-pending";
     String DEBUG_RESOURCE = "/{"+IDP_ID_PARAM+"}/debug";
     String CONSENT_RESOURCE = "/{"+IDP_ID_PARAM+"}/consent";
+    String PRE_REGISTER_PATH = "pre-register";
     String SINGLE_IDP_PROMPT_RESOURCE = "/{"+IDP_ID_PARAM+"}/start-prompt";
 
     String EIDAS_REGISTER_RESOURCE = "/eidas/{"+SCHEME_ID_PARAM+"}/register";

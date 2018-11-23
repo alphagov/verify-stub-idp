@@ -18,7 +18,11 @@ import uk.gov.ida.stub.idp.domain.FraudIndicator;
 import uk.gov.ida.stub.idp.domain.IdpIdaStatus;
 import uk.gov.ida.stub.idp.domain.OutboundResponseFromIdp;
 import uk.gov.ida.stub.idp.domain.factories.AssertionFactory;
-import uk.gov.ida.stub.idp.repositories.*;
+
+import uk.gov.ida.stub.idp.repositories.Idp;
+import uk.gov.ida.stub.idp.repositories.IdpSession;
+import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
+import uk.gov.ida.stub.idp.repositories.MetadataRepository;
 import uk.gov.ida.stub.idp.saml.transformers.OutboundResponseFromIdpTransformerProvider;
 
 import java.net.URI;

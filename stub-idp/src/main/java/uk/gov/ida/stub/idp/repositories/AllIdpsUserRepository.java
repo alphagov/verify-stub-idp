@@ -102,25 +102,17 @@ public class AllIdpsUserRepository {
     }
 
     public Optional<DatabaseIdpUser> getUserForIdp(String idpFriendlyName, String username) {
-        final List<DatabaseIdpUser> matchingUsers = userRepository.getUsersForIdp(idpFriendlyName)
+        return userRepository.getUsersForIdp(idpFriendlyName)
                 .stream()
                 .filter(u -> u.getUsername().equalsIgnoreCase(username))
-                .collect(Collectors.toList());
-        if (!matchingUsers.isEmpty()) {
-            return Optional.ofNullable(matchingUsers.get(0));
-        }
-        return Optional.empty();
+                .findFirst();
     }
 
     public Optional<DatabaseEidasUser> getUserForCountry(String countryFriendlyName, String username) {
-        final List<DatabaseEidasUser> matchingUsers = userRepository.getUsersForCountry(STUB_COUNTRY_FRIENDLY_ID)
+        return userRepository.getUsersForCountry(STUB_COUNTRY_FRIENDLY_ID)
                 .stream()
                 .filter(u -> u.getUsername().equalsIgnoreCase(username))
-                .collect(Collectors.toList());
-        if (!matchingUsers.isEmpty()) {
-            return Optional.ofNullable(matchingUsers.get(0));
-        }
-        return Optional.empty();
+                .findFirst();
     }
 
     public boolean containsUserForIdp(String idpFriendlyName, String username) {

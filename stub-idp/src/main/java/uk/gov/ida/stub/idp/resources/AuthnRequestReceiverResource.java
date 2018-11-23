@@ -2,18 +2,26 @@ package uk.gov.ida.stub.idp.resources;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uk.gov.ida.common.SessionId;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.cookies.CookieFactory;
+import uk.gov.ida.stub.idp.cookies.CookieNames;
 import uk.gov.ida.stub.idp.domain.EidasScheme;
 import uk.gov.ida.stub.idp.domain.IdpLanguageHint;
 import uk.gov.ida.stub.idp.exceptions.InvalidEidasSchemeException;
+import uk.gov.ida.stub.idp.exceptions.InvalidSessionIdException;
+import uk.gov.ida.stub.idp.exceptions.InvalidUsernameOrPasswordException;
+import uk.gov.ida.stub.idp.repositories.IdpSession;
+import uk.gov.ida.stub.idp.repositories.IdpSessionRepository;
 import uk.gov.ida.stub.idp.services.AuthnRequestReceiverService;
 import uk.gov.ida.stub.idp.services.AuthnRequestReceiverService.SessionCreated;
+import uk.gov.ida.stub.idp.services.IdpUserService;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.CookieParam;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -38,14 +46,20 @@ public class AuthnRequestReceiverResource {
     private final AuthnRequestReceiverService authnRequestReceiverService;
     private final CookieFactory cookieFactory;
     private final Boolean isSecureCookieEnabled;
+    private final IdpSessionRepository idpSessionRepository;
+    private final IdpUserService idpUserService;
 
     @Inject
     public AuthnRequestReceiverResource(AuthnRequestReceiverService authnRequestReceiverService,
                                         CookieFactory cookieFactory,
-                                        @Named("isSecureCookieEnabled") Boolean isSecureCookieEnabled) {
+                                        @Named("isSecureCookieEnabled") Boolean isSecureCookieEnabled,
+                                        IdpSessionRepository idpSessionRepository,
+                                        IdpUserService idpUserService) {
         this.authnRequestReceiverService = authnRequestReceiverService;
         this.cookieFactory = cookieFactory;
         this.isSecureCookieEnabled = isSecureCookieEnabled;
+        this.idpSessionRepository = idpSessionRepository;
+        this.idpUserService = idpUserService;
     }
 
     @POST
@@ -57,11 +71,25 @@ public class AuthnRequestReceiverResource {
             @FormParam(Urls.REGISTRATION_PARAM) Optional<Boolean> registration,
             @FormParam(Urls.RELAY_STATE_PARAM) String relayState,
             @FormParam(Urls.LANGUAGE_HINT_PARAM) Optional<IdpLanguageHint> languageHint,
-            @FormParam(Urls.SINGLE_IDP_JOURNEY_ID_PARAM) Optional<UUID> singleIdpJourneyId) {
+            @FormParam(Urls.SINGLE_IDP_JOURNEY_ID_PARAM) Optional<UUID> singleIdpJourneyId,
+            @CookieParam(CookieNames.SESSION_COOKIE_NAME) SessionId sessionCookie) {
         LOG.debug("Received request for idp {} from HUB", idpName);
 
+        NewCookie[] cookies;
         final SessionCreated sessionCreated = authnRequestReceiverService.handleAuthnRequest(idpName, samlRequest, idpHints, registration, relayState, languageHint, singleIdpJourneyId);
-
+        if (sessionCookie != null) {
+            Optional<IdpSession> preRegSession = idpSessionRepository.get(sessionCookie);
+            if (preRegSession.isPresent() && preRegSession.get().getIdpUser().isPresent()) {
+                try {
+                    idpUserService.attachIdpUserToSession(preRegSession.get().getIdpUser(), sessionCreated.getIdpSessionId());
+                    idpSessionRepository.deleteSession(preRegSession.get().getSessionId());
+                } catch (InvalidUsernameOrPasswordException e) {
+                    e.printStackTrace();
+                } catch (InvalidSessionIdException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
         return Response.seeOther(sessionCreated.getNextLocation())
                 .cookie(getCookies(sessionCreated))
                 .build();

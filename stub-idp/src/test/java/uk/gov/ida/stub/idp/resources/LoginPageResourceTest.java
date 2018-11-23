@@ -6,29 +6,38 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.saml.hub.domain.IdaAuthnRequestFromHub;
+import uk.gov.ida.stub.idp.cookies.CookieFactory;
+import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
 import uk.gov.ida.stub.idp.domain.SubmitButtonValue;
 import uk.gov.ida.stub.idp.exceptions.InvalidSessionIdException;
 import uk.gov.ida.stub.idp.exceptions.InvalidUsernameOrPasswordException;
+import uk.gov.ida.stub.idp.repositories.AllIdpsUserRepository;
+import uk.gov.ida.stub.idp.repositories.Idp;
 import uk.gov.ida.stub.idp.repositories.IdpSession;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.resources.idp.LoginPageResource;
 import uk.gov.ida.stub.idp.services.IdpUserService;
 import uk.gov.ida.stub.idp.services.NonSuccessAuthnResponseService;
+import uk.gov.ida.stub.idp.views.ErrorMessageType;
 import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
 
+import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -59,6 +68,12 @@ public class LoginPageResourceTest {
     IdaAuthnRequestFromHub idaAuthnRequestFromHub;
     @Mock
     private IdpUserService idpUserService;
+    @Mock
+    private AllIdpsUserRepository allIdpsUserRepository;
+    @Mock
+    private DatabaseIdpUser databaseIdpUser;
+    @Mock
+    private Idp idp;
 
     @Before
     public void createResource() {
@@ -103,6 +118,9 @@ public class LoginPageResourceTest {
 
     @Test
     public void shouldBuildSuccessResponse() throws InvalidUsernameOrPasswordException, InvalidSessionIdException {
+
+        when(allIdpsUserRepository.getUserForIdp(anyString(), anyString())).thenReturn(Optional.of(databaseIdpUser));
+
         final Response response = resource.post(IDP_NAME, USERNAME, PASSWORD, SubmitButtonValue.SignIn, SESSION_ID);
 
         verify(idpUserService).attachIdpUserToSession(IDP_NAME, USERNAME, PASSWORD, SESSION_ID);
@@ -116,5 +134,28 @@ public class LoginPageResourceTest {
         resource.postAuthnPending(IDP_NAME, SESSION_ID);
 
         verify(nonSuccessAuthnResponseService).generateAuthnPending(IDP_NAME, SAML_REQUEST_ID, RELAY_STATE);
+    }
+
+    @Test
+    public void shouldLogUserInWhenUserHasRegisteredAndHasActiveSession() {
+        Optional<IdpSession> idpSession = Optional.of(Mockito.mock(IdpSession.class));
+        when(sessionRepository.get(SESSION_ID)).thenReturn(idpSession);
+        when(idpSession.get().getIdpUser()).thenReturn(Optional.of(databaseIdpUser));
+        final Response response = resource.get(IDP_NAME,null, SESSION_ID);
+        assertThat(response.getStatus()).isEqualTo(Response.Status.SEE_OTHER.getStatusCode());
+        assertThat(response.getLocation().toString()).contains("consent");
+    }
+
+    @Test
+    public void shouldPresentLoginScreenInWhenThereIsNoActivePreRegSession() {
+        Optional<IdpSession> preRegSession = Optional.of(Mockito.mock(IdpSession.class));
+        when(sessionRepository.get(SESSION_ID)).thenReturn(preRegSession);
+        when(preRegSession.get().getIdpUser()).thenReturn(Optional.empty());
+        when(idpStubsRepository.getIdpWithFriendlyId(IDP_NAME)).thenReturn(idp);
+        when(idp.getDisplayName()).thenReturn("mock idp display name");
+        when(idp.getFriendlyId()).thenReturn("mock idp friendly id");
+        when(idp.getAssetId()).thenReturn("mock idp asset id");
+        final Response response = resource.get(IDP_NAME, Optional.of(ErrorMessageType.NO_ERROR),SESSION_ID);
+        assertThat(response.getStatus()).isEqualTo(Response.Status.OK.getStatusCode());
     }
 }
