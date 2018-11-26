@@ -34,6 +34,8 @@ public interface Urls {
     String CYCLE3_PARAM = "c3";
     String LEVEL_OF_ASSURANCE_PARAM = "loa";
     String SIGNING_ALGORITHM_PARAM = "signingAlgorithm";
+    String SOURCE_PARAM = "source";
+    String SOURCE_PARAM_PRE_REG_VALUE = "pre-reg";
 
     // paths and resources
     String IDP_SAML2_SSO_RESOURCE = "/{"+IDP_ID_PARAM+"}/SAML2/SSO";

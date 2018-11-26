@@ -56,6 +56,7 @@ public class SingleIdpPromptPageResource {
     public Response get(
             @PathParam(Urls.IDP_ID_PARAM) @NotNull String idpName,
             @QueryParam(Urls.ERROR_MESSAGE_PARAM) Optional<ErrorMessageType> errorMessage,
+            @QueryParam(Urls.SOURCE_PARAM) Optional<String> source,
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) SessionId sessionCookie) throws FeatureNotEnabledException {
         if (!singleIdpConfiguration.isEnabled()) throw new FeatureNotEnabledException();
         Idp idp = idpStubsRepository.getIdpWithFriendlyId(idpName);
@@ -63,9 +64,11 @@ public class SingleIdpPromptPageResource {
         Optional<DatabaseIdpUser> idpUser = Optional.empty();
 
         List<Service> serviceList = serviceListService.getServices();
-        if (sessionCookie != null) {
+        if (source.isPresent() && source.get().equals(Urls.SOURCE_PARAM_PRE_REG_VALUE) && sessionCookie != null) {
             Optional<IdpSession> idpSession = idpSessionRepository.get(sessionCookie);
-            idpUser = idpSession.get().getIdpUser();
+            if(idpSession.isPresent()) {
+                idpUser = idpSession.get().getIdpUser();
+            }
         }
 
         return Response.ok()

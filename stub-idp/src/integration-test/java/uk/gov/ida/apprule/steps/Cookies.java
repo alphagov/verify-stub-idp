@@ -19,7 +19,7 @@ public class Cookies {
 
     public void extractCookies(Response response) {
         response.getCookies().forEach((k,v) -> {
-            if (v.getExpiry().before(Date.from(Instant.now()))) {
+            if (v.getMaxAge() == 0) {
                 cookies.remove(k);
             } else {
                 this.cookies.put(k, v);

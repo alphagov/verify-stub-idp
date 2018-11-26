@@ -1,6 +1,8 @@
 package uk.gov.ida.stub.idp.views;
 
 import com.google.common.net.HttpHeaders;
+import uk.gov.ida.stub.idp.cookies.CookieNames;
+import uk.gov.ida.stub.idp.cookies.HttpOnlyNewCookie;
 import uk.gov.ida.stub.idp.domain.SamlResponse;
 
 import javax.inject.Inject;
@@ -24,6 +26,7 @@ public abstract class SamlMessageRedirectViewFactory {
         return Response.ok(samlFormPostingView)
             .header(HttpHeaders.CACHE_CONTROL, "no-cache, no-store")
             .header(HttpHeaders.PRAGMA, "no-cache")
+            .cookie(new HttpOnlyNewCookie(CookieNames.SESSION_COOKIE_NAME,"","/","",0,false))
             .build();
     }
 
