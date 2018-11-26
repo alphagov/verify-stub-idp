@@ -11,10 +11,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Response;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 public class PreRegistrationSteps {
     private Response response;
@@ -56,7 +59,13 @@ public class PreRegistrationSteps {
 
     public PreRegistrationSteps userIsRedirectedTo(URI uri) {
         assertThat(response.getStatus()).isEqualTo(Response.Status.SEE_OTHER.getStatusCode());
-        assertThat(response.getLocation()).isEqualTo(uri);
+        String uriString = null;
+        try {
+            uriString = URLDecoder.decode(uri.toString(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            fail("URI couldn't be decoded");
+        }
+        assertThat(response.getLocation().toString()).isEqualTo(uriString);
         return this;
     }
 

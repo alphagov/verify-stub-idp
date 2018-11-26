@@ -198,6 +198,7 @@ public class RegistrationPageResource {
                 }
 
                 return Response.seeOther(UriBuilder.fromPath(Urls.SINGLE_IDP_PROMPT_RESOURCE)
+                        .queryParam(Urls.SOURCE_PARAM,Urls.SOURCE_PARAM_PRE_REG_VALUE)
                         .build(idpName))
                         .build();
             }

@@ -75,7 +75,7 @@ public class SingleIdpPromptResourceTest {
         when(singleIdpConfiguration.isEnabled()).thenReturn(false);
 
         assertThatExceptionOfType(FeatureNotEnabledException.class)
-            .isThrownBy(()->singleIdpPromptPageResource.get(idpName, Optional.empty(),null));
+            .isThrownBy(()->singleIdpPromptPageResource.get(idpName, Optional.empty(),Optional.empty(), null));
     }
 
 
@@ -84,7 +84,7 @@ public class SingleIdpPromptResourceTest {
 
         when(serviceListService.getServices()).thenReturn(new ArrayList<>());
 
-        Response response = singleIdpPromptPageResource.get(idpName, Optional.empty(), null);
+        Response response = singleIdpPromptPageResource.get(idpName, Optional.empty(), Optional.empty(), null);
 
         assertThat(response.getEntity()).isInstanceOf(SingleIdpPromptPageView.class);
 
@@ -98,7 +98,7 @@ public class SingleIdpPromptResourceTest {
 
         when(serviceListService.getServices()).thenReturn(Arrays.asList(service1, service2, service3));
 
-        Response response = singleIdpPromptPageResource.get(idpName, Optional.empty(), null);
+        Response response = singleIdpPromptPageResource.get(idpName, Optional.empty(), Optional.empty(),null);
 
         assertThat(response.getEntity()).isInstanceOf(SingleIdpPromptPageView.class);
 

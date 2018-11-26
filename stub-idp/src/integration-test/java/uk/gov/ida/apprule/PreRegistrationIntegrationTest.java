@@ -70,7 +70,7 @@ public class PreRegistrationIntegrationTest extends IntegrationTestHelper {
                 .withParam(Urls.SUBMIT_PARAM, SubmitButtonValue.Register.toString())
                 .build(),
             "/register")
-        .userIsRedirectedTo("/start-prompt")
+        .userIsRedirectedTo("/start-prompt?source=pre-reg")
         .theRedirectIsFollowed()
         .theResponseStatusIs(Response.Status.OK)
         .responseContains(FIRSTNAME_PARAM,
