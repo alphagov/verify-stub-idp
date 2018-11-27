@@ -53,7 +53,7 @@
             <input name="serviceId" value="${service.serviceId}" type="hidden" />
             <input name="idpEntityId" value="${idpId}" type="hidden" />
             <input name="singleIdpJourneyIdentifier" value="${uniqueId}" type="hidden" />
-            <p><a href="javascript:document.forms[${service?index}].submit()">${service.name}</a><br />
+            <input type="submit" class="link-button" value="${service.name}"/><br />
             Level of assurance ${service.loa?remove_beginning("LEVEL_")}
             </p>
         </form>

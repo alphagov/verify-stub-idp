@@ -620,6 +620,16 @@ button:active, .button:active {
   transform: perspective(0) translateY(3px);
 }
 
+input.link-button {
+     background:none!important;
+     color:#005ea5;
+     border:none;
+     padding:0!important;
+     font: inherit;
+     cursor: pointer;
+     text-decoration: underline;
+}
+
 /* line 456, ../../../../../../../idp-html/app/assets/stylesheets/_global.scss */
 button.text {
   margin: 0;
