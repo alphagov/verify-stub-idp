@@ -36,7 +36,7 @@ stubIdps:
           password: <password hash>
 ```
 
-The friendlyId can be used to enable multiple IDPs but using the same displayName and assetId e.g. for different on-boarding relying parties.
+The `friendlyId` can be used to enable multiple IDPs but using the same `displayName` and `assetId` e.g. for different on-boarding relying parties.
 
 Header images for IDPs should be placed into `ida-stub-idp/src/main/resources/assets/images/providers/` and are referenced as `assetId` e.g. stub-idp-one.png is referenced as `stub-idp-one`
 
@@ -112,4 +112,3 @@ This project is developed under the [Alphagov Code of Conduct](https://github.co
 [MIT Licence](LICENCE)
 
 This code is provided for informational purposes only and is not yet intended for use outside GOV.UK Verify
-
