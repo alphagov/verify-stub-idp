@@ -45,7 +45,7 @@ cfSetDatabaseUri() {
 cfPushArtifact() {
   ARTIFACT_LOCATION="https://artifactory.ida.digital.cabinet-office.gov.uk/artifactory/remote-repos/uk/gov/ida/ida-stub-idp/$ARTIFACT_BUILD_NUMBER/ida-stub-idp-$ARTIFACT_BUILD_NUMBER.zip"
   curl -s "${ARTIFACT_LOCATION}" --output "ida-stub-idp-$ARTIFACT_BUILD_NUMBER.zip"
-  cf push $TEST_APP_NAME -f manifest.yml --no-start -p "ida-stub-idp-$ARTIFACT_BUILD_NUMBER.zip" --hostname "$TEST_HOSTNAME"
+  cf push $TEST_APP_NAME -f manifest.yml --no-start -p "ida-stub-idp-$ARTIFACT_BUILD_NUMBER.zip" --hostname "$TEST_HOSTNAME" -t 120
 }
 
 cfBlueGreenDeployment() {
