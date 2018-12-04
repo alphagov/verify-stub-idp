@@ -45,6 +45,7 @@ import uk.gov.ida.stub.idp.resources.eidas.EidasRegistrationPageResource;
 import uk.gov.ida.stub.idp.resources.idp.ConsentResource;
 import uk.gov.ida.stub.idp.resources.idp.DebugPageResource;
 import uk.gov.ida.stub.idp.resources.idp.HeadlessIdpResource;
+import uk.gov.ida.stub.idp.resources.idp.HomePageResource;
 import uk.gov.ida.stub.idp.resources.idp.LoginPageResource;
 import uk.gov.ida.stub.idp.resources.idp.RegistrationPageResource;
 import uk.gov.ida.stub.idp.resources.idp.SingleIdpPromptPageResource;
@@ -145,6 +146,7 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
         environment.jersey().register(EidasDebugPageResource.class);
         environment.jersey().register(SingleIdpPromptPageResource.class);
         environment.jersey().register(LogoutPageResource.class);
+        environment.jersey().register(HomePageResource.class);
 
         //exception mappers
         environment.jersey().register(IdpNotFoundExceptionMapper.class);

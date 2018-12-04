@@ -25,7 +25,7 @@ public class PreRegistrationSteps {
     private Client client;
     private StubIdpAppRule applicationRule;
 
-    private static final String IDP_NAME = "stub-idp-one";
+    private static final String IDP_NAME = "stub-idp-demo-one";
     private static final String DISPLAY_NAME = "Stub Idp One Pre-Register";
 
     public PreRegistrationSteps(Client client, StubIdpAppRule applicationRule) {

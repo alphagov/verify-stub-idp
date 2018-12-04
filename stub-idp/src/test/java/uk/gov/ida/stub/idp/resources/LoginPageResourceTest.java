@@ -1,6 +1,7 @@
 package uk.gov.ida.stub.idp.resources;
 
 import com.squarespace.jersey2.guice.JerseyGuiceUtils;
+import org.glassfish.jersey.server.ContainerRequest;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -11,14 +12,18 @@ import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.saml.hub.domain.IdaAuthnRequestFromHub;
 import uk.gov.ida.stub.idp.cookies.CookieFactory;
+import uk.gov.ida.stub.idp.cookies.HmacValidator;
 import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
 import uk.gov.ida.stub.idp.domain.SubmitButtonValue;
 import uk.gov.ida.stub.idp.exceptions.InvalidSessionIdException;
 import uk.gov.ida.stub.idp.exceptions.InvalidUsernameOrPasswordException;
+import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASessionFilter;
 import uk.gov.ida.stub.idp.repositories.AllIdpsUserRepository;
+import uk.gov.ida.stub.idp.repositories.EidasSessionRepository;
 import uk.gov.ida.stub.idp.repositories.Idp;
 import uk.gov.ida.stub.idp.repositories.IdpSession;
+import uk.gov.ida.stub.idp.repositories.IdpSessionRepository;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.resources.idp.LoginPageResource;
@@ -35,6 +40,8 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -61,7 +68,7 @@ public class LoginPageResourceTest {
     @Mock
     private IdpStubsRepository idpStubsRepository;
     @Mock
-    private SessionRepository<IdpSession> sessionRepository;
+    private IdpSessionRepository sessionRepository;
     @Mock
     private NonSuccessAuthnResponseService nonSuccessAuthnResponseService;
     @Mock
@@ -74,6 +81,8 @@ public class LoginPageResourceTest {
     private DatabaseIdpUser databaseIdpUser;
     @Mock
     private Idp idp;
+    @Mock
+    private CookieFactory cookieFactory;
 
     @Before
     public void createResource() {
@@ -82,7 +91,8 @@ public class LoginPageResourceTest {
                 nonSuccessAuthnResponseService,
                 new SamlResponseRedirectViewFactory(),
                 idpUserService,
-                sessionRepository);
+                sessionRepository,
+                cookieFactory);
 
         when(sessionRepository.get(SESSION_ID)).thenReturn(Optional.ofNullable(new IdpSession(SESSION_ID, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null, null)));
         when(sessionRepository.deleteAndGet(SESSION_ID)).thenReturn(Optional.ofNullable(new IdpSession(SESSION_ID, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null, null)));
@@ -137,13 +147,34 @@ public class LoginPageResourceTest {
     }
 
     @Test
-    public void shouldLogUserInWhenUserHasRegisteredAndHasActiveSession() {
+    public void shouldRedirectToConsentWhenNewlyRegisteredUserReturnsFromHub() {
         Optional<IdpSession> idpSession = Optional.of(Mockito.mock(IdpSession.class));
+        when(idpStubsRepository.getIdpWithFriendlyId(IDP_NAME)).thenReturn(idp);
         when(sessionRepository.get(SESSION_ID)).thenReturn(idpSession);
+        when(idpSession.get().getIdaAuthnRequestFromHub()).thenReturn(Mockito.mock(IdaAuthnRequestFromHub.class));
         when(idpSession.get().getIdpUser()).thenReturn(Optional.of(databaseIdpUser));
-        final Response response = resource.get(IDP_NAME,null, SESSION_ID);
+        final Response response = resource.get(IDP_NAME, Optional.of(ErrorMessageType.NO_ERROR), SESSION_ID);
         assertThat(response.getStatus()).isEqualTo(Response.Status.SEE_OTHER.getStatusCode());
         assertThat(response.getLocation().toString()).contains("consent");
+    }
+
+    @Test
+    public void shouldRedirectLoggedInUserToHomePageIfNoIdaAuthReqFromHub() {
+        Optional<IdpSession> idpSession = Optional.of(Mockito.mock(IdpSession.class));
+        when(idpStubsRepository.getIdpWithFriendlyId(IDP_NAME)).thenReturn(idp);
+        when(sessionRepository.get(SESSION_ID)).thenReturn(idpSession);
+        when(idpSession.get().getIdaAuthnRequestFromHub()).thenReturn(null);
+        when(idpSession.get().getIdpUser()).thenReturn(Optional.of(databaseIdpUser));
+        final Response response = resource.get(IDP_NAME, Optional.of(ErrorMessageType.NO_ERROR), SESSION_ID);
+        assertThat(response.getStatus()).isEqualTo(Response.Status.SEE_OTHER.getStatusCode());
+        assertThat(response.getLocation().toString()).contains("an%20idp%20name");
+    }
+
+    @Test
+    public void shouldShowLoginFormWhenNoCookiePresent() {
+        when(idpStubsRepository.getIdpWithFriendlyId(IDP_NAME)).thenReturn(idp);
+        final Response response = resource.get(IDP_NAME, Optional.of(ErrorMessageType.NO_ERROR), null);
+        assertThat(response.getStatus()).isEqualTo(Response.Status.OK.getStatusCode());
     }
 
     @Test
@@ -157,5 +188,25 @@ public class LoginPageResourceTest {
         when(idp.getAssetId()).thenReturn("mock idp asset id");
         final Response response = resource.get(IDP_NAME, Optional.of(ErrorMessageType.NO_ERROR),SESSION_ID);
         assertThat(response.getStatus()).isEqualTo(Response.Status.OK.getStatusCode());
+    }
+
+    @Test
+    public void shouldLogUserInAndTakeToHomePageWhenNoIdaReq() {
+        Optional<IdpSession> idpSession = Optional.of(Mockito.mock(IdpSession.class));
+        when(idpSession.get().getIdaAuthnRequestFromHub()).thenReturn(null);
+        when(idpSession.get().getIdpUser()).thenReturn(Optional.empty());
+        final Response response = resource.post(IDP_NAME,USERNAME,PASSWORD, SubmitButtonValue.SignIn, SESSION_ID);
+        assertThat(response.getStatus()).isEqualTo(Response.Status.SEE_OTHER.getStatusCode());
+        assertThat(response.getLocation().toString()).contains("an%20idp%20name");
+    }
+
+    @Test
+    public void shouldLogUserInAndTakeToConsentPageWhenIdaReqPresent() {
+        Optional<IdpSession> idpSession = Optional.of(Mockito.mock(IdpSession.class));
+        when(idpSession.get().getIdaAuthnRequestFromHub()).thenReturn(idaAuthnRequestFromHub);
+        when(idpSession.get().getIdpUser()).thenReturn(Optional.empty());
+        final Response response = resource.post(IDP_NAME,USERNAME,PASSWORD, SubmitButtonValue.SignIn, SESSION_ID);
+        assertThat(response.getStatus()).isEqualTo(Response.Status.SEE_OTHER.getStatusCode());
+        assertThat(response.getLocation().toString()).contains("consent");
     }
 }

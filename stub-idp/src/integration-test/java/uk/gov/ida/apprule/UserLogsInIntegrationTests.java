@@ -76,22 +76,8 @@ public class UserLogsInIntegrationTests extends IntegrationTestHelper {
     }
 
     @Test
-    public void sessionIdRequiredAlsoCheckResponseHeadersTest() {
-        Response response = client.target(authnRequestSteps.getStubIdpUri(Urls.LOGIN_RESOURCE))
-                .request()
-                .cookie(CookieNames.SESSION_COOKIE_NAME, "notAValidRequestId")
-                .get();
-        assertThat(response.getStatus()).isEqualTo(500);
-        final String body = response.readEntity(String.class);
-        assertThat(body).contains("Sorry, something went wrong");
-        // ensure data not stored by browser
-        assertThat(response.getHeaderString(CACHE_CONTROL_KEY)).isEqualTo(CACHE_CONTROL_NO_CACHE_VALUE);
-        assertThat(response.getHeaderString(PRAGMA_KEY)).isEqualTo(PRAGMA_NO_CACHE_VALUE);
-    }
-
-    @Test
     public void ensureImagesAreCacheableTest() {
-        Response response = client.target(authnRequestSteps.getStubIdpUri("/assets/images/providers/stub-idp-one.png"))
+        Response response = client.target(authnRequestSteps.getStubIdpUri("/assets/images/providers/stub-idp-demo-one.png"))
                 .request()
                 .get();
         assertThat(response.getStatus()).isEqualTo(200);
@@ -107,7 +93,7 @@ public class UserLogsInIntegrationTests extends IntegrationTestHelper {
                 .get();
         assertThat(response.getStatus()).isEqualTo(404);
         final String body = response.readEntity(String.class);
-        assertThat(body).isEmpty();
+        assertThat(body).contains("No idp found with friendlyId: pathThatDoesNotExist");
     }
 
     @Test

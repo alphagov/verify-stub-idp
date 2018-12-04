@@ -50,6 +50,7 @@ public interface Urls {
     String LOGIN_UPLIFT_FAILED_PATH = "uplift-failed";
     String LOGIN_REQUESTER_ERROR_PATH = "requester-error";
     String LOGOUT_RESOURCE = "/{"+IDP_ID_PARAM+"}/logout";
+    String HOMEPAGE_RESOURCE = "/{"+IDP_ID_PARAM+"}";
 
     String REGISTER_RESOURCE = "/{"+IDP_ID_PARAM+"}/register";
     String PRE_REGISTER_RESOURCE = "/{"+IDP_ID_PARAM+"}/register/pre-register";

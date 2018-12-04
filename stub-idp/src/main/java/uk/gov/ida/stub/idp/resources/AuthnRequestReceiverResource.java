@@ -75,7 +75,6 @@ public class AuthnRequestReceiverResource {
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) SessionId sessionCookie) {
         LOG.debug("Received request for idp {} from HUB", idpName);
 
-        NewCookie[] cookies;
         final SessionCreated sessionCreated = authnRequestReceiverService.handleAuthnRequest(idpName, samlRequest, idpHints, registration, relayState, languageHint, singleIdpJourneyId);
         if (sessionCookie != null) {
             Optional<IdpSession> preRegSession = idpSessionRepository.get(sessionCookie);

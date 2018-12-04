@@ -33,7 +33,7 @@ public class LogoutPageResource {
                         @CookieParam(CookieNames.SESSION_COOKIE_NAME) SessionId session) {
 
         idpSessionRepository.deleteSession(session);
-        return Response.seeOther(UriBuilder.fromPath(Urls.PRE_REGISTER_RESOURCE).build(idpName))
+        return Response.seeOther(UriBuilder.fromPath(Urls.HOMEPAGE_RESOURCE).build(idpName))
                 .cookie(new HttpOnlyNewCookie(
                         CookieNames.SESSION_COOKIE_NAME,
                         "",
