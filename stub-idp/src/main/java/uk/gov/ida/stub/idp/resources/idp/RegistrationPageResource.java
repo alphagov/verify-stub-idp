@@ -109,14 +109,7 @@ public class RegistrationPageResource {
 
         Idp idp = idpStubsRepository.getIdpWithFriendlyId(idpName);
         IdpSession idpSession = new IdpSession(
-                new SessionId(UUID.randomUUID().toString()),
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                Optional.of(UUID.randomUUID()));
+                new SessionId(UUID.randomUUID().toString()));
         final SessionId sessionId = idpSessionRepository.createSession(idpSession);
         return Response.ok(new RegistrationPageView(idp.getDisplayName(), idp.getFriendlyId(), errorMessage.orElse(NO_ERROR).getMessage(), idp.getAssetId(), Urls.PRE_REGISTER_PATH))
                 .cookie(cookieFactory.createSessionIdCookie(sessionId))

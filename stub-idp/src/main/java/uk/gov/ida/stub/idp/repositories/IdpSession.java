@@ -26,6 +26,10 @@ public class IdpSession extends Session {
 		this.singleIdpJourneyId = singleIdpJourneyId;
 	}
 
+	public IdpSession(SessionId sessionId) {
+		this(sessionId, null, null, null, null, null, null, null);
+	}
+
 	public IdaAuthnRequestFromHub getIdaAuthnRequestFromHub() {
 		return idaAuthnRequestFromHub;
 	}
