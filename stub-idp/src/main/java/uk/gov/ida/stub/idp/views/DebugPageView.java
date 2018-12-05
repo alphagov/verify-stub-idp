@@ -1,5 +1,6 @@
 package uk.gov.ida.stub.idp.views;
 
+import uk.gov.ida.saml.hub.domain.IdaAuthnRequestFromHub;
 import uk.gov.ida.stub.idp.domain.IdpHint;
 import uk.gov.ida.stub.idp.domain.IdpLanguageHint;
 import uk.gov.ida.stub.idp.repositories.IdpSession;
@@ -45,6 +46,10 @@ public class DebugPageView extends IdpPageView {
     public List<String> getAuthnContexts() {
         return session.getIdaAuthnRequestFromHub().getLevelsOfAssurance().stream()
             .map(Enum::name).collect(Collectors.toList());
+    }
+
+    public IdaAuthnRequestFromHub getIdaAuthnRequestFromHub() {
+        return session.getIdaAuthnRequestFromHub();
     }
 
     public String getRelayState() {

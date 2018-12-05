@@ -5,6 +5,7 @@
     <title>${pageTitle}</title>
     <meta charset="utf-8"/>
     <meta content="width=device-width,initial-scale=1.0" name="viewport"/>
+    <meta name="robots" content="noindex">
     <link href="/assets/styles/application_auth.css" media="all"
           rel="stylesheet" type="text/css"/>
     <link href="/assets/styles/application_auth_extensions.css" media="all"
