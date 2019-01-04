@@ -7,12 +7,14 @@ import org.junit.rules.ExpectedException;
 
 import static io.dropwizard.jackson.Jackson.newObjectMapper;
 import static io.dropwizard.jersey.validation.Validators.newValidator;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
 
-public class DatabaseConfigurationTest extends BaseConfigurationTest {
+public class DatabaseConfigurationTest {
 
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
+
     private final YamlConfigurationFactory factory = new YamlConfigurationFactory<>(
             DatabaseConfiguration.class, newValidator(), newObjectMapper(), "dw.");
 
@@ -39,7 +41,7 @@ public class DatabaseConfigurationTest extends BaseConfigurationTest {
                 ""
         );
 
-        assert dbCfg.getUrl().equals(url);
+        assertThat(dbCfg.getUrl()).isEqualTo(url);
     }
 
     @Test
@@ -51,7 +53,7 @@ public class DatabaseConfigurationTest extends BaseConfigurationTest {
                 new StringConfigurationSourceProvider("vcapServices: '" + vcap + "'"), ""
         );
 
-        assert dbCfg.getUrl().equals(url);
+        assertThat(dbCfg.getUrl()).isEqualTo(url);
     }
 
     @Test
@@ -63,7 +65,7 @@ public class DatabaseConfigurationTest extends BaseConfigurationTest {
                 new StringConfigurationSourceProvider("url: idontcare\nvcapServices: '" + vcap + "'"), ""
         );
 
-        assert dbCfg.getUrl().equals(url);
+        assertThat(dbCfg.getUrl()).isEqualTo(url);
     }
 
     @Test

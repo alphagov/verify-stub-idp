@@ -9,10 +9,11 @@ import static io.dropwizard.jackson.Jackson.newObjectMapper;
 import static io.dropwizard.jersey.validation.Validators.newValidator;
 import static org.hamcrest.core.StringContains.containsString;
 
-public class StubIdpConfigurationTest extends BaseConfigurationTest {
+public class StubIdpConfigurationTest {
 
     @Rule
     public final ExpectedException expectedException = ExpectedException.none();
+    
     private final YamlConfigurationFactory factory = new YamlConfigurationFactory<>(
         StubIdpConfiguration.class, newValidator(), newObjectMapper(), "dw.");
 
