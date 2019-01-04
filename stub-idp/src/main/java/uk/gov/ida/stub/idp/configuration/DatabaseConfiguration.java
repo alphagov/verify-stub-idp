@@ -1,8 +1,10 @@
 package uk.gov.ida.stub.idp.configuration;
 
+import com.google.common.base.Strings;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.dropwizard.jackson.Jackson;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -23,7 +25,7 @@ public class DatabaseConfiguration {
                 .ofNullable(vcapServices)
                 .map(val -> {
                     try {
-                        ObjectMapper mapper = new ObjectMapper();
+                        ObjectMapper mapper = Jackson.newObjectMapper();
                         return mapper.readTree(val);
                     }
                     catch (IOException e) {
@@ -39,9 +41,9 @@ public class DatabaseConfiguration {
     }
 
     public String getUrl() {
-        if (vcapServices != null && vcapServices.length() > 0) {
+        if (!Strings.isNullOrEmpty(vcapServices)) {
             return getUrlFromVcap(vcapServices);
-        } else if (url != null && url.length() > 0) {
+        } else if (!Strings.isNullOrEmpty(url)) {
             return url;
         }
 
