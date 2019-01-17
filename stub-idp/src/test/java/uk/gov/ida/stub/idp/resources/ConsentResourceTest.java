@@ -70,7 +70,7 @@ public class ConsentResourceTest {
     public void shouldWarnUserIfLOAIsTooLow() {
         final SessionId idpSessionId = SessionId.createNewSessionId();
 
-        IdpSession session = new IdpSession(idpSessionId, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null, null);
+        IdpSession session = new IdpSession(idpSessionId, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null, null, null);
         session.setIdpUser(newUser(AuthnContext.LEVEL_1));
         when(sessionRepository.get(idpSessionId)).thenReturn(Optional.ofNullable(session));
 
@@ -87,7 +87,7 @@ public class ConsentResourceTest {
     public void shouldWarnUserIfLOAIsTooLowWhenMultipleValuesPresent() {
         final SessionId idpSessionId = SessionId.createNewSessionId();
 
-        IdpSession session = new IdpSession(idpSessionId, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null, null);
+        IdpSession session = new IdpSession(idpSessionId, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null, null, null);
         session.setIdpUser(newUser(AuthnContext.LEVEL_1));
         when(sessionRepository.get(idpSessionId)).thenReturn(Optional.ofNullable(session));
 
@@ -104,7 +104,7 @@ public class ConsentResourceTest {
     public void shouldNotWarnUserIfLOAIsOk() {
         final SessionId idpSessionId = SessionId.createNewSessionId();
 
-        IdpSession session = new IdpSession(idpSessionId, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null, null);
+        IdpSession session = new IdpSession(idpSessionId, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null, null, null);
         session.setIdpUser(newUser(AuthnContext.LEVEL_2));
         when(sessionRepository.get(idpSessionId)).thenReturn(Optional.ofNullable(session));
 

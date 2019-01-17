@@ -19,9 +19,10 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
 import static uk.gov.ida.stub.idp.builders.StubIdpBuilder.aStubIdp;
+import static uk.gov.ida.stub.idp.csrf.CSRFCheckProtectionFilter.CSRF_PROTECT_FORM_KEY;
 
 public class PreRegistrationIntegrationTest extends IntegrationTestHelper {
-    private static final String IDP_NAME = "stub-idp-one";
+    private static final String IDP_NAME = "stub-idp-demo-one";
     private static final String DISPLAY_NAME = "Stub Idp One Pre-Register";
     private static final String FIRSTNAME_PARAM = "Jack";
     private static final String SURNAME_PARAM = "Bauer";
@@ -47,9 +48,9 @@ public class PreRegistrationIntegrationTest extends IntegrationTestHelper {
 
     @Test
     public void userPreRegistersAndThenComesFromRP(){
-        PreRegistrationSteps toCompletePreRegistrationAndLogin = new PreRegistrationSteps(client, applicationRule);
+        PreRegistrationSteps steps = new PreRegistrationSteps(client, applicationRule);
 
-        toCompletePreRegistrationAndLogin
+        steps
 
         .userSuccessfullyNavigatesTo("/register/pre-register")
         .responseContains("Register with " + DISPLAY_NAME)
@@ -67,6 +68,7 @@ public class PreRegistrationIntegrationTest extends IntegrationTestHelper {
                 .withParam(Urls.USERNAME_PARAM, USERNAME_PARAM)
                 .withParam(Urls.PASSWORD_PARAM, PASSWORD_PARAM)
                 .withParam(Urls.LEVEL_OF_ASSURANCE_PARAM, LEVEL_OF_ASSURANCE_PARAM)
+                .withParam(CSRF_PROTECT_FORM_KEY, steps.getCsrfToken())
                 .withParam(Urls.SUBMIT_PARAM, SubmitButtonValue.Register.toString())
                 .build(),
             "/register")

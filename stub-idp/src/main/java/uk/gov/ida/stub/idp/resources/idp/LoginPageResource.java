@@ -5,6 +5,7 @@ import uk.gov.ida.common.SessionId;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.cookies.CookieFactory;
 import uk.gov.ida.stub.idp.cookies.CookieNames;
+import uk.gov.ida.stub.idp.csrf.CSRFCheckProtection;
 import uk.gov.ida.stub.idp.domain.FraudIndicator;
 import uk.gov.ida.stub.idp.domain.SamlResponse;
 import uk.gov.ida.stub.idp.domain.SubmitButtonValue;
@@ -47,6 +48,7 @@ import static uk.gov.ida.stub.idp.views.ErrorMessageType.NO_ERROR;
 
 @Path(Urls.LOGIN_RESOURCE)
 @Produces(MediaType.TEXT_HTML)
+@CSRFCheckProtection
 public class LoginPageResource {
 
     private final IdpStubsRepository idpStubsRepository;
@@ -99,7 +101,7 @@ public class LoginPageResource {
             }
         } else {
 
-            return showLoginForm(idp, errorMessage);
+            return showLoginForm(session, idp, errorMessage);
 
         }
     }
@@ -259,27 +261,32 @@ public class LoginPageResource {
 
     private Response createSessionAndShowLoginForm(Idp idp, Optional<ErrorMessageType> errorMessage){
 
-        final IdpSession idpSession = new IdpSession(
-                new SessionId(UUID.randomUUID().toString()));
-        final SessionId sessionId = sessionRepository.createSession(idpSession);
+        final IdpSession session = new IdpSession(new SessionId(UUID.randomUUID().toString()));
+        final SessionId sessionId = sessionRepository.createSession(session);
+        sessionRepository.updateSession(session.getSessionId(), session.setNewCsrfToken());
 
         return Response.ok().entity(
                 new LoginPageView(
                         idp.getDisplayName(),
                         idp.getFriendlyId(),
                         errorMessage.orElse(NO_ERROR).getMessage(),
-                        idp.getAssetId()))
+                        idp.getAssetId(),
+                        session.getCsrfToken()))
                 .cookie(cookieFactory.createSessionIdCookie(sessionId))
                 .build();
     }
 
-    private Response showLoginForm(Idp idp, Optional<ErrorMessageType> errorMessage) {
+    private Response showLoginForm(Optional<IdpSession> session, Idp idp, Optional<ErrorMessageType> errorMessage) {
+        if(session.isPresent()) {
+            sessionRepository.updateSession(session.get().getSessionId(), session.get().setNewCsrfToken());
+        }
         return Response.ok().entity(
                 new LoginPageView(
                         idp.getDisplayName(),
                         idp.getFriendlyId(),
                         errorMessage.orElse(NO_ERROR).getMessage(),
-                        idp.getAssetId()))
+                        idp.getAssetId(),
+                        session.map(s -> s.getCsrfToken()).orElse(null)))
                 .build();
     }
 

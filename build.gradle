@@ -79,7 +79,7 @@ subprojects {
                 "org.flywaydb:flyway-core:4.2.0",
                 'org.freemarker:freemarker:2.3.27-incubating',
                 "org.jdbi:jdbi3-core:3.0.0",
-                'org.jsoup:jsoup:1.6.1',
+                'org.jsoup:jsoup:1.11.3',
                 'org.mindrot:jbcrypt:0.3m',
                 "org.opensaml:opensaml-core:$dependencyVersions.opensaml",
                 "org.postgresql:postgresql:42.1.4",

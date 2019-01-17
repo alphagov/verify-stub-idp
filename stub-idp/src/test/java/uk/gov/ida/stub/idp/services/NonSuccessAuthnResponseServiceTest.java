@@ -131,7 +131,7 @@ public class NonSuccessAuthnResponseServiceTest {
     public void shouldBuildFraudResponse(){
         IdpSession session = new IdpSession(SessionId.createNewSessionId(),
                 IdaAuthnRequestFromHub.createRequestReceivedFromHub(REQUEST_ID, HUB_URI.toString(), ImmutableList.of(LEVEL_2), false, DateTime.now(), AuthnContextComparisonTypeEnumeration.EXACT),
-                RELAY_STATE, null, null, null, null, null);
+                RELAY_STATE, null, null, null, null, null, null);
         nonSuccessAuthnResponseService.generateFraudResponse(IDP_NAME, REQUEST_ID, FraudIndicator.FI01, "ipAddress", session).getResponseString();
 
         verify(transformer).apply(captor.capture());

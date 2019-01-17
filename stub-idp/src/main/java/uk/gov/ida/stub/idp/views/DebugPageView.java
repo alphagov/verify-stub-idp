@@ -15,7 +15,7 @@ public class DebugPageView extends IdpPageView {
     private final IdpSession session;
 
     public DebugPageView(String name, String idpId, String assetId, IdpSession session) {
-        super("debugPage.ftl", name, idpId, null, assetId);
+        super("debugPage.ftl", name, idpId, null, assetId, Optional.empty());
         this.session = session;
     }
 

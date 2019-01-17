@@ -1,10 +1,12 @@
 package uk.gov.ida.stub.idp.views;
 
+import java.util.Optional;
+
 public class RegistrationPageView extends IdpPageView {
     private String path;
 
-    public RegistrationPageView(String name, String idpId, String errorMessage, String assetId, String path) {
-        super("registrationPage.ftl", name, idpId, errorMessage, assetId);
+    public RegistrationPageView(String name, String idpId, String errorMessage, String assetId, String path, String csrfToken) {
+        super("registrationPage.ftl", name, idpId, errorMessage, assetId, Optional.ofNullable(csrfToken));
         this.path = path;
     }
 

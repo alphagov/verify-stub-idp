@@ -8,6 +8,7 @@ import uk.gov.ida.stub.idp.domain.IdpLanguageHint;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class Session {
@@ -18,15 +19,23 @@ public abstract class Session {
     private final List<String> invalidHints;
     private final Optional<IdpLanguageHint> languageHint;
     private final Optional<Boolean> registration;
-    
-    public Session(@JsonProperty("sessionId") SessionId sessionId, @JsonProperty("relayState") String relayState,
-                   @JsonProperty("validHints") List<IdpHint> validHints, @JsonProperty("invalidHints") List<String> invalidHints, @JsonProperty("languageHint") Optional<IdpLanguageHint> languageHint, @JsonProperty("registration") Optional<Boolean> registration) {
+
+    private String csrfToken;
+
+    public Session(@JsonProperty("sessionId") SessionId sessionId,
+                   @JsonProperty("relayState") String relayState,
+                   @JsonProperty("validHints") List<IdpHint> validHints,
+                   @JsonProperty("invalidHints") List<String> invalidHints,
+                   @JsonProperty("languageHint") Optional<IdpLanguageHint> languageHint,
+                   @JsonProperty("registration") Optional<Boolean> registration,
+                   @JsonProperty("csrfToken") String csrfToken) {
         this.sessionId = sessionId;
         this.relayState = relayState;
         this.validHints = validHints;
         this.invalidHints = invalidHints;
         this.languageHint = languageHint;
         this.registration = registration;
+        this.csrfToken = csrfToken;
     }
 
     public SessionId getSessionId() {
@@ -52,4 +61,12 @@ public abstract class Session {
     public Optional<Boolean> isRegistration() {
         return registration;
     }
+
+    public String getCsrfToken() { return csrfToken; }
+
+    public Session setNewCsrfToken() {
+        this.csrfToken = UUID.randomUUID().toString();
+        return this;
+    }
+
 }

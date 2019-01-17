@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import uk.gov.ida.apprule.support.TestSamlRequestFactory;
 import uk.gov.ida.apprule.support.eidas.EidasAuthnRequestBuilder;
 import uk.gov.ida.saml.core.IdaConstants;
@@ -19,8 +20,10 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.ida.stub.idp.csrf.CSRFCheckProtectionFilter.CSRF_PROTECT_FORM_KEY;
 import static uk.gov.ida.stub.idp.repositories.StubCountryRepository.STUB_COUNTRY_FRIENDLY_ID;
 
 public class AuthnRequestSteps {
@@ -145,12 +148,25 @@ public class AuthnRequestSteps {
     }
 
     private void userLogsIn(Cookies cookies, String username, String loginUrl, String consentUrl) {
+        Response response = client.target(getStubIdpUri(loginUrl))
+                .request()
+                .cookie(CookieNames.SESSION_COOKIE_NAME, cookies.getSessionId())
+                .cookie(CookieNames.SECURE_COOKIE_NAME, cookies.getSecure())
+                .get();
+
+        assertThat(response.getStatus()).isEqualTo(200);
+
         Form form = new Form();
         form.param(Urls.USERNAME_PARAM, username);
         form.param(Urls.PASSWORD_PARAM, "bar");
         form.param(Urls.SUBMIT_PARAM, "SignIn");
+        final Document entity = Jsoup.parse(response.readEntity(String.class));
+        final Element csrfElement = entity.getElementById(CSRF_PROTECT_FORM_KEY);
+        if(!Objects.isNull(csrfElement)) {
+            form.param(CSRF_PROTECT_FORM_KEY, entity.getElementById(CSRF_PROTECT_FORM_KEY).val());
+        }
 
-        Response response = client.target(getStubIdpUri(loginUrl))
+        response = client.target(getStubIdpUri(loginUrl))
                 .request()
                 .cookie(CookieNames.SESSION_COOKIE_NAME, cookies.getSessionId())
                 .cookie(CookieNames.SECURE_COOKIE_NAME, cookies.getSecure())
@@ -180,6 +196,11 @@ public class AuthnRequestSteps {
         Form form = new Form();
         form.param(Urls.SUBMIT_PARAM, "I Agree");
         form.param(Urls.RANDOMISE_PID_PARAM, Boolean.toString(randomize));
+        final Document entity = Jsoup.parse(response.readEntity(String.class));
+        final Element csrfElement = entity.getElementById(CSRF_PROTECT_FORM_KEY);
+        if(!Objects.isNull(csrfElement)) {
+            form.param(CSRF_PROTECT_FORM_KEY, entity.getElementById(CSRF_PROTECT_FORM_KEY).val());
+        }
 
         response = client.target(getStubIdpUri(consentUrl))
                 .request()

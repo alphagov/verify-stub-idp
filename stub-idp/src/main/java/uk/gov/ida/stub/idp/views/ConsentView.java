@@ -6,6 +6,7 @@ import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.views.helpers.IdpUserHelper;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ConsentView extends IdpPageView {
@@ -14,8 +15,8 @@ public class ConsentView extends IdpPageView {
     private final List<uk.gov.ida.saml.core.domain.AuthnContext> levelsOfAssurance;
     private final IdpUserHelper idpUserHelper;
 
-    public ConsentView(String name, String idpId, String assetId, DatabaseIdpUser idpUser, boolean userLOADidNotMatch, AuthnContext userLevelOfAssurance, List<AuthnContext> levelsOfAssurance) {
-        super("consent.ftl", name, idpId, null, assetId);
+    public ConsentView(String name, String idpId, String assetId, DatabaseIdpUser idpUser, boolean userLOADidNotMatch, AuthnContext userLevelOfAssurance, List<AuthnContext> levelsOfAssurance, String csrfToken) {
+        super("consent.ftl", name, idpId, null, assetId, Optional.ofNullable(csrfToken));
         this.userLOADidNotMatch = userLOADidNotMatch;
         this.userLevelOfAssurance = userLevelOfAssurance;
         this.levelsOfAssurance = levelsOfAssurance;

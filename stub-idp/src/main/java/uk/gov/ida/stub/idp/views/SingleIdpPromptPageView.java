@@ -8,6 +8,7 @@ import uk.gov.ida.stub.idp.views.helpers.IdpUserHelper;
 import java.net.URI;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class SingleIdpPromptPageView extends IdpPageView {
@@ -22,7 +23,7 @@ public class SingleIdpPromptPageView extends IdpPageView {
     }
 
     public SingleIdpPromptPageView(String name, String idpId, String errorMessage, String assetId, List<Service> services, URI verifySubmissionUrl, UUID uniqueId, DatabaseIdpUser idpUser) {
-        super("singleIdpPromptPage.ftl", name, idpId, errorMessage, assetId);
+        super("singleIdpPromptPage.ftl", name, idpId, errorMessage, assetId, Optional.empty());
         services.sort(Comparator.comparing(Service::getServiceCategory));
         this.services = services;
         this.uniqueId = uniqueId;

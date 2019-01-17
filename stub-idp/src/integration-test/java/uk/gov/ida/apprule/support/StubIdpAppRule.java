@@ -1,6 +1,7 @@
 package uk.gov.ida.apprule.support;
 
 import certificates.values.CACertificates;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import httpstub.HttpStubRule;
@@ -36,8 +37,15 @@ public class StubIdpAppRule extends DropwizardAppRule<StubIdpConfiguration> {
 
     private final List<StubIdp> stubIdps = new ArrayList<>();
 
+    private static final HttpStubRule fakeFrontend = new HttpStubRule();
+
     public StubIdpAppRule(ConfigOverride... configOverrides) {
         super(StubIdpApplication.class, "configuration/stub-idp.yml", withDefaultOverrides(configOverrides));
+        try {
+            fakeFrontend.register("/get-available-services", 200, "application/json", "[]");
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 
     public static ConfigOverride[] withDefaultOverrides(ConfigOverride ... configOverrides) {
@@ -73,6 +81,7 @@ public class StubIdpAppRule extends DropwizardAppRule<StubIdpConfiguration> {
                 .add(ConfigOverride.config("europeanIdentity.signingKeyPairConfiguration.publicKeyConfiguration.cert", STUB_IDP_PUBLIC_PRIMARY_CERT))
                 .add(ConfigOverride.config("database.url", "jdbc:h2:mem:test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1"))
                 .add(ConfigOverride.config("singleIdpJourney.enabled", "true"))
+                .add(ConfigOverride.config("singleIdpJourney.serviceListUri", "http://localhost:"+fakeFrontend.getPort()+"/get-available-services"))
                 .add(configOverrides)
                 .build();
         return overrides.toArray(new ConfigOverride[overrides.size()]);

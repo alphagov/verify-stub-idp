@@ -18,6 +18,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
 import static uk.gov.ida.stub.idp.builders.StubIdpBuilder.aStubIdp;
+import static uk.gov.ida.stub.idp.csrf.CSRFCheckProtectionFilter.CSRF_PROTECT_FORM_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HomePageIntegrationTest {
@@ -50,13 +51,14 @@ public class HomePageIntegrationTest {
     @Test
     public void shouldWelcomeUserWhenLoggedIn() {
 
-       PreRegistrationSteps userLogsInAndIsRedirectedToHomePage = new PreRegistrationSteps(client, applicationRule);
+       PreRegistrationSteps steps = new PreRegistrationSteps(client, applicationRule);
 
-        userLogsInAndIsRedirectedToHomePage.userSuccessfullyNavigatesTo("/login")
+        steps.userSuccessfullyNavigatesTo("/login")
                 .clientPostsFormData(FormBuilder.newForm()
                         .withParam(Urls.IDP_ID_PARAM, IDP_NAME)
-                        .withParam(Urls.USERNAME_PARAM, "stub-idp-demo-one")
+                        .withParam(Urls.USERNAME_PARAM, IDP_NAME)
                         .withParam(Urls.PASSWORD_PARAM,"bar")
+                        .withParam(CSRF_PROTECT_FORM_KEY, steps.getCsrfToken())
                         .withParam(Urls.SUBMIT_PARAM, SubmitButtonValue.SignIn.toString())
                         .build(),
                         "/login")
