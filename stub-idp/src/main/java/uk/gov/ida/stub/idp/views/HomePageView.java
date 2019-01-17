@@ -12,7 +12,7 @@ public class HomePageView extends IdpPageView {
     IdpUserHelper idpUserHelper;
 
     public HomePageView(String name, String idpId, String errorMessage, String assetId, Optional<DatabaseIdpUser> loggedInUser) {
-        super("homePage.ftl", name, idpId, errorMessage, assetId);
+        super("homePage.ftl", name, idpId, errorMessage, assetId, Optional.empty());
         this.loggedInUser = loggedInUser;
         idpUserHelper = new IdpUserHelper(loggedInUser.orElse(null));
     }

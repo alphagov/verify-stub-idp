@@ -75,7 +75,7 @@ public class AuthnRequestReceiverService {
         validateHints(idpHints, validHints, invalidHints);
 
         final IdaAuthnRequestFromHub idaRequestFromHub = samlRequestTransformer.apply(samlRequest);
-        IdpSession session = new IdpSession(SessionId.createNewSessionId(), idaRequestFromHub, relayState, validHints, invalidHints, languageHint, registration, singleIdpJourneyId);
+        IdpSession session = new IdpSession(SessionId.createNewSessionId(), idaRequestFromHub, relayState, validHints, invalidHints, languageHint, registration, singleIdpJourneyId, null);
         final SessionId idpSessionId = idpSessionRepository.createSession(session);
 
         UriBuilder uriBuilder;
@@ -92,7 +92,7 @@ public class AuthnRequestReceiverService {
         AuthnRequest authnRequest = stringAuthnRequestTransformer.apply(samlRequest);
         validateEidasAuthnRequest(authnRequest);
         EidasAuthnRequest eidasAuthnRequest = EidasAuthnRequest.buildFromAuthnRequest(authnRequest);
-        EidasSession session = new EidasSession(SessionId.createNewSessionId(), eidasAuthnRequest, relayState, Collections.emptyList(), Collections.emptyList(), languageHint, Optional.empty());
+        EidasSession session = new EidasSession(SessionId.createNewSessionId(), eidasAuthnRequest, relayState, Collections.emptyList(), Collections.emptyList(), languageHint, Optional.empty(), null);
         final SessionId idpSessionId = eidasSessionRepository.createSession(session);
 
         UriBuilder uriBuilder = UriBuilder.fromPath(Urls.EIDAS_LOGIN_RESOURCE);

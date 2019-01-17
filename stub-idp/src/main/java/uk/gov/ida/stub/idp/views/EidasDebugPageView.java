@@ -4,6 +4,7 @@ import uk.gov.ida.stub.idp.domain.IdpLanguageHint;
 import uk.gov.ida.stub.idp.repositories.EidasSession;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.text.MessageFormat.format;
@@ -13,7 +14,7 @@ public class EidasDebugPageView extends IdpPageView {
     private final EidasSession session;
 
     public EidasDebugPageView(String displayName, String friendlyId, String assetId, EidasSession session) {
-        super("eidasDebugPage.ftl", displayName, friendlyId, null, assetId);
+        super("eidasDebugPage.ftl", displayName, friendlyId, null, assetId, Optional.empty());
         this.session = session;
     }
 

@@ -6,6 +6,7 @@ import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.cookies.CookieFactory;
 import uk.gov.ida.stub.idp.cookies.CookieNames;
+import uk.gov.ida.stub.idp.csrf.CSRFCheckProtection;
 import uk.gov.ida.stub.idp.domain.SamlResponse;
 import uk.gov.ida.stub.idp.domain.SubmitButtonValue;
 import uk.gov.ida.stub.idp.exceptions.GenericStubIdpException;
@@ -54,6 +55,7 @@ import static uk.gov.ida.stub.idp.views.ErrorMessageType.USERNAME_ALREADY_TAKEN;
 
 @Path(Urls.REGISTER_RESOURCE)
 @Produces(MediaType.TEXT_HTML)
+@CSRFCheckProtection
 public class RegistrationPageResource {
 
     private final IdpStubsRepository idpStubsRepository;
@@ -86,19 +88,16 @@ public class RegistrationPageResource {
     @SessionCookieValueMustExistAsASession
     public Response get(
             @PathParam(Urls.IDP_ID_PARAM) @NotNull String idpName,
-            @QueryParam(Urls.ERROR_MESSAGE_PARAM) java.util.Optional<ErrorMessageType> errorMessage,
+            @QueryParam(Urls.ERROR_MESSAGE_PARAM) Optional<ErrorMessageType> errorMessage,
             @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
 
-        if (Strings.isNullOrEmpty(sessionCookie.toString())) {
-            throw new GenericStubIdpException(format("Unable to locate session cookie for " + idpName), Response.Status.BAD_REQUEST);
-        }
-
-        if (!sessionRepository.containsSession(sessionCookie)) {
-            throw new GenericStubIdpException(format("Session is invalid for " + idpName), Response.Status.BAD_REQUEST);
-        }
+        final IdpSession session = checkAndGetSession(idpName, sessionCookie);
 
         Idp idp = idpStubsRepository.getIdpWithFriendlyId(idpName);
-        return Response.ok(new RegistrationPageView(idp.getDisplayName(), idp.getFriendlyId(), errorMessage.orElse(NO_ERROR).getMessage(), idp.getAssetId(), null)).build();
+
+        sessionRepository.updateSession(session.getSessionId(), session.setNewCsrfToken());
+
+        return Response.ok(new RegistrationPageView(idp.getDisplayName(), idp.getFriendlyId(), errorMessage.orElse(NO_ERROR).getMessage(), idp.getAssetId(), null, session.getCsrfToken())).build();
     }
 
     @GET
@@ -108,10 +107,11 @@ public class RegistrationPageResource {
             @QueryParam(Urls.ERROR_MESSAGE_PARAM) Optional<ErrorMessageType> errorMessage) {
 
         Idp idp = idpStubsRepository.getIdpWithFriendlyId(idpName);
-        IdpSession idpSession = new IdpSession(
+        IdpSession session = new IdpSession(
                 new SessionId(UUID.randomUUID().toString()));
-        final SessionId sessionId = idpSessionRepository.createSession(idpSession);
-        return Response.ok(new RegistrationPageView(idp.getDisplayName(), idp.getFriendlyId(), errorMessage.orElse(NO_ERROR).getMessage(), idp.getAssetId(), Urls.PRE_REGISTER_PATH))
+        final SessionId sessionId = idpSessionRepository.createSession(session);
+        sessionRepository.updateSession(session.getSessionId(), session.setNewCsrfToken());
+        return Response.ok(new RegistrationPageView(idp.getDisplayName(), idp.getFriendlyId(), errorMessage.orElse(NO_ERROR).getMessage(), idp.getAssetId(), Urls.PRE_REGISTER_PATH, session.getCsrfToken()))
                 .cookie(cookieFactory.createSessionIdCookie(sessionId))
                 .build();
     }
@@ -146,7 +146,6 @@ public class RegistrationPageResource {
         if (!session.isPresent()) {
             throw new GenericStubIdpException(format("Session is invalid for " + idpName), Response.Status.BAD_REQUEST);
         }
-
 
         if (session.get().getIdaAuthnRequestFromHub() == null) {
             return preRegisterResponse(idpName, firstname, surname, addressLine1, addressLine2, addressTown, addressPostCode, dateOfBirth, username, password, levelOfAssurance, submitButtonValue, sessionCookie);
@@ -248,6 +247,20 @@ public class RegistrationPageResource {
                 throw new GenericStubIdpException("unknown submit button value", Response.Status.BAD_REQUEST);
             }
         }
+    }
+
+    private IdpSession checkAndGetSession(String idpName, SessionId sessionCookie) {
+        if (Strings.isNullOrEmpty(sessionCookie.toString())) {
+            throw new GenericStubIdpException(format("Unable to locate session cookie for " + idpName), Response.Status.BAD_REQUEST);
+        }
+
+        Optional<IdpSession> session = sessionRepository.get(sessionCookie);
+
+        if (!session.isPresent()) {
+            throw new GenericStubIdpException(format("Session is invalid for " + idpName), Response.Status.BAD_REQUEST);
+        }
+
+        return session.get();
     }
 
     private Response createErrorResponse(ErrorMessageType errorMessage, String idpName) {

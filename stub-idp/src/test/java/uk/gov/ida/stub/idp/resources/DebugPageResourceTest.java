@@ -59,7 +59,7 @@ public class DebugPageResourceTest {
 
     @Test
     public void shouldHaveNullJourneyIdInPageViewWhenNoIdReceived() {
-        when(sessionRepository.get(SESSION_ID)).thenReturn(Optional.ofNullable(new IdpSession(SESSION_ID, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null, Optional.empty())));
+        when(sessionRepository.get(SESSION_ID)).thenReturn(Optional.ofNullable(new IdpSession(SESSION_ID, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null, Optional.empty(), null)));
 
         Response response = resource.get(IDP_NAME, SESSION_ID);
 
@@ -70,7 +70,7 @@ public class DebugPageResourceTest {
     @Test
     public void shouldHaveJourneyIdInPageViewWhenIdReceived() {
         UUID uuid = UUID.randomUUID();
-        when(sessionRepository.get(SESSION_ID)).thenReturn(Optional.ofNullable(new IdpSession(SESSION_ID, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null, Optional.ofNullable(uuid))));
+        when(sessionRepository.get(SESSION_ID)).thenReturn(Optional.ofNullable(new IdpSession(SESSION_ID, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null, Optional.ofNullable(uuid), null)));
 
         Response response = resource.get(IDP_NAME, SESSION_ID);
 

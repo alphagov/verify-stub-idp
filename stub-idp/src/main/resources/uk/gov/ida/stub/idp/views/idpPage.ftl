@@ -21,7 +21,7 @@
 <header>
     <div class="container" id="auth">
         <div class="logo">
-            <img src="/assets/images/providers/${assetId}.png" alt="${name}" height="142px">
+            <img src="/assets/images/providers/${assetId}.png" alt="${name}" height="142px" />
         </div>
     </div>
 </header>

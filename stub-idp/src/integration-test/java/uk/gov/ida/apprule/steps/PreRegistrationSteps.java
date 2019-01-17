@@ -1,5 +1,8 @@
 package uk.gov.ida.apprule.steps;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import uk.gov.ida.apprule.support.StubIdpAppRule;
 
 import javax.ws.rs.client.Client;
@@ -12,15 +15,19 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.util.Arrays;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static uk.gov.ida.stub.idp.csrf.CSRFCheckProtectionFilter.CSRF_PROTECT_FORM_KEY;
 
 public class PreRegistrationSteps {
     private Response response;
     private Cookies cookies;
+    private String csrfToken;
     private Client client;
     private StubIdpAppRule applicationRule;
+    private String responseEntity;
 
     private static final String IDP_NAME = "stub-idp-demo-one";
     private static final String DISPLAY_NAME = "Stub Idp One Pre-Register";
@@ -46,6 +53,12 @@ public class PreRegistrationSteps {
                 .cookie(cookies.getSessionCookie())
                 .get();
         assertThat(response.getStatus()).isEqualTo(Response.Status.OK.getStatusCode());
+        this.responseEntity = response.readEntity(String.class);
+        final Document entity = Jsoup.parse(responseEntity);
+        final Element csrfElement = entity.getElementById(CSRF_PROTECT_FORM_KEY);
+        if(!Objects.isNull(csrfElement)) {
+            csrfToken = entity.getElementById(CSRF_PROTECT_FORM_KEY).val();
+        }
         cookies.extractCookies(response);
         return this;
     }
@@ -72,6 +85,7 @@ public class PreRegistrationSteps {
                 .cookie(cookies.getSessionCookie())
                 .get();
         cookies.extractCookies(response);
+        responseEntity = response.readEntity(String.class);
         return this;
     }
 
@@ -106,8 +120,7 @@ public class PreRegistrationSteps {
     }
 
     public PreRegistrationSteps responseContains(String ... content) {
-        String entityString = response.readEntity(String.class);
-        Arrays.stream(content).forEach(string -> assertThat(entityString).contains(string));
+        Arrays.stream(content).forEach(string -> assertThat(responseEntity).contains(string));
         return this;
     }
 
@@ -117,5 +130,9 @@ public class PreRegistrationSteps {
 
     private URI getUri(String path) {
         return UriBuilder.fromUri("http://localhost:" + applicationRule.getLocalPort()).path(path).build();
+    }
+
+    public String getCsrfToken() {
+        return csrfToken;
     }
 }

@@ -3,15 +3,17 @@ package uk.gov.ida.stub.idp.views;
 import io.dropwizard.views.View;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 public class IdpPageView extends View {
-    private String subPageTemplateName;
+    private final String subPageTemplateName;
     private final String name;
     private final String idpId;
-    private String errorMessage;
+    private final String errorMessage;
     private final String assetId;
+    private final Optional<String> csrfToken;
 
-    public IdpPageView(String subPageTemplateName, String name, String idpId, String errorMessage, String assetId) {
+    public IdpPageView(String subPageTemplateName, String name, String idpId, String errorMessage, String assetId, Optional<String> csrfToken) {
         super("idpPage.ftl", StandardCharsets.UTF_8);
 
         this.subPageTemplateName = subPageTemplateName;
@@ -19,6 +21,7 @@ public class IdpPageView extends View {
         this.idpId = idpId;
         this.errorMessage = errorMessage;
         this.assetId = assetId;
+        this.csrfToken = csrfToken;
     }
 
     public String getPageTitle() {
@@ -46,5 +49,9 @@ public class IdpPageView extends View {
 
     public String getSubPageTemplateName() {
         return subPageTemplateName;
+    }
+
+    public Optional<String> getCsrfToken() {
+        return csrfToken;
     }
 }

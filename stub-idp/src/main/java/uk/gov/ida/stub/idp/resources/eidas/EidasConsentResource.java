@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.cookies.CookieNames;
+import uk.gov.ida.stub.idp.csrf.CSRFCheckProtection;
 import uk.gov.ida.stub.idp.domain.EidasScheme;
 import uk.gov.ida.stub.idp.domain.EidasUser;
 import uk.gov.ida.stub.idp.domain.SamlResponse;
@@ -36,6 +37,7 @@ import java.util.Optional;
 @Path(Urls.EIDAS_CONSENT_RESOURCE)
 @Produces(MediaType.TEXT_HTML)
 @SessionCookieValueMustExistAsASession
+@CSRFCheckProtection
 public class EidasConsentResource {
 
     private final SessionRepository<EidasSession> sessionRepository;
@@ -76,7 +78,9 @@ public class EidasConsentResource {
         EidasUser eidasUser = session.getEidasUser().get();
         StubCountry stubCountry = stubCountryRepository.getStubCountryWithFriendlyId(eidasScheme.get());
 
-        return Response.ok(new EidasConsentView(stubCountry.getDisplayName(), stubCountry.getFriendlyId(), stubCountry.getAssetId(), eidasUser)).build();
+        sessionRepository.updateSession(session.getSessionId(), session.setNewCsrfToken());
+
+        return Response.ok(new EidasConsentView(stubCountry.getDisplayName(), stubCountry.getFriendlyId(), stubCountry.getAssetId(), eidasUser, session.getCsrfToken())).build();
     }
 
     @POST

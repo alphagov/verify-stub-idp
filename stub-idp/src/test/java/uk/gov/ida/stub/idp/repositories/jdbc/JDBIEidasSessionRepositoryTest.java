@@ -38,11 +38,11 @@ public class JDBIEidasSessionRepositoryTest {
 		EidasAuthnRequest authnRequest = new EidasAuthnRequest("7cb0ba32-4ebd-4291-8901-c647d4687572", "test-issuer", "", "", Arrays.asList());
 
 		SessionId eidasSessionId = SessionId.createNewSessionId();
-		EidasSession session = new EidasSession(eidasSessionId, authnRequest, "test-relay-state", Arrays.asList(IdpHint.has_ukphotolicence), Arrays.asList("invalid hint"), Optional.of(IdpLanguageHint.cy), Optional.of(true));
+		EidasSession session = new EidasSession(eidasSessionId, authnRequest, "test-relay-state", Arrays.asList(IdpHint.has_ukphotolicence), Arrays.asList("invalid hint"), Optional.of(IdpLanguageHint.cy), Optional.of(true), null);
 		session.setEidasUser(new EidasUser("Joe", Optional.empty(), "Bloggs", Optional.empty(), "persistentId", new LocalDate(1524655440000L, DateTimeZone.UTC), Optional.of(new EidasAddress("PO Box 123", "", "", "", "", "", "", "", "AB1 2YZ")), Optional.of(Gender.MALE)));
 		repository.createSession(session);
 		
-		String expectedSerializedSession = "{{\"sessionId\":\""+ eidasSessionId.getSessionId() +"\",\"eidasAuthnRequest\":{\"requestId\":\"7cb0ba32-4ebd-4291-8901-c647d4687572\",\"issuer\":\"test-issuer\",\"destination\":\"\",\"requestedLoa\":\"\",\"attributes\":[]},\"relayState\":\"test-relay-state\",\"validHints\":[\"has_ukphotolicence\"],\"invalidHints\":[\"invalid hint\"],\"languageHint\":\"cy\",\"registration\":true,\"eidasUser\":{\"firstName\":\"Joe\",\"familyName\":\"Bloggs\",\"persistentId\":\"persistentId\",\"dateOfBirth\":[2018,4,25],\"address\":{\"poBox\":\"PO Box 123\",\"locatorDesignator\":\"\",\"locatorName\":\"\",\"cvAddressArea\":\"\",\"thoroughfare\":\"\",\"postName\":\"\",\"adminunitFirstLine\":\"\",\"adminunitSecondLine\":\"\",\"postCode\":\"AB1 2YZ\"},\"gender\":\"MALE\"}}}";
+		String expectedSerializedSession = "{{\"sessionId\":\""+ eidasSessionId.getSessionId() +"\",\"eidasAuthnRequest\":{\"requestId\":\"7cb0ba32-4ebd-4291-8901-c647d4687572\",\"issuer\":\"test-issuer\",\"destination\":\"\",\"requestedLoa\":\"\",\"attributes\":[]},\"relayState\":\"test-relay-state\",\"validHints\":[\"has_ukphotolicence\"],\"invalidHints\":[\"invalid hint\"],\"languageHint\":\"cy\",\"registration\":true,\"csrfToken\":null,\"eidasUser\":{\"firstName\":\"Joe\",\"familyName\":\"Bloggs\",\"persistentId\":\"persistentId\",\"dateOfBirth\":[2018,4,25],\"address\":{\"poBox\":\"PO Box 123\",\"locatorDesignator\":\"\",\"locatorName\":\"\",\"cvAddressArea\":\"\",\"thoroughfare\":\"\",\"postName\":\"\",\"adminunitFirstLine\":\"\",\"adminunitSecondLine\":\"\",\"postCode\":\"AB1 2YZ\"},\"gender\":\"MALE\"}}}";
 
 		jdbi.useHandle(handle -> {
 			Optional<String> result = handle.select("select session_data from stub_idp_session where session_id = ?", eidasSessionId.toString())
@@ -58,7 +58,7 @@ public class JDBIEidasSessionRepositoryTest {
 	public void get_shouldReturnPopulatedEidasSession_whenSessionExists() {
 		EidasAuthnRequest authnRequest = new EidasAuthnRequest("7cb0ba32-4ebd-4291-8901-c647d4687572", "test-issuer", "", "", Arrays.asList());
 
-		EidasSession expectedSession = new EidasSession(SessionId.createNewSessionId(), authnRequest, "test-relay-state", Arrays.asList(IdpHint.has_ukphotolicence), Arrays.asList("invalid hint"), Optional.of(IdpLanguageHint.cy), Optional.of(true));
+		EidasSession expectedSession = new EidasSession(SessionId.createNewSessionId(), authnRequest, "test-relay-state", Arrays.asList(IdpHint.has_ukphotolicence), Arrays.asList("invalid hint"), Optional.of(IdpLanguageHint.cy), Optional.of(true), null);
 		expectedSession.setEidasUser(new EidasUser("Joe", Optional.empty(), "Bloggs", Optional.empty(), "persistentId", new LocalDate(1524655440000L, DateTimeZone.UTC), Optional.of(new EidasAddress("PO Box 123", "", "", "", "", "", "", "", "AB1 2YZ")), Optional.of(Gender.MALE)));
 		SessionId insertedSessionId = repository.createSession(expectedSession);
 

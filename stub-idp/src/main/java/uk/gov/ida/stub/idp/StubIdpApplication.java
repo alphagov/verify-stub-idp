@@ -22,6 +22,8 @@ import uk.gov.ida.filters.AcceptLanguageFilter;
 import uk.gov.ida.saml.core.IdaSamlBootstrap;
 import uk.gov.ida.stub.idp.bundles.DatabaseMigrationBundle;
 import uk.gov.ida.stub.idp.configuration.StubIdpConfiguration;
+import uk.gov.ida.stub.idp.csrf.CSRFCheckProtectionFeature;
+import uk.gov.ida.stub.idp.csrf.CSRFViewRenderer;
 import uk.gov.ida.stub.idp.exceptions.mappers.CatchAllExceptionMapper;
 import uk.gov.ida.stub.idp.exceptions.mappers.FeatureNotEnabledExceptionMapper;
 import uk.gov.ida.stub.idp.exceptions.mappers.FileNotFoundExceptionMapper;
@@ -56,6 +58,8 @@ import uk.gov.ida.stub.idp.resources.idp.SingleIdpPromptPageResource;
 import javax.servlet.DispatcherType;
 import java.util.EnumSet;
 import java.util.Map;
+
+import static java.util.Collections.singletonList;
 
 public class StubIdpApplication extends Application<StubIdpConfiguration> {
 
@@ -104,7 +108,7 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
         bootstrap.addBundle(guiceBundle);
 
         bootstrap.addBundle(new ServiceStatusBundle());
-        bootstrap.addBundle(new ViewBundle<StubIdpConfiguration>() {
+        bootstrap.addBundle(new ViewBundle<StubIdpConfiguration>(singletonList(new CSRFViewRenderer())) {
             @Override
             public Map<String, Map<String, String>> getViewConfiguration(StubIdpConfiguration config) {
                 // beware: this is to force enable escaping of unsanitised user input
@@ -128,6 +132,7 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
         environment.servlets().addFilter("Remove Accept-Language headers", AcceptLanguageFilter.class).addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 
         environment.jersey().register(SessionCookieValueMustExistAsASessionFeature.class);
+        environment.jersey().register(CSRFCheckProtectionFeature.class);
 
         environment.getObjectMapper().setDateFormat(new ISO8601DateFormat());
 

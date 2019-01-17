@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.cookies.CookieNames;
+import uk.gov.ida.stub.idp.csrf.CSRFCheckProtection;
 import uk.gov.ida.stub.idp.domain.EidasScheme;
 import uk.gov.ida.stub.idp.domain.SamlResponse;
 import uk.gov.ida.stub.idp.exceptions.GenericStubIdpException;
@@ -45,6 +46,7 @@ import static uk.gov.ida.stub.idp.views.ErrorMessageType.NO_ERROR;
 
 @Path(Urls.EIDAS_LOGIN_RESOURCE)
 @SessionCookieValueMustExistAsASession
+@CSRFCheckProtection
 public class EidasLoginPageResource {
 
     private final SessionRepository<EidasSession> sessionRepository;
@@ -78,12 +80,14 @@ public class EidasLoginPageResource {
             throw new InvalidEidasSchemeException();
         }
 
-        checkSession(schemeName, sessionCookie);
+        final EidasSession session = checkSession(schemeName, sessionCookie);
 
         StubCountry stubCountry = stubCountryRepository.getStubCountryWithFriendlyId(eidasScheme.get());
 
+        sessionRepository.updateSession(session.getSessionId(), session.setNewCsrfToken());
+
         return Response.ok()
-                .entity(new EidasLoginPageView(stubCountry.getDisplayName(), stubCountry.getFriendlyId(), errorMessage.orElse(NO_ERROR).getMessage(), stubCountry.getAssetId()))
+                .entity(new EidasLoginPageView(stubCountry.getDisplayName(), stubCountry.getFriendlyId(), errorMessage.orElse(NO_ERROR).getMessage(), stubCountry.getAssetId(), session.getCsrfToken()))
                 .build();
     }
 

@@ -5,6 +5,7 @@ import uk.gov.ida.common.SessionId;
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.cookies.CookieNames;
+import uk.gov.ida.stub.idp.csrf.CSRFCheckProtection;
 import uk.gov.ida.stub.idp.domain.EidasScheme;
 import uk.gov.ida.stub.idp.domain.SamlResponse;
 import uk.gov.ida.stub.idp.domain.SubmitButtonValue;
@@ -54,6 +55,7 @@ import static uk.gov.ida.stub.idp.views.ErrorMessageType.USERNAME_ALREADY_TAKEN;
 @Path(Urls.EIDAS_REGISTER_RESOURCE)
 @Produces(MediaType.TEXT_HTML)
 @SessionCookieValueMustExistAsASession
+@CSRFCheckProtection
 public class EidasRegistrationPageResource {
 
     private final StubCountryRepository stubsCountryRepository;
@@ -95,8 +97,12 @@ public class EidasRegistrationPageResource {
             throw new GenericStubIdpException(format(("Session is invalid for " + schemeId)), Response.Status.BAD_REQUEST);
         }
 
+        EidasSession session = sessionRepository.get(sessionCookie).get();
+
+        sessionRepository.updateSession(session.getSessionId(), session.setNewCsrfToken());
+
         StubCountry stubCountry = stubsCountryRepository.getStubCountryWithFriendlyId(eidasScheme.get());
-        return Response.ok(new EidasRegistrationPageView(stubCountry.getDisplayName(), stubCountry.getFriendlyId(), errorMessage.orElse(NO_ERROR).getMessage(), stubCountry.getAssetId())).build();
+        return Response.ok(new EidasRegistrationPageView(stubCountry.getDisplayName(), stubCountry.getFriendlyId(), errorMessage.orElse(NO_ERROR).getMessage(), stubCountry.getAssetId(), session.getCsrfToken())).build();
     }
 
     @POST

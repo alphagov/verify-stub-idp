@@ -5,6 +5,7 @@ import uk.gov.ida.common.SessionId;
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.cookies.CookieNames;
+import uk.gov.ida.stub.idp.csrf.CSRFCheckProtection;
 import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.exceptions.GenericStubIdpException;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASession;
@@ -75,7 +76,8 @@ public class ConsentResource {
         boolean isUserLOATooLow = !requestLevelsOfAssurance.stream().anyMatch(loa -> loa.equals(userLevelOfAssurance));
 
         Idp idp = idpStubsRepository.getIdpWithFriendlyId(idpName);
-        return Response.ok(new ConsentView(idp.getDisplayName(), idp.getFriendlyId(), idp.getAssetId(), idpUser, isUserLOATooLow, userLevelOfAssurance, requestLevelsOfAssurance)).build();
+        sessionRepository.updateSession(session.getSessionId(), session.setNewCsrfToken());
+        return Response.ok(new ConsentView(idp.getDisplayName(), idp.getFriendlyId(), idp.getAssetId(), idpUser, isUserLOATooLow, userLevelOfAssurance, requestLevelsOfAssurance, session.getCsrfToken())).build();
     }
 
     private GenericStubIdpException errorResponse(String error) {
@@ -83,6 +85,7 @@ public class ConsentResource {
     }
 
     @POST
+    @CSRFCheckProtection
     public Response consent(
             @Context HttpServletRequest httpServletRequest,
             @PathParam(Urls.IDP_ID_PARAM) @NotNull String idpName,
