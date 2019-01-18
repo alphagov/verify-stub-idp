@@ -3,17 +3,17 @@
     <div class="tabs">
         <ul>
             <li>
-                <a id="tab-login" class="tab-text" href="/eidas/${idpId}/login">Login</a>
+                <a id="tab-login" class="tab-text" href="${rootPrefix}/eidas/${idpId}/login${routeSuffix}">Login</a>
             </li>
             <li class="on" id="tab-register">
                 <span class="tab-text">Register</span>
             </li>
             <li>
-                <a id="tab-debug" class="tab-text" href="/eidas/${idpId}/debug">System information</a>
+                <a id="tab-debug" class="tab-text" href="${rootPrefix}/eidas/${idpId}/debug${routeSuffix}">System information</a>
             </li>
         </ul>
     </div>
-    <form action="/eidas/${idpId}/register" class="register" method="post" id="registration-form" autocomplete="off">
+    <form action="${rootPrefix}/eidas/${idpId}/register${routeSuffix}" class="register" method="post" id="registration-form" autocomplete="off">
         <fieldset>
             <legend>Register with ${name}</legend>
 

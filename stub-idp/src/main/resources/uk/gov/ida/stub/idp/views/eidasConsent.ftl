@@ -40,11 +40,10 @@
         <p>Do you agree to allow ${name} to send your personal details to the relying party from which you are
             authenticating?</p>
     </div>
-     <form action="/eidas/${idpId}/consent" method="post">
-         <p class="submit">
-             <input id="agree" class="button color-ok" type="submit" name="submit" value="I Agree"/>
-         </p>
+    <div class="submit">
+        <form action="${rootPrefix}/eidas/${idpId}/consent${routeSuffix}" method="post">
+          <input id="agree" class="button color-ok" type="submit" name="submit" value="I Agree"/>
           <!-- this is used by acceptance tests -->
           <input id="signingAlgorithm" name="signingAlgorithm" type="hidden" value="rsasha256"/>
-     </form>
+        </form>
 </div>

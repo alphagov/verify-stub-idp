@@ -1,6 +1,7 @@
 package uk.gov.ida.stub.idp.views;
 
 import io.dropwizard.views.View;
+import uk.gov.ida.stub.idp.Urls;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -53,5 +54,13 @@ public class IdpPageView extends View {
 
     public Optional<String> getCsrfToken() {
         return csrfToken;
+    }
+
+    public String getRootPrefix() {
+        return Urls.ROOT_PREFIX;
+    }
+
+    public String getRouteSuffix() {
+        return Urls.ROUTE_SUFFIX;
     }
 }

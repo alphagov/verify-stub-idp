@@ -1,9 +1,11 @@
 package uk.gov.ida.apprule.steps;
 
+import com.google.common.collect.ImmutableMap;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import uk.gov.ida.apprule.support.StubIdpAppRule;
+import uk.gov.ida.stub.idp.Urls;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
@@ -39,7 +41,7 @@ public class PreRegistrationSteps {
     }
 
     public PreRegistrationSteps userNavigatesTo(String path) {
-        this.response = client.target(getUri(IDP_NAME + path))
+        this.response = client.target(getUri(path))
                 .request()
                 .cookie(cookies.getSessionCookie())
                 .get();
@@ -48,7 +50,7 @@ public class PreRegistrationSteps {
     }
 
     public PreRegistrationSteps userSuccessfullyNavigatesTo(String path) {
-        this.response = client.target(getUri(IDP_NAME + path))
+        this.response = client.target(getUri(path))
                 .request()
                 .cookie(cookies.getSessionCookie())
                 .get();
@@ -64,7 +66,7 @@ public class PreRegistrationSteps {
     }
 
     public PreRegistrationSteps userIsRedirectedTo(String path) {
-        return userIsRedirectedTo(getUri(IDP_NAME + path));
+        return userIsRedirectedTo(getUri(path));
     }
 
     public PreRegistrationSteps userIsRedirectedTo(URI uri) {
@@ -107,7 +109,7 @@ public class PreRegistrationSteps {
     }
 
     private PreRegistrationSteps postFormTo(Form form, String path) {
-        return postFormTo(form, getUri(IDP_NAME + path));
+        return postFormTo(form, getUri(path));
     }
 
     private PreRegistrationSteps postFormTo(Form form, URI uri){
@@ -129,7 +131,9 @@ public class PreRegistrationSteps {
     }
 
     private URI getUri(String path) {
-        return UriBuilder.fromUri("http://localhost:" + applicationRule.getLocalPort()).path(path).build();
+        return UriBuilder.fromUri("http://localhost:" + applicationRule.getLocalPort())
+                .path(path)
+                .buildFromMap(ImmutableMap.of(Urls.IDP_ID_PARAM, IDP_NAME));
     }
 
     public String getCsrfToken() {

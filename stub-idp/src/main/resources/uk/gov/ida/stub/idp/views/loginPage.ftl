@@ -6,14 +6,14 @@
                 <span id="tab-login" class="tab-text">Login</span>
             </li>
             <li>
-                <a id="tab-register" class="tab-text" href="/${idpId}/register">Register</a>
+                <a id="tab-register" class="tab-text" href="${rootPrefix}/${idpId}/register${routeSuffix}">Register</a>
             </li>
             <li>
-                <a id="tab-debug" class="tab-text" href="/${idpId}/debug">System information</a>
+                <a id="tab-debug" class="tab-text" href="${rootPrefix}/${idpId}/debug${routeSuffix}">System information</a>
             </li>
         </ul>
     </div>
-    <form action="/${idpId}/login" class="login" method="post">
+    <form action="${rootPrefix}/${idpId}/login${routeSuffix}" class="login" method="post">
         <fieldset>
             <legend>Verified ID Login</legend>
             <p>Use your existing username and password to complete your Verified ID transaction.</p>
@@ -38,7 +38,7 @@
             </div>
         </fieldset>
     </form>
-    <form action="/${idpId}/login/authn-pending" method="post">
+    <form action="${rootPrefix}/${idpId}/login${routeSuffix}/authn-pending" method="post">
         <legend>Submit Authn Pending Response</legend>
         <fieldset>
             <div class="submit">
@@ -46,7 +46,7 @@
             </div>
         </fieldset>
     </form>
-    <form action="/${idpId}/login/no-authn-context" method="post">
+    <form action="${rootPrefix}/${idpId}/login${routeSuffix}/no-authn-context" method="post">
         <fieldset>
             <legend>Submit Login No Authn Context</legend>
               <div class="submit">
@@ -54,7 +54,7 @@
               </div>
         </fieldset>
     </form>
-    <form action="/${idpId}/login/authn-failure" method="post">
+    <form action="${rootPrefix}/${idpId}/login${routeSuffix}/authn-failure" method="post">
         <fieldset>
             <legend>Submit Login Authn Failure</legend>
             <div class="submit">
@@ -62,7 +62,7 @@
             </div>
         </fieldset>
     </form>
-    <form action="/${idpId}/login/uplift-failed" method="post">
+    <form action="${rootPrefix}/${idpId}/login${routeSuffix}/uplift-failed" method="post">
         <fieldset>
             <legend>Submit Login Uplift Failed</legend>
             <div class="submit">
@@ -70,7 +70,7 @@
             </div>
         </fieldset>
     </form>
-    <form action="/${idpId}/login/fraud-failure" method="post">
+    <form action="${rootPrefix}/${idpId}/login${routeSuffix}/fraud-failure" method="post">
         <fieldset>
             <legend>Submit Login Fraud Failure</legend>
             <select name="failureStatus" id="failureStatus">
@@ -84,7 +84,7 @@
             </div>
         </fieldset>
     </form>
-    <form action="/${idpId}/login/requester-error" method="post"">
+    <form action="${rootPrefix}/${idpId}/login${routeSuffix}/requester-error" method="post"">
     <fieldset>
         <legend>Submit Requester Error</legend>
         <div>

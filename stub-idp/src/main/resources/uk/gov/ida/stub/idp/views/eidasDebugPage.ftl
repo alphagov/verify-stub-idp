@@ -3,10 +3,10 @@
     <div class="tabs">
         <ul>
             <li>
-               <a id="tab-login" class="tab-text" href="/eidas/${idpId}/login">Login</a>
+               <a id="tab-login" class="tab-text" href="${rootPrefix}/eidas/${idpId}/login${routeSuffix}">Login</a>
             </li>
             <li>
-                <a id="tab-register" class="tab-text" href="/eidas/${idpId}/register">Register</a>
+                <a id="tab-register" class="tab-text" href="${rootPrefix}/eidas/${idpId}/register${routeSuffix}">Register</a>
             </li>
             <li class="on" id="tab-debug">
                 <span class="tab-text">System information</span>

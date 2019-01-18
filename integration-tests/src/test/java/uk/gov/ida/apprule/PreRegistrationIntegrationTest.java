@@ -52,7 +52,7 @@ public class PreRegistrationIntegrationTest extends IntegrationTestHelper {
 
         steps
 
-        .userSuccessfullyNavigatesTo("/register/pre-register")
+        .userSuccessfullyNavigatesTo(Urls.PRE_REGISTER_RESOURCE)
         .responseContains("Register with " + DISPLAY_NAME)
 
         .userSubmitsForm(
@@ -71,8 +71,8 @@ public class PreRegistrationIntegrationTest extends IntegrationTestHelper {
                 .withParam(CSRF_PROTECT_FORM_KEY, steps.getCsrfToken())
                 .withParam(Urls.SUBMIT_PARAM, SubmitButtonValue.Register.toString())
                 .build(),
-            "/register")
-        .userIsRedirectedTo("/start-prompt?source=pre-reg")
+                Urls.REGISTER_RESOURCE)
+        .userIsRedirectedTo(Urls.SINGLE_IDP_PROMPT_RESOURCE+"?source=pre-reg")
         .theRedirectIsFollowed()
         .theResponseStatusIs(Response.Status.OK)
         .responseContains(FIRSTNAME_PARAM,
@@ -88,11 +88,11 @@ public class PreRegistrationIntegrationTest extends IntegrationTestHelper {
                                 .withParam(Urls.SAML_REQUEST_PARAM, TestSamlRequestFactory.anAuthnRequest())
                                 .withParam(Urls.RELAY_STATE_PARAM, "relay-state")
                                 .build(),
-                        "/SAML2/SSO")
+                        Urls.IDP_SAML2_SSO_RESOURCE)
 
-        .userIsRedirectedTo("/login")
+        .userIsRedirectedTo(Urls.LOGIN_RESOURCE)
         .theRedirectIsFollowed()
-        .userIsRedirectedTo("/consent")
+        .userIsRedirectedTo(Urls.CONSENT_RESOURCE)
         .theRedirectIsFollowed()
         .theResponseStatusIs(Response.Status.OK)
         .responseContains(FIRSTNAME_PARAM,

@@ -43,7 +43,7 @@ public class HomePageIntegrationTest {
 
         PreRegistrationSteps loggedOutUserVisitsHomePage = new PreRegistrationSteps(client, applicationRule);
 
-        loggedOutUserVisitsHomePage.userSuccessfullyNavigatesTo("")
+        loggedOutUserVisitsHomePage.userSuccessfullyNavigatesTo(Urls.HOMEPAGE_RESOURCE)
                 .responseContains("Log In");
 
     }
@@ -53,7 +53,7 @@ public class HomePageIntegrationTest {
 
        PreRegistrationSteps steps = new PreRegistrationSteps(client, applicationRule);
 
-        steps.userSuccessfullyNavigatesTo("/login")
+        steps.userSuccessfullyNavigatesTo(Urls.LOGIN_RESOURCE)
                 .clientPostsFormData(FormBuilder.newForm()
                         .withParam(Urls.IDP_ID_PARAM, IDP_NAME)
                         .withParam(Urls.USERNAME_PARAM, IDP_NAME)
@@ -61,8 +61,8 @@ public class HomePageIntegrationTest {
                         .withParam(CSRF_PROTECT_FORM_KEY, steps.getCsrfToken())
                         .withParam(Urls.SUBMIT_PARAM, SubmitButtonValue.SignIn.toString())
                         .build(),
-                        "/login")
-                .userIsRedirectedTo("")
+                        Urls.LOGIN_RESOURCE)
+                .userIsRedirectedTo(Urls.HOMEPAGE_RESOURCE)
                 .theRedirectIsFollowed()
                 .theResponseStatusIs(Response.Status.OK)
                 .responseContains("Welcome Jack Bauer", "Logout");

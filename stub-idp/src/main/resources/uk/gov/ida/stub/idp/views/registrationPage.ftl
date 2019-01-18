@@ -4,7 +4,7 @@
         <ul>
         <#if path != "pre-register">
             <li>
-                <a id="tab-login" class="tab-text" href="/${idpId}/login">Login</a>
+                <a id="tab-login" class="tab-text" href="${rootPrefix}/${idpId}/login${routeSuffix}">Login</a>
             </li>
         </#if>
         <li class="on" id="tab-register">
@@ -12,7 +12,7 @@
         </li>
         <#if path != "pre-register">
             <li>
-                <a id="tab-debug" class="tab-text" href="/${idpId}/debug">System information</a>
+                <a id="tab-debug" class="tab-text" href="${rootPrefix}/${idpId}/debug${routeSuffix}">System information</a>
             </li>
         </#if>
         </ul>

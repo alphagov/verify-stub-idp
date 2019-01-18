@@ -3,10 +3,10 @@
     <div class="tabs">
         <ul>
             <li>
-                <a id="tab-login" class="tab-text" href="/${idpId}/login">Login</a>
+                <a id="tab-login" class="tab-text" href="${rootPrefix}/${idpId}/login${routeSuffix}">Login</a>
             </li>
             <li>
-                <a id="tab-register" class="tab-text" href="/${idpId}/register">Register</a>
+                <a id="tab-register" class="tab-text" href="${rootPrefix}/${idpId}/register${routeSuffix}">Register</a>
             </li>
             <li class="on" id="tab-debug">
                 <span class="tab-text">System information</span>
