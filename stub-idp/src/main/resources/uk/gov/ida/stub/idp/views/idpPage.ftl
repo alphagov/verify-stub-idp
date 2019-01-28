@@ -14,7 +14,7 @@
     <script type="text/javascript" src="/assets/lib/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="/assets/lib/jquery.validate.min.js"></script>
     <script type="text/javascript" src="/assets/lib/jquery-ui.min.js"></script>
-    <link rel="shortcut icon" href="/assets/images/providers/stub-idp-one.png">
+    <link rel="shortcut icon" href="/assets/images/providers/${assetId}.png">
 </head>
 <body class="auth ">
 <header>
