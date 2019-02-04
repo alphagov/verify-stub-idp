@@ -7,6 +7,7 @@ import uk.gov.ida.stub.idp.cookies.CookieNames;
 import uk.gov.ida.stub.idp.domain.EidasScheme;
 import uk.gov.ida.stub.idp.domain.EidasUser;
 import uk.gov.ida.stub.idp.domain.SamlResponse;
+import uk.gov.ida.stub.idp.exceptions.GenericStubIdpException;
 import uk.gov.ida.stub.idp.exceptions.InvalidEidasSchemeException;
 import uk.gov.ida.stub.idp.exceptions.InvalidSigningAlgorithmException;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASession;
@@ -28,7 +29,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Optional;
@@ -119,7 +119,7 @@ public class EidasConsentResource {
         return session.get();
     }
 
-    private WebApplicationException errorResponse(String error) {
-        return new WebApplicationException(Response.status(Response.Status.BAD_REQUEST).entity(error).build());
+    private GenericStubIdpException errorResponse(String error) {
+        return new GenericStubIdpException(error, Response.Status.BAD_REQUEST);
     }
 }

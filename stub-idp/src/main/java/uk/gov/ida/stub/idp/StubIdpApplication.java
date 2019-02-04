@@ -25,10 +25,10 @@ import uk.gov.ida.stub.idp.configuration.StubIdpConfiguration;
 import uk.gov.ida.stub.idp.exceptions.mappers.CatchAllExceptionMapper;
 import uk.gov.ida.stub.idp.exceptions.mappers.FeatureNotEnabledExceptionMapper;
 import uk.gov.ida.stub.idp.exceptions.mappers.FileNotFoundExceptionMapper;
+import uk.gov.ida.stub.idp.exceptions.mappers.GenericStubIdpExceptionExceptionMapper;
 import uk.gov.ida.stub.idp.exceptions.mappers.IdpNotFoundExceptionMapper;
 import uk.gov.ida.stub.idp.exceptions.mappers.IdpUserNotFoundExceptionMapper;
 import uk.gov.ida.stub.idp.exceptions.mappers.SessionSerializationExceptionMapper;
-import uk.gov.ida.stub.idp.exceptions.mappers.WebApplicationExceptionExceptionMapper;
 import uk.gov.ida.stub.idp.filters.NoCacheResponseFilter;
 import uk.gov.ida.stub.idp.filters.SecurityHeadersFilter;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASessionFeature;
@@ -43,15 +43,16 @@ import uk.gov.ida.stub.idp.resources.eidas.EidasDebugPageResource;
 import uk.gov.ida.stub.idp.resources.eidas.EidasLoginPageResource;
 import uk.gov.ida.stub.idp.resources.eidas.EidasProxyNodeServiceMetadataResource;
 import uk.gov.ida.stub.idp.resources.eidas.EidasRegistrationPageResource;
+import uk.gov.ida.stub.idp.resources.idp.CancelPreRegistrationPageResource;
 import uk.gov.ida.stub.idp.resources.idp.ConsentResource;
 import uk.gov.ida.stub.idp.resources.idp.DebugPageResource;
 import uk.gov.ida.stub.idp.resources.idp.HeadlessIdpResource;
 import uk.gov.ida.stub.idp.resources.idp.HomePageResource;
 import uk.gov.ida.stub.idp.resources.idp.LoginPageResource;
+import uk.gov.ida.stub.idp.resources.idp.LogoutPageResource;
 import uk.gov.ida.stub.idp.resources.idp.RegistrationPageResource;
 import uk.gov.ida.stub.idp.resources.idp.SingleIdpPromptPageResource;
-import uk.gov.ida.stub.idp.resources.idp.CancelPreRegistrationPageResource;
-import uk.gov.ida.stub.idp.resources.idp.LogoutPageResource;
+
 import javax.servlet.DispatcherType;
 import java.util.EnumSet;
 import java.util.Map;
@@ -155,7 +156,7 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
         environment.jersey().register(FileNotFoundExceptionMapper.class);
         environment.jersey().register(SessionSerializationExceptionMapper.class);
         environment.jersey().register(FeatureNotEnabledExceptionMapper.class);
-        environment.jersey().register(WebApplicationExceptionExceptionMapper.class);
+        environment.jersey().register(GenericStubIdpExceptionExceptionMapper.class);
         environment.jersey().register(CatchAllExceptionMapper.class);
 
         //filters

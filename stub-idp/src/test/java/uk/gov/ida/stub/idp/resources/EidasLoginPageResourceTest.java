@@ -13,6 +13,7 @@ import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.EidasAuthnRequest;
 import uk.gov.ida.stub.idp.domain.EidasScheme;
 import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
+import uk.gov.ida.stub.idp.exceptions.GenericStubIdpException;
 import uk.gov.ida.stub.idp.repositories.EidasSession;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.repositories.StubCountry;
@@ -23,7 +24,6 @@ import uk.gov.ida.stub.idp.services.StubCountryService;
 import uk.gov.ida.stub.idp.views.SamlRedirectView;
 import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
@@ -114,8 +114,8 @@ public class EidasLoginPageResourceTest {
         assertThat(returnedPage.getTargetUri().toString()).isEqualTo("http://hub.url/");
     }
 
-    @Test(expected = WebApplicationException.class)
-    public void loginShouldThrowAWebApplicationExceptionWhenSessionIsEmpty(){
+    @Test(expected = GenericStubIdpException.class)
+    public void loginShouldThrowAGenericStubIdpExceptionWhenSessionIsEmpty(){
         resource.get(SCHEME_NAME, Optional.empty(), null);
     }
 }
