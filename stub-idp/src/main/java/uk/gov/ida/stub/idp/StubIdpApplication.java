@@ -107,7 +107,7 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
             @Override
             public Map<String, Map<String, String>> getViewConfiguration(StubIdpConfiguration config) {
                 // beware: this is to force enable escaping of unsanitised user input
-                return ImmutableMap.of(new FreemarkerViewRenderer().getSuffix(),
+                return ImmutableMap.of(new FreemarkerViewRenderer().getConfigurationKey(),
                     ImmutableMap.of(
                         "output_format", "HTMLOutputFormat"
                     ));
