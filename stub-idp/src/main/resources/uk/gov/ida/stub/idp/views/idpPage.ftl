@@ -28,5 +28,12 @@
 <div class="main-container">
     <#include "./${subPageTemplateName}">
 </div>
+
+<hr>
+<footer>
+    <div class="container" id="links" style="text-align: center;">
+        <a href="https://github.com/alphagov/verify-stub-idp">Source Code</a> - Built by the Government Digital Service
+    </div>
+</footer>
 </body>
 </html>

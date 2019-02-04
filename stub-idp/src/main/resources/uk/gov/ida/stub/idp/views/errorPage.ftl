@@ -47,5 +47,11 @@ Another technical problem has arisen.<br>
 <div class="help">Go back to a service and try again.</div>
 </div>
 </div>
+<hr>
+<footer>
+    <div class="container" id="links">
+        <a href="https://github.com/alphagov/verify-stub-idp">Source Code</a> - Built by the Government Digital Service
+    </div>
+</footer>
 </body>
 </html>
