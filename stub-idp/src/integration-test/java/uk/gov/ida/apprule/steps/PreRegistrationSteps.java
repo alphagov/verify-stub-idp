@@ -1,16 +1,13 @@
 package uk.gov.ida.apprule.steps;
 
-import sun.security.provider.certpath.OCSPResponse;
-import uk.gov.ida.apprule.PreRegistrationIntegrationTest;
 import uk.gov.ida.apprule.support.StubIdpAppRule;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;

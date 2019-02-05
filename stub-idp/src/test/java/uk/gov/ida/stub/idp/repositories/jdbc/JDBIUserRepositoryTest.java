@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import static org.apache.commons.lang3.StringEscapeUtils.escapeJson;
+import static org.apache.commons.text.StringEscapeUtils.escapeJson;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.ida.stub.idp.builders.IdpUserBuilder.anIdpUser;
 
