@@ -3,8 +3,7 @@ package uk.gov.ida.stub.idp.repositories.reaper;
 import io.dropwizard.lifecycle.Managed;
 import org.apache.log4j.Logger;
 import uk.gov.ida.stub.idp.configuration.StubIdpConfiguration;
-import uk.gov.ida.stub.idp.repositories.IdpSession;
-import uk.gov.ida.stub.idp.repositories.SessionRepository;
+import uk.gov.ida.stub.idp.repositories.IdpSessionRepository;
 
 import javax.inject.Inject;
 import java.util.concurrent.ScheduledExecutorService;
@@ -20,13 +19,13 @@ public class ManagedStaleSessionReaper implements Managed {
 
     private final ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(1);
     private final StaleSessionReaperConfiguration staleSessionReaperConfiguration;
-    private final SessionRepository<IdpSession> verifySessionRepository;
+    private final IdpSessionRepository verifySessionRepository;
     private final long terminationTimeoutSeconds;
     private final int reaperFrequencyInSeconds;
 
     @Inject
     public ManagedStaleSessionReaper(StubIdpConfiguration stubIdpConfiguration,
-                                     SessionRepository<IdpSession> verifySessionRepository) {
+                                     IdpSessionRepository verifySessionRepository) {
         this.staleSessionReaperConfiguration = stubIdpConfiguration.getStaleSessionReaperConfiguration();
         this.verifySessionRepository = verifySessionRepository;
         this.terminationTimeoutSeconds = staleSessionReaperConfiguration.getTerminationTimeout().getStandardSeconds();

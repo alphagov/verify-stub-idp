@@ -18,7 +18,7 @@ import uk.gov.ida.stub.idp.exceptions.InvalidSessionIdException;
 import uk.gov.ida.stub.idp.exceptions.InvalidUsernameOrPasswordException;
 import uk.gov.ida.stub.idp.exceptions.UsernameAlreadyTakenException;
 import uk.gov.ida.stub.idp.repositories.EidasSession;
-import uk.gov.ida.stub.idp.repositories.SessionRepository;
+import uk.gov.ida.stub.idp.repositories.EidasSessionRepository;
 import uk.gov.ida.stub.idp.repositories.StubCountry;
 import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
 
@@ -52,7 +52,7 @@ public class StubCountryServiceTest {
     private EidasAuthnRequest eidasAuthnRequest;
     
     @Mock
-    private SessionRepository<EidasSession> sessionRepository;
+    private EidasSessionRepository sessionRepository;
 
     @Mock
     private StubCountryRepository stubCountryRepository;

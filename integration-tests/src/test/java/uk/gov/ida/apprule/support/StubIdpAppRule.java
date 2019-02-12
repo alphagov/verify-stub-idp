@@ -40,7 +40,7 @@ public class StubIdpAppRule extends DropwizardAppRule<StubIdpConfiguration> {
     private static final HttpStubRule fakeFrontend = new HttpStubRule();
 
     public StubIdpAppRule(ConfigOverride... configOverrides) {
-        super(StubIdpApplication.class, "configuration/stub-idp.yml", withDefaultOverrides(configOverrides));
+        super(StubIdpApplication.class, "../configuration/stub-idp.yml", withDefaultOverrides(configOverrides));
         try {
             fakeFrontend.register("/get-available-services", 200, "application/json", "[]");
         } catch (JsonProcessingException e) {

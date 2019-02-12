@@ -1,0 +1,49 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>uk.gov.ida.stub-idp</groupId>
+    <artifactId>parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <opensaml.version>3.3.0</opensaml.version>
+        <dropwizard.version>1.3.8</dropwizard.version>
+        <dropwizard_guicier.version>1.0.0.6</dropwizard_guicier.version>
+        <joda_time.version>2.9.9</joda_time.version>
+        <ida_utils.version>2.0.0-350</ida_utils.version>
+        <ida_test_utils.version>2.0.0-43</ida_test_utils.version>
+        <ida_dev_pki.version>1.1.0-34</ida_dev_pki.version>
+        <saml_libs.version>${opensaml.version}-157</saml_libs.version>
+        <hub_saml.version>${opensaml.version}-15582</hub_saml.version>
+    </properties>
+
+    <modules>
+        <module>stub-idp</module>
+        <module>stub-idp-saml</module>
+        <module>stub-idp-saml-test</module>
+        <module>integration-tests</module>
+    </modules>
+
+    <repositories>
+        <repository>
+            <id>alphagov bintray</id>
+            <url>https://dl.bintray.com/alphagov/maven-test</url>
+            <snapshots><enabled>false</enabled></snapshots>
+        </repository>
+        <repository>
+            <id>alphagov bintray (dropwizard-logstash)</id>
+            <url>https://dl.bintray.com/alphagov/maven</url>
+            <snapshots><enabled>false</enabled></snapshots>
+        </repository>
+        <repository>
+            <id>jcenter</id>
+            <url>https://jcenter.bintray.com</url>
+            <snapshots><enabled>false</enabled></snapshots>
+        </repository>
+    </repositories>
+
+</project>

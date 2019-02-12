@@ -2,8 +2,7 @@ package uk.gov.ida.stub.idp.repositories.reaper;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
-import uk.gov.ida.stub.idp.repositories.IdpSession;
-import uk.gov.ida.stub.idp.repositories.SessionRepository;
+import uk.gov.ida.stub.idp.repositories.IdpSessionRepository;
 
 import static java.text.MessageFormat.format;
 
@@ -14,10 +13,10 @@ public class StaleSessionReaper implements Runnable {
     /**
      * this operates on all sessions in the database, both eidas and verify
      */
-    private final SessionRepository<IdpSession> verifySessionRepository;
+    private final IdpSessionRepository verifySessionRepository;
     private final Duration sessionIsStaleAfter;
 
-    public StaleSessionReaper(SessionRepository<IdpSession> verifySessionRepository,
+    public StaleSessionReaper(IdpSessionRepository verifySessionRepository,
                               StaleSessionReaperConfiguration staleSessionReaperConfiguration) {
         this.verifySessionRepository = verifySessionRepository;
         this.sessionIsStaleAfter = staleSessionReaperConfiguration.getSessionIsStaleAfter();

@@ -11,8 +11,8 @@ import uk.gov.ida.stub.idp.exceptions.GenericStubIdpException;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASession;
 import uk.gov.ida.stub.idp.repositories.Idp;
 import uk.gov.ida.stub.idp.repositories.IdpSession;
+import uk.gov.ida.stub.idp.repositories.IdpSessionRepository;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
-import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.services.NonSuccessAuthnResponseService;
 import uk.gov.ida.stub.idp.services.SuccessAuthnResponseService;
 import uk.gov.ida.stub.idp.views.ConsentView;
@@ -40,7 +40,7 @@ import java.util.Optional;
 public class ConsentResource {
 
     private final IdpStubsRepository idpStubsRepository;
-    private final SessionRepository<IdpSession> sessionRepository;
+    private final IdpSessionRepository sessionRepository;
     private final SuccessAuthnResponseService successAuthnResponseService;
     private final NonSuccessAuthnResponseService nonSuccessAuthnResponseService;
     private final SamlResponseRedirectViewFactory samlResponseRedirectViewFactory;
@@ -51,7 +51,7 @@ public class ConsentResource {
     @Inject
     public ConsentResource(
             IdpStubsRepository idpStubsRepository,
-            SessionRepository<IdpSession> sessionRepository,
+            IdpSessionRepository sessionRepository,
             SuccessAuthnResponseService successAuthnResponseService,
             NonSuccessAuthnResponseService nonSuccessAuthnResponseService,
             SamlResponseRedirectViewFactory samlResponseRedirectViewFactory) {

@@ -15,7 +15,7 @@ import uk.gov.ida.stub.idp.domain.EidasScheme;
 import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
 import uk.gov.ida.stub.idp.exceptions.GenericStubIdpException;
 import uk.gov.ida.stub.idp.repositories.EidasSession;
-import uk.gov.ida.stub.idp.repositories.SessionRepository;
+import uk.gov.ida.stub.idp.repositories.EidasSessionRepository;
 import uk.gov.ida.stub.idp.repositories.StubCountry;
 import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
 import uk.gov.ida.stub.idp.resources.eidas.EidasLoginPageResource;
@@ -52,7 +52,7 @@ public class EidasLoginPageResourceTest {
     private final String PASSWORD = "password";
 
     @Mock
-    private SessionRepository<EidasSession> sessionRepository;
+    private EidasSessionRepository sessionRepository;
 
     @Mock
 	private EidasAuthnResponseService eidasSuccessAuthnResponseService;

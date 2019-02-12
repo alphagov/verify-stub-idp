@@ -12,8 +12,9 @@ import uk.gov.ida.stub.idp.csrf.exceptions.CSRFTokenNotFoundException;
 import uk.gov.ida.stub.idp.csrf.exceptions.CSRFTokenWasInvalidException;
 import uk.gov.ida.stub.idp.exceptions.SessionIdCookieNotFoundException;
 import uk.gov.ida.stub.idp.repositories.EidasSession;
+import uk.gov.ida.stub.idp.repositories.EidasSessionRepository;
 import uk.gov.ida.stub.idp.repositories.IdpSession;
-import uk.gov.ida.stub.idp.repositories.SessionRepository;
+import uk.gov.ida.stub.idp.repositories.IdpSessionRepository;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -34,8 +35,8 @@ import static uk.gov.ida.stub.idp.cookies.CookieNames.SESSION_COOKIE_NAME;
  */
 public class CSRFCheckProtectionFilter implements ContainerRequestFilter {
 
-    private final SessionRepository<IdpSession> idpSessionRepository;
-    private final SessionRepository<EidasSession> eidasSessionRepository;
+    private final IdpSessionRepository idpSessionRepository;
+    private final EidasSessionRepository eidasSessionRepository;
     private final HmacValidator hmacValidator;
     private final boolean isSecureCookieEnabled;
 
@@ -45,8 +46,8 @@ public class CSRFCheckProtectionFilter implements ContainerRequestFilter {
     private static final String NO_CURRENT_SESSION_COOKIE_VALUE = "no-current-session";
 
     @Inject
-    public CSRFCheckProtectionFilter(SessionRepository<IdpSession> idpSessionRepository,
-                                     SessionRepository<EidasSession> eidasSessionRepository,
+    public CSRFCheckProtectionFilter(IdpSessionRepository idpSessionRepository,
+                                     EidasSessionRepository eidasSessionRepository,
                                      HmacValidator hmacValidator,
                                      @Named("isSecureCookieEnabled") Boolean isSecureCookieEnabled) {
         this.idpSessionRepository = idpSessionRepository;

@@ -13,9 +13,8 @@ import uk.gov.ida.stub.idp.exceptions.InvalidSecureCookieException;
 import uk.gov.ida.stub.idp.exceptions.SecureCookieNotFoundException;
 import uk.gov.ida.stub.idp.exceptions.SessionIdCookieNotFoundException;
 import uk.gov.ida.stub.idp.exceptions.SessionNotFoundException;
-import uk.gov.ida.stub.idp.repositories.EidasSession;
-import uk.gov.ida.stub.idp.repositories.IdpSession;
-import uk.gov.ida.stub.idp.repositories.SessionRepository;
+import uk.gov.ida.stub.idp.repositories.EidasSessionRepository;
+import uk.gov.ida.stub.idp.repositories.IdpSessionRepository;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Cookie;
@@ -38,9 +37,9 @@ public class SessionCookieValueMustExistAsASessionFilterTest {
     @Mock
     private HmacValidator hmacValidator;
     @Mock
-    private SessionRepository<IdpSession> idpSessionRepository;
+    private IdpSessionRepository idpSessionRepository;
     @Mock
-    private SessionRepository<EidasSession> eidasSessionRepository;
+    private EidasSessionRepository eidasSessionRepository;
     @Mock
     private ContainerRequestContext containerRequestContext;
 

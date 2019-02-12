@@ -20,7 +20,6 @@ import uk.gov.ida.stub.idp.repositories.Idp;
 import uk.gov.ida.stub.idp.repositories.IdpSession;
 import uk.gov.ida.stub.idp.repositories.IdpSessionRepository;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
-import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.services.IdpUserService;
 import uk.gov.ida.stub.idp.services.NonSuccessAuthnResponseService;
 import uk.gov.ida.stub.idp.views.ErrorMessageType;
@@ -62,9 +61,8 @@ public class RegistrationPageResource {
     private final IdpUserService idpUserService;
     private final SamlResponseRedirectViewFactory samlResponseRedirectViewFactory;
     private final NonSuccessAuthnResponseService nonSuccessAuthnResponseService;
-    private final SessionRepository<IdpSession> sessionRepository;
-    private final CookieFactory cookieFactory;
     private final IdpSessionRepository idpSessionRepository;
+    private final CookieFactory cookieFactory;
 
     @Inject
     public RegistrationPageResource(
@@ -72,16 +70,14 @@ public class RegistrationPageResource {
             IdpUserService idpUserService,
             SamlResponseRedirectViewFactory samlResponseRedirectViewFactory,
             NonSuccessAuthnResponseService nonSuccessAuthnResponseService,
-            SessionRepository<IdpSession> sessionRepository,
-            CookieFactory cookieFactory,
-            IdpSessionRepository idpSessionRepository) {
+            IdpSessionRepository idpSessionRepository,
+            CookieFactory cookieFactory) {
         this.idpUserService = idpUserService;
         this.idpStubsRepository = idpStubsRepository;
         this.samlResponseRedirectViewFactory = samlResponseRedirectViewFactory;
         this.nonSuccessAuthnResponseService = nonSuccessAuthnResponseService;
-        this.sessionRepository = sessionRepository;
-        this.cookieFactory = cookieFactory;
         this.idpSessionRepository = idpSessionRepository;
+        this.cookieFactory = cookieFactory;
     }
 
     @GET
@@ -95,7 +91,7 @@ public class RegistrationPageResource {
 
         Idp idp = idpStubsRepository.getIdpWithFriendlyId(idpName);
 
-        sessionRepository.updateSession(session.getSessionId(), session.setNewCsrfToken());
+        idpSessionRepository.updateSession(session.getSessionId(), session.setNewCsrfToken());
 
         return Response.ok(new RegistrationPageView(idp.getDisplayName(), idp.getFriendlyId(), errorMessage.orElse(NO_ERROR).getMessage(), idp.getAssetId(), null, session.getCsrfToken())).build();
     }
@@ -110,7 +106,7 @@ public class RegistrationPageResource {
         IdpSession session = new IdpSession(
                 new SessionId(UUID.randomUUID().toString()));
         final SessionId sessionId = idpSessionRepository.createSession(session);
-        sessionRepository.updateSession(session.getSessionId(), session.setNewCsrfToken());
+        idpSessionRepository.updateSession(session.getSessionId(), session.setNewCsrfToken());
         return Response.ok(new RegistrationPageView(idp.getDisplayName(), idp.getFriendlyId(), errorMessage.orElse(NO_ERROR).getMessage(), idp.getAssetId(), Urls.PRE_REGISTER_PATH, session.getCsrfToken()))
                 .cookie(cookieFactory.createSessionIdCookie(sessionId))
                 .build();
@@ -141,7 +137,7 @@ public class RegistrationPageResource {
             throw new GenericStubIdpException(format("Unable to locate session cookie for " + idpName), Response.Status.BAD_REQUEST);
         }
 
-        Optional<IdpSession> session = sessionRepository.get(sessionCookie);
+        Optional<IdpSession> session = idpSessionRepository.get(sessionCookie);
 
         if (!session.isPresent()) {
             throw new GenericStubIdpException(format("Session is invalid for " + idpName), Response.Status.BAD_REQUEST);
@@ -169,7 +165,7 @@ public class RegistrationPageResource {
                                          SessionId sessionCookie) {
         switch (submitButtonValue) {
             case Cancel: {
-                sessionRepository.deleteSession(sessionCookie);
+                idpSessionRepository.deleteSession(sessionCookie);
                 return Response.seeOther(UriBuilder.fromPath(Urls.CANCEL_PRE_REGISTER_RESOURCE).build(idpName)).build();
             }
             case Register: {
@@ -220,7 +216,7 @@ public class RegistrationPageResource {
         switch (submitButtonValue) {
             case Cancel: {
 
-                session = sessionRepository.deleteAndGet(sessionCookie);
+                session = idpSessionRepository.deleteAndGet(sessionCookie);
 
                 final SamlResponse cancelResponse = nonSuccessAuthnResponseService.generateAuthnCancel(idpName, samlRequestId, session.get().getRelayState());
                 return samlResponseRedirectViewFactory.sendSamlMessage(cancelResponse);
@@ -254,7 +250,7 @@ public class RegistrationPageResource {
             throw new GenericStubIdpException(format("Unable to locate session cookie for " + idpName), Response.Status.BAD_REQUEST);
         }
 
-        Optional<IdpSession> session = sessionRepository.get(sessionCookie);
+        Optional<IdpSession> session = idpSessionRepository.get(sessionCookie);
 
         if (!session.isPresent()) {
             throw new GenericStubIdpException(format("Session is invalid for " + idpName), Response.Status.BAD_REQUEST);

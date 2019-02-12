@@ -2,14 +2,14 @@ package uk.gov.ida.stub.idp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMultimap;
-import com.google.inject.AbstractModule;
+import com.google.inject.Binder;
 import com.google.inject.Provides;
 import com.google.inject.TypeLiteral;
+import com.hubspot.dropwizard.guicier.DropwizardAwareModule;
 import io.dropwizard.configuration.ConfigurationFactory;
 import io.dropwizard.configuration.ConfigurationSourceProvider;
 import io.dropwizard.configuration.DefaultConfigurationFactoryFactory;
 import io.dropwizard.servlets.tasks.Task;
-import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.jdbi.v3.core.Jdbi;
 import org.joda.time.Period;
@@ -26,19 +26,11 @@ import uk.gov.ida.common.shared.configuration.KeyConfiguration;
 import uk.gov.ida.common.shared.configuration.SecureCookieConfiguration;
 import uk.gov.ida.common.shared.configuration.SecureCookieKeyConfiguration;
 import uk.gov.ida.common.shared.configuration.SecureCookieKeyStore;
-
 import uk.gov.ida.common.shared.security.HmacDigest;
 import uk.gov.ida.common.shared.security.IdGenerator;
+import uk.gov.ida.common.shared.security.PublicKeyFactory;
 import uk.gov.ida.common.shared.security.SecureCookieKeyConfigurationKeyStore;
 import uk.gov.ida.common.shared.security.X509CertificateFactory;
-import uk.gov.ida.saml.security.EncryptionKeyStore;
-import uk.gov.ida.saml.security.EntityToEncryptForLocator;
-import uk.gov.ida.saml.security.IdaKeyStore;
-import uk.gov.ida.saml.security.IdaKeyStoreCredentialRetriever;
-import uk.gov.ida.saml.security.SignatureFactory;
-import uk.gov.ida.saml.security.SigningKeyStore;
-import uk.gov.ida.saml.security.signature.SignatureRSASSAPSS;
-import uk.gov.ida.common.shared.security.PublicKeyFactory;
 import uk.gov.ida.jerseyclient.ErrorHandlingClient;
 import uk.gov.ida.jerseyclient.JsonClient;
 import uk.gov.ida.jerseyclient.JsonResponseProcessor;
@@ -49,11 +41,16 @@ import uk.gov.ida.saml.idp.configuration.SamlConfiguration;
 import uk.gov.ida.saml.metadata.MetadataHealthCheck;
 import uk.gov.ida.saml.metadata.MetadataResolverConfiguration;
 import uk.gov.ida.saml.metadata.factories.DropwizardMetadataResolverFactory;
-
+import uk.gov.ida.saml.security.EncryptionKeyStore;
+import uk.gov.ida.saml.security.EntityToEncryptForLocator;
+import uk.gov.ida.saml.security.IdaKeyStore;
+import uk.gov.ida.saml.security.IdaKeyStoreCredentialRetriever;
+import uk.gov.ida.saml.security.SignatureFactory;
+import uk.gov.ida.saml.security.SigningKeyStore;
+import uk.gov.ida.saml.security.signature.SignatureRSASSAPSS;
 import uk.gov.ida.stub.idp.auth.ManagedAuthFilterInstaller;
 import uk.gov.ida.stub.idp.builders.CountryMetadataBuilder;
 import uk.gov.ida.stub.idp.builders.CountryMetadataSigningHelper;
-
 import uk.gov.ida.stub.idp.configuration.AssertionLifetimeConfiguration;
 import uk.gov.ida.stub.idp.configuration.IdpStubsConfiguration;
 import uk.gov.ida.stub.idp.configuration.SigningKeyPairConfiguration;
@@ -66,15 +63,11 @@ import uk.gov.ida.stub.idp.domain.factories.AssertionRestrictionsFactory;
 import uk.gov.ida.stub.idp.domain.factories.IdentityProviderAssertionFactory;
 import uk.gov.ida.stub.idp.domain.factories.StubTransformersFactory;
 import uk.gov.ida.stub.idp.listeners.StubIdpsFileListener;
-
 import uk.gov.ida.stub.idp.repositories.AllIdpsUserRepository;
-import uk.gov.ida.stub.idp.repositories.EidasSession;
 import uk.gov.ida.stub.idp.repositories.EidasSessionRepository;
-import uk.gov.ida.stub.idp.repositories.IdpSession;
 import uk.gov.ida.stub.idp.repositories.IdpSessionRepository;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
 import uk.gov.ida.stub.idp.repositories.MetadataRepository;
-import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
 import uk.gov.ida.stub.idp.repositories.UserRepository;
 import uk.gov.ida.stub.idp.repositories.jdbc.JDBIEidasSessionRepository;
@@ -87,7 +80,6 @@ import uk.gov.ida.stub.idp.saml.transformers.EidasResponseTransformerProvider;
 import uk.gov.ida.stub.idp.saml.transformers.OutboundResponseFromIdpTransformerProvider;
 import uk.gov.ida.stub.idp.security.HubEncryptionKeyStore;
 import uk.gov.ida.stub.idp.security.IdaAuthnRequestKeyStore;
-
 import uk.gov.ida.stub.idp.services.AuthnRequestReceiverService;
 import uk.gov.ida.stub.idp.services.EidasAuthnResponseService;
 import uk.gov.ida.stub.idp.services.GeneratePasswordService;
@@ -111,14 +103,13 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 
-public class StubIdpModule extends AbstractModule {
-
-    private final Bootstrap<StubIdpConfiguration> bootstrap;
+public class StubIdpModule extends DropwizardAwareModule<StubIdpConfiguration> {
 
     public static final String HUB_CONNECTOR_METADATA_REPOSITORY = "HubConnectorMetadataRepository";
     public static final String HUB_METADATA_REPOSITORY = "HubMetadataRepository";
@@ -129,66 +120,59 @@ public class StubIdpModule extends AbstractModule {
     public static final String COUNTRY_SIGNING_KEY_STORE = "CountrySigningKeyStore";
     public static final String IDP_SIGNING_KEY_STORE = "IdpSigningKeyStore";
 
-    public StubIdpModule(Bootstrap<StubIdpConfiguration> bootstrap) {
-        this.bootstrap = bootstrap;
-    }
-
     @Override
-    protected void configure() {
-        bind(AssertionLifetimeConfiguration.class).to(StubIdpConfiguration.class).asEagerSingleton();
+    public void configure(Binder binder) {
+        binder.bind(AssertionLifetimeConfiguration.class).to(StubIdpConfiguration.class).asEagerSingleton();
 
-        bind(SigningKeyStore.class).to(IdaAuthnRequestKeyStore.class).asEagerSingleton();
+        binder.bind(SigningKeyStore.class).to(IdaAuthnRequestKeyStore.class).asEagerSingleton();
 
-        bind(EntityToEncryptForLocator.class).to(IdpHardCodedEntityToEncryptForLocator.class).asEagerSingleton();
-        bind(CountryMetadataSigningHelper.class).asEagerSingleton();
-        bind(new TypeLiteral<ConcurrentMap<String, Document>>() {
+        binder.bind(EntityToEncryptForLocator.class).to(IdpHardCodedEntityToEncryptForLocator.class).asEagerSingleton();
+        binder.bind(CountryMetadataSigningHelper.class).asEagerSingleton();
+        binder.bind(new TypeLiteral<ConcurrentMap<String, Document>>() {
         }).toInstance(new ConcurrentHashMap<>());
 
-        bind(AllIdpsUserRepository.class).asEagerSingleton();
+        binder.bind(AllIdpsUserRepository.class).asEagerSingleton();
 
-        bind(IdpStubsRepository.class).asEagerSingleton();
-        bind(KeyStore.class).toProvider(EmptyKeyStoreProvider.class).asEagerSingleton();
+        binder.bind(IdpStubsRepository.class).asEagerSingleton();
+        binder.bind(KeyStore.class).toProvider(EmptyKeyStoreProvider.class).asEagerSingleton();
 
-        bind(PublicKeyFactory.class);
-        bind(SamlResponseRedirectViewFactory.class);
-        bind(AssertionFactory.class);
-        bind(AssertionRestrictionsFactory.class);
-        bind(IdentityProviderAssertionFactory.class);
-        bind(CountryMetadataBuilder.class);
+        binder.bind(PublicKeyFactory.class);
+        binder.bind(SamlResponseRedirectViewFactory.class);
+        binder.bind(AssertionFactory.class);
+        binder.bind(AssertionRestrictionsFactory.class);
+        binder.bind(IdentityProviderAssertionFactory.class);
+        binder.bind(CountryMetadataBuilder.class);
 
-        bind(StubIdpsFileListener.class).asEagerSingleton();
+        binder.bind(StubIdpsFileListener.class).asEagerSingleton();
 
         //must be eager singletons to be auto injected
         // Elegant-hack: this is how we install the basic auth filter, so we can use a guice injected user repository
-        bind(ManagedAuthFilterInstaller.class).asEagerSingleton();
+        binder.bind(ManagedAuthFilterInstaller.class).asEagerSingleton();
 
-        bind(IdGenerator.class);
-        bind(X509CertificateFactory.class);
+        binder.bind(IdGenerator.class);
+        binder.bind(X509CertificateFactory.class);
 
-        bind(AuthnRequestReceiverService.class);
-        bind(SuccessAuthnResponseService.class);
-        bind(GeneratePasswordService.class);
-        bind(NonSuccessAuthnResponseService.class);
-        bind(IdpUserService.class);
-        bind(StubCountryService.class);
-        bind(UserService.class);
-        bind(SamlResponseRedirectViewFactory.class);
-        
-        bind(new TypeLiteral<SessionRepository<IdpSession>>(){}).to(IdpSessionRepository.class);
-        bind(new TypeLiteral<SessionRepository<EidasSession>>(){}).to(EidasSessionRepository.class);
+        binder.bind(AuthnRequestReceiverService.class);
+        binder.bind(SuccessAuthnResponseService.class);
+        binder.bind(GeneratePasswordService.class);
+        binder.bind(NonSuccessAuthnResponseService.class);
+        binder.bind(IdpUserService.class);
+        binder.bind(StubCountryService.class);
+        binder.bind(UserService.class);
+        binder.bind(SamlResponseRedirectViewFactory.class);
 
-        bind(ManagedStaleSessionReaper.class).asEagerSingleton();
+        binder.bind(ManagedStaleSessionReaper.class).asEagerSingleton();
 
-        bind(HmacValidator.class);
-        bind(HmacDigest.class);
-        bind(SecureCookieKeyStore.class).to(SecureCookieKeyConfigurationKeyStore.class);
-        bind(CookieFactory.class);
-        bind(JsonResponseProcessor.class);
+        binder.bind(HmacValidator.class);
+        binder.bind(HmacDigest.class);
+        binder.bind(SecureCookieKeyStore.class).to(SecureCookieKeyConfigurationKeyStore.class);
+        binder.bind(CookieFactory.class);
+        binder.bind(JsonResponseProcessor.class);
     }
 
     @Provides
     public ObjectMapper getObjectMapper() {
-        return bootstrap.getObjectMapper();
+        return getBootstrap().getObjectMapper();
     }
 
     @Provides
@@ -198,58 +182,58 @@ public class StubIdpModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public UserRepository getUserRepository(StubIdpConfiguration configuration, UserMapper userMapper) {
-        Jdbi jdbi = Jdbi.create(configuration.getDatabaseConfiguration().getUrl());
+    public UserRepository getUserRepository(UserMapper userMapper) {
+        Jdbi jdbi = Jdbi.create(getConfiguration().getDatabaseConfiguration().getUrl());
         return new JDBIUserRepository(jdbi, userMapper);
     }
     
     @Provides
     @Singleton
-    public IdpSessionRepository getIdpSessionRepository(StubIdpConfiguration configuration) {
-        Jdbi jdbi = Jdbi.create(configuration.getDatabaseConfiguration().getUrl());
+    public IdpSessionRepository getIdpSessionRepository() {
+        Jdbi jdbi = Jdbi.create(getConfiguration().getDatabaseConfiguration().getUrl());
         return new JDBIIdpSessionRepository(jdbi);
     }
 
     @Provides
     @Singleton
-    public EidasSessionRepository getEidasSessionRepository(StubIdpConfiguration configuration) {
-        Jdbi jdbi = Jdbi.create(configuration.getDatabaseConfiguration().getUrl());
+    public EidasSessionRepository getEidasSessionRepository() {
+        Jdbi jdbi = Jdbi.create(getConfiguration().getDatabaseConfiguration().getUrl());
         return new JDBIEidasSessionRepository(jdbi);
     }
 
     @Provides
     @Singleton
     @Named("HubEntityId")
-    public String getHubEntityId(StubIdpConfiguration configuration) {
-        return configuration.getHubEntityId();
+    public String getHubEntityId() {
+        return getConfiguration().getHubEntityId();
     }
 
     @Provides
     @Singleton
     @Named("HubConnectorEntityId")
-    public String getHubConnectorEntityId(StubIdpConfiguration configuration) {
-        return configuration.getEuropeanIdentityConfiguration().getHubConnectorEntityId();
+    public String getHubConnectorEntityId() {
+        return getConfiguration().getEuropeanIdentityConfiguration().getHubConnectorEntityId();
     }
 
     @Provides
     @Singleton
     @Named("StubCountryMetadataUrl")
-    public String getStubCountryMetadataUrl(StubIdpConfiguration configuration) {
-        return configuration.getEuropeanIdentityConfiguration().getStubCountryBaseUrl() + Urls.METADATA_RESOURCE;
+    public String getStubCountryMetadataUrl() {
+        return getConfiguration().getEuropeanIdentityConfiguration().getStubCountryBaseUrl() + Urls.METADATA_RESOURCE;
     }
 
     @Provides
     @Singleton
     @Named("StubCountrySsoUrl")
-    public String getStubCountrySsoUrl(StubIdpConfiguration configuration) {
-        return configuration.getEuropeanIdentityConfiguration().getStubCountryBaseUrl() + Urls.EIDAS_SAML2_SSO_RESOURCE;
+    public String getStubCountrySsoUrl() {
+        return getConfiguration().getEuropeanIdentityConfiguration().getStubCountryBaseUrl() + Urls.EIDAS_SAML2_SSO_RESOURCE;
     }
 
     @Provides
     private ConfigurationFactory<IdpStubsConfiguration> getConfigurationFactory() {
-        Validator validator = bootstrap.getValidatorFactory().getValidator();
+        Validator validator = getBootstrap().getValidatorFactory().getValidator();
         return new DefaultConfigurationFactoryFactory<IdpStubsConfiguration>()
-            .create(IdpStubsConfiguration.class, validator, bootstrap.getObjectMapper(), "");
+            .create(IdpStubsConfiguration.class, validator, getBootstrap().getObjectMapper(), "");
     }
 
     @Provides
@@ -261,7 +245,7 @@ public class StubIdpModule extends AbstractModule {
 
     @Provides
     private ConfigurationSourceProvider getConfigurationSourceProvider() {
-        return bootstrap.getConfigurationSourceProvider();
+        return getBootstrap().getConfigurationSourceProvider();
     }
 
     @Provides
@@ -308,13 +292,12 @@ public class StubIdpModule extends AbstractModule {
     public OutboundResponseFromIdpTransformerProvider getOutboundResponseFromIdpTransformerProvider(
         @Named(StubIdpModule.HUB_ENCRYPTION_KEY_STORE) EncryptionKeyStore encryptionKeyStore,
         @Named(IDP_SIGNING_KEY_STORE) IdaKeyStore keyStore,
-        EntityToEncryptForLocator entityToEncryptForLocator,
-        StubIdpConfiguration stubIdpConfiguration) {
+        EntityToEncryptForLocator entityToEncryptForLocator) {
         return new OutboundResponseFromIdpTransformerProvider(
             encryptionKeyStore,
             keyStore,
             entityToEncryptForLocator,
-            Optional.ofNullable(stubIdpConfiguration.getSigningKeyPairConfiguration().getCert()),
+            Optional.ofNullable(getConfiguration().getSigningKeyPairConfiguration().getCert()),
             new StubTransformersFactory(),
             new SignatureRSASHA256(),
             new DigestSHA256()
@@ -383,29 +366,29 @@ public class StubIdpModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public SamlConfiguration samlConfiguration(StubIdpConfiguration stubIdpConfiguration) {
-        return stubIdpConfiguration.getSamlConfiguration();
+    public SamlConfiguration samlConfiguration() {
+        return getConfiguration().getSamlConfiguration();
     }
 
     @Provides
     @Singleton
     @Named(IDP_SIGNING_KEY_STORE)
-    public IdaKeyStore getKeyStore(StubIdpConfiguration stubIdpConfiguration) {
-        return getKeystoreFromConfig(stubIdpConfiguration.getSigningKeyPairConfiguration());
+    public IdaKeyStore getKeyStore() {
+        return getKeystoreFromConfig(getConfiguration().getSigningKeyPairConfiguration());
     }
 
     @Provides
     @Singleton
     @Named(COUNTRY_SIGNING_KEY_STORE)
-    public IdaKeyStore getCountryKeyStore(StubIdpConfiguration stubIdpConfiguration) {
-        return getKeystoreFromConfig(stubIdpConfiguration.getEuropeanIdentityConfiguration().getSigningKeyPairConfiguration());
+    public IdaKeyStore getCountryKeyStore() {
+        return getKeystoreFromConfig(getConfiguration().getEuropeanIdentityConfiguration().getSigningKeyPairConfiguration());
     }
 
     @Provides
     @Singleton
     @Named("isSecureCookieEnabled")
-    public Boolean isSecureCookieEnabled(StubIdpConfiguration stubIdpConfiguration) {
-        return stubIdpConfiguration.getSecureCookieConfiguration() != null;
+    public Boolean isSecureCookieEnabled() {
+        return Objects.nonNull(getConfiguration().getSecureCookieConfiguration());
     }
 
     @Provides
@@ -417,15 +400,15 @@ public class StubIdpModule extends AbstractModule {
     @Provides
     @Singleton
     @SecureCookieKeyConfiguration
-    public KeyConfiguration getSecureCookieKeyConfiguration(StubIdpConfiguration stubIdpConfiguration) {
-        return isSecureCookieEnabled(stubIdpConfiguration) ? stubIdpConfiguration.getSecureCookieConfiguration().getKeyConfiguration() : new KeyConfiguration() {
+    public KeyConfiguration getSecureCookieKeyConfiguration() {
+        return isSecureCookieEnabled() ? getConfiguration().getSecureCookieConfiguration().getKeyConfiguration() : new KeyConfiguration() {
         };
     }
 
     @Provides
     @Singleton
-    public SecureCookieConfiguration getSecureCookieConfiguration(StubIdpConfiguration stubIdpConfiguration) {
-        return isSecureCookieEnabled(stubIdpConfiguration) ? stubIdpConfiguration.getSecureCookieConfiguration() : new SecureCookieConfiguration() {
+    public SecureCookieConfiguration getSecureCookieConfiguration() {
+        return isSecureCookieEnabled() ? getConfiguration().getSecureCookieConfiguration() : new SecureCookieConfiguration() {
             {
                 this.secure = false;
             }
@@ -469,19 +452,19 @@ public class StubIdpModule extends AbstractModule {
     @Provides
     @Named(HUB_METADATA_RESOLVER)
     @Singleton
-    public MetadataResolver getHubMetadataResolver(Environment environment, StubIdpConfiguration configuration) {
-        MetadataResolver metadataResolver = new DropwizardMetadataResolverFactory().createMetadataResolver(environment, configuration.getMetadataConfiguration());
-        registerMetadataHealthcheckAndRefresh(environment, metadataResolver, configuration.getMetadataConfiguration(), "metadata");
+    public MetadataResolver getHubMetadataResolver() {
+        MetadataResolver metadataResolver = new DropwizardMetadataResolverFactory().createMetadataResolver(getEnvironment(), getConfiguration().getMetadataConfiguration());
+        registerMetadataHealthcheckAndRefresh(getEnvironment(), metadataResolver, getConfiguration().getMetadataConfiguration(), "metadata");
         return metadataResolver;
     }
 
     @Provides
     @Named(HUB_CONNECTOR_METADATA_RESOLVER)
     @Singleton
-    public Optional<MetadataResolver> getHubConnectorMetadataResolver(Environment environment, StubIdpConfiguration configuration) {
-        if (configuration.getEuropeanIdentityConfiguration().isEnabled()) {
-            MetadataResolver metadataResolver = new DropwizardMetadataResolverFactory().createMetadataResolver(environment, configuration.getEuropeanIdentityConfiguration().getMetadata());
-            registerMetadataHealthcheckAndRefresh(environment, metadataResolver, configuration.getEuropeanIdentityConfiguration().getMetadata(), "connector-metadata");
+    public Optional<MetadataResolver> getHubConnectorMetadataResolver() {
+        if (getConfiguration().getEuropeanIdentityConfiguration().isEnabled()) {
+            MetadataResolver metadataResolver = new DropwizardMetadataResolverFactory().createMetadataResolver(getEnvironment(), getConfiguration().getEuropeanIdentityConfiguration().getMetadata());
+            registerMetadataHealthcheckAndRefresh(getEnvironment(), metadataResolver, getConfiguration().getEuropeanIdentityConfiguration().getMetadata(), "connector-metadata");
             return Optional.of(metadataResolver);
         }
         return Optional.empty();
@@ -489,16 +472,16 @@ public class StubIdpModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public SingleIdpConfiguration getSingleIdpJourneyConfiguration(StubIdpConfiguration configuration) {
-        return configuration.getSingleIdpJourneyConfiguration();
+    public SingleIdpConfiguration getSingleIdpJourneyConfiguration() {
+        return getConfiguration().getSingleIdpJourneyConfiguration();
     }
 
     @Provides
     @Singleton
-    public JsonClient getJsonClient(Environment environment, StubIdpConfiguration configuration, JsonResponseProcessor jsonResponseProcessor) {
+    public JsonClient getJsonClient(JsonResponseProcessor jsonResponseProcessor) {
         Client client = new ClientProvider(
-                environment,
-                configuration.getSingleIdpJourneyConfiguration().getServiceListClient(),
+                getEnvironment(),
+                getConfiguration().getSingleIdpJourneyConfiguration().getServiceListClient(),
                 true,
                 "StubIdpJsonClient").get();
         ErrorHandlingClient errorHandlingClient = new ErrorHandlingClient(client);
@@ -507,8 +490,8 @@ public class StubIdpModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public ServiceListService getServiceListService(StubIdpConfiguration configuration, JsonClient jsonClient) {
-        return new ServiceListService(configuration.getSingleIdpJourneyConfiguration(), jsonClient);
+    public ServiceListService getServiceListService(JsonClient jsonClient) {
+        return new ServiceListService(getConfiguration().getSingleIdpJourneyConfiguration(), jsonClient);
     }
 
     private void registerMetadataHealthcheckAndRefresh(Environment environment, MetadataResolver metadataResolver, MetadataResolverConfiguration metadataResolverConfiguration, String name) {

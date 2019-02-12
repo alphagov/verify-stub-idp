@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
-import com.hubspot.dropwizard.guicier.DropwizardModule;
 import com.hubspot.dropwizard.guicier.GuiceBundle;
 import com.squarespace.jersey2.guice.JerseyGuiceUtils;
 import io.dropwizard.Application;
@@ -102,8 +101,7 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
 
         GuiceBundle<StubIdpConfiguration> guiceBundle = GuiceBundle
             .defaultBuilder(getConfigurationClass())
-            .modules(new StubIdpModule(bootstrap),
-                new DropwizardModule())
+            .modules(new StubIdpModule())
             .build();
         bootstrap.addBundle(guiceBundle);
 

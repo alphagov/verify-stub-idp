@@ -14,7 +14,7 @@ import uk.gov.ida.stub.idp.exceptions.InvalidSessionIdException;
 import uk.gov.ida.stub.idp.exceptions.InvalidUsernameOrPasswordException;
 import uk.gov.ida.stub.idp.exceptions.UsernameAlreadyTakenException;
 import uk.gov.ida.stub.idp.repositories.EidasSession;
-import uk.gov.ida.stub.idp.repositories.SessionRepository;
+import uk.gov.ida.stub.idp.repositories.EidasSessionRepository;
 import uk.gov.ida.stub.idp.repositories.StubCountry;
 import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
 
@@ -24,10 +24,10 @@ import java.util.Optional;
 public class StubCountryService {
 
     private final StubCountryRepository stubCountryRepository;
-    private final SessionRepository<EidasSession> sessionRepository;
+    private final EidasSessionRepository sessionRepository;
 
     @Inject
-    public StubCountryService(StubCountryRepository stubCountryRepository, SessionRepository<EidasSession> sessionRepository) {
+    public StubCountryService(StubCountryRepository stubCountryRepository, EidasSessionRepository sessionRepository) {
         this.stubCountryRepository = stubCountryRepository;
         this.sessionRepository = sessionRepository;
     }

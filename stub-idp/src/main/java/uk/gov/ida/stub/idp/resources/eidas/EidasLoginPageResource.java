@@ -13,7 +13,7 @@ import uk.gov.ida.stub.idp.exceptions.InvalidSessionIdException;
 import uk.gov.ida.stub.idp.exceptions.InvalidUsernameOrPasswordException;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASession;
 import uk.gov.ida.stub.idp.repositories.EidasSession;
-import uk.gov.ida.stub.idp.repositories.SessionRepository;
+import uk.gov.ida.stub.idp.repositories.EidasSessionRepository;
 import uk.gov.ida.stub.idp.repositories.StubCountry;
 import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
 import uk.gov.ida.stub.idp.services.EidasAuthnResponseService;
@@ -49,7 +49,7 @@ import static uk.gov.ida.stub.idp.views.ErrorMessageType.NO_ERROR;
 @CSRFCheckProtection
 public class EidasLoginPageResource {
 
-    private final SessionRepository<EidasSession> sessionRepository;
+    private final EidasSessionRepository sessionRepository;
     private final EidasAuthnResponseService eidasSuccessAuthnResponseRequest;
     private final SamlResponseRedirectViewFactory samlResponseRedirectViewFactory;
     private final StubCountryRepository stubCountryRepository;
@@ -57,7 +57,7 @@ public class EidasLoginPageResource {
 
     @Inject
     public EidasLoginPageResource(
-            SessionRepository<EidasSession> sessionRepository,
+            EidasSessionRepository sessionRepository,
             EidasAuthnResponseService eidasSuucessAuthnResponseRequest,
             SamlResponseRedirectViewFactory samlResponseRedirectViewFactory,
             StubCountryRepository stubCountryRepository,

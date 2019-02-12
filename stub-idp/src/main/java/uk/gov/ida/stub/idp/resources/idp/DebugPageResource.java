@@ -8,8 +8,8 @@ import uk.gov.ida.stub.idp.exceptions.GenericStubIdpException;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASession;
 import uk.gov.ida.stub.idp.repositories.Idp;
 import uk.gov.ida.stub.idp.repositories.IdpSession;
+import uk.gov.ida.stub.idp.repositories.IdpSessionRepository;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
-import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.views.DebugPageView;
 
 import javax.inject.Inject;
@@ -31,12 +31,12 @@ import static java.text.MessageFormat.format;
 public class DebugPageResource {
 
     private final IdpStubsRepository idpStubsRepository;
-    private final SessionRepository<IdpSession> sessionRepository;
+    private final IdpSessionRepository sessionRepository;
 
     @Inject
     public DebugPageResource(
             IdpStubsRepository idpStubsRepository,
-            SessionRepository<IdpSession> sessionRepository) {
+            IdpSessionRepository sessionRepository) {
         this.idpStubsRepository = idpStubsRepository;
         this.sessionRepository = sessionRepository;
     }

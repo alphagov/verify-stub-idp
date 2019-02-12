@@ -9,7 +9,7 @@ import uk.gov.ida.stub.idp.exceptions.GenericStubIdpException;
 import uk.gov.ida.stub.idp.exceptions.InvalidEidasSchemeException;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASession;
 import uk.gov.ida.stub.idp.repositories.EidasSession;
-import uk.gov.ida.stub.idp.repositories.SessionRepository;
+import uk.gov.ida.stub.idp.repositories.EidasSessionRepository;
 import uk.gov.ida.stub.idp.repositories.StubCountry;
 import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
 import uk.gov.ida.stub.idp.views.EidasDebugPageView;
@@ -32,12 +32,12 @@ import static java.text.MessageFormat.format;
 @SessionCookieValueMustExistAsASession
 public class EidasDebugPageResource {
 
-    private final SessionRepository<EidasSession> sessionRepository;
+    private final EidasSessionRepository sessionRepository;
     private final StubCountryRepository stubCountryRepository;
 
     @Inject
     public EidasDebugPageResource(
-            SessionRepository<EidasSession> sessionRepository,
+            EidasSessionRepository sessionRepository,
             StubCountryRepository stubCountryRepository) {
         this.sessionRepository = sessionRepository;
         this.stubCountryRepository = stubCountryRepository;

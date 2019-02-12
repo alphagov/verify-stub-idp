@@ -19,8 +19,8 @@ import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 import uk.gov.ida.stub.idp.repositories.Idp;
 import uk.gov.ida.stub.idp.repositories.IdpSession;
+import uk.gov.ida.stub.idp.repositories.IdpSessionRepository;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
-import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.resources.idp.ConsentResource;
 import uk.gov.ida.stub.idp.services.NonSuccessAuthnResponseService;
 import uk.gov.ida.stub.idp.services.SuccessAuthnResponseService;
@@ -48,7 +48,7 @@ public class ConsentResourceTest {
     @Mock
     private IdpStubsRepository idpStubsRepository;
     @Mock
-    private SessionRepository<IdpSession> sessionRepository;
+    private IdpSessionRepository sessionRepository;
     @Mock
     private IdaAuthnRequestFromHub idaAuthnRequestFromHub;
     @Mock

@@ -63,7 +63,7 @@ stubIdpYmlFileRefresh: 10s
 metrics:
   reporters:
     - type: graphite
-      host: graphite
+      host: 127.0.0.1
       port: 2003
       prefix: ${GRAPHITE_PREFIX}
       frequency: ${GRAPHITE_REPORTING_FREQUENCY:-10s}

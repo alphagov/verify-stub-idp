@@ -17,9 +17,9 @@ import uk.gov.ida.stub.idp.csrf.exceptions.CSRFCouldNotValidateSessionException;
 import uk.gov.ida.stub.idp.csrf.exceptions.CSRFNoTokenInSessionException;
 import uk.gov.ida.stub.idp.csrf.exceptions.CSRFTokenNotFoundException;
 import uk.gov.ida.stub.idp.csrf.exceptions.CSRFTokenWasInvalidException;
-import uk.gov.ida.stub.idp.repositories.EidasSession;
+import uk.gov.ida.stub.idp.repositories.EidasSessionRepository;
 import uk.gov.ida.stub.idp.repositories.IdpSession;
-import uk.gov.ida.stub.idp.repositories.SessionRepository;
+import uk.gov.ida.stub.idp.repositories.IdpSessionRepository;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Cookie;
@@ -45,9 +45,9 @@ public class CSRFCheckProtectionFilterTest {
     @Mock
     private HmacValidator hmacValidator;
     @Mock
-    private SessionRepository<IdpSession> idpSessionRepository;
+    private IdpSessionRepository idpSessionRepository;
     @Mock
-    private SessionRepository<EidasSession> eidasSessionRepository;
+    private EidasSessionRepository eidasSessionRepository;
     @Mock
     private ContainerRequestContext containerRequestContext;
     @Mock

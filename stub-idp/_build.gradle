@@ -84,8 +84,8 @@ task copyStubIdpLogos(type: Copy) {
         }
     }
 }
-build.dependsOn copyStubIdpLogos
-build.mustRunAfter copyStubIdpLogos
+_build.dependsOn copyStubIdpLogos
+_build.mustRunAfter copyStubIdpLogos
 
 task copyToLib(dependsOn: jar, type: Copy) {
     into "$buildDir/output/lib"

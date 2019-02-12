@@ -16,7 +16,7 @@ import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
 import uk.gov.ida.stub.idp.exceptions.GenericStubIdpException;
 import uk.gov.ida.stub.idp.exceptions.InvalidSigningAlgorithmException;
 import uk.gov.ida.stub.idp.repositories.EidasSession;
-import uk.gov.ida.stub.idp.repositories.SessionRepository;
+import uk.gov.ida.stub.idp.repositories.EidasSessionRepository;
 import uk.gov.ida.stub.idp.repositories.StubCountry;
 import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
 import uk.gov.ida.stub.idp.resources.eidas.EidasConsentResource;
@@ -45,7 +45,7 @@ public class EidasConsentResourceTest {
     private EidasSession session;
 
     @Mock
-    private SessionRepository<EidasSession> sessionRepository;
+    private EidasSessionRepository sessionRepository;
 
     @Mock
     private EidasAuthnResponseService successAuthnResponseService;

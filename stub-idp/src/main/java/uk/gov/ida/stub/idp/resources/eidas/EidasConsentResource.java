@@ -13,7 +13,7 @@ import uk.gov.ida.stub.idp.exceptions.InvalidEidasSchemeException;
 import uk.gov.ida.stub.idp.exceptions.InvalidSigningAlgorithmException;
 import uk.gov.ida.stub.idp.filters.SessionCookieValueMustExistAsASession;
 import uk.gov.ida.stub.idp.repositories.EidasSession;
-import uk.gov.ida.stub.idp.repositories.SessionRepository;
+import uk.gov.ida.stub.idp.repositories.EidasSessionRepository;
 import uk.gov.ida.stub.idp.repositories.StubCountry;
 import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
 import uk.gov.ida.stub.idp.services.EidasAuthnResponseService;
@@ -40,7 +40,7 @@ import java.util.Optional;
 @CSRFCheckProtection
 public class EidasConsentResource {
 
-    private final SessionRepository<EidasSession> sessionRepository;
+    private final EidasSessionRepository sessionRepository;
     private final StubCountryRepository stubCountryRepository;
     private final EidasAuthnResponseService rsaSha256AuthnResponseService;
     private final EidasAuthnResponseService rsaSsaPssAuthnResponseService;
@@ -51,7 +51,7 @@ public class EidasConsentResource {
 
     @Inject
     public EidasConsentResource(
-            SessionRepository<EidasSession> sessionRepository,
+            EidasSessionRepository sessionRepository,
             @Named("RSASHA256EidasAuthnResponseService") EidasAuthnResponseService rsaSha256AuthnResponseService,
             @Named("RSASSAPSSEidasAuthnResponseService") EidasAuthnResponseService rsaSsaPssAuthnResponseService,
             SamlResponseRedirectViewFactory samlResponseRedirectViewFactory,

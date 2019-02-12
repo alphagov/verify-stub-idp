@@ -5,7 +5,7 @@ import uk.gov.ida.common.SessionId;
 
 import java.util.Optional;
 
-public interface SessionRepository<T extends Session> {
+interface SessionRepository<T extends Session> {
 	boolean containsSession(SessionId sessionToken);
 	Optional<T> get(SessionId sessionToken);
 	SessionId updateSession(SessionId sessionToken, Session session);
