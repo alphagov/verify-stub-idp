@@ -77,9 +77,6 @@ public class CSRFCheckProtectionFilterTest {
     @Test(expected = CSRFCouldNotValidateSessionException.class)
     public void shouldValidateSession() throws Exception {
         final String csrfToken = "foo";
-        final String entity = "a=1&b=2&c=3&"+CSRF_PROTECT_FORM_KEY+"="+csrfToken;
-        when(containerRequestContext.getEntityStream()).thenReturn(new ByteArrayInputStream(entity.getBytes()));
-        when(session.getCsrfToken()).thenReturn(csrfToken);
 
         when(hmacValidator.validateHMACSHA256("secure-cookie", sessionId.getSessionId())).thenReturn(false);
 
@@ -89,9 +86,6 @@ public class CSRFCheckProtectionFilterTest {
     @Test(expected = CSRFBodyNotFoundException.class)
     public void shouldValidateEntityExists() throws Exception {
         final String csrfToken = "foo";
-        final String entity = "a=1&b=2&c=3&"+CSRF_PROTECT_FORM_KEY+"="+csrfToken;
-        when(containerRequestContext.getEntityStream()).thenReturn(new ByteArrayInputStream(entity.getBytes()));
-        when(session.getCsrfToken()).thenReturn(csrfToken);
 
         when(containerRequestContext.hasEntity()).thenReturn(false);
 
@@ -122,10 +116,8 @@ public class CSRFCheckProtectionFilterTest {
 
     @Test(expected = CSRFTokenNotFoundException.class)
     public void shouldErrorIfTokenNotFound() throws Exception {
-        final String csrfToken = "foo";
         final String entity = "a=1&b=2&c=3&";
         when(containerRequestContext.getEntityStream()).thenReturn(new ByteArrayInputStream(entity.getBytes()));
-        when(session.getCsrfToken()).thenReturn(csrfToken);
 
         new CSRFCheckProtectionFilter(idpSessionRepository, eidasSessionRepository, hmacValidator, isSecureCookieEnabled).filter(containerRequestContext);
     }

@@ -119,8 +119,6 @@ public class LoginPageResourceTest {
     @Test
     public void shouldBuildSuccessResponse() throws InvalidUsernameOrPasswordException, InvalidSessionIdException {
 
-        when(allIdpsUserRepository.getUserForIdp(anyString(), anyString())).thenReturn(Optional.of(databaseIdpUser));
-
         final Response response = resource.post(IDP_NAME, USERNAME, PASSWORD, SubmitButtonValue.SignIn, SESSION_ID);
 
         verify(idpUserService).attachIdpUserToSession(IDP_NAME, USERNAME, PASSWORD, SESSION_ID);
@@ -182,9 +180,6 @@ public class LoginPageResourceTest {
 
     @Test
     public void shouldLogUserInAndTakeToHomePageWhenNoIdaReq() {
-        Optional<IdpSession> idpSession = Optional.of(Mockito.mock(IdpSession.class));
-        when(idpSession.get().getIdaAuthnRequestFromHub()).thenReturn(null);
-        when(idpSession.get().getIdpUser()).thenReturn(Optional.empty());
         final Response response = resource.post(IDP_NAME,USERNAME,PASSWORD, SubmitButtonValue.SignIn, SESSION_ID);
         assertThat(response.getStatus()).isEqualTo(Response.Status.SEE_OTHER.getStatusCode());
         assertThat(response.getLocation().toString()).contains("an%20idp%20name");
@@ -192,9 +187,6 @@ public class LoginPageResourceTest {
 
     @Test
     public void shouldLogUserInAndTakeToConsentPageWhenIdaReqPresent() {
-        Optional<IdpSession> idpSession = Optional.of(Mockito.mock(IdpSession.class));
-        when(idpSession.get().getIdaAuthnRequestFromHub()).thenReturn(idaAuthnRequestFromHub);
-        when(idpSession.get().getIdpUser()).thenReturn(Optional.empty());
         final Response response = resource.post(IDP_NAME,USERNAME,PASSWORD, SubmitButtonValue.SignIn, SESSION_ID);
         assertThat(response.getStatus()).isEqualTo(Response.Status.SEE_OTHER.getStatusCode());
         assertThat(response.getLocation().toString()).contains("consent");

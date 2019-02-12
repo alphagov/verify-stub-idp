@@ -167,7 +167,6 @@ public class SessionCookieValueMustExistAsASessionFilterTest {
         );
         when(containerRequestContext.getCookies()).thenReturn(cookies);
         when(hmacValidator.validateHMACSHA256("secure-cookie", sessionId.getSessionId())).thenReturn(true);
-        when(idpSessionRepository.get(sessionId)).thenReturn(Optional.empty());
         new SessionCookieValueMustExistAsASessionFilter(idpSessionRepository, eidasSessionRepository, hmacValidator, isSecureCookieEnabled).filter(containerRequestContext);
     }
 
@@ -180,7 +179,6 @@ public class SessionCookieValueMustExistAsASessionFilterTest {
                 SECURE_COOKIE_NAME, new NewCookie(SECURE_COOKIE_NAME, "secure-cookies")
         );
         when(containerRequestContext.getCookies()).thenReturn(cookies);
-        when(hmacValidator.validateHMACSHA256("secure-cookies", sessionId.getSessionId())).thenReturn(false);
         when(idpSessionRepository.containsSession(sessionId)).thenReturn(true);
         new SessionCookieValueMustExistAsASessionFilter(idpSessionRepository, eidasSessionRepository, hmacValidator, false).filter(containerRequestContext);
     }

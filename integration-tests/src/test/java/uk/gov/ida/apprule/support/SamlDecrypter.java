@@ -25,6 +25,7 @@ import uk.gov.ida.saml.core.validators.DestinationValidator;
 import uk.gov.ida.saml.core.validators.assertion.AssertionAttributeStatementValidator;
 import uk.gov.ida.saml.core.validators.assertion.AuthnStatementAssertionValidator;
 import uk.gov.ida.saml.core.validators.assertion.DuplicateAssertionValidator;
+import uk.gov.ida.saml.core.validators.assertion.DuplicateAssertionValidatorImpl;
 import uk.gov.ida.saml.core.validators.assertion.IPAddressValidator;
 import uk.gov.ida.saml.core.validators.assertion.IdentityProviderAssertionValidator;
 import uk.gov.ida.saml.core.validators.assertion.MatchingDatasetAssertionValidator;
@@ -40,9 +41,11 @@ import uk.gov.ida.saml.hub.domain.InboundResponseFromIdp;
 import uk.gov.ida.saml.hub.transformers.inbound.IdaResponseFromIdpUnmarshaller;
 import uk.gov.ida.saml.hub.transformers.inbound.IdpIdaStatusUnmarshaller;
 import uk.gov.ida.saml.hub.transformers.inbound.PassthroughAssertionUnmarshaller;
+import uk.gov.ida.saml.hub.transformers.inbound.SamlStatusToCountryAuthenticationStatusCodeMapper;
 import uk.gov.ida.saml.hub.transformers.inbound.SamlStatusToIdpIdaStatusMappingsFactory;
 import uk.gov.ida.saml.hub.transformers.inbound.providers.DecoratedSamlResponseToIdaResponseIssuedByIdpTransformer;
 import uk.gov.ida.saml.hub.validators.StringSizeValidator;
+import uk.gov.ida.saml.hub.validators.authnrequest.ConcurrentMapIdExpirationCache;
 import uk.gov.ida.saml.hub.validators.response.common.ResponseSizeValidator;
 import uk.gov.ida.saml.hub.validators.response.idp.components.EncryptedResponseFromIdpValidator;
 import uk.gov.ida.saml.hub.validators.response.idp.components.ResponseAssertionsFromIdpValidator;
@@ -194,7 +197,7 @@ public class SamlDecrypter {
 
             new EidasAttributeStatementAssertionValidator().validate(validatedIdentityAssertion);
             new AuthnStatementAssertionValidator(
-                    new DuplicateAssertionValidator(new ConcurrentHashMap<>())
+                    new DuplicateAssertionValidatorImpl(new ConcurrentMapIdExpirationCache<>(new ConcurrentHashMap<>()))
             ).validate(validatedIdentityAssertion);
             new EidasAuthnResponseIssuerValidator().validate(validatedResponse, validatedIdentityAssertion);
         }
@@ -236,12 +239,12 @@ public class SamlDecrypter {
         IdaKeyStoreCredentialRetriever storeCredentialRetriever = new IdaKeyStoreCredentialRetriever(keyStore);
         return new DecoratedSamlResponseToIdaResponseIssuedByIdpTransformer(
                 new IdaResponseFromIdpUnmarshaller(
-                        new IdpIdaStatusUnmarshaller(new IdpIdaStatus.IdpIdaStatusFactory(), new SamlStatusToIdpIdaStatusMappingsFactory()),
+                        new IdpIdaStatusUnmarshaller(),
                         new PassthroughAssertionUnmarshaller(new XmlObjectToBase64EncodedStringTransformer<>(), new AuthnContextFactory())),
                 new SamlResponseSignatureValidator(new SamlMessageSignatureValidator(new CredentialFactorySignatureValidator(credentialFactory))),
                 new AssertionDecrypter(new EncryptionAlgorithmValidator(), new DecrypterFactory().createDecrypter(storeCredentialRetriever.getDecryptingCredentials())),
                 new SamlAssertionsSignatureValidator(new SamlMessageSignatureValidator(new CredentialFactorySignatureValidator(credentialFactory))),
-                new EncryptedResponseFromIdpValidator(new SamlStatusToIdpIdaStatusMappingsFactory()),
+                new EncryptedResponseFromIdpValidator(new SamlStatusToCountryAuthenticationStatusCodeMapper()),
                 new DestinationValidator(URI.create("http://foo.com/bar"), "/bar"),
                 new ResponseAssertionsFromIdpValidator(
                         new IdentityProviderAssertionValidator(
@@ -249,8 +252,8 @@ public class SamlDecrypter {
                                 new AssertionSubjectValidator(),
                                 new AssertionAttributeStatementValidator(),
                                 new AssertionSubjectConfirmationValidator()),
-                        new MatchingDatasetAssertionValidator(new DuplicateAssertionValidator(new ConcurrentHashMap<>())),
-                        new AuthnStatementAssertionValidator(new DuplicateAssertionValidator(new ConcurrentHashMap<>())),
+                        new MatchingDatasetAssertionValidator(new DuplicateAssertionValidatorImpl(new ConcurrentMapIdExpirationCache<>(new ConcurrentHashMap<>()))),
+                        new AuthnStatementAssertionValidator(new DuplicateAssertionValidatorImpl(new ConcurrentMapIdExpirationCache<>(new ConcurrentHashMap<>()))),
                         new IPAddressValidator(),
                         hubEntityId));
     }
