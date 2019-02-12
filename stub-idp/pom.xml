@@ -317,12 +317,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>uk.gov.ida</groupId>
-            <artifactId>common-test-utils</artifactId>
-            <version>${ida_test_utils.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>uk.gov.ida.stub-idp</groupId>
             <artifactId>hub-saml</artifactId>
             <version>1.0-SNAPSHOT</version>

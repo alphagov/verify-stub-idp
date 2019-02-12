@@ -15,11 +15,12 @@
         <dropwizard_guicier.version>1.0.0.6</dropwizard_guicier.version>
         <guice.version>4.0</guice.version>
         <joda_time.version>2.9.9</joda_time.version>
+        <mockito.version>2.23.0</mockito.version>
+
+        <!-- libs using these should be imported -->
         <ida_utils.version>2.0.0-350</ida_utils.version>
-        <ida_test_utils.version>2.0.0-43</ida_test_utils.version>
         <ida_dev_pki.version>1.1.0-34</ida_dev_pki.version>
         <saml_libs.version>3.4.0-170</saml_libs.version>
-        <mockito.version>2.23.0</mockito.version>
     </properties>
 
     <modules>
