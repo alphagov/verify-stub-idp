@@ -93,21 +93,15 @@
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-joda</artifactId>
-            <version>2.9.5</version>
+            <version>${jackson.version}</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>com.hubspot.dropwizard</groupId>
-            <artifactId>dropwizard-guicier</artifactId>
-            <version>${dropwizard_guicier.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.squarespace.jersey2-guice</groupId>
-            <artifactId>0-jersey2-guice-spi</artifactId>
-            <version>1.0.6</version>
-            <scope>compile</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.squarespace.jersey2-guice</groupId>-->
+            <!--<artifactId>0-jersey2-guice-spi</artifactId>-->
+            <!--<version>1.0.6</version>-->
+            <!--<scope>compile</scope>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>de.neuland-bfi</groupId>
             <artifactId>jade4j</artifactId>
@@ -203,6 +197,13 @@
             <artifactId>opensaml-core</artifactId>
             <version>${opensaml.version}</version>
             <scope>compile</scope>
+            <exclusions>
+                <!-- use the newer version from dropwizard itself -->
+                <exclusion>
+                    <groupId>io.dropwizard.metrics</groupId>
+                    <artifactId>metrics-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -229,29 +230,65 @@
             <version>${ida_utils.version}</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.hubspot.dropwizard</groupId>
+            <artifactId>dropwizard-guicier</artifactId>
+            <version>${dropwizard_guicier.version}</version>
+            <scope>compile</scope>
+            <!-- this is needed until dropwizard-guicier is updated -->
+            <exclusions>
+                <exclusion>
+                    <groupId>io.dropwizard</groupId>
+                    <artifactId>dropwizard-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.dropwizard</groupId>
+                    <artifactId>dropwizard-servlets</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.dropwizard</groupId>
+                    <artifactId>dropwizard-lifecycle</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.dropwizard</groupId>
+                    <artifactId>dropwizard-jetty</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.dropwizard.metrics</groupId>
+                    <artifactId>metrics-healthchecks</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- this is needed until dropwizard-guicier is updated -->
+        <dependency>
+            <groupId>org.glassfish.hk2</groupId>
+            <artifactId>hk2-api</artifactId>
+            <version>2.5.0-b32</version>
+            <scope>compile</scope>
+        </dependency>
         <!-- saml libs -->
         <dependency>
-            <groupId>uk.gov.ida</groupId>
+            <groupId>uk.gov.ida.stub-idp</groupId>
             <artifactId>saml-extensions</artifactId>
-            <version>${saml_libs.version}</version>
+            <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>uk.gov.ida</groupId>
+            <groupId>uk.gov.ida.stub-idp</groupId>
             <artifactId>saml-metadata-bindings</artifactId>
-            <version>${saml_libs.version}</version>
+            <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>uk.gov.ida</groupId>
+            <groupId>uk.gov.ida.stub-idp</groupId>
             <artifactId>saml-security</artifactId>
-            <version>${saml_libs.version}</version>
+            <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>uk.gov.ida</groupId>
+            <groupId>uk.gov.ida.stub-idp</groupId>
             <artifactId>saml-utils</artifactId>
-            <version>${saml_libs.version}</version>
+            <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -263,7 +300,7 @@
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
-            <version>2.2.3</version>
+            <version>${jaxb.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -281,13 +318,13 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.6</version>
+            <version>${jackson.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.9.6</version>
+            <version>${jackson.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -311,9 +348,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>uk.gov.ida</groupId>
-            <artifactId>saml-metadata-bindings-test</artifactId>
-            <version>${saml_libs.version}</version>
+            <groupId>uk.gov.ida.stub-idp</groupId>
+            <artifactId>saml-metadata-bindings</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -338,7 +376,7 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.9.1</version>
+            <version>${assertj.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -350,13 +388,20 @@
         <dependency>
             <groupId>org.junit.vintage</groupId>
             <artifactId>junit-vintage-engine</artifactId>
-            <version>5.4.0</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>uk.gov.ida.stub-idp</groupId>
+            <artifactId>saml-utils</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>test-jar</type>
             <scope>test</scope>
         </dependency>
     </dependencies>

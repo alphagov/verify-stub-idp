@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ID="VERIFY-HUB" entityID="https://hub.local/SAML2/metadata/connector" xsi:type="md:EntityDescriptorType" validUntil="2018-08-02T12:49:24+01:00">
+  <md:SPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol" xsi:type="md:SPSSODescriptorType" WantAssertionsSigned="true">
+    <md:KeyDescriptor use="encryption" xsi:type="md:KeyDescriptorType">
+      <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xsi:type="ds:KeyInfoType">
+        <ds:KeyName xmlns:xs="http://www.w3.org/2001/XMLSchema">https://hub.local/SAML2/metadata/connector</ds:KeyName>
+        <ds:X509Data xsi:type="ds:X509DataType">
+          <ds:X509Certificate>MIICxzCCAm2gAwIBAgIUPmZOp7YrFNF14lZJqGkb8exszCkwCgYIKoZIzj0EAwIw
+gYkxCzAJBgNVBAYTAkdCMQ8wDQYDVQQIEwZMb25kb24xDzANBgNVBAcTBkxvbmRv
+bjEXMBUGA1UEChMOQ2FiaW5ldCBPZmZpY2UxDDAKBgNVBAsTA0dEUzExMC8GA1UE
+AxMoVmVyaWZ5IExvY2FsIFN0YXJ0dXAgSHViIEludGVybWVkaWF0ZSBDQTAgFw0x
+ODA4MTcxMzA0MDBaGA8yMTE4MDcyNDEzMDQwMFowgYwxCzAJBgNVBAYTAkdCMQ8w
+DQYDVQQIEwZMb25kb24xDzANBgNVBAcTBkxvbmRvbjEXMBUGA1UEChMOQ2FiaW5l
+dCBPZmZpY2UxDDAKBgNVBAsTA0dEUzE0MDIGA1UEAwwrVmVyaWZ5IExvY2FsIFN0
+YXJ0dXAgSHViX2VuY3J5cHRpb25fcHJpbWFyeTBZMBMGByqGSM49AgEGCCqGSM49
+AwEHA0IABEMrmtI2HEIekqRecBgsbWmYmVdgWERQktIt/RAAId3G68SJ87P8n+tS
+4Wqx87y6p8qrtIVst0u2G2I4hpreicWjgaswgagwDgYDVR0PAQH/BAQDAgUgMAwG
+A1UdEwEB/wQCMAAwHQYDVR0OBBYEFLXy58EJhx2V32UmIc3LNrLxGf0bMB8GA1Ud
+IwQYMBaAFGx7jCPSflat1yz/nCI+zsaV7iNHMDIGCCsGAQUFBwEBBCYwJDAiBggr
+BgEFBQcwAYYWaHR0cDovL2xvY2FsaG9zdDo1ODg4OTAUBgNVHREEDTALgglsb2Nh
+bGhvc3QwCgYIKoZIzj0EAwIDSAAwRQIgDF2xJlcDcDqPfh6X0HBuctn7/eNilt0d
+QQb8DzM25O4CIQCE/FMA/hN99g0gwyp6n+5Le9P/Gd1JeZ7pgogbQwiMzw==
+</ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </md:KeyDescriptor>
+    <md:KeyDescriptor use="signing" xsi:type="md:KeyDescriptorType">
+      <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xsi:type="ds:KeyInfoType">
+        <ds:KeyName xmlns:xs="http://www.w3.org/2001/XMLSchema">https://hub.local/SAML2/metadata/connector</ds:KeyName>
+        <ds:X509Data xsi:type="ds:X509DataType">
+          <ds:X509Certificate>MIICwzCCAmqgAwIBAgIUGHOlK4Q6LK3xAEoFhZy0wjnyC2AwCgYIKoZIzj0EAwIw
+gYkxCzAJBgNVBAYTAkdCMQ8wDQYDVQQIEwZMb25kb24xDzANBgNVBAcTBkxvbmRv
+bjEXMBUGA1UEChMOQ2FiaW5ldCBPZmZpY2UxDDAKBgNVBAsTA0dEUzExMC8GA1UE
+AxMoVmVyaWZ5IExvY2FsIFN0YXJ0dXAgSHViIEludGVybWVkaWF0ZSBDQTAgFw0x
+ODA4MTcxMzA0MDBaGA8yMTE4MDcyNDEzMDQwMFowgYkxCzAJBgNVBAYTAkdCMQ8w
+DQYDVQQIEwZMb25kb24xDzANBgNVBAcTBkxvbmRvbjEXMBUGA1UEChMOQ2FiaW5l
+dCBPZmZpY2UxDDAKBgNVBAsTA0dEUzExMC8GA1UEAwwoVmVyaWZ5IExvY2FsIFN0
+YXJ0dXAgSHViX3NpZ25pbmdfcHJpbWFyeTBZMBMGByqGSM49AgEGCCqGSM49AwEH
+A0IABE2HS+mlwjjBA666Erd+D9OnBMXMZErkJoRNJgRnBc3bjHQuuqR5fkWgC6K+
+MXLLawitLhZxCOxwTVCbxPSu8nKjgaswgagwDgYDVR0PAQH/BAQDAgeAMAwGA1Ud
+EwEB/wQCMAAwHQYDVR0OBBYEFKPvCeUv7Z7DwBNHbMwyRqR8VMb9MB8GA1UdIwQY
+MBaAFGx7jCPSflat1yz/nCI+zsaV7iNHMDIGCCsGAQUFBwEBBCYwJDAiBggrBgEF
+BQcwAYYWaHR0cDovL2xvY2FsaG9zdDo1ODg4OTAUBgNVHREEDTALgglsb2NhbGhv
+c3QwCgYIKoZIzj0EAwIDRwAwRAIgNMq+7cfWZosCIpbXOVq3KLDuPOYDeWDjJ8PW
+xcweZl8CIErB/te1K6NnDhazLebi4r2iwfbU8T3Zg8arRyK+AKXa</ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </md:KeyDescriptor>
+    <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://hub.local:443/SAML2/SSO/EidasResponse/POST" index="1" isDefault="true" xsi:type="md:IndexedEndpointType"/>
+  </md:SPSSODescriptor>
+  <md:Organization xsi:type="md:OrganizationType">
+    <md:OrganizationName xml:lang="en-GB" xsi:type="md:localizedNameType">GOV.UK</md:OrganizationName>
+    <md:OrganizationDisplayName xml:lang="en-GB" xsi:type="md:localizedNameType">GOV.UK</md:OrganizationDisplayName>
+    <md:OrganizationURL xml:lang="en-GB" xsi:type="md:localizedURIType">https://www.gov.uk</md:OrganizationURL>
+  </md:Organization>
+</md:EntityDescriptor>

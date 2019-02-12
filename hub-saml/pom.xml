@@ -3,7 +3,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>uk.gov.ida.stub-idp</groupId>
     <artifactId>hub-saml</artifactId>
     <version>1.0-SNAPSHOT</version>
 
@@ -33,15 +32,15 @@
 
     <dependencies>
         <dependency>
-            <groupId>uk.gov.ida</groupId>
+            <groupId>uk.gov.ida.stub-idp</groupId>
             <artifactId>saml-utils</artifactId>
-            <version>${saml_libs.version}</version>
+            <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>uk.gov.ida</groupId>
+            <groupId>uk.gov.ida.stub-idp</groupId>
             <artifactId>saml-metadata-bindings</artifactId>
-            <version>${saml_libs.version}</version>
+            <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -65,14 +64,14 @@
         <dependency>
             <groupId>net.shibboleth.utilities</groupId>
             <artifactId>java-support</artifactId>
-            <version>7.4.2</version>
+            <version>${shibboleth_utils.version}</version>
             <scope>compile</scope>
         </dependency>
         <!-- test dependencies -->
         <dependency>
             <groupId>org.junit.vintage</groupId>
             <artifactId>junit-vintage-engine</artifactId>
-            <version>5.4.0</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -82,9 +81,23 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>uk.gov.ida.stub-idp</groupId>
+            <artifactId>saml-metadata-bindings</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>uk.gov.ida.stub-idp</groupId>
+            <artifactId>saml-utils</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>uk.gov.ida</groupId>
-            <artifactId>saml-metadata-bindings-test</artifactId>
-            <version>${saml_libs.version}</version>
+            <artifactId>ida-dev-pki</artifactId>
+            <version>${ida_dev_pki.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

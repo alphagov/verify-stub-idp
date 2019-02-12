@@ -1,0 +1,32 @@
+server:
+  applicationConnectors:
+    - type: http
+      port: 0
+  adminConnectors:
+    - type: http
+      port: 0
+
+
+logging:
+  level: INFO
+  appenders:
+    - type: console
+
+metadata:
+  uri: OVERRIDE_ME
+  trustStore:
+    path: OVERRIDE_ME
+    password: puppet
+  minRefreshDelay: 60000
+  maxRefreshDelay: 600000
+  expectedEntityId: https://signin.service.gov.uk
+  jerseyClientName: OVERRIDE_ME
+  client:
+    timeout: 2s
+    timeToLive: 10m
+    cookiesEnabled: false
+    connectionTimeout: 1s
+    retries: 3
+    keepAlive: 60s
+    chunkedEncodingEnabled: false
+    validateAfterInactivityPeriod: 5s

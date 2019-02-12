@@ -8,27 +8,47 @@
     <packaging>pom</packaging>
 
     <properties>
+        <!-- language version -->
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+
+        <!-- runtime dependencies -->
         <opensaml.version>3.4.2</opensaml.version>
         <dropwizard.version>1.3.8</dropwizard.version>
         <dropwizard_guicier.version>1.0.0.6</dropwizard_guicier.version>
-        <guice.version>4.0</guice.version>
-        <joda_time.version>2.9.9</joda_time.version>
+        <guice.version>4.2.2</guice.version>
+        <joda_time.version>2.10.1</joda_time.version>
+        <shibboleth_utils.version>7.4.2</shibboleth_utils.version>
+        <javax_validation.version>1.1.0.Final</javax_validation.version>
+        <jackson.version>2.9.6</jackson.version>
+        <nimbus_jwt.version>5.4</nimbus_jwt.version>
+        <slf4j.version>1.7.25</slf4j.version>
+        <jaxb.version>2.2.3</jaxb.version>
+
+        <!-- test dependencies -->
+        <assertj.version>3.9.1</assertj.version>
+        <assertj_jodatime.version>1.1.0</assertj_jodatime.version>
+        <junit.version>5.4.0</junit.version>
         <mockito.version>2.23.0</mockito.version>
 
         <!-- libs using these should be imported -->
         <ida_utils.version>2.0.0-350</ida_utils.version>
-        <ida_dev_pki.version>1.1.0-34</ida_dev_pki.version>
-        <saml_libs.version>3.4.0-170</saml_libs.version>
+        <ida_dev_pki.version>1.1.0-37</ida_dev_pki.version>
     </properties>
 
     <modules>
         <module>stub-idp</module>
         <module>hub-saml</module>
+        <module>saml-extensions</module>
+        <module>saml-metadata-bindings</module>
+        <module>saml-security</module>
+        <module>saml-serializers</module>
+        <module>saml-utils</module>
+        <module>trust-anchor</module>
         <module>stub-idp-saml</module>
         <module>stub-idp-saml-test</module>
         <module>integration-tests</module>
+        <module>test-utils</module>
     </modules>
 
     <repositories>
