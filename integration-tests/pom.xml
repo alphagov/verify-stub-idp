@@ -147,9 +147,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>uk.gov.ida</groupId>
-            <artifactId>ida-dev-pki</artifactId>
-            <version>${ida_dev_pki.version}</version>
+            <groupId>uk.gov.ida.stub-idp</groupId>
+            <artifactId>dev-pki</artifactId>
+            <version>1.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
