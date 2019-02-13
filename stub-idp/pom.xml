@@ -24,6 +24,14 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.1.1</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>${main.class}</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
@@ -55,19 +63,6 @@
                     <!--</execution>-->
                 <!--</executions>-->
             <!--</plugin>-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.1</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <mainClass>${main.class}</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
@@ -87,7 +82,7 @@
         <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
-            <version>4.9</version>
+            <version>${logstash_logback_encoder.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -213,21 +208,21 @@
         </dependency>
         <!-- verify utils libs -->
         <dependency>
-            <groupId>uk.gov.ida</groupId>
+            <groupId>uk.gov.ida.stub-idp</groupId>
             <artifactId>common-utils</artifactId>
-            <version>${ida_utils.version}</version>
+            <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>uk.gov.ida</groupId>
+            <groupId>uk.gov.ida.stub-idp</groupId>
             <artifactId>rest-utils</artifactId>
-            <version>${ida_utils.version}</version>
+            <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>uk.gov.ida</groupId>
+            <groupId>uk.gov.ida.stub-idp</groupId>
             <artifactId>security-utils</artifactId>
-            <version>${ida_utils.version}</version>
+            <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -306,13 +301,13 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.7</version>
+            <version>${commons_lang3.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.10</version>
+            <version>${commons_codec.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

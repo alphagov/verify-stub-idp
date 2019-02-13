@@ -1,0 +1,20 @@
+server:
+  applicationConnectors:
+    - type: http
+      port: 0
+  requestLog:
+    type: classic
+    appenders:
+      - type: logstash-file
+        currentLogFilename: ./build/logstash-file-requests.log
+        archivedLogFilenamePattern: ./build/logstash-file-requests.log.%d.log
+        archivedFileCount: 1
+      - type: console
+
+logging:
+    appenders:
+        - type: logstash-file
+          currentLogFilename: ./build/logstash-file-log.log
+          archivedLogFilenamePattern: ./build/logstash-file-log.log.%d.log
+          archivedFileCount: 1
+        - type: console

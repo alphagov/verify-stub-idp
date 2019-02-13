@@ -1,0 +1,11 @@
+server:
+  applicationConnectors:
+    - type: http
+      port: 0
+  requestLog:
+    appenders:
+      - type: access-logstash-console
+
+logging:
+    appenders:
+        - type: logstash-console

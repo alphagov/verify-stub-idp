@@ -1,0 +1,6 @@
+featureClass: uk.gov.ida.shared.utils.featuretoggles.IdaFeatures
+features:
+  - featureName: UIRework
+    active: false
+  - featureName: EncodeAssertions
+    active: true
