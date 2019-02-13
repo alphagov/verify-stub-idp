@@ -80,5 +80,30 @@
             <version>${commons_lang.version}</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>uk.gov.ida.stub-idp</groupId>
+            <artifactId>dev-pki</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>uk.gov.ida.stub-idp</groupId>
+            <artifactId>test-utils</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>${junit.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>uk.gov.ida.stub-idp</groupId>
+            <artifactId>saml-utils</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>test-jar</type>
+            <scope>compile</scope> <!-- 🤢 -->
+        </dependency>
     </dependencies>
 </project>
