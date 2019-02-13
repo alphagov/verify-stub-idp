@@ -1,3 +1,0 @@
-include "stub-idp",
-        "stub-idp-saml",
-        "stub-idp-saml-test"
