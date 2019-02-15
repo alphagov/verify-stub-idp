@@ -2,8 +2,7 @@ package uk.gov.ida.configuration;
 
 public interface SSLContextConfiguration {
 
+    TrustedSslServersConfiguration getTrustedSslServers();
 
-    public TrustedSslServersConfiguration getTrustedSslServers();
-
-    public MutualAuthConfiguration getMutualAuth();
+    MutualAuthConfiguration getMutualAuth();
 }

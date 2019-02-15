@@ -20,14 +20,8 @@ public class KeyStoreLoader {
         try {
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             char[] charPassword = password.toCharArray();
-            InputStream inputStream = null;
-            try {
-                inputStream = new FileInputStream(uri);
+            try (InputStream inputStream = new FileInputStream(uri)) {
                 keyStore.load(inputStream, charPassword);
-            } finally {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
             }
             return keyStore;
         } catch (KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException e) {

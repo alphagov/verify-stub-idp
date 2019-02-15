@@ -29,12 +29,7 @@ public class KeyStoreCache {
         final String password = configuration.getPassword();
 
         try {
-            return trustStoreCache.get(trustStorePath, new Callable<KeyStore>() {
-                @Override
-                public KeyStore call() throws Exception {
-                    return keyStoreLoader.load(trustStorePath, password);
-                }
-            });
+            return trustStoreCache.get(trustStorePath, () -> keyStoreLoader.load(trustStorePath, password));
         } catch (ExecutionException e) {
             throw Throwables.propagate(e);
         }

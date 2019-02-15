@@ -11,7 +11,6 @@ import uk.gov.ida.common.ExceptionType;
 import uk.gov.ida.exceptions.ApplicationException;
 
 import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;

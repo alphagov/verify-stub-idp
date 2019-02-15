@@ -62,7 +62,7 @@ public class JsonClientTest {
     public void getWithGenericType_shouldDelegateToProcessor() throws Exception {
         Response clientResponse = Response.noContent().build();
         when(errorHandlingClient.get(testUri)).thenReturn(clientResponse);
-        GenericType<String> genericType = new GenericType<String>() {};
+        GenericType<String> genericType = new GenericType<>() {};
 
         jsonClient.get(testUri, genericType);
 

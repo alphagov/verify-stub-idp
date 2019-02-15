@@ -8,7 +8,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ServiceStatusResourceTest {
 
-    ServiceStatus instance  = ServiceStatus.getInstance();;
+    ServiceStatus instance  = ServiceStatus.getInstance();
+
     @Test
     public void shouldReturn200WhenInitialised() throws Exception {
         ServiceStatusResource serviceStatusResource = new ServiceStatusResource();

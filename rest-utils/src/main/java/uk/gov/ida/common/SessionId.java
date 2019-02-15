@@ -2,6 +2,7 @@ package uk.gov.ida.common;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class SessionId {
@@ -40,7 +41,7 @@ public class SessionId {
 
         SessionId otherSessionId = (SessionId) o;
 
-        return sessionId == null ? otherSessionId.sessionId == null : sessionId.equals(otherSessionId.sessionId);
+        return Objects.equals(sessionId, otherSessionId.sessionId);
     }
 
     @Override

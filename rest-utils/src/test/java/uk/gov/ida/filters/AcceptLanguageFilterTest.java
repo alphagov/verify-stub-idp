@@ -1,6 +1,5 @@
 package uk.gov.ida.filters;
 
-import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import javax.servlet.http.HttpServletRequest;

@@ -1,7 +1,7 @@
 package uk.gov.ida.common;
 
-
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
 public class IpFromXForwardedForHeader {
 
@@ -9,10 +9,7 @@ public class IpFromXForwardedForHeader {
 
     public String getPrincipalIpAddress(HttpServletRequest httpServletRequest) {
         final String xForwardedForHeaderValue = httpServletRequest.getHeader(HttpHeaders.X_FORWARDED_FOR);
-        if (xForwardedForHeaderValue != null) {
-            return xForwardedForHeaderValue;
-        }
+        return Objects.requireNonNullElse(xForwardedForHeaderValue, IP_ADDRESS_NOT_PRESENT_VALUE);
 
-        return IP_ADDRESS_NOT_PRESENT_VALUE;
     }
 }

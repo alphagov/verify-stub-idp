@@ -1,7 +1,5 @@
 package uk.gov.ida.analytics;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
@@ -19,19 +17,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.ida.configuration.AnalyticsConfiguration;
 import uk.gov.ida.configuration.AnalyticsConfigurationBuilder;
 
-import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Cookie;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.Optional;
 
-import static com.google.common.base.Optional.fromNullable;
 import static java.text.MessageFormat.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -86,7 +82,7 @@ public class AnalyticsReporterTest {
 
         AnalyticsReporter analyticsReporter = spy(new AnalyticsReporter(piwikClient, new AnalyticsConfigurationBuilder().build()));
 
-        doReturn(piwikUri).when(analyticsReporter).generateURI(friendlyDescription, requestContext, Optional.<CustomVariable>absent(), Optional.of(visitorId));
+        doReturn(piwikUri).when(analyticsReporter).generateURI(friendlyDescription, requestContext, Optional.<CustomVariable>empty(), Optional.of(visitorId));
 
         analyticsReporter.report(friendlyDescription, requestContext);
 
@@ -100,7 +96,7 @@ public class AnalyticsReporterTest {
 
         AnalyticsReporter analyticsReporter = spy(new AnalyticsReporter(piwikClient, new AnalyticsConfigurationBuilder().build()));
 
-        doThrow(new RuntimeException("error")).when(analyticsReporter).generateURI(friendlyDescription, requestContext, Optional.<CustomVariable>absent(), Optional.of(visitorId));
+        doThrow(new RuntimeException("error")).when(analyticsReporter).generateURI(friendlyDescription, requestContext, Optional.<CustomVariable>empty(), Optional.of(visitorId));
 
         analyticsReporter.report(friendlyDescription, requestContext);
     }
@@ -120,13 +116,9 @@ public class AnalyticsReporterTest {
 
         AnalyticsReporter analyticsReporter = new AnalyticsReporter(piwikClient, analyticsConfiguration);
 
-        URIBuilder testURI = new URIBuilder(analyticsReporter.generateURI("SERVER friendly description of URL", requestContext, Optional.<CustomVariable>absent(), Optional.of("abc")));
+        URIBuilder testURI = new URIBuilder(analyticsReporter.generateURI("SERVER friendly description of URL", requestContext, Optional.empty(), Optional.of("abc")));
 
-        Map<String, NameValuePair> expectedParams = Maps.uniqueIndex(expectedURI.getQueryParams(), new Function<NameValuePair, String>() {
-            public String apply(NameValuePair from) {
-                return from.getName();
-            }
-        });
+        Map<String, NameValuePair> expectedParams = Maps.uniqueIndex(expectedURI.getQueryParams(), from -> from.getName());
 
         for (NameValuePair param : testURI.getQueryParams()) {
             assertThat(expectedParams).containsEntry(param.getName(), param);
@@ -147,16 +139,12 @@ public class AnalyticsReporterTest {
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
         expectedURI.addParameter("cdt", fmt.print(now));
         AnalyticsReporter analyticsReporter = new AnalyticsReporter(piwikClient, analyticsConfiguration);
-        Optional<Cookie> piwikCookie = fromNullable(requestContext.getCookies().get(PIWIK_VISITOR_ID));
+        Optional<Cookie> piwikCookie = Optional.ofNullable(requestContext.getCookies().get(PIWIK_VISITOR_ID));
         Optional<String> visitorId = Optional.of(piwikCookie.get().getValue());
         Optional<CustomVariable> customVariableOptional = Optional.of(new CustomVariable(1, "RP", "HMRC BLA"));
         URIBuilder testURI = new URIBuilder(analyticsReporter.generateURI("page-title", requestContext, customVariableOptional, visitorId));
 
-        Map<String, NameValuePair> expectedParams = Maps.uniqueIndex(expectedURI.getQueryParams(), new Function<NameValuePair, String>() {
-            public String apply(NameValuePair from) {
-                return from.getName();
-            }
-        });
+        Map<String, NameValuePair> expectedParams = Maps.uniqueIndex(expectedURI.getQueryParams(), NameValuePair::getName);
 
         for (NameValuePair param : testURI.getQueryParams()) {
             assertThat(expectedParams).containsEntry(param.getName(), param);
@@ -173,7 +161,7 @@ public class AnalyticsReporterTest {
 
         reporter.reportPageView("Title", requestContext, "http://page-view");
 
-        Mockito.verify(piwikClient).report(captor.capture(), eq(requestContext));
+        verify(piwikClient).report(captor.capture(), eq(requestContext));
         URIBuilder uriBuilder = new URIBuilder(captor.getValue());
         checkURIBase(uriBuilder.toString(), config.getPiwikServerSideUrl());
         checkURIURL(uriBuilder, "http://page-view");
@@ -188,7 +176,7 @@ public class AnalyticsReporterTest {
 
         reporter.reportPageView("Title", requestContext, "http://page-view");
 
-        Mockito.verify(piwikClient).report(captor.capture(), eq(requestContext));
+        verify(piwikClient).report(captor.capture(), eq(requestContext));
         checkVisitorId(captor.getValue().getQuery(), visitorId);
     }
 
@@ -201,7 +189,7 @@ public class AnalyticsReporterTest {
 
         reporter.reportPageView("Title", requestContext, "http://page-view");
 
-        Mockito.verify(piwikClient).report(captor.capture(), eq(requestContext));
+        verify(piwikClient).report(captor.capture(), eq(requestContext));
         String query = captor.getValue().getQuery();
         checkQueryParamMissing(query, "_id");
     }
@@ -213,7 +201,7 @@ public class AnalyticsReporterTest {
 
         reporter.reportPageView("Title", requestContext, "http://page-view");
 
-        Mockito.verify(piwikClient, never()).report(any(URI.class), any(ContainerRequest.class));
+        verify(piwikClient, never()).report(any(URI.class), any(ContainerRequest.class));
     }
 
     private void checkCommonParams(URIBuilder uriBuilder, String siteId) {

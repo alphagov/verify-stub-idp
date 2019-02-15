@@ -1,6 +1,5 @@
 package uk.gov.ida.analytics;
 
-import com.google.common.base.Optional;
 import org.apache.http.client.utils.URIBuilder;
 import org.glassfish.jersey.server.ContainerRequest;
 import org.joda.time.DateTime;
@@ -13,8 +12,7 @@ import javax.inject.Inject;
 import javax.ws.rs.core.Cookie;
 import java.net.URI;
 import java.net.URISyntaxException;
-
-import static com.google.common.base.Optional.fromNullable;
+import java.util.Optional;
 
 public class AnalyticsReporter {
 
@@ -36,7 +34,7 @@ public class AnalyticsReporter {
     }
 
     public void report(String friendlyDescription, ContainerRequest context) {
-        reportToPiwik(friendlyDescription, context, Optional.<CustomVariable>absent());
+        reportToPiwik(friendlyDescription, context, Optional.<CustomVariable>empty());
     }
 
     public void reportPageView(String pageTitle, ContainerRequest context, String uri) {
@@ -50,7 +48,7 @@ public class AnalyticsReporter {
     }
 
     private Optional<String> getVisitorId(ContainerRequest context) {
-        return fromNullable(context.getCookies().get(PIWIK_VISITOR_ID)).transform(Cookie::getValue);
+        return Optional.ofNullable(context.getCookies().get(PIWIK_VISITOR_ID)).map(Cookie::getValue);
     }
 
     private URI generateCustomURI(String friendlyDescription, String url, Optional<String> visitorId) throws
@@ -78,14 +76,12 @@ public class AnalyticsReporter {
                 .addParameter("cookie", "false");
     }
 
-    protected URI generateURI(String friendlyDescription, ContainerRequest request, Optional<CustomVariable> customVariable, Optional<String> visitorId) throws URISyntaxException {
+    URI generateURI(String friendlyDescription, ContainerRequest request, Optional<CustomVariable> customVariable, Optional<String> visitorId) throws URISyntaxException {
         URIBuilder uriBuilder = buildAnalyticsURI(friendlyDescription, request.getRequestUri().toString(), visitorId);
-        if(customVariable.isPresent()) {
-            uriBuilder.addParameter("_cvar", customVariable.get().getJson());
-        }
+        customVariable.ifPresent(customVariable1 -> uriBuilder.addParameter("_cvar", customVariable1.getJson()));
 
         // Only FireFox on Windows is unable to provide referrer on AJAX calls
-        Optional<String> refererHeader = fromNullable(request.getHeaderString(REFERER));
+        Optional<String> refererHeader = Optional.ofNullable(request.getHeaderString(REFERER));
         if(refererHeader.isPresent()) {
             uriBuilder.addParameter("urlref", refererHeader.get());
             uriBuilder.addParameter("ref", refererHeader.get());

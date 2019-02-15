@@ -17,7 +17,7 @@ public class ServiceStatusResource {
     @Inject
     public ServiceStatusResource() {
 
-        this.serviceStatus = serviceStatus.getInstance();
+        this.serviceStatus = ServiceStatus.getInstance();
     }
 
     @GET
