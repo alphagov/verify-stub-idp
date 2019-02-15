@@ -9,6 +9,7 @@ import uk.gov.ida.saml.core.extensions.impl.RequestedAttributesImpl;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -60,7 +61,7 @@ public class EidasAuthnRequest {
 
     private static List<uk.gov.ida.stub.idp.domain.RequestedAttribute> getRequestAttributes(AuthnRequest request){
 
-        Optional<XMLObject> requestedAttributesObj = request.getExtensions().getOrderedChildren()
+        Optional<XMLObject> requestedAttributesObj = Objects.requireNonNull(request.getExtensions().getOrderedChildren())
                 .stream()
                 .filter(x -> x.getClass() == RequestedAttributesImpl.class)
                 .findFirst();

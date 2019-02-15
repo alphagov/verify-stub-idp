@@ -15,6 +15,7 @@ import uk.gov.ida.stub.idp.repositories.EidasSession;
 import uk.gov.ida.stub.idp.repositories.EidasSessionRepository;
 import uk.gov.ida.stub.idp.repositories.IdpSession;
 import uk.gov.ida.stub.idp.repositories.IdpSessionRepository;
+import uk.gov.ida.stub.idp.repositories.Session;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -42,7 +43,8 @@ public class CSRFCheckProtectionFilter implements ContainerRequestFilter {
 
     public static final String CSRF_PROTECT_FORM_KEY = "csrf_protect";
 
-    private enum Status {VERIFIED, ID_NOT_PRESENT, HASH_NOT_PRESENT, DELETED_SESSION, INVALID_HASH, NOT_FOUND };
+    private enum Status {VERIFIED, ID_NOT_PRESENT, HASH_NOT_PRESENT, DELETED_SESSION, INVALID_HASH, NOT_FOUND }
+
     private static final String NO_CURRENT_SESSION_COOKIE_VALUE = "no-current-session";
 
     @Inject
@@ -97,10 +99,7 @@ public class CSRFCheckProtectionFilter implements ContainerRequestFilter {
         if(idpSession.isPresent()) {
             return Optional.ofNullable(idpSession.get().getCsrfToken());
         }
-        if(eidasSession.isPresent()) {
-            return Optional.ofNullable(eidasSession.get().getCsrfToken());
-        }
-        return Optional.empty();
+        return eidasSession.map(Session::getCsrfToken);
     }
 
     protected SessionId getValidSessionId(ContainerRequestContext requestContext) {

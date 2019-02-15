@@ -32,7 +32,7 @@ public final class HardCodedTestUserList {
                 Collections.singletonList(createMdsValue("Jack")),
                 Collections.singletonList(createMdsValue("Cornelius")),
                 Collections.singletonList(createMdsValue("Bauer")),
-                Optional.ofNullable(createMdsValue(Gender.MALE)),
+                Optional.of(createMdsValue(Gender.MALE)),
                 Collections.singletonList(createMdsValue(LocalDate.parse("1984-02-29"))),
                 ImmutableList.of(new AddressFactory().create(Collections.singletonList("1 Two St"), "1A 2BC", null, null, null, null, true),
                         new AddressFactory().create(Collections.singletonList("221b Baker St."), "W4 1SH", null, null, DateTime.parse("2007-09-27"), DateTime.parse("2007-09-28"), true),

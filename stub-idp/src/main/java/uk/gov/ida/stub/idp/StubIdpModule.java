@@ -426,10 +426,7 @@ public class StubIdpModule extends DropwizardAwareModule<StubIdpConfiguration> {
     @Named(HUB_CONNECTOR_ENCRYPTION_KEY_STORE)
     @Singleton
     public Optional<EncryptionKeyStore> getHubConnectorEncryptionKeyStore(@Named(HUB_CONNECTOR_METADATA_REPOSITORY) Optional<MetadataRepository> metadataRepository, PublicKeyFactory publicKeyFactory) {
-        if (metadataRepository.isPresent()) {
-            return Optional.of(new HubEncryptionKeyStore(metadataRepository.get(), publicKeyFactory));
-        }
-        return Optional.empty();
+        return metadataRepository.map(metadataRepository1 -> new HubEncryptionKeyStore(metadataRepository1, publicKeyFactory));
     }
 
     @Provides
@@ -443,10 +440,7 @@ public class StubIdpModule extends DropwizardAwareModule<StubIdpConfiguration> {
     @Named(HUB_CONNECTOR_METADATA_REPOSITORY)
     @Singleton
     public Optional<MetadataRepository> getHubConnectorMetadataRepository(@Named(HUB_CONNECTOR_METADATA_RESOLVER) Optional<MetadataResolver> metadataResolver, @Named("HubConnectorEntityId") String hubEntityId) {
-        if (metadataResolver.isPresent()) {
-            return Optional.of(new MetadataRepository(metadataResolver.get(), hubEntityId));
-        }
-        return Optional.empty();
+        return metadataResolver.map(metadataResolver1 -> new MetadataRepository(metadataResolver1, hubEntityId));
     }
 
     @Provides

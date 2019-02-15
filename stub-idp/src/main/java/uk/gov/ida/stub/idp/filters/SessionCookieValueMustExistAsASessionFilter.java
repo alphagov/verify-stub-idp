@@ -30,7 +30,8 @@ public class SessionCookieValueMustExistAsASessionFilter implements ContainerReq
     private final HmacValidator hmacValidator;
     private final boolean isSecureCookieEnabled;
 
-    public enum Status {VERIFIED, ID_NOT_PRESENT, HASH_NOT_PRESENT, DELETED_SESSION, INVALID_HASH, NOT_FOUND };
+    public enum Status {VERIFIED, ID_NOT_PRESENT, HASH_NOT_PRESENT, DELETED_SESSION, INVALID_HASH, NOT_FOUND }
+
     public static final String NO_CURRENT_SESSION_COOKIE_VALUE = "no-current-session";
 
     @Inject

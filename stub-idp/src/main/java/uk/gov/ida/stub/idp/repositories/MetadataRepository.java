@@ -12,8 +12,6 @@ import org.opensaml.saml.saml2.metadata.SPSSODescriptor;
 import org.opensaml.security.credential.UsageType;
 import org.opensaml.xmlsec.signature.X509Certificate;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;

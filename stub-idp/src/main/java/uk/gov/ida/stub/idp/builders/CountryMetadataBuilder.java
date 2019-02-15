@@ -7,6 +7,7 @@ import java.net.URI;
 import java.security.cert.CertificateEncodingException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -86,7 +87,7 @@ public class CountryMetadataBuilder {
     }
 
     private <T extends XMLObject> T createElement(QName elementName, QName typeName) {
-        return (T) xmlFactory.getBuilder(elementName).buildObject(elementName, typeName);
+        return (T) Objects.requireNonNull(xmlFactory.getBuilder(elementName)).buildObject(elementName, typeName);
     }
 
     private Certificate getSigningCertificate(URI entityId, java.security.cert.Certificate signingCertificate) throws CertificateEncodingException {

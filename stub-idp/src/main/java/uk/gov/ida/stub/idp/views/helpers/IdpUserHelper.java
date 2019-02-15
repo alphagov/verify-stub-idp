@@ -37,7 +37,7 @@ public class IdpUserHelper {
     }
 
     public String getSurnames() {
-        Collection<String> surnameValues = Collections2.transform(this.idpUser.getSurnames(), new Function<MatchingDatasetValue<String>, String>() {
+        Collection<String> surnameValues = Collections2.transform(this.idpUser.getSurnames(), new Function<>() {
             @Nullable
             @Override
             public String apply(@Nullable MatchingDatasetValue<String> input) {

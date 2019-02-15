@@ -2,7 +2,6 @@ package uk.gov.ida.stub.idp.repositories;
 
 import uk.gov.ida.stub.idp.domain.DatabaseEidasUser;
 import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
-import uk.gov.ida.stub.idp.domain.EidasUser;
 
 import java.util.Collection;
 

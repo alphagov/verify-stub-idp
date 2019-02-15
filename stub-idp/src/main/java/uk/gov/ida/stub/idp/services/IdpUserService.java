@@ -143,7 +143,7 @@ public class IdpUserService {
                 Collections.singletonList(createSimpleMdsValue2("firstname")),
                 Collections.emptyList(),
                 Collections.singletonList(createSimpleMdsValue2("smith")),
-                Optional.ofNullable(createSimpleMdsValue2(Gender.FEMALE)),
+                Optional.of(createSimpleMdsValue2(Gender.FEMALE)),
                 Collections.emptyList(),
                 Collections.singletonList(
                         new Address(asList("line1", "line2"), "KT23 4XD", null, "fhfhf", DateTime.parse("2000-01-01"), DateTime.parse("2013-05-05"), false)
