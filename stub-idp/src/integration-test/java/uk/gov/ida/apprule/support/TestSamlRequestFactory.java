@@ -1,20 +1,13 @@
 package uk.gov.ida.apprule.support;
 
-import com.google.common.base.Throwables;
-import com.google.common.io.Resources;
 import org.joda.time.DateTime;
 import org.opensaml.saml.saml2.core.AuthnRequest;
-import uk.gov.ida.saml.core.test.TestCertificateStrings;
 import uk.gov.ida.saml.core.test.TestCredentialFactory;
 import uk.gov.ida.saml.core.test.TestEntityIds;
 import uk.gov.ida.saml.core.test.builders.IssuerBuilder;
 import uk.gov.ida.saml.hub.domain.Endpoints;
 import uk.gov.ida.saml.serializers.XmlObjectToBase64EncodedStringTransformer;
 
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.Base64;
 import java.util.Optional;
 import java.util.UUID;
 
