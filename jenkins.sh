@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-set -eu
-set -o pipefail
+set -euo pipefail
+
+cd "$(dirname "$0")"
 
 stub_idp_fedconfig="$(pwd)/../verify-stub-idp-federation-config"
 
@@ -9,11 +10,10 @@ stub_idp_fedconfig="$(pwd)/../verify-stub-idp-federation-config"
 mkdir -p stub-idp/src/dist/resources
 rsync -qrv "$stub_idp_fedconfig/configuration/" stub-idp/src/dist/resources/
 
-./gradlew --parallel --no-daemon \
-  clean test intTest
+./gradlew --parallel --no-daemon clean test intTest
 
 ./gradlew --no-daemon \
-  -Pversion=$BUILD_NUMBER \
+  -Pversion="$BUILD_NUMBER" \
   -PstubidpExtraLogosDirectory="$stub_idp_fedconfig/idp-logos" \
   copyStubIdpLogos copyToLib distZip publish bintrayUpload
 

@@ -7,7 +7,7 @@ if test -e local.env; then
     source local.env
     set +a
 else
-    printf "$(tput setaf 1)No local environment found. Use verify-local-startup or openssl to generate a local.env file\n$(tput sgr0)"
+    printf "%sNo local environment found. Use verify-local-startup or openssl to generate a local.env file\n%s" "$(tput setaf 1)" "$(tput sgr0)"
     exit
 fi
 
@@ -20,10 +20,10 @@ fi
 
 if ! docker ps | grep stub-idp-postgres-db
 then
-    printf "$(tput setaf 3)Postgres not running... Attempting to start postgres using docker...\n$(tput sgr0)"
+    printf "%sPostgres not running... Attempting to start postgres using docker...\n%s" "$(tput setaf 3)" "$(tput sgr0)"
     docker run --rm -d -p 5432:5432 --name stub-idp-postgres-db postgres
 fi
 
 mkdir -p logs
-start_service stub-idp . configuration/stub-idp.yml $STUB_IDP_PORT
+start_service stub-idp . configuration/stub-idp.yml "$STUB_IDP_PORT"
 wait

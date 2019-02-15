@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 
-cd $(dirname "${BASH_SOURCE[0]}")
+set -eu
+
+: "${DOCKER_TAG:=stub-idp:latest}"
+
+cd "$(dirname "${BASH_SOURCE[0]}")"
 
 ./gradlew clean
 ./gradlew distZip -Pversion=local
-docker build -t stub-idp:latest -f run.Dockerfile . 2>&1
-echo "stub-idp:latest"
+docker build -t "$DOCKER_TAG" -f run.Dockerfile . 2>&1
+echo "$DOCKER_TAG"
