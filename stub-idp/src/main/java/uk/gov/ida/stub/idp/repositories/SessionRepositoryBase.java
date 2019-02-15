@@ -61,8 +61,6 @@ public abstract class SessionRepositoryBase<T extends Session> implements Sessio
             T session = objectMapper.readValue(unescapeJson(serializedSession.substring(1, serializedSession.length() - 1)), sessionType);
 
             return Optional.of(session);
-        } catch (JsonParseException e) {
-            return cleanupSession(sessionToken);
         } catch (JsonMappingException e) {
             return cleanupSession(sessionToken);
         } catch (IOException e) {
