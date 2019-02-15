@@ -1,6 +1,5 @@
 package uk.gov.ida.apprule.steps;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -19,6 +18,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.ida.stub.idp.repositories.StubCountryRepository.STUB_COUNTRY_FRIENDLY_ID;
@@ -53,11 +53,11 @@ public class AuthnRequestSteps {
     }
 
     public Cookies userPostsAuthnRequestToStubIdp() {
-        return userPostsAuthnRequestToStubIdp(ImmutableList.of(), Optional.absent(), Optional.absent());
+        return userPostsAuthnRequestToStubIdp(ImmutableList.of(), Optional.empty(), Optional.empty());
     }
 
     public Cookies userPostsAuthnRequestToStubIdp(String hint) {
-        return userPostsAuthnRequestToStubIdp(ImmutableList.of(hint), Optional.absent(), Optional.absent());
+        return userPostsAuthnRequestToStubIdp(ImmutableList.of(hint), Optional.empty(), Optional.empty());
     }
 
     public Cookies userPostsAuthnRequestToStubIdp(List<String> hints, Optional<String> language, Optional<Boolean> registration) {
@@ -87,7 +87,7 @@ public class AuthnRequestSteps {
             eidasAuthnRequestBuilder.withRequestedAttribute(IdaConstants.Eidas_Attributes.Gender.NAME);
         }
         String authnRequest = eidasAuthnRequestBuilder.build();
-        Response response = postAuthnRequest(ImmutableList.of(), Optional.absent(), Optional.absent(), authnRequest, Urls.EIDAS_SAML2_SSO_RESOURCE);
+        Response response = postAuthnRequest(ImmutableList.of(), Optional.empty(), Optional.empty(), authnRequest, Urls.EIDAS_SAML2_SSO_RESOURCE);
 
         assertThat(response.getStatus()).isEqualTo(303);
         assertThat(response.getLocation().getPath()).startsWith(getStubIdpUri(Urls.EIDAS_LOGIN_RESOURCE).getPath());
