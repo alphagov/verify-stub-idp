@@ -1,8 +1,9 @@
 # Verify Stub IDP
+![Stub IDP logo](././stub-idp/src/main/resources/assets/images/providers/stub-idp-demo-one.png)
 
 This microservice is a stub IDP that can be white-labelled to simulate any IDP, or used as a Stub eIDAS Proxy Service Node.
 
-[![Build Status](https://travis-ci.org/alphagov/verify-stub-idp.svg?branch=master)](https://travis-ci.org/alphagov/verify-stub-idp)
+[![Build Status](https://travis-ci.org/willp-bl/verify-stub-idp.svg?branch=master)](https://travis-ci.org/willp-bl/verify-stub-idp)
 
 ## Note about the history of this repository
 
