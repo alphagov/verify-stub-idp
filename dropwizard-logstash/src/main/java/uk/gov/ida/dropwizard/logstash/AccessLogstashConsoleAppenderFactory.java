@@ -73,7 +73,8 @@ public class AccessLogstashConsoleAppenderFactory extends ConsoleAppenderFactory
         }
 
         private JsonProvider<IAccessEvent> accessProvider() {
-            AbstractNestedJsonProvider<IAccessEvent> access = new AbstractNestedJsonProvider<IAccessEvent>() {};
+            AbstractNestedJsonProvider<IAccessEvent> access = new AbstractNestedJsonProvider<>() {
+            };
             access.setFieldName("access");
             JsonProviders<IAccessEvent> accessProviders = access.getProviders();
             accessProviders.addProvider(new MethodJsonProvider() {{setFieldName("method");}});

@@ -24,6 +24,7 @@ import java.security.cert.PKIXParameters;
 import java.security.cert.X509Certificate;
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class EidasTrustAnchorResolver {
@@ -62,7 +63,7 @@ public class EidasTrustAnchorResolver {
         X509Certificate certificate = (X509Certificate) certificateFactory.generateCertificate(certStream);
 
         try {
-            List<X509Certificate> certificateList = Arrays.asList(certificate);
+            List<X509Certificate> certificateList = Collections.singletonList(certificate);
             CertPath cp = certificateFactory.generateCertPath(certificateList);
             PKIXParameters params = new PKIXParameters(trustStore);
             params.setRevocationEnabled(false);

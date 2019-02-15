@@ -112,7 +112,7 @@ public class FederationMetadataWithoutTrustStoresBundleTest {
             @GET
             public String getMetadata() throws ResolverException {
                 return metadataResolver.resolveSingle(new CriteriaSet(new EntityIdCriterion(TestEntityIds.HUB_ENTITY_ID))).getEntityID();
-            };
+            }
         }
     }
 }

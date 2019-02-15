@@ -15,7 +15,7 @@ public class LevelLogger<T> {
     }
 
     static <T> LevelLogger<T> getLevelLogger(Class<T> clazz) {
-        return new LevelLogger<T>(clazz);
+        return new LevelLogger<>(clazz);
     }
 
     public void log(Level level, Exception exception, UUID errorId){

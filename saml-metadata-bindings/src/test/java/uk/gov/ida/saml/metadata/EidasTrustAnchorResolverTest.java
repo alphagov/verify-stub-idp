@@ -32,6 +32,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -109,7 +110,7 @@ public class EidasTrustAnchorResolverTest {
 
     private String createJwsWithACountryTrustAnchor(PrivateKey privateKey) throws ParseException, JOSEException, CertificateEncodingException {
         Generator generator = new Generator(privateKey, publicSigningCert);
-        return generator.generate(Arrays.asList(createJsonAnchor("https://eu.entity.id"))).serialize();
+        return generator.generate(Collections.singletonList(createJsonAnchor("https://eu.entity.id"))).serialize();
     }
 
     private String createJsonAnchor(String kid) {

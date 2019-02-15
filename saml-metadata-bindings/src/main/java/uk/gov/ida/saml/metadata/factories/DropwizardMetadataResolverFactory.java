@@ -98,6 +98,6 @@ public class DropwizardMetadataResolverFactory {
                     certificateChainValidator,
                     idpKeyStore)));
 
-        return Collections.unmodifiableList(new ArrayList(metadataFilters));
+        return List.copyOf(metadataFilters);
     }
 }

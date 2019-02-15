@@ -1,12 +1,9 @@
 package certificates.values;
 
 import com.google.common.base.Throwables;
-import com.google.common.io.Resources;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
-import java.net.URL;
-import java.util.Base64;
 
 public class CACertificates {
     private static String readCertificateFile(String name) {

@@ -16,7 +16,7 @@ public class EntitiesDescriptorNamePredicate implements Predicate<EntityDescript
     @Override
     public boolean apply(EntityDescriptor input) {
         XMLObject parent = input.getParent();
-        if (parent == null || !(parent instanceof EntitiesDescriptor)) {
+        if (!(parent instanceof EntitiesDescriptor)) {
             return false;
         }
         String entitiesName = ((EntitiesDescriptor) parent).getName();

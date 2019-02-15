@@ -61,7 +61,7 @@ public class PKIXSignatureValidationFilterProviderTest {
     @Before
     public void setUp() throws Exception {
         IdaSamlBootstrap.bootstrap();
-        trustStore = loadKeyStore(asList(CACertificates.TEST_METADATA_CA));
+        trustStore = loadKeyStore(Collections.singletonList(CACertificates.TEST_METADATA_CA));
         signatureValidationFilter = new PKIXSignatureValidationFilterProvider(trustStore).get();
     }
 
@@ -91,9 +91,7 @@ public class PKIXSignatureValidationFilterProviderTest {
 
     @Test
     public void shouldErrorLoadingInvalidMetadataWhenSignedWithCertificateIssuedByOtherCA() throws Exception {
-        assertThatThrownBy(()-> {
-            validateMetadata(metadataFactory.signedMetadata(TestCertificateStrings.HUB_TEST_PUBLIC_SIGNING_CERT, TestCertificateStrings.HUB_TEST_PRIVATE_SIGNING_KEY));
-        }).isInstanceOf(FilterException.class);
+        assertThatThrownBy(()-> validateMetadata(metadataFactory.signedMetadata(TestCertificateStrings.HUB_TEST_PUBLIC_SIGNING_CERT, TestCertificateStrings.HUB_TEST_PRIVATE_SIGNING_KEY))).isInstanceOf(FilterException.class);
     }
 
     @Test
@@ -145,7 +143,7 @@ public class PKIXSignatureValidationFilterProviderTest {
 
     @Test
     public void shouldErrorLoadingMetadataWhenTrustStoreOnlyContainsRootCertificate() throws Exception {
-        trustStore = loadKeyStore(asList(CACertificates.TEST_ROOT_CA));
+        trustStore = loadKeyStore(Collections.singletonList(CACertificates.TEST_ROOT_CA));
         signatureValidationFilter = new PKIXSignatureValidationFilterProvider(trustStore).get();
 
         String metadataContent = metadataFactory.metadataWithFullCertificateChain(

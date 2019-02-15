@@ -185,7 +185,6 @@ public class CertificateChainValidationFilterTest {
                                                                                 keyDescriptor ->
                                                                                     keyDescriptor.getKeyInfo()
                                                                                                  .getKeyNames()
-                                                                                                 .stream()
                                                                                                  .forEach(
                                                                                                     keyName ->
                                                                                                         keyNames.add(keyName.getValue())))));

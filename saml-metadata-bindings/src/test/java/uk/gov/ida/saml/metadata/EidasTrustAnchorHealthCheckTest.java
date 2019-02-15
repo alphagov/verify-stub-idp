@@ -15,6 +15,7 @@ import org.opensaml.saml.metadata.resolver.MetadataResolver;
 import org.opensaml.xmlsec.signature.support.SignatureException;
 import uk.gov.ida.saml.core.test.builders.metadata.EntityDescriptorBuilder;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -84,7 +85,7 @@ public class EidasTrustAnchorHealthCheckTest {
 
         ImmutableMap<String, MetadataResolver> metadataResolverMap = ImmutableMap.of(entityId1, validMetadataResolver);
 
-        when(metadataResolverRepository.getResolverEntityIds()).thenReturn(asList(entityId1));
+        when(metadataResolverRepository.getResolverEntityIds()).thenReturn(Collections.singletonList(entityId1));
         when(metadataResolverRepository.getMetadataResolvers()).thenReturn(metadataResolverMap);
 
         Result result = eidasTrustAnchorHealthCheck.check();

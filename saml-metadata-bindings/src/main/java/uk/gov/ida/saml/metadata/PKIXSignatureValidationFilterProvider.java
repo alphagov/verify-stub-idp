@@ -79,8 +79,8 @@ public class PKIXSignatureValidationFilterProvider implements Provider<Signature
             Throwables.propagate(e);
         }
         SignatureTrustEngine trustEngine = new PKIXSignatureTrustEngine(
-                new NamelessPKIXValidationInformationResolver(asList(basicPKIXValidationInformation)),
-                new BasicProviderKeyInfoCredentialResolver(asList(new InlineX509DataProvider()))
+                new NamelessPKIXValidationInformationResolver(Collections.singletonList(basicPKIXValidationInformation)),
+                new BasicProviderKeyInfoCredentialResolver(Collections.singletonList(new InlineX509DataProvider()))
         );
 
 

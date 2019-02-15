@@ -1,7 +1,7 @@
 package uk.gov.ida.saml.metadata.factories;
 
-import com.google.common.base.Predicate;
 import net.shibboleth.utilities.java.support.resolver.CriterionPredicateRegistry;
+import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.opensaml.saml.metadata.resolver.MetadataResolver;
@@ -14,6 +14,7 @@ import uk.gov.ida.saml.metadata.ExpiredCertificateMetadataFilter;
 
 import javax.ws.rs.client.Client;
 import java.net.URI;
+import java.util.function.Predicate;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,14 +29,14 @@ public class MetadataResolverFactoryTest {
 
     @Test
     public void shouldProvideMetadataResolver() throws Exception {
-        Client client = new org.glassfish.jersey.client.JerseyClientBuilder().build();
+        Client client = new JerseyClientBuilder().build();
         MetadataResolverFactory metadataResolverFactory = new MetadataResolverFactory();
         MetadataResolver metadataResolver = metadataResolverFactory.create(client, URI.create("http://example.com"), asList(signatureValidationFilter,  expiredCertificateMetadataFilter),10, 5);
         assertThat(metadataResolver).isNotNull();
 
         AbstractBatchMetadataResolver batchMetadataResolver = (AbstractBatchMetadataResolver) metadataResolver;
         CriterionPredicateRegistry<EntityDescriptor> criterionPredicateRegistry = batchMetadataResolver.getCriterionPredicateRegistry();
-        Predicate<EntityDescriptor> predicate = criterionPredicateRegistry.getPredicate(new EntitiesDescriptorNameCriterion("some-name"));
+        Predicate<EntityDescriptor> predicate = criterionPredicateRegistry.getPredicate(new EntitiesDescriptorNameCriterion("some-name"))::apply;
         assertThat(predicate.getClass()).isEqualTo(EntitiesDescriptorNamePredicate.class);
         assertThat(batchMetadataResolver.isResolveViaPredicatesOnly()).isTrue();
     }
