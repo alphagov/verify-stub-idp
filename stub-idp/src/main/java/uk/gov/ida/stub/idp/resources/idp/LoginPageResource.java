@@ -17,7 +17,6 @@ import uk.gov.ida.stub.idp.repositories.Idp;
 import uk.gov.ida.stub.idp.repositories.IdpSession;
 import uk.gov.ida.stub.idp.repositories.IdpSessionRepository;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
-import uk.gov.ida.stub.idp.repositories.Session;
 import uk.gov.ida.stub.idp.services.IdpUserService;
 import uk.gov.ida.stub.idp.services.NonSuccessAuthnResponseService;
 import uk.gov.ida.stub.idp.views.ErrorMessageType;
@@ -278,14 +277,16 @@ public class LoginPageResource {
     }
 
     private Response showLoginForm(Optional<IdpSession> session, Idp idp, Optional<ErrorMessageType> errorMessage) {
-        session.ifPresent(idpSession -> sessionRepository.updateSession(idpSession.getSessionId(), idpSession.setNewCsrfToken()));
+        if(session.isPresent()) {
+            sessionRepository.updateSession(session.get().getSessionId(), session.get().setNewCsrfToken());
+        }
         return Response.ok().entity(
                 new LoginPageView(
                         idp.getDisplayName(),
                         idp.getFriendlyId(),
                         errorMessage.orElse(NO_ERROR).getMessage(),
                         idp.getAssetId(),
-                        session.map(Session::getCsrfToken).orElse(null)))
+                        session.map(s -> s.getCsrfToken()).orElse(null)))
                 .build();
     }
 

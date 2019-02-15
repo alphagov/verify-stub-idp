@@ -1,5 +1,6 @@
 package uk.gov.ida.stub.idp.views;
 
+import io.dropwizard.views.View;
 import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.views.helpers.IdpUserHelper;
 

@@ -1,8 +1,7 @@
 package uk.gov.ida.stub.idp.exceptions;
 
+import com.google.common.base.Optional;
 import uk.gov.ida.common.SessionId;
-
-import java.util.Optional;
 
 public class SecureCookieNotFoundException extends RuntimeException {
 
@@ -12,7 +11,7 @@ public class SecureCookieNotFoundException extends RuntimeException {
     public SecureCookieNotFoundException(String message, SessionId sessionId) {
         super(message);
         this.message = message;
-        this.sessionId = Optional.ofNullable(sessionId);
+        this.sessionId = Optional.fromNullable(sessionId);
     }
 
     public Optional<SessionId> getSessionId() {

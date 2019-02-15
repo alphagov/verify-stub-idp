@@ -36,7 +36,7 @@ public final class IdpIdaStatus implements IdaStatus {
     }
 
     private IdpIdaStatus(Status status) {
-        this(status, Optional.empty());
+        this(status, Optional.<String>empty());
     }
 
     private IdpIdaStatus(Status status, Optional<String> message) {
@@ -59,7 +59,9 @@ public final class IdpIdaStatus implements IdaStatus {
 
         IdpIdaStatus idpIdaStatus = (IdpIdaStatus) o;
 
-        return status == idpIdaStatus.status;
+        if (status != idpIdaStatus.status) return false;
+
+        return true;
     }
 
     @Override

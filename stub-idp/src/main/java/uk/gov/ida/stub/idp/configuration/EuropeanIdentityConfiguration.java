@@ -6,6 +6,7 @@ import uk.gov.ida.saml.metadata.TrustStoreBackedMetadataConfiguration;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.net.URI;
 
 public class EuropeanIdentityConfiguration {
 

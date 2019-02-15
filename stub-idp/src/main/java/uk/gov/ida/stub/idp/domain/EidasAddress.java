@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.glassfish.jersey.internal.util.Base64;
 
 import java.text.MessageFormat;
-import java.util.Objects;
 
 public class EidasAddress {
     private final String poBox;
@@ -95,15 +94,19 @@ public class EidasAddress {
 
         EidasAddress that = (EidasAddress) o;
 
-        if (!Objects.equals(poBox, that.poBox)) return false;
-        if (!Objects.equals(locatorDesignator, that.locatorDesignator)) return false;
-        if (!Objects.equals(locatorName, that.locatorName)) return false;
-        if (!Objects.equals(cvAddressArea, that.cvAddressArea)) return false;
-        if (!Objects.equals(thoroughfare, that.thoroughfare)) return false;
-        if (!Objects.equals(postName, that.postName)) return false;
-        if (!Objects.equals(adminunitFirstLine, that.adminunitFirstLine)) return false;
-        if (!Objects.equals(adminunitSecondLine, that.adminunitSecondLine)) return false;
-        return Objects.equals(postCode, that.postCode);
+        if (poBox != null ? !poBox.equals(that.poBox) : that.poBox != null) return false;
+        if (locatorDesignator != null ? !locatorDesignator.equals(that.locatorDesignator) : that.locatorDesignator != null)
+            return false;
+        if (locatorName != null ? !locatorName.equals(that.locatorName) : that.locatorName != null) return false;
+        if (cvAddressArea != null ? !cvAddressArea.equals(that.cvAddressArea) : that.cvAddressArea != null)
+            return false;
+        if (thoroughfare != null ? !thoroughfare.equals(that.thoroughfare) : that.thoroughfare != null) return false;
+        if (postName != null ? !postName.equals(that.postName) : that.postName != null) return false;
+        if (adminunitFirstLine != null ? !adminunitFirstLine.equals(that.adminunitFirstLine) : that.adminunitFirstLine != null)
+            return false;
+        if (adminunitSecondLine != null ? !adminunitSecondLine.equals(that.adminunitSecondLine) : that.adminunitSecondLine != null)
+            return false;
+        return postCode != null ? postCode.equals(that.postCode) : that.postCode == null;
 
     }
 }

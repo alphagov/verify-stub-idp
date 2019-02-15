@@ -82,7 +82,9 @@ public class AuthnRequestReceiverResource {
                 try {
                     idpUserService.attachIdpUserToSession(preRegSession.get().getIdpUser(), sessionCreated.getIdpSessionId());
                     idpSessionRepository.deleteSession(preRegSession.get().getSessionId());
-                } catch (InvalidUsernameOrPasswordException | InvalidSessionIdException e) {
+                } catch (InvalidUsernameOrPasswordException e) {
+                    e.printStackTrace();
+                } catch (InvalidSessionIdException e) {
                     e.printStackTrace();
                 }
             }

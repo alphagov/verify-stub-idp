@@ -67,7 +67,7 @@ public class Idp {
             String password,
             AuthnContext levelOfAssurance) {
 
-        String pidValue = pid.orElseGet(() -> UUID.randomUUID().toString());
+        String pidValue = pid.isPresent() ? pid.get() : UUID.randomUUID().toString();
         return allIdpsUserRepository.createUserForIdp(friendlyId, pidValue, firstnames, middleNames, surnames, gender, dateOfBirths, addresses, username, password, levelOfAssurance);
     }
 

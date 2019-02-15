@@ -45,7 +45,7 @@ public enum EidasScheme {
 
     EidasScheme(String eidasSchemeName) {
         this.eidasSchemeName = eidasSchemeName;
-    }
+    };
 
     public String getEidasSchemeName() {
         return eidasSchemeName;
@@ -54,7 +54,7 @@ public enum EidasScheme {
     public static Optional<EidasScheme> fromString(String eidasSchemeName) {
         for(EidasScheme eidasScheme : values()) {
             if(eidasScheme.getEidasSchemeName().equals(eidasSchemeName)) {
-                return Optional.of(eidasScheme);
+                return Optional.ofNullable(eidasScheme);
             }
         }
         return Optional.empty();

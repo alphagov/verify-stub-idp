@@ -11,8 +11,6 @@ import org.opensaml.xmlsec.signature.support.Signer;
 
 import uk.gov.ida.saml.security.SignatureFactory;
 
-import java.util.Objects;
-
 public class CountryMetadataSigningHelper {
     private SignatureFactory signatureFactory;
 
@@ -23,8 +21,8 @@ public class CountryMetadataSigningHelper {
 
     public <T extends SignableSAMLObject> T sign(T signableSAMLObject) throws MarshallingException, SignatureException, SecurityException {
         signableSAMLObject.setSignature(signatureFactory.createSignature());
-        Objects.requireNonNull(XMLObjectProviderRegistrySupport.getMarshallerFactory().getMarshaller(signableSAMLObject)).marshall(signableSAMLObject);
-        Signer.signObject(Objects.requireNonNull(signableSAMLObject.getSignature()));
+        XMLObjectProviderRegistrySupport.getMarshallerFactory().getMarshaller(signableSAMLObject).marshall(signableSAMLObject);
+        Signer.signObject(signableSAMLObject.getSignature());
 
         return signableSAMLObject;
     }

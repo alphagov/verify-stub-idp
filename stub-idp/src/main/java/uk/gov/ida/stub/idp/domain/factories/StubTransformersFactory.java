@@ -40,7 +40,7 @@ public class StubTransformersFactory {
         AuthnRequestSizeValidator sizeValidator = new AuthnRequestSizeValidator(new StringSizeValidator());
 
 
-        StringToOpenSamlObjectTransformer<AuthnRequest> stringtoOpenSamlObjectTransformer = coreTransformersFactory.getStringtoOpenSamlObjectTransformer(sizeValidator);
+        StringToOpenSamlObjectTransformer<AuthnRequest> stringtoOpenSamlObjectTransformer = coreTransformersFactory.<AuthnRequest>getStringtoOpenSamlObjectTransformer(sizeValidator);
 
         return getAuthnRequestToIdaRequestFromHubTransformer(signingKeyStore).compose(stringtoOpenSamlObjectTransformer);
     }
@@ -48,13 +48,15 @@ public class StubTransformersFactory {
     public Function<String, AuthnRequest> getStringToAuthnRequest(){
         AuthnRequestSizeValidator sizeValidator = new AuthnRequestSizeValidator(new StringSizeValidator());
 
-        return coreTransformersFactory.getStringtoOpenSamlObjectTransformer(sizeValidator);
+        StringToOpenSamlObjectTransformer<AuthnRequest> stringtoOpenSamlObjectTransformer = coreTransformersFactory.<AuthnRequest>getStringtoOpenSamlObjectTransformer(sizeValidator);
+
+        return stringtoOpenSamlObjectTransformer;
     }
 
     private AuthnRequestToIdaRequestFromHubTransformer getAuthnRequestToIdaRequestFromHubTransformer(SigningKeyStore signingKeyStore) {
         return new AuthnRequestToIdaRequestFromHubTransformer(
                 new IdaAuthnRequestFromHubUnmarshaller(),
-                coreTransformersFactory.getSamlRequestSignatureValidator(signingKeyStore)
+                coreTransformersFactory.<AuthnRequest>getSamlRequestSignatureValidator(signingKeyStore)
         );
     }
 

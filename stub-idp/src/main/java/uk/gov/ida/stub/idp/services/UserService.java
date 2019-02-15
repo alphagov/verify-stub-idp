@@ -43,7 +43,10 @@ public class UserService {
         Idp idp = idpStubsRepository.getIdpWithFriendlyId(idpName);
         Optional<DatabaseIdpUser> user = idp.getUser(username);
 
-        return user.map(this::transform);
+        if (user.isPresent()) {
+            return Optional.ofNullable(transform(user.get()));
+        }
+        return Optional.empty();
     }
 
 

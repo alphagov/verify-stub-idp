@@ -107,8 +107,7 @@ public class StubCountryService {
     private EidasUser createEidasUser(Optional<DatabaseEidasUser> optionalUser) {
 
         DatabaseEidasUser user = optionalUser.get();
-
-        return new EidasUser(
+        EidasUser eidasUser = new EidasUser(
                 user.getFirstname().getValue(),
                 getOptionalValue(user.getNonLatinFirstname()),
                 user.getSurname().getValue(),
@@ -118,6 +117,8 @@ public class StubCountryService {
                 Optional.empty(),
                 Optional.empty()
         );
+
+        return eidasUser;
     }
 
     private Optional<String> getOptionalValue(Optional<MatchingDatasetValue<String>> fieldValue) {

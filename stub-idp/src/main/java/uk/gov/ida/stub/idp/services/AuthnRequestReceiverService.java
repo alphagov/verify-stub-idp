@@ -22,7 +22,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -102,7 +101,7 @@ public class AuthnRequestReceiverService {
     }
 
     private void validateEidasAuthnRequest(AuthnRequest request) {
-        if (Objects.requireNonNull(request.getSignature()).getKeyInfo() == null) {
+        if (request.getSignature().getKeyInfo() == null) {
             throw new InvalidEidasAuthnRequestException("KeyInfo cannot be null");
         }
         if (request.getSignature().getKeyInfo().getX509Datas().isEmpty()) {

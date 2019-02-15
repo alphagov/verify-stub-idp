@@ -77,7 +77,7 @@ public class EidasAuthnResponseService {
             hubConnectorEntityId
         );
 
-        return new SamlResponseFromValue<>(response, eidasResponseTransformerProvider.getTransformer(), session.getRelayState(), hubUrl);
+        return new SamlResponseFromValue<Response>(response, eidasResponseTransformerProvider.getTransformer(), session.getRelayState(), hubUrl);
     }
 
     public SamlResponseFromValue<Response> generateAuthnFailed(EidasSession session, String schemeId) {
