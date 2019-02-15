@@ -77,7 +77,7 @@ public class SuccessAuthnResponseService {
                 authnStatementAssertion,
                 hubUrl);
 
-        return new SamlResponseFromValue<OutboundResponseFromIdp>(idaResponse, outboundResponseFromIdpTransformerProvider.get(idp), session.getRelayState(), hubUrl);
+        return new SamlResponseFromValue<>(idaResponse, outboundResponseFromIdpTransformerProvider.get(idp), session.getRelayState(), hubUrl);
     }
 
 }

@@ -119,7 +119,7 @@ public class NonSuccessAuthnResponseService {
     }
 
     private SamlResponseFromValue<OutboundResponseFromIdp> generateResponse(Idp idp, OutboundResponseFromIdp outboundResponseFromIdp, URI hubUrl, String relayState) {
-        return new SamlResponseFromValue<OutboundResponseFromIdp>(outboundResponseFromIdp, outboundResponseFromIdpTransformerProvider.get(idp), relayState, hubUrl);
+        return new SamlResponseFromValue<>(outboundResponseFromIdp, outboundResponseFromIdpTransformerProvider.get(idp), relayState, hubUrl);
     }
 
 }
