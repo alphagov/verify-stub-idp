@@ -107,8 +107,7 @@ public class MetadataRepositoryTest {
         try {
             metadataRepository.getSigningCertificates();
             fail("Expected exception");
-        } catch (MetadataRepository.InvalidMetadataException e) {
-        }
+        } catch (MetadataRepository.InvalidMetadataException ignored) { }
     }
 
     @Test
@@ -117,8 +116,7 @@ public class MetadataRepositoryTest {
         try {
             metadataRepository.getSigningCertificates();
             fail("Expected exception");
-        } catch (MetadataRepository.InvalidMetadataException e) {
-        }
+        } catch (MetadataRepository.InvalidMetadataException ignored) { }
     }
 
     private MetadataRepository initializeMetadata(String metadata) throws IOException, InitializationException, ComponentInitializationException, ResolverException {
