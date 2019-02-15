@@ -34,6 +34,7 @@
         <aws_java_sdk.version>1.11.277</aws_java_sdk.version>
         <logstash_logback_encoder.version>4.11</logstash_logback_encoder.version>
         <logback.version>1.2.3</logback.version>
+        <javax_activation.version>1.2.0</javax_activation.version>
 
         <!-- test dependencies -->
         <assertj.version>3.9.1</assertj.version>
