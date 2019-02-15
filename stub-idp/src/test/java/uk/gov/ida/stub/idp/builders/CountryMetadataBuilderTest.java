@@ -27,7 +27,9 @@ import org.opensaml.saml.saml2.metadata.ManageNameIDService;
 import org.opensaml.saml.saml2.metadata.SingleLogoutService;
 import org.opensaml.security.SecurityException;
 import org.opensaml.security.credential.UsageType;
+import org.opensaml.xmlsec.signature.KeyInfo;
 import org.opensaml.xmlsec.signature.X509Certificate;
+import org.opensaml.xmlsec.signature.X509Data;
 import org.opensaml.xmlsec.signature.support.SignatureException;
 import org.w3c.dom.Document;
 
@@ -56,10 +58,10 @@ public class CountryMetadataBuilderTest {
 
     private void assertCertificate(Optional<KeyDescriptor> keyDescriptor, String certString) {
         Optional<X509Certificate> signingCertificate = keyDescriptor
-            .map(k -> k.getKeyInfo())
-            .map(k -> k.getX509Datas())
+            .map(KeyDescriptor::getKeyInfo)
+            .map(KeyInfo::getX509Datas)
             .map(x -> x.get(0))
-            .map(x -> x.getX509Certificates())
+            .map(X509Data::getX509Certificates)
             .map(c -> c.get(0));
         assertThat(signingCertificate).isPresent();
         assertThat(prepareCertString(signingCertificate.get().getValue())).isEqualTo(prepareCertString(certString));

@@ -71,7 +71,7 @@ public class EidasUserLogsInIntegrationTests extends IntegrationTestHelper {
         final List<Attribute> attributes = inboundResponseFromCountry.getValidatedIdentityAssertion().getAttributeStatements().get(0).getAttributes();
         // stub-country can currently only return these 4 attributes
         assertThat(attributes.size()).isEqualTo(4);
-        assertThat(attributes.stream().map(a -> a.getName()).collect(Collectors.toList()))
+        assertThat(attributes.stream().map(Attribute::getName).collect(Collectors.toList()))
                 .containsExactlyInAnyOrder(
                         IdaConstants.Eidas_Attributes.FirstName.NAME,
                         IdaConstants.Eidas_Attributes.FamilyName.NAME,

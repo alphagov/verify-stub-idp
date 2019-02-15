@@ -28,7 +28,7 @@ public class HardCodedKeyStore implements SigningKeyStore, EncryptionKeyStore, I
     @Override
     public List<PublicKey> getVerifyingKeysForEntity(String entityId) {
         List<String> certs = Collections.singletonList(TestCertificateStrings.PUBLIC_SIGNING_CERTS.get(entityId));
-        return certs.stream().map(cert -> publicKeyFactory.createPublicKey(cert)).collect(Collectors.toList());
+        return certs.stream().map(publicKeyFactory::createPublicKey).collect(Collectors.toList());
     }
 
     @Override
