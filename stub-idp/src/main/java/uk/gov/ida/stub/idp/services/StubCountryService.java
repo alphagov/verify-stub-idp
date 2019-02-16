@@ -121,7 +121,7 @@ public class StubCountryService {
     }
 
     private Optional<String> getOptionalValue(Optional<MatchingDatasetValue<String>> fieldValue) {
-        return Optional.ofNullable(fieldValue.map(MatchingDatasetValue::getValue).orElse(null));
+        return fieldValue.map(MatchingDatasetValue::getValue);
     }
 
     private <T> MatchingDatasetValue<T> createMdsValue(T value) {
