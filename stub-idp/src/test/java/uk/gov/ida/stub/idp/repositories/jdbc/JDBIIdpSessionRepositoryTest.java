@@ -17,7 +17,7 @@ import uk.gov.ida.stub.idp.domain.MatchingDatasetValue;
 import uk.gov.ida.stub.idp.repositories.IdpSession;
 import uk.gov.ida.stub.idp.repositories.jdbc.migrations.DatabaseMigrationRunner;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,14 +57,14 @@ public class JDBIIdpSessionRepositoryTest {
 
 	private IdpSession createSession() {
 		DateTime authnRequestIssueTime = new DateTime(2018, 4, 25, 11, 24, 0, DateTimeZone.UTC);
-		IdaAuthnRequestFromHub authnRequest = new IdaAuthnRequestFromHub("155a37d3-5a9d-4cd0-b68a-158717b85202", "test-issuer", authnRequestIssueTime, Arrays.asList(), Optional.empty(), null, null, AuthnContextComparisonTypeEnumeration.EXACT);
+		IdaAuthnRequestFromHub authnRequest = new IdaAuthnRequestFromHub("155a37d3-5a9d-4cd0-b68a-158717b85202", "test-issuer", authnRequestIssueTime, Collections.emptyList(), Optional.empty(), null, null, AuthnContextComparisonTypeEnumeration.EXACT);
 		return createSession(authnRequest);
 	}
 
 	@Test
 	public void createSession_shouldCreateIdpSessionAndStoreInDatabase() {
 		DateTime authnRequestIssueTime = new DateTime(2018, 4, 25, 11, 24, 0, DateTimeZone.UTC);
-		IdaAuthnRequestFromHub authnRequest = new IdaAuthnRequestFromHub("155a37d3-5a9d-4cd0-b68a-158717b85202", "test-issuer", authnRequestIssueTime, Arrays.asList(), Optional.empty(), null, null, AuthnContextComparisonTypeEnumeration.EXACT);
+		IdaAuthnRequestFromHub authnRequest = new IdaAuthnRequestFromHub("155a37d3-5a9d-4cd0-b68a-158717b85202", "test-issuer", authnRequestIssueTime, Collections.emptyList(), Optional.empty(), null, null, AuthnContextComparisonTypeEnumeration.EXACT);
 		IdpSession session = createSession(authnRequest);
 		SessionId insertedSessionId = repository.createSession(session);
 		String expectedSerializedSession = "{{\"sessionId\":\""+ insertedSessionId.getSessionId() +"\",\"idaAuthnRequestFromHub\":{\"id\":\"155a37d3-5a9d-4cd0-b68a-158717b85202\",\"issuer\":\"test-issuer\",\"issueInstant\":1524655440000,\"levelsOfAssurance\":[],\"forceAuthentication\":null,\"sessionExpiryTimestamp\":null,\"comparisonType\":{\"comparisonType\":\"exact\"},\"destination\":null},\"relayState\":\"test-relay-state\",\"validHints\":[],\"invalidHints\":[],\"languageHint\":null,\"registration\":null,\"singleIdpJourneyId\":null,\"idpUser\":{\"username\":\"jobloggs\",\"persistentId\":\"persistentId\",\"password\":\"12345678\",\"firstnames\":[{\"value\":\"Joe\",\"from\":null,\"to\":null,\"verified\":true}],\"middleNames\":[],\"surnames\":[{\"value\":\"Bloggs\",\"from\":null,\"to\":null,\"verified\":true}],\"gender\":{\"value\":\"MALE\",\"from\":null,\"to\":null,\"verified\":true},\"dateOfBirths\":[{\"value\":[2018,4,25],\"from\":null,\"to\":null,\"verified\":true}],\"addresses\":[],\"levelOfAssurance\":\"LEVEL_1\",\"currentAddress\":null}}}";
@@ -91,7 +91,7 @@ public class JDBIIdpSessionRepositoryTest {
 	@Test
 	public void get_shouldReturnPopulatedIdpSession_whenSessionExists() {
 		DateTime authnRequestIssueTime = new DateTime(2018, 4, 25, 11, 24, 0, DateTimeZone.UTC);
-		IdaAuthnRequestFromHub authnRequest = new IdaAuthnRequestFromHub("155a37d3-5a9d-4cd0-b68a-158717b85202", "test-issuer", authnRequestIssueTime, Arrays.asList(), Optional.empty(), null, null, AuthnContextComparisonTypeEnumeration.EXACT);
+		IdaAuthnRequestFromHub authnRequest = new IdaAuthnRequestFromHub("155a37d3-5a9d-4cd0-b68a-158717b85202", "test-issuer", authnRequestIssueTime, Collections.emptyList(), Optional.empty(), null, null, AuthnContextComparisonTypeEnumeration.EXACT);
 		IdpSession expectedSession = createSession(authnRequest);
 		SessionId insertedSessionId = repository.createSession(expectedSession);
 		
@@ -105,7 +105,7 @@ public class JDBIIdpSessionRepositoryTest {
 	@Test
 	public void updateSession_shouldNotThrowException_whenSessionDoesNotExist() {
 		DateTime authnRequestIssueTime = new DateTime(2018, 4, 25, 11, 24, 0, DateTimeZone.UTC);
-		IdaAuthnRequestFromHub authnRequest = new IdaAuthnRequestFromHub("155a37d3-5a9d-4cd0-b68a-158717b85202", "test-issuer", authnRequestIssueTime, Arrays.asList(), Optional.empty(), null, null, AuthnContextComparisonTypeEnumeration.EXACT);
+		IdaAuthnRequestFromHub authnRequest = new IdaAuthnRequestFromHub("155a37d3-5a9d-4cd0-b68a-158717b85202", "test-issuer", authnRequestIssueTime, Collections.emptyList(), Optional.empty(), null, null, AuthnContextComparisonTypeEnumeration.EXACT);
 		IdpSession session = createSession(authnRequest);
 		SessionId insertedSessionId = repository.createSession(session);
 		session = repository.get(insertedSessionId).get();
@@ -117,7 +117,7 @@ public class JDBIIdpSessionRepositoryTest {
 	@Test
 	public void updateSession_shouldUpdateStoredSessionInDatabase_whenSessionExists() {
 		DateTime authnRequestIssueTime = new DateTime(2018, 4, 25, 11, 24, 0, DateTimeZone.UTC);
-		IdaAuthnRequestFromHub authnRequest = new IdaAuthnRequestFromHub("155a37d3-5a9d-4cd0-b68a-158717b85202", "test-issuer", authnRequestIssueTime, Arrays.asList(), Optional.empty(), null, null, AuthnContextComparisonTypeEnumeration.EXACT);
+		IdaAuthnRequestFromHub authnRequest = new IdaAuthnRequestFromHub("155a37d3-5a9d-4cd0-b68a-158717b85202", "test-issuer", authnRequestIssueTime, Collections.emptyList(), Optional.empty(), null, null, AuthnContextComparisonTypeEnumeration.EXACT);
 		IdpSession session = createSession(authnRequest);
 		SessionId insertedSessionId = repository.createSession(session);
 		IdpSession expectedSession = repository.get(insertedSessionId).get();
@@ -131,7 +131,7 @@ public class JDBIIdpSessionRepositoryTest {
 	@Test
 	public void deleteSession_shouldDeleteSessionFromDatabase_whenSessionExists() {
 		DateTime authnRequestIssueTime = new DateTime(2018, 4, 25, 11, 24, 0, DateTimeZone.UTC);
-		IdaAuthnRequestFromHub authnRequest = new IdaAuthnRequestFromHub("155a37d3-5a9d-4cd0-b68a-158717b85202", "test-issuer", authnRequestIssueTime, Arrays.asList(), Optional.empty(), null, null, AuthnContextComparisonTypeEnumeration.EXACT);
+		IdaAuthnRequestFromHub authnRequest = new IdaAuthnRequestFromHub("155a37d3-5a9d-4cd0-b68a-158717b85202", "test-issuer", authnRequestIssueTime, Collections.emptyList(), Optional.empty(), null, null, AuthnContextComparisonTypeEnumeration.EXACT);
 		IdpSession session = createSession(authnRequest);
 		SessionId insertedSessionId = repository.createSession(session);
 		
@@ -141,9 +141,9 @@ public class JDBIIdpSessionRepositoryTest {
 	}
 	
 	private IdpSession createSession(IdaAuthnRequestFromHub authnRequestFromHub) {
-		IdpSession session = new IdpSession(SessionId.createNewSessionId(), authnRequestFromHub, "test-relay-state", Arrays.asList(), Arrays.asList(), Optional.empty(), Optional.empty(),Optional.empty());
+		IdpSession session = new IdpSession(SessionId.createNewSessionId(), authnRequestFromHub, "test-relay-state", Collections.emptyList(), Collections.emptyList(), Optional.empty(), Optional.empty(),Optional.empty());
 		// TODO: add addresses to IdpUser below once Address has a equals() method implemented.
-		session.setIdpUser(Optional.of(new DatabaseIdpUser("jobloggs", "persistentId", "12345678", Arrays.asList(new MatchingDatasetValue<>("Joe", null, null, true)), Arrays.asList(), Arrays.asList(new MatchingDatasetValue<>("Bloggs", null, null, true)), Optional.of(new MatchingDatasetValue<>(Gender.MALE, null, null, true)), Arrays.asList(new MatchingDatasetValue<>(new LocalDate(authnRequestFromHub.getIssueInstant().getMillis(), DateTimeZone.UTC), null, null, true)), Arrays.asList(), AuthnContext.LEVEL_1)));
+		session.setIdpUser(Optional.of(new DatabaseIdpUser("jobloggs", "persistentId", "12345678", Collections.singletonList(new MatchingDatasetValue<>("Joe", null, null, true)), Collections.emptyList(), Collections.singletonList(new MatchingDatasetValue<>("Bloggs", null, null, true)), Optional.of(new MatchingDatasetValue<>(Gender.MALE, null, null, true)), Collections.singletonList(new MatchingDatasetValue<>(new LocalDate(authnRequestFromHub.getIssueInstant().getMillis(), DateTimeZone.UTC), null, null, true)), Collections.emptyList(), AuthnContext.LEVEL_1)));
 		
 		return session;
 	}

@@ -204,7 +204,7 @@ public class IdentityProviderAssertionToAssertionTransformerTest {
 
     @Test
     public void shouldTransformAssertionSubjectsCurrentAddress() {
-        List<Address> address = singletonList(new AddressFactory().create(asList("221b Baker St."), "W4 1SH", "A 1", "4536789", DateTime.parse("2007-09-28"), DateTime.parse("2007-10-29"), true));
+        List<Address> address = singletonList(new AddressFactory().create(singletonList("221b Baker St."), "W4 1SH", "A 1", "4536789", DateTime.parse("2007-09-28"), DateTime.parse("2007-10-29"), true));
         IdentityProviderAssertion assertion = anIdentityProviderAssertion().withMatchingDataset(MatchingDatasetBuilder.aMatchingDataset().withCurrentAddresses(address).build()).build();
 
         transformer.transform(assertion);

@@ -47,7 +47,7 @@ import uk.gov.ida.stub.idp.services.AuthnRequestReceiverService;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -174,7 +174,7 @@ public class EidasAuthnRequestTest {
         KeyPair signingKeyPair = new KeyPair(publicSigningKey, privateSigningKey);
         KeyPair encryptionKeyPair = new KeyPair(privateEncryptionKey, publicEncryptionKey);
 
-        return new IdaKeyStore(signingKeyPair, Arrays.asList(encryptionKeyPair));
+        return new IdaKeyStore(signingKeyPair, Collections.singletonList(encryptionKeyPair));
     }
 
     private Extensions createEidasExtensions() {
