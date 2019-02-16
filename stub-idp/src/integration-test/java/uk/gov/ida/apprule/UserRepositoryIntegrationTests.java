@@ -202,11 +202,11 @@ public class UserRepositoryIntegrationTests extends IntegrationTestHelper {
                     pid,
                     username.orElse(null),
                     password.orElse(null),
-                    Optional.<MatchingDatasetValue<String>>empty(),
-                    Optional.<MatchingDatasetValue<String>>empty(),
-                    Collections.<MatchingDatasetValue<String>>emptyList(),
-                    Optional.<MatchingDatasetValue<Gender>>empty(),
-                    Optional.<MatchingDatasetValue<LocalDate>>empty(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    Collections.emptyList(),
+                    Optional.empty(),
+                    Optional.empty(),
                     address,
                     levelOfAssurance.orElse(null));
         }
