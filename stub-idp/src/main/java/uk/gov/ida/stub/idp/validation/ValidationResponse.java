@@ -24,6 +24,10 @@ public final class ValidationResponse {
         return isOk;
     }
 
+    public boolean isNotOk() {
+        return !isOk;
+    }
+
     public List<String> getMessages() {
         return messages;
     }

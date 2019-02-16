@@ -72,7 +72,7 @@ public class ConsentResource {
 
         List<AuthnContext> requestLevelsOfAssurance = session.getIdaAuthnRequestFromHub().getLevelsOfAssurance();
         AuthnContext userLevelOfAssurance = idpUser.getLevelOfAssurance();
-        boolean isUserLOATooLow = !requestLevelsOfAssurance.stream().anyMatch(loa -> loa.equals(userLevelOfAssurance));
+        boolean isUserLOATooLow = requestLevelsOfAssurance.stream().noneMatch(loa -> loa.equals(userLevelOfAssurance));
 
         Idp idp = idpStubsRepository.getIdpWithFriendlyId(idpName);
         return Response.ok(new ConsentView(idp.getDisplayName(), idp.getFriendlyId(), idp.getAssetId(), idpUser, isUserLOATooLow, userLevelOfAssurance, requestLevelsOfAssurance)).build();
