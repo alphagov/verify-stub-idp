@@ -182,11 +182,8 @@ public class UserRepositoryIntegrationTests extends IntegrationTestHelper {
     }
 
     private static <T> Optional<MatchingDatasetValue<T>> createOptionalMdsValue(Optional<T> value) {
-        if (!value.isPresent()) {
-            return Optional.empty();
-        }
+        return value.map(t -> new MatchingDatasetValue<>(t, null, null, true));
 
-        return Optional.ofNullable(new MatchingDatasetValue<>(value.get(), null, null, true));
     }
 
     protected static class UserBuilder {

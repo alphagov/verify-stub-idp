@@ -21,17 +21,9 @@ public class NameIdBuilder {
         NameID nameId = openSamlXmlObjectFactory.createNameId(value);
         nameId.setFormat(null);
 
-        if (format.isPresent()) {
-            nameId.setFormat(format.get());
-        }
-
-        if (nameQualifier.isPresent()) {
-            nameId.setNameQualifier(nameQualifier.get());
-        }
-
-        if (spNameQualifier.isPresent()) {
-            nameId.setSPNameQualifier(spNameQualifier.get());
-        }
+        format.ifPresent(nameId::setFormat);
+        nameQualifier.ifPresent(nameId::setNameQualifier);
+        spNameQualifier.ifPresent(nameId::setSPNameQualifier);
 
         return nameId;
     }

@@ -32,21 +32,11 @@ public class SubjectConfirmationDataBuilder {
     public SubjectConfirmationData build() {
         SubjectConfirmationData subjectConfirmationData = openSamlXmlObjectFactory.createSubjectConfirmationData();
 
-        if (recipient.isPresent()) {
-            subjectConfirmationData.setRecipient(recipient.get());
-        }
-        if (notOnOrAfter.isPresent()) {
-            subjectConfirmationData.setNotOnOrAfter(notOnOrAfter.get());
-        }
-        if (notBefore.isPresent()) {
-            subjectConfirmationData.setNotBefore(notBefore.get());
-        }
-        if (inResponseTo.isPresent()) {
-            subjectConfirmationData.setInResponseTo(inResponseTo.get());
-        }
-        if (address.isPresent()) {
-            subjectConfirmationData.setAddress(address.get());
-        }
+        recipient.ifPresent(subjectConfirmationData::setRecipient);
+        notOnOrAfter.ifPresent(subjectConfirmationData::setNotOnOrAfter);
+        notBefore.ifPresent(subjectConfirmationData::setNotBefore);
+        inResponseTo.ifPresent(subjectConfirmationData::setInResponseTo);
+        address.ifPresent(subjectConfirmationData::setAddress);
         subjectConfirmationData.getUnknownXMLObjects().addAll(assertions);
         subjectConfirmationData.getUnknownXMLObjects().addAll(encryptedAssertions);
 
