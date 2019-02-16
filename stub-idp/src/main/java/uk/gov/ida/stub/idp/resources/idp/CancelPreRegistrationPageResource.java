@@ -3,7 +3,6 @@ package uk.gov.ida.stub.idp.resources.idp;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.repositories.Idp;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
-import uk.gov.ida.stub.idp.services.IdpUserService;
 import uk.gov.ida.stub.idp.views.CancelPreRegistrationPageView;
 import uk.gov.ida.stub.idp.views.ErrorMessageType;
 
@@ -17,8 +16,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import java.net.URI;
 import java.util.Optional;
 
 import static uk.gov.ida.stub.idp.views.ErrorMessageType.NO_ERROR;

@@ -1,6 +1,5 @@
 package uk.gov.ida.apprule;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.JerseyClientBuilder;
@@ -22,6 +21,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,7 +53,7 @@ public class HintsIntegrationTests extends IntegrationTestHelper {
     public void debugPageShowsHints() throws Exception {
         List<String> hints = ImmutableList.of(IdpHint.has_apps.name(), "snakes", "plane");
         final Optional<Boolean> registration = Optional.of(true);
-        final Optional<String> language = Optional.absent();
+        final Optional<String> language = Optional.empty();
         final AuthnRequestSteps.Cookies cookies = authnRequestSteps.userPostsAuthnRequestToStubIdp(hints, language, registration);
         Response response = aUserVisitsTheDebugPage(IDP_NAME, cookies);
 
@@ -71,8 +71,8 @@ public class HintsIntegrationTests extends IntegrationTestHelper {
     @Test
     public void debugPageShowsLanguageHint() throws Exception {
         List<String> hints = ImmutableList.of();
-        final Optional<Boolean> registration = Optional.absent();
-        final Optional<String> language = Optional.fromNullable("cy");
+        final Optional<Boolean> registration = Optional.empty();
+        final Optional<String> language = Optional.ofNullable("cy");
         final AuthnRequestSteps.Cookies cookies = authnRequestSteps.userPostsAuthnRequestToStubIdp(hints, language, registration);
         Response response = aUserVisitsTheDebugPage(IDP_NAME, cookies);
 

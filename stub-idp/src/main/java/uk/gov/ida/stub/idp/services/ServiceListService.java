@@ -1,18 +1,15 @@
 package uk.gov.ida.stub.idp.services;
 
 import org.apache.log4j.Logger;
-import org.apache.velocity.util.ArrayListWrapper;
 import uk.gov.ida.jerseyclient.JsonClient;
 import uk.gov.ida.stub.idp.configuration.SingleIdpConfiguration;
 import uk.gov.ida.stub.idp.domain.Service;
 import uk.gov.ida.stub.idp.exceptions.FeatureNotEnabledException;
 
 import javax.inject.Inject;
-import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.GenericType;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ServiceListService {

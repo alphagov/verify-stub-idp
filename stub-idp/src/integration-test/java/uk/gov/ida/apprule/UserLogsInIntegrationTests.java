@@ -12,8 +12,6 @@ import uk.gov.ida.apprule.support.IntegrationTestHelper;
 import uk.gov.ida.apprule.support.SamlDecrypter;
 import uk.gov.ida.apprule.support.StubIdpAppRule;
 import uk.gov.ida.saml.hub.domain.InboundResponseFromIdp;
-import uk.gov.ida.stub.idp.Urls;
-import uk.gov.ida.stub.idp.cookies.CookieNames;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
@@ -24,9 +22,7 @@ import java.security.cert.CertificateException;
 import static java.util.Optional.empty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.ida.common.HttpHeaders.CACHE_CONTROL_KEY;
-import static uk.gov.ida.common.HttpHeaders.CACHE_CONTROL_NO_CACHE_VALUE;
 import static uk.gov.ida.common.HttpHeaders.PRAGMA_KEY;
-import static uk.gov.ida.common.HttpHeaders.PRAGMA_NO_CACHE_VALUE;
 import static uk.gov.ida.stub.idp.builders.StubIdpBuilder.aStubIdp;
 
 public class UserLogsInIntegrationTests extends IntegrationTestHelper {

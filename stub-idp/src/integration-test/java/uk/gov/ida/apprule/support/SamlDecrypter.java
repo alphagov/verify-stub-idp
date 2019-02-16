@@ -128,9 +128,7 @@ public class SamlDecrypter {
             jerseyClientMetadataResolver.setId("SamlDecrypter.MetadataResolver"+UUID.randomUUID());
             jerseyClientMetadataResolver.initialize();
             jerseyClientMetadataResolver.refresh();
-        } catch (ComponentInitializationException e) {
-            e.printStackTrace();
-        } catch (ResolverException e) {
+        } catch (ComponentInitializationException | ResolverException e) {
             e.printStackTrace();
         }
         return jerseyClientMetadataResolver;

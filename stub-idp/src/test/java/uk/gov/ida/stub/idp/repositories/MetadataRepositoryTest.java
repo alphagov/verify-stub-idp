@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.opensaml.core.config.InitializationException;
 import org.opensaml.core.config.InitializationService;
 import org.opensaml.saml.metadata.resolver.impl.FilesystemMetadataResolver;
-import uk.gov.ida.saml.core.test.TestCertificateStrings;
 import uk.gov.ida.saml.core.test.TestEntityIds;
 
 import java.io.File;
@@ -108,8 +107,7 @@ public class MetadataRepositoryTest {
         try {
             metadataRepository.getSigningCertificates();
             fail("Expected exception");
-        } catch (MetadataRepository.InvalidMetadataException e) {
-        }
+        } catch (MetadataRepository.InvalidMetadataException ignored) { }
     }
 
     @Test
@@ -118,8 +116,7 @@ public class MetadataRepositoryTest {
         try {
             metadataRepository.getSigningCertificates();
             fail("Expected exception");
-        } catch (MetadataRepository.InvalidMetadataException e) {
-        }
+        } catch (MetadataRepository.InvalidMetadataException ignored) { }
     }
 
     private MetadataRepository initializeMetadata(String metadata) throws IOException, InitializationException, ComponentInitializationException, ResolverException {

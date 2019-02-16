@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.saml.hub.domain.IdaAuthnRequestFromHub;
-import uk.gov.ida.stub.idp.cookies.CookieNames;
 import uk.gov.ida.stub.idp.repositories.Idp;
 import uk.gov.ida.stub.idp.repositories.IdpSession;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
@@ -17,7 +16,6 @@ import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.resources.idp.DebugPageResource;
 import uk.gov.ida.stub.idp.views.DebugPageView;
 
-import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.Response;
 import java.util.Optional;
 import java.util.UUID;

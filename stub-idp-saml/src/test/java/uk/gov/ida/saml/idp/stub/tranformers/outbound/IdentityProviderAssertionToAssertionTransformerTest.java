@@ -214,7 +214,7 @@ public class IdentityProviderAssertionToAssertionTransformerTest {
 
     @Test
     public void shouldHandleMissingAssertionSubjectsCurrentAddress() {
-        IdentityProviderAssertion assertion = anIdentityProviderAssertion().withMatchingDataset(MatchingDatasetBuilder.aFullyPopulatedMatchingDataset().withCurrentAddresses(new ArrayList<Address>()).build()).build();
+        IdentityProviderAssertion assertion = anIdentityProviderAssertion().withMatchingDataset(MatchingDatasetBuilder.aFullyPopulatedMatchingDataset().withCurrentAddresses(new ArrayList<>()).build()).build();
 
         transformer.transform(assertion);
 
@@ -234,7 +234,7 @@ public class IdentityProviderAssertionToAssertionTransformerTest {
 
     @Test
     public void shouldHandleMissingAssertionSubjectsPreviousAddress() {
-        IdentityProviderAssertion assertion = anIdentityProviderAssertion().withMatchingDataset(MatchingDatasetBuilder.aFullyPopulatedMatchingDataset().withPreviousAddresses(new ArrayList<Address>()).build()).build();
+        IdentityProviderAssertion assertion = anIdentityProviderAssertion().withMatchingDataset(MatchingDatasetBuilder.aFullyPopulatedMatchingDataset().withPreviousAddresses(new ArrayList<>()).build()).build();
 
         transformer.transform(assertion);
 
