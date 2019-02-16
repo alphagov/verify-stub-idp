@@ -9,7 +9,6 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
-import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -24,7 +23,7 @@ public class SecurityHeadersFilterTest {
     private ContainerResponseContext containerResponseContext;
 
     @Test
-    public void checkSecurityHeadersAreAdded() throws IOException {
+    public void checkSecurityHeadersAreAdded() {
         SecurityHeadersFilter securityHeadersFilter = new SecurityHeadersFilter();
         MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
         when(containerResponseContext.getHeaders()).thenReturn(headers);

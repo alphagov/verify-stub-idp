@@ -17,7 +17,6 @@ import javax.inject.Named;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Cookie;
-import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -46,7 +45,7 @@ public class SessionCookieValueMustExistAsASessionFilter implements ContainerReq
     }
 
     @Override
-    public void filter(ContainerRequestContext requestContext) throws IOException {
+    public void filter(ContainerRequestContext requestContext) {
 
         // Get SessionId from cookie
         final Optional<String> sessionCookie = Optional.ofNullable(getValueOfPossiblyNullCookie(requestContext.getCookies(), SESSION_COOKIE_NAME));

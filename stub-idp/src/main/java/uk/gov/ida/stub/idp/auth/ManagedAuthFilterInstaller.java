@@ -28,7 +28,7 @@ public class ManagedAuthFilterInstaller implements Managed {
     }
 
     @Override
-    public void start() throws Exception {
+    public void start() {
         if(stubIdpConfiguration.isBasicAuthEnabledForUserResource()) {
             environment.servlets()
                     .addFilter("Basic Auth Filter for Idps", new UserResourceBasicAuthFilter(idpStubsRepository))
@@ -37,7 +37,7 @@ public class ManagedAuthFilterInstaller implements Managed {
     }
 
     @Override
-    public void stop() throws Exception {
+    public void stop() {
         // method intentionally left blank
     }
 }

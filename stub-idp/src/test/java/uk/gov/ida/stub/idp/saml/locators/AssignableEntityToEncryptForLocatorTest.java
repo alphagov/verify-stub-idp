@@ -7,7 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AssignableEntityToEncryptForLocatorTest {
 
     @Test
-    public void shouldStoreEntityIdInMapAgainstRequestId() throws Exception {
+    public void shouldStoreEntityIdInMapAgainstRequestId() {
         AssignableEntityToEncryptForLocator assignableEntityToEncryptForLocator = new AssignableEntityToEncryptForLocator();
         String requestId = "requestId";
         String entityId = "entityId";
@@ -18,7 +18,7 @@ public class AssignableEntityToEncryptForLocatorTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void shouldRemoveEntityIdInMapAgainstRequestId() throws Exception {
+    public void shouldRemoveEntityIdInMapAgainstRequestId() {
         AssignableEntityToEncryptForLocator assignableEntityToEncryptForLocator = new AssignableEntityToEncryptForLocator();
         String requestId = "requestId";
         String entityId = "entityId";

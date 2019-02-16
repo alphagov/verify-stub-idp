@@ -40,7 +40,7 @@ public class OutboundResponseFromIdpToSamlResponseTransformerTest {
     }
 
     @Test
-    public void transform_shouldTransformMatchingDataAssertion() throws Exception {
+    public void transform_shouldTransformMatchingDataAssertion() {
         Response response = openSamlXmlObjectFactory.createResponse();
         IdentityProviderAssertion assertion = anIdentityProviderAssertion().withMatchingDataset(MatchingDatasetBuilder.aMatchingDataset().build()).build();
         OutboundResponseFromIdp originalResponse = OutboundResponseFromIdp.createSuccessResponseFromIdp(

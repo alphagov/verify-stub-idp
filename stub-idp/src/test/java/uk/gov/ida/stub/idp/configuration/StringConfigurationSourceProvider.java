@@ -3,7 +3,6 @@ package uk.gov.ida.stub.idp.configuration;
 import io.dropwizard.configuration.ConfigurationSourceProvider;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 
 public class StringConfigurationSourceProvider implements ConfigurationSourceProvider {
@@ -14,7 +13,7 @@ public class StringConfigurationSourceProvider implements ConfigurationSourcePro
     }
 
     @Override
-    public InputStream open(String path) throws IOException {
+    public InputStream open(String path) {
         return new ByteArrayInputStream(this.configuration.getBytes());
     }
 }
