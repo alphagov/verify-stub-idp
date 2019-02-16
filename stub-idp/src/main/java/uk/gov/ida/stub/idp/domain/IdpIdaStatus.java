@@ -2,6 +2,7 @@ package uk.gov.ida.stub.idp.domain;
 
 import uk.gov.ida.saml.core.domain.IdaStatus;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import static java.util.Optional.empty;
@@ -59,16 +60,12 @@ public final class IdpIdaStatus implements IdaStatus {
 
         IdpIdaStatus idpIdaStatus = (IdpIdaStatus) o;
 
-        if (status != idpIdaStatus.status) return false;
-
-        return true;
+        return status == idpIdaStatus.status;
     }
 
     @Override
     public int hashCode() {
-        int result = status.hashCode();
-        result = 31 * result;
-        return result;
+        return Objects.hash(status);
     }
 
     @Override
