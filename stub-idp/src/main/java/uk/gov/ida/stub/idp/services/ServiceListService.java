@@ -34,9 +34,8 @@ public class ServiceListService {
 
     private List<Service> readListFromHub(){
         try {
-            List<Service> services = jsonClient.get(singleIdpConfiguration.getServiceListUri(), new GenericType<List<Service>>() {});
 
-            return services;
+            return jsonClient.get(singleIdpConfiguration.getServiceListUri(), new GenericType<List<Service>>() {});
         } catch (RuntimeException ex) {
             LOG.error(MessageFormat.format("Error getting service list from {0}", singleIdpConfiguration.getServiceListUri().toString()), ex);
         }
