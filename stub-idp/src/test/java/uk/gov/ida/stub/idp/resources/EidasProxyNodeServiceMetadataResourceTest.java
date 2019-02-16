@@ -70,7 +70,7 @@ public class EidasProxyNodeServiceMetadataResourceTest {
         entityDescriptor = (EntityDescriptor) XMLObjectProviderRegistrySupport.getBuilderFactory()
           .getBuilder(EntityDescriptor.DEFAULT_ELEMENT_NAME).buildObject(EntityDescriptor.DEFAULT_ELEMENT_NAME, EntityDescriptor.TYPE_NAME);
         when(idaKeyStore.getSigningCertificate()).thenReturn(signingCertificate);
-        when(countryMetadataBuilder.createEntityDescriptorForProxyNodeService(any(), any(), any(), any())).thenReturn(entityDescriptor);;
+        when(countryMetadataBuilder.createEntityDescriptorForProxyNodeService(any(), any(), any(), any())).thenReturn(entityDescriptor);
     }
 
     @Test(expected = InvalidEidasSchemeException.class)

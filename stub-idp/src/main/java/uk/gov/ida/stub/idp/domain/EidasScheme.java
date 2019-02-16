@@ -45,7 +45,7 @@ public enum EidasScheme {
 
     EidasScheme(String eidasSchemeName) {
         this.eidasSchemeName = eidasSchemeName;
-    };
+    }
 
     public String getEidasSchemeName() {
         return eidasSchemeName;

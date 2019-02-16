@@ -168,7 +168,7 @@ public class EidasAuthnRequestTest {
                 TestEntityIds.HUB_ENTITY_ID)));
         PublicKey publicSigningKey = publicKeyFactory.createPublicKey(TestCertificateStrings.getPrimaryPublicEncryptionCert(TestEntityIds.HUB_ENTITY_ID));
 
-        PrivateKey publicEncryptionKey = new PrivateKeyFactory().createPrivateKey(Base64.decodeBase64(TestCertificateStrings.HUB_TEST_PRIVATE_ENCRYPTION_KEY));;
+        PrivateKey publicEncryptionKey = new PrivateKeyFactory().createPrivateKey(Base64.decodeBase64(TestCertificateStrings.HUB_TEST_PRIVATE_ENCRYPTION_KEY));
         PublicKey privateEncryptionKey = publicKeyFactory.createPublicKey(TestCertificateStrings.HUB_TEST_PUBLIC_ENCRYPTION_CERT);
 
         KeyPair signingKeyPair = new KeyPair(publicSigningKey, privateSigningKey);
