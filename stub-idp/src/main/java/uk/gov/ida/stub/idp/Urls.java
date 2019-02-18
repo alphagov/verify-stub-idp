@@ -45,36 +45,42 @@ public interface Urls {
     String IDP_SAML2_SSO_RESOURCE = "/{"+IDP_ID_PARAM+"}/SAML2/SSO";
     String EIDAS_SAML2_SSO_RESOURCE = "/eidas/{"+SCHEME_ID_PARAM+"}/SAML2/SSO";
     String HEADLESS_ROOT = "/headless";
+    String IDP_ROOT_PATH = ROOT_PREFIX + "/{" + IDP_ID_PARAM + "}";
+    String EIDAS_ROOT_PATH = ROOT_PREFIX + "/eidas/{"+SCHEME_ID_PARAM+"}";
 
-    String LOGIN_RESOURCE = ROOT_PREFIX + "/{"+IDP_ID_PARAM+"}/login" + ROUTE_SUFFIX;
-    String EIDAS_LOGIN_RESOURCE = ROOT_PREFIX + "/eidas/{"+SCHEME_ID_PARAM+"}/login" + ROUTE_SUFFIX;
+    // idp
     String LOGIN_AUTHN_FAILURE_PATH = "authn-failure";
     String LOGIN_NO_AUTHN_CONTEXT_PATH = "no-authn-context";
     String LOGIN_FRAUD_FAILURE_PATH = "fraud-failure";
     String LOGIN_UPLIFT_FAILED_PATH = "uplift-failed";
     String LOGIN_REQUESTER_ERROR_PATH = "requester-error";
-    String LOGOUT_RESOURCE = ROOT_PREFIX + "/{"+IDP_ID_PARAM+"}/logout" + ROUTE_SUFFIX;
-    String HOMEPAGE_RESOURCE = ROOT_PREFIX + "/{"+IDP_ID_PARAM+"}";
+    String LOGIN_AUTHN_PENDING_PATH = "authn-pending";
 
-    String REGISTER_RESOURCE = ROOT_PREFIX + "/{"+IDP_ID_PARAM+"}/register" + ROUTE_SUFFIX;
+    String LOGIN_RESOURCE = IDP_ROOT_PATH + "/login" + ROUTE_SUFFIX;
+    String REGISTER_RESOURCE = IDP_ROOT_PATH + "/register" + ROUTE_SUFFIX;
+    String DEBUG_RESOURCE = IDP_ROOT_PATH + "/debug" + ROUTE_SUFFIX;
+    String CONSENT_RESOURCE = IDP_ROOT_PATH + "/consent" + ROUTE_SUFFIX;
+
+    // standalone idp
+    String LOGOUT_RESOURCE = IDP_ROOT_PATH + "/logout" + ROUTE_SUFFIX;
+    String HOMEPAGE_RESOURCE = IDP_ROOT_PATH;
     String PRE_REGISTER_PATH = "pre-register";
     String PRE_REGISTER_RESOURCE = REGISTER_RESOURCE + "/" + PRE_REGISTER_PATH;
-    String CANCEL_PRE_REGISTER_RESOURCE = ROOT_PREFIX + "/{"+IDP_ID_PARAM+"}/cancel-pre-register" + ROUTE_SUFFIX;
-    String LOGIN_AUTHN_PENDING_PATH = "authn-pending";
-    String DEBUG_RESOURCE = ROOT_PREFIX + "/{"+IDP_ID_PARAM+"}/debug" + ROUTE_SUFFIX;
-    String CONSENT_RESOURCE = ROOT_PREFIX + "/{"+IDP_ID_PARAM+"}/consent" + ROUTE_SUFFIX;
-    String SINGLE_IDP_PROMPT_RESOURCE = ROOT_PREFIX + "/{"+IDP_ID_PARAM+"}/start-prompt" + ROUTE_SUFFIX;
+    String CANCEL_PRE_REGISTER_RESOURCE = IDP_ROOT_PATH + "/cancel-pre-register" + ROUTE_SUFFIX;
+    String SINGLE_IDP_PROMPT_RESOURCE = IDP_ROOT_PATH + "/start-prompt" + ROUTE_SUFFIX;
 
-    String EIDAS_REGISTER_RESOURCE = ROOT_PREFIX + "/eidas/{"+SCHEME_ID_PARAM+"}/register" + ROUTE_SUFFIX;
-    String EIDAS_CONSENT_RESOURCE = ROOT_PREFIX + "/eidas/{"+SCHEME_ID_PARAM+"}/consent" + ROUTE_SUFFIX;
+    // stub country
     String METADATA_RESOURCE = "/{"+SCHEME_ID_PARAM+"}/ServiceMetadata";
-    String EIDAS_DEBUG_RESOURCE = ROOT_PREFIX + "/eidas/{"+SCHEME_ID_PARAM+"}/debug" + ROUTE_SUFFIX;
+    String EIDAS_LOGIN_RESOURCE = EIDAS_ROOT_PATH + "/login" + ROUTE_SUFFIX;
+    String EIDAS_REGISTER_RESOURCE = EIDAS_ROOT_PATH + "/register" + ROUTE_SUFFIX;
+    String EIDAS_CONSENT_RESOURCE = EIDAS_ROOT_PATH + "/consent" + ROUTE_SUFFIX;
+    String EIDAS_DEBUG_RESOURCE = EIDAS_ROOT_PATH + "/debug" + ROUTE_SUFFIX;
 
+    // test user management
     String USERS_RESOURCE = "/{"+IDP_ID_PARAM+"}/users";
     String DELETE_USER_PATH = "/delete";
     String GET_USER_PATH = "/{" + USERNAME_PARAM + "}";
 
     @SuppressWarnings("squid:S2068")
     String PASSWORD_GEN_RESOURCE = "/password-gen";
-
 }
