@@ -69,9 +69,9 @@ public class AuthnRequestSteps {
 
         assertThat(response.getStatus()).isEqualTo(303);
         if(registration.isPresent() && registration.get()) {
-            assertThat(response.getLocation().getPath()).startsWith(getStubIdpUri(Urls.REGISTER_RESOURCE).getPath());
+            assertThat(response.getLocation().getPath()).startsWith(getStubIdpUri(Urls.IDP_REGISTER_RESOURCE).getPath());
         } else {
-            assertThat(response.getLocation().getPath()).startsWith(getStubIdpUri(Urls.LOGIN_RESOURCE).getPath());
+            assertThat(response.getLocation().getPath()).startsWith(getStubIdpUri(Urls.IDP_LOGIN_RESOURCE).getPath());
         }
 
         return getCookiesAndFollowRedirect(response);
@@ -144,7 +144,7 @@ public class AuthnRequestSteps {
     }
 
     public void userLogsIn(Cookies cookies, String username) {
-        userLogsIn(cookies, username, Urls.LOGIN_RESOURCE, Urls.CONSENT_RESOURCE);
+        userLogsIn(cookies, username, Urls.IDP_LOGIN_RESOURCE, Urls.IDP_CONSENT_RESOURCE);
     }
 
     private void userLogsIn(Cookies cookies, String username, String loginUrl, String consentUrl) {
@@ -177,7 +177,7 @@ public class AuthnRequestSteps {
     }
 
     public String userConsentsReturnSamlResponse(Cookies cookies, boolean randomize) {
-        return userConsentsReturnSamlResponse(cookies, randomize, Urls.CONSENT_RESOURCE);
+        return userConsentsReturnSamlResponse(cookies, randomize, Urls.IDP_CONSENT_RESOURCE);
     }
 
     public String eidasUserConsentsReturnSamlResponse(Cookies cookies, boolean randomize) {
@@ -216,7 +216,7 @@ public class AuthnRequestSteps {
     }
 
     public void userViewsTheDebugPage(Cookies cookies) {
-        userViewsTheDebugPage(cookies, getStubIdpUri(Urls.DEBUG_RESOURCE));
+        userViewsTheDebugPage(cookies, getStubIdpUri(Urls.IDP_DEBUG_RESOURCE));
     }
 
     public String eidasUserViewsTheDebugPage(Cookies cookies) {

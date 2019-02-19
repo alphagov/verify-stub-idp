@@ -90,7 +90,10 @@ public class StubIdpConfiguration extends Configuration implements
     @JsonProperty("database")
     private DatabaseConfiguration databaseConfiguration;
 
+    @Valid
     @NotNull
+    private boolean singleIdpJourneyEnabled = false;
+
     @Valid
     @JsonProperty
     private SingleIdpConfiguration singleIdpJourney;
@@ -165,5 +168,9 @@ public class StubIdpConfiguration extends Configuration implements
 
     public StaleSessionReaperConfiguration getStaleSessionReaperConfiguration() {
         return staleSessionReaperConfiguration;
+    }
+
+    public boolean isSingleIdpJourneyEnabled() {
+        return singleIdpJourneyEnabled;
     }
 }

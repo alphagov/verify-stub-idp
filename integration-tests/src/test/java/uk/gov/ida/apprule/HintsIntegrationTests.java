@@ -101,7 +101,7 @@ public class HintsIntegrationTests extends IntegrationTestHelper {
     }
 
     private String getDebugPath(String idp) {
-        UriBuilder uriBuilder = UriBuilder.fromPath("http://localhost:"+applicationRule.getLocalPort()+Urls.DEBUG_RESOURCE.replace("{idpId}", IDP_NAME));
+        UriBuilder uriBuilder = UriBuilder.fromPath("http://localhost:"+applicationRule.getLocalPort()+Urls.IDP_DEBUG_RESOURCE.replace("{idpId}", IDP_NAME));
         return uriBuilder.build(idp).toASCIIString();
     }
 

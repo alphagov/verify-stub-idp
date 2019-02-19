@@ -1,4 +1,4 @@
-package uk.gov.ida.stub.idp.resources.idp;
+package uk.gov.ida.stub.idp.resources.singleidp;
 
 
 import uk.gov.ida.common.SessionId;
@@ -27,7 +27,7 @@ import java.util.Optional;
 
 import static uk.gov.ida.stub.idp.views.ErrorMessageType.NO_ERROR;
 
-@Path(Urls.HOMEPAGE_RESOURCE)
+@Path(Urls.SINGLE_IDP_HOMEPAGE_RESOURCE)
 @Produces(MediaType.TEXT_HTML)
 public class HomePageResource {
 

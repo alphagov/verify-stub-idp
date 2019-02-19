@@ -1,4 +1,4 @@
-package uk.gov.ida.stub.idp.resources.idp;
+package uk.gov.ida.stub.idp.resources.singleidp;
 
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.stub.idp.Urls;
@@ -31,7 +31,7 @@ import java.util.UUID;
 
 import static uk.gov.ida.stub.idp.views.ErrorMessageType.NO_ERROR;
 
-@Path(Urls.SINGLE_IDP_PROMPT_RESOURCE)
+@Path(Urls.SINGLE_IDP_START_PROMPT_RESOURCE)
 @Produces(MediaType.TEXT_HTML)
 public class SingleIdpPromptPageResource {
 

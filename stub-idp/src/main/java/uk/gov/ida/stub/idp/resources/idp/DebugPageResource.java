@@ -25,7 +25,7 @@ import java.util.Optional;
 
 import static java.text.MessageFormat.format;
 
-@Path(Urls.DEBUG_RESOURCE)
+@Path(Urls.IDP_DEBUG_RESOURCE)
 @Produces(MediaType.TEXT_HTML)
 @SessionCookieValueMustExistAsASession
 public class DebugPageResource {

@@ -34,7 +34,7 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Optional;
 
-@Path(Urls.CONSENT_RESOURCE)
+@Path(Urls.IDP_CONSENT_RESOURCE)
 @Produces(MediaType.TEXT_HTML)
 @SessionCookieValueMustExistAsASession
 public class ConsentResource {

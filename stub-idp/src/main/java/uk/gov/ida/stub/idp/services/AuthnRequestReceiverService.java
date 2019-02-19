@@ -80,9 +80,9 @@ public class AuthnRequestReceiverService {
 
         UriBuilder uriBuilder;
         if (registration.isPresent() && registration.get()) {
-            uriBuilder = UriBuilder.fromPath(Urls.REGISTER_RESOURCE);
+            uriBuilder = UriBuilder.fromPath(Urls.IDP_REGISTER_RESOURCE);
         } else {
-            uriBuilder = UriBuilder.fromPath(Urls.LOGIN_RESOURCE);
+            uriBuilder = UriBuilder.fromPath(Urls.IDP_LOGIN_RESOURCE);
         }
 
         return new SessionCreated(uriBuilder.build(idpName), idpSessionId);

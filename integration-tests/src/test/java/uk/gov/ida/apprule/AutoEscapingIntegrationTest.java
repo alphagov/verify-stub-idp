@@ -49,7 +49,7 @@ public class AutoEscapingIntegrationTest extends IntegrationTestHelper {
     }
 
     private String userSeesTheHintOnTheDebugPage(AuthnRequestSteps.Cookies cookies, String hint) {
-        Response response = client.target(UriBuilder.fromUri("http://localhost:" + applicationRule.getLocalPort()).path(Urls.DEBUG_RESOURCE).build(IDP_NAME))
+        Response response = client.target(UriBuilder.fromUri("http://localhost:" + applicationRule.getLocalPort()).path(Urls.IDP_DEBUG_RESOURCE).build(IDP_NAME))
                 .queryParam(UNKNOWN_HINTS_PARAM, hint)
                 .request()
                 .cookie(CookieNames.SESSION_COOKIE_NAME, cookies.getSessionId())

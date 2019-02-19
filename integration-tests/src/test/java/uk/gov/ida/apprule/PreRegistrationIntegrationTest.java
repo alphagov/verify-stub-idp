@@ -1,5 +1,6 @@
 package uk.gov.ida.apprule;
 
+import io.dropwizard.testing.ConfigOverride;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.junit.Before;
@@ -36,7 +37,7 @@ public class PreRegistrationIntegrationTest extends IntegrationTestHelper {
     private static final String LEVEL_OF_ASSURANCE_PARAM = AuthnContext.LEVEL_2.name();
 
     @ClassRule
-    public static final StubIdpAppRule applicationRule = new StubIdpAppRule()
+    public static final StubIdpAppRule applicationRule = new StubIdpAppRule(ConfigOverride.config("singleIdpJourneyEnabled", "true"))
             .withStubIdp(aStubIdp().withId(IDP_NAME).withDisplayName(DISPLAY_NAME).build());
 
     public static Client client = JerseyClientBuilder.createClient().property(ClientProperties.FOLLOW_REDIRECTS, false);
@@ -52,7 +53,7 @@ public class PreRegistrationIntegrationTest extends IntegrationTestHelper {
 
         steps
 
-        .userSuccessfullyNavigatesTo(Urls.PRE_REGISTER_RESOURCE)
+        .userSuccessfullyNavigatesTo(Urls.SINGLE_IDP_PRE_REGISTER_RESOURCE)
         .responseContains("Register with " + DISPLAY_NAME)
 
         .userSubmitsForm(
@@ -71,8 +72,8 @@ public class PreRegistrationIntegrationTest extends IntegrationTestHelper {
                 .withParam(CSRF_PROTECT_FORM_KEY, steps.getCsrfToken())
                 .withParam(Urls.SUBMIT_PARAM, SubmitButtonValue.Register.toString())
                 .build(),
-                Urls.REGISTER_RESOURCE)
-        .userIsRedirectedTo(Urls.SINGLE_IDP_PROMPT_RESOURCE+"?source=pre-reg")
+                Urls.IDP_REGISTER_RESOURCE)
+        .userIsRedirectedTo(Urls.SINGLE_IDP_START_PROMPT_RESOURCE +"?source=pre-reg")
         .theRedirectIsFollowed()
         .theResponseStatusIs(Response.Status.OK)
         .responseContains(FIRSTNAME_PARAM,
@@ -90,9 +91,9 @@ public class PreRegistrationIntegrationTest extends IntegrationTestHelper {
                                 .build(),
                         Urls.IDP_SAML2_SSO_RESOURCE)
 
-        .userIsRedirectedTo(Urls.LOGIN_RESOURCE)
+        .userIsRedirectedTo(Urls.IDP_LOGIN_RESOURCE)
         .theRedirectIsFollowed()
-        .userIsRedirectedTo(Urls.CONSENT_RESOURCE)
+        .userIsRedirectedTo(Urls.IDP_CONSENT_RESOURCE)
         .theRedirectIsFollowed()
         .theResponseStatusIs(Response.Status.OK)
         .responseContains(FIRSTNAME_PARAM,

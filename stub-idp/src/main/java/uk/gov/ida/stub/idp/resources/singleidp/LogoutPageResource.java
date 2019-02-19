@@ -1,4 +1,4 @@
-package uk.gov.ida.stub.idp.resources.idp;
+package uk.gov.ida.stub.idp.resources.singleidp;
 
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.stub.idp.Urls;
@@ -17,7 +17,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
-@Path(Urls.LOGOUT_RESOURCE)
+@Path(Urls.SINGLE_IDP_LOGOUT_RESOURCE)
 @Produces(MediaType.TEXT_HTML)
 public class LogoutPageResource {
 
@@ -33,7 +33,7 @@ public class LogoutPageResource {
                         @CookieParam(CookieNames.SESSION_COOKIE_NAME) SessionId session) {
 
         idpSessionRepository.deleteSession(session);
-        return Response.seeOther(UriBuilder.fromPath(Urls.HOMEPAGE_RESOURCE).build(idpName))
+        return Response.seeOther(UriBuilder.fromPath(Urls.SINGLE_IDP_HOMEPAGE_RESOURCE).build(idpName))
                 .cookie(new HttpOnlyNewCookie(
                         CookieNames.SESSION_COOKIE_NAME,
                         "",

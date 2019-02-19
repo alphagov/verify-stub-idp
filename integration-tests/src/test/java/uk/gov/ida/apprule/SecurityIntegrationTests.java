@@ -24,7 +24,6 @@ import javax.ws.rs.core.UriBuilder;
 
 import java.util.Objects;
 
-import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.ida.stub.idp.builders.StubIdpBuilder.aStubIdp;
 import static uk.gov.ida.stub.idp.csrf.CSRFCheckProtectionFilter.CSRF_PROTECT_FORM_KEY;
@@ -79,7 +78,7 @@ public class SecurityIntegrationTests extends IntegrationTestHelper {
         form.param(Urls.SUBMIT_PARAM, "SignIn");
         form.param(CSRF_PROTECT_FORM_KEY, "this_is_not_a_csrf_value");
 
-        Response response = client.target(authnRequestSteps.getStubIdpUri(Urls.LOGIN_RESOURCE))
+        Response response = client.target(authnRequestSteps.getStubIdpUri(Urls.IDP_LOGIN_RESOURCE))
                 .request()
                 .cookie(CookieNames.SESSION_COOKIE_NAME, cookies.getSessionId())
                 .cookie(CookieNames.SECURE_COOKIE_NAME, cookies.getSecure())
@@ -89,7 +88,7 @@ public class SecurityIntegrationTests extends IntegrationTestHelper {
     }
 
     private String getLoginPageCsrfValue(AuthnRequestSteps.Cookies cookies) {
-        Response response = client.target(authnRequestSteps.getStubIdpUri(Urls.LOGIN_RESOURCE))
+        Response response = client.target(authnRequestSteps.getStubIdpUri(Urls.IDP_LOGIN_RESOURCE))
                 .request()
                 .cookie(CookieNames.SESSION_COOKIE_NAME, cookies.getSessionId())
                 .cookie(CookieNames.SECURE_COOKIE_NAME, cookies.getSecure())

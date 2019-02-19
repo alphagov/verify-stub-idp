@@ -44,15 +44,17 @@ import uk.gov.ida.stub.idp.resources.eidas.EidasDebugPageResource;
 import uk.gov.ida.stub.idp.resources.eidas.EidasLoginPageResource;
 import uk.gov.ida.stub.idp.resources.eidas.EidasProxyNodeServiceMetadataResource;
 import uk.gov.ida.stub.idp.resources.eidas.EidasRegistrationPageResource;
-import uk.gov.ida.stub.idp.resources.idp.CancelPreRegistrationPageResource;
 import uk.gov.ida.stub.idp.resources.idp.ConsentResource;
 import uk.gov.ida.stub.idp.resources.idp.DebugPageResource;
 import uk.gov.ida.stub.idp.resources.idp.HeadlessIdpResource;
-import uk.gov.ida.stub.idp.resources.idp.HomePageResource;
 import uk.gov.ida.stub.idp.resources.idp.LoginPageResource;
-import uk.gov.ida.stub.idp.resources.idp.LogoutPageResource;
 import uk.gov.ida.stub.idp.resources.idp.RegistrationPageResource;
-import uk.gov.ida.stub.idp.resources.idp.SingleIdpPromptPageResource;
+import uk.gov.ida.stub.idp.resources.idp.SecureLoginPageResource;
+import uk.gov.ida.stub.idp.resources.idp.SecureRegistrationPageResource;
+import uk.gov.ida.stub.idp.resources.singleidp.HomePageResource;
+import uk.gov.ida.stub.idp.resources.singleidp.LogoutPageResource;
+import uk.gov.ida.stub.idp.resources.singleidp.PreRegistrationResource;
+import uk.gov.ida.stub.idp.resources.singleidp.SingleIdpPromptPageResource;
 
 import javax.servlet.DispatcherType;
 import java.util.EnumSet;
@@ -134,24 +136,36 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
 
         environment.getObjectMapper().setDateFormat(new ISO8601DateFormat());
 
-        //resources
+        // idp resources
         environment.jersey().register(AuthnRequestReceiverResource.class);
-        environment.jersey().register(LoginPageResource.class);
-        environment.jersey().register(EidasLoginPageResource.class);
-        environment.jersey().register(EidasConsentResource.class);
-        environment.jersey().register(RegistrationPageResource.class);
-        environment.jersey().register(CancelPreRegistrationPageResource.class);
-        environment.jersey().register(EidasRegistrationPageResource.class);
         environment.jersey().register(DebugPageResource.class);
         environment.jersey().register(ConsentResource.class);
+
+        // single idp resources
+        if(configuration.isSingleIdpJourneyEnabled()) {
+            environment.jersey().register(SingleIdpPromptPageResource.class);
+            environment.jersey().register(LogoutPageResource.class);
+            environment.jersey().register(HomePageResource.class);
+            environment.jersey().register(PreRegistrationResource.class);
+
+            environment.jersey().register(LoginPageResource.class);
+            environment.jersey().register(RegistrationPageResource.class);
+        } else {
+            environment.jersey().register(SecureLoginPageResource.class);
+            environment.jersey().register(SecureRegistrationPageResource.class);
+        }
+
+        // proxy node resources
+        environment.jersey().register(EidasLoginPageResource.class);
+        environment.jersey().register(EidasConsentResource.class);
+        environment.jersey().register(EidasRegistrationPageResource.class);
+        environment.jersey().register(EidasProxyNodeServiceMetadataResource.class);
+        environment.jersey().register(EidasDebugPageResource.class);
+
+        // other idp resources
         environment.jersey().register(UserResource.class);
         environment.jersey().register(HeadlessIdpResource.class);
         environment.jersey().register(GeneratePasswordResource.class);
-        environment.jersey().register(EidasProxyNodeServiceMetadataResource.class);
-        environment.jersey().register(EidasDebugPageResource.class);
-        environment.jersey().register(SingleIdpPromptPageResource.class);
-        environment.jersey().register(LogoutPageResource.class);
-        environment.jersey().register(HomePageResource.class);
 
         //exception mappers
         environment.jersey().register(IdpNotFoundExceptionMapper.class);

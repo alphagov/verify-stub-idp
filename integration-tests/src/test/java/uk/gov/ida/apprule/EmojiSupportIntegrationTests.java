@@ -54,7 +54,7 @@ public class EmojiSupportIntegrationTests extends IntegrationTestHelper {
     }
 
     private Document userConsents(AuthnRequestSteps.Cookies cookies) {
-        Response response = aStubIdpRequest(Urls.CONSENT_RESOURCE, cookies).get();
+        Response response = aStubIdpRequest(Urls.IDP_CONSENT_RESOURCE, cookies).get();
 
         assertThat(response.getStatus()).isEqualTo(200);
 

@@ -42,7 +42,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.Optional;
-import java.util.UUID;
 
 import static java.text.MessageFormat.format;
 import static uk.gov.ida.stub.idp.views.ErrorMessageType.INCOMPLETE_REGISTRATION;
@@ -52,7 +51,7 @@ import static uk.gov.ida.stub.idp.views.ErrorMessageType.INVALID_USERNAME_OR_PAS
 import static uk.gov.ida.stub.idp.views.ErrorMessageType.NO_ERROR;
 import static uk.gov.ida.stub.idp.views.ErrorMessageType.USERNAME_ALREADY_TAKEN;
 
-@Path(Urls.REGISTER_RESOURCE)
+@Path(Urls.IDP_REGISTER_RESOURCE)
 @Produces(MediaType.TEXT_HTML)
 @CSRFCheckProtection
 public class RegistrationPageResource {
@@ -62,7 +61,6 @@ public class RegistrationPageResource {
     private final SamlResponseRedirectViewFactory samlResponseRedirectViewFactory;
     private final NonSuccessAuthnResponseService nonSuccessAuthnResponseService;
     private final IdpSessionRepository idpSessionRepository;
-    private final CookieFactory cookieFactory;
 
     @Inject
     public RegistrationPageResource(
@@ -77,7 +75,6 @@ public class RegistrationPageResource {
         this.samlResponseRedirectViewFactory = samlResponseRedirectViewFactory;
         this.nonSuccessAuthnResponseService = nonSuccessAuthnResponseService;
         this.idpSessionRepository = idpSessionRepository;
-        this.cookieFactory = cookieFactory;
     }
 
     @GET
@@ -94,22 +91,6 @@ public class RegistrationPageResource {
         idpSessionRepository.updateSession(session.getSessionId(), session.setNewCsrfToken());
 
         return Response.ok(new RegistrationPageView(idp.getDisplayName(), idp.getFriendlyId(), errorMessage.orElse(NO_ERROR).getMessage(), idp.getAssetId(), null, session.getCsrfToken())).build();
-    }
-
-    @GET
-    @Path(Urls.PRE_REGISTER_PATH)
-    public Response get(
-            @PathParam(Urls.IDP_ID_PARAM) @NotNull String idpName,
-            @QueryParam(Urls.ERROR_MESSAGE_PARAM) Optional<ErrorMessageType> errorMessage) {
-
-        Idp idp = idpStubsRepository.getIdpWithFriendlyId(idpName);
-        IdpSession session = new IdpSession(
-                new SessionId(UUID.randomUUID().toString()));
-        final SessionId sessionId = idpSessionRepository.createSession(session);
-        idpSessionRepository.updateSession(session.getSessionId(), session.setNewCsrfToken());
-        return Response.ok(new RegistrationPageView(idp.getDisplayName(), idp.getFriendlyId(), errorMessage.orElse(NO_ERROR).getMessage(), idp.getAssetId(), Urls.PRE_REGISTER_PATH, session.getCsrfToken()))
-                .cookie(cookieFactory.createSessionIdCookie(sessionId))
-                .build();
     }
 
     @POST
@@ -166,7 +147,7 @@ public class RegistrationPageResource {
         switch (submitButtonValue) {
             case Cancel: {
                 idpSessionRepository.deleteSession(sessionCookie);
-                return Response.seeOther(UriBuilder.fromPath(Urls.CANCEL_PRE_REGISTER_RESOURCE).build(idpName)).build();
+                return Response.seeOther(UriBuilder.fromPath(Urls.SINGLE_IDP_CANCEL_PRE_REGISTER_RESOURCE).build(idpName)).build();
             }
             case Register: {
                 try {
@@ -185,7 +166,7 @@ public class RegistrationPageResource {
                     return createErrorResponse(INVALID_USERNAME_OR_PASSWORD, idpName);
                 }
 
-                return Response.seeOther(UriBuilder.fromPath(Urls.SINGLE_IDP_PROMPT_RESOURCE)
+                return Response.seeOther(UriBuilder.fromPath(Urls.SINGLE_IDP_START_PROMPT_RESOURCE)
                         .queryParam(Urls.SOURCE_PARAM,Urls.SOURCE_PARAM_PRE_REG_VALUE)
                         .build(idpName))
                         .build();
@@ -224,7 +205,7 @@ public class RegistrationPageResource {
             case Register: {
                 try {
                     idpUserService.createAndAttachIdpUserToSession(idpName, firstname, surname, addressLine1, addressLine2, addressTown, addressPostCode, levelOfAssurance, dateOfBirth, username, password, sessionCookie);
-                    return Response.seeOther(UriBuilder.fromPath(Urls.CONSENT_RESOURCE)
+                    return Response.seeOther(UriBuilder.fromPath(Urls.IDP_CONSENT_RESOURCE)
                             .build(idpName))
                             .build();
                 } catch (InvalidSessionIdException e) {
@@ -260,7 +241,7 @@ public class RegistrationPageResource {
     }
 
     private Response createErrorResponse(ErrorMessageType errorMessage, String idpName) {
-        URI uri = UriBuilder.fromPath(Urls.REGISTER_RESOURCE)
+        URI uri = UriBuilder.fromPath(Urls.IDP_REGISTER_RESOURCE)
                 .queryParam(Urls.ERROR_MESSAGE_PARAM, errorMessage)
                 .build(idpName);
         return Response.seeOther(uri).build();

@@ -15,7 +15,7 @@ import uk.gov.ida.stub.idp.repositories.AllIdpsUserRepository;
 import uk.gov.ida.stub.idp.repositories.Idp;
 import uk.gov.ida.stub.idp.repositories.IdpSessionRepository;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
-import uk.gov.ida.stub.idp.resources.idp.SingleIdpPromptPageResource;
+import uk.gov.ida.stub.idp.resources.singleidp.SingleIdpPromptPageResource;
 import uk.gov.ida.stub.idp.services.ServiceListService;
 import uk.gov.ida.stub.idp.views.SingleIdpPromptPageView;
 

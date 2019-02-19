@@ -72,7 +72,7 @@ public class LevelOfAssuranceIntegrationTests extends IntegrationTestHelper {
     }
 
     private String getDebugPath(String idp) {
-        UriBuilder uriBuilder = UriBuilder.fromPath("http://localhost:"+applicationRule.getLocalPort()+Urls.DEBUG_RESOURCE);
+        UriBuilder uriBuilder = UriBuilder.fromPath("http://localhost:"+applicationRule.getLocalPort()+Urls.IDP_DEBUG_RESOURCE);
         return uriBuilder.build(idp).toASCIIString();
     }
 

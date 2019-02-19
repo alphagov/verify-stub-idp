@@ -46,7 +46,7 @@ import java.util.UUID;
 import static java.text.MessageFormat.format;
 import static uk.gov.ida.stub.idp.views.ErrorMessageType.NO_ERROR;
 
-@Path(Urls.LOGIN_RESOURCE)
+@Path(Urls.IDP_LOGIN_RESOURCE)
 @Produces(MediaType.TEXT_HTML)
 @CSRFCheckProtection
 public class LoginPageResource {
@@ -291,17 +291,17 @@ public class LoginPageResource {
     }
 
     private Response redirectToConsentPage(String idpName) {
-        return Response.seeOther(UriBuilder.fromPath(Urls.CONSENT_RESOURCE)
+        return Response.seeOther(UriBuilder.fromPath(Urls.IDP_CONSENT_RESOURCE)
                 .build(idpName)).build();
     }
 
     private Response redirectToHomePage(String idpName) {
-        return Response.seeOther((UriBuilder.fromPath(Urls.HOMEPAGE_RESOURCE))
+        return Response.seeOther((UriBuilder.fromPath(Urls.SINGLE_IDP_HOMEPAGE_RESOURCE))
                 .build(idpName)).build();
     }
 
     private Response redirectToHomePageWithCookie(String idpName, SessionId sessionId) {
-        return Response.seeOther((UriBuilder.fromPath(Urls.HOMEPAGE_RESOURCE))
+        return Response.seeOther((UriBuilder.fromPath(Urls.SINGLE_IDP_HOMEPAGE_RESOURCE))
                 .build(idpName))
                 .cookie(cookieFactory.createSessionIdCookie(sessionId))
                 .build();
@@ -334,7 +334,7 @@ public class LoginPageResource {
     }
 
     private Response createErrorResponse(ErrorMessageType errorMessage, String idpName) {
-        URI uri = UriBuilder.fromPath(Urls.LOGIN_RESOURCE)
+        URI uri = UriBuilder.fromPath(Urls.IDP_LOGIN_RESOURCE)
                 .queryParam(Urls.ERROR_MESSAGE_PARAM, errorMessage)
                 .build(idpName);
         return Response.seeOther(uri).build();
