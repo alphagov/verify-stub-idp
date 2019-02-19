@@ -13,7 +13,11 @@ import javax.inject.Inject;
 public class SecureRegistrationPageResource extends RegistrationPageResource {
 
     @Inject
-    public SecureRegistrationPageResource(IdpStubsRepository idpStubsRepository, IdpUserService idpUserService, SamlResponseRedirectViewFactory samlResponseRedirectViewFactory, NonSuccessAuthnResponseService nonSuccessAuthnResponseService, IdpSessionRepository idpSessionRepository) {
+    public SecureRegistrationPageResource(IdpStubsRepository idpStubsRepository,
+                                          IdpUserService idpUserService,
+                                          SamlResponseRedirectViewFactory samlResponseRedirectViewFactory,
+                                          NonSuccessAuthnResponseService nonSuccessAuthnResponseService,
+                                          IdpSessionRepository idpSessionRepository) {
         super(idpStubsRepository, idpUserService, samlResponseRedirectViewFactory, nonSuccessAuthnResponseService, idpSessionRepository);
     }
 }

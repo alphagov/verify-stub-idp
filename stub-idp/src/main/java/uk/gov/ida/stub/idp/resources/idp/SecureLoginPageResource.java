@@ -13,7 +13,12 @@ import javax.inject.Inject;
 @SessionCookieValueMustExistAsASession
 public class SecureLoginPageResource extends LoginPageResource {
     @Inject
-    public SecureLoginPageResource(IdpStubsRepository idpStubsRepository, NonSuccessAuthnResponseService nonSuccessAuthnResponseService, SamlResponseRedirectViewFactory samlResponseRedirectViewFactory, IdpUserService idpUserService, IdpSessionRepository sessionRepository, CookieFactory cookieFactory) {
+    public SecureLoginPageResource(IdpStubsRepository idpStubsRepository,
+                                   NonSuccessAuthnResponseService nonSuccessAuthnResponseService,
+                                   SamlResponseRedirectViewFactory samlResponseRedirectViewFactory,
+                                   IdpUserService idpUserService,
+                                   IdpSessionRepository sessionRepository,
+                                   CookieFactory cookieFactory) {
         super(idpStubsRepository, nonSuccessAuthnResponseService, samlResponseRedirectViewFactory, idpUserService, sessionRepository, cookieFactory);
     }
 }
