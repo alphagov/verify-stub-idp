@@ -19,12 +19,12 @@ import javax.ws.rs.core.UriBuilder;
 
 @Path(Urls.SINGLE_IDP_LOGOUT_RESOURCE)
 @Produces(MediaType.TEXT_HTML)
-public class LogoutPageResource {
+public class SingleIdpLogoutPageResource {
 
     private IdpSessionRepository idpSessionRepository;
 
     @Inject
-    public LogoutPageResource(IdpSessionRepository idpSessionRepository) {
+    public SingleIdpLogoutPageResource(IdpSessionRepository idpSessionRepository) {
         this.idpSessionRepository = idpSessionRepository;
     }
 

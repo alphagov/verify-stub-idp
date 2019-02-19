@@ -29,14 +29,14 @@ import static uk.gov.ida.stub.idp.views.ErrorMessageType.NO_ERROR;
 
 @Path(Urls.SINGLE_IDP_HOMEPAGE_RESOURCE)
 @Produces(MediaType.TEXT_HTML)
-public class HomePageResource {
+public class SingleIdpHomePageResource {
 
     private final IdpStubsRepository idpStubsRepository;
     private final IdpSessionRepository sessionRepository;
 
     @Inject
-    public HomePageResource(IdpStubsRepository idpStubsRepository,
-                            IdpSessionRepository sessionRepository){
+    public SingleIdpHomePageResource(IdpStubsRepository idpStubsRepository,
+                                     IdpSessionRepository sessionRepository){
 
         this.idpStubsRepository = idpStubsRepository;
         this.sessionRepository = sessionRepository;

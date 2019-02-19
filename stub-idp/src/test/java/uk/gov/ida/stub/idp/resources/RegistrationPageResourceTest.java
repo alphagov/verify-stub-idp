@@ -75,8 +75,8 @@ public class RegistrationPageResourceTest {
                 idpUserService,
                 new SamlResponseRedirectViewFactory(),
                 nonSuccessAuthnResponseService,
-                idpSessionRepository,
-                cookieFactory);
+                idpSessionRepository
+        );
 
         when(idpSessionRepository.get(SESSION_ID)).thenReturn(Optional.ofNullable(new IdpSession(SESSION_ID, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null, null, null)));
         when(idpSessionRepository.deleteAndGet(SESSION_ID)).thenReturn(Optional.ofNullable(new IdpSession(SESSION_ID, idaAuthnRequestFromHub, RELAY_STATE, null, null, null, null, null, null)));

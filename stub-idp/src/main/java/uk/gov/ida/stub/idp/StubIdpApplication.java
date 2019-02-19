@@ -51,10 +51,10 @@ import uk.gov.ida.stub.idp.resources.idp.LoginPageResource;
 import uk.gov.ida.stub.idp.resources.idp.RegistrationPageResource;
 import uk.gov.ida.stub.idp.resources.idp.SecureLoginPageResource;
 import uk.gov.ida.stub.idp.resources.idp.SecureRegistrationPageResource;
-import uk.gov.ida.stub.idp.resources.singleidp.HomePageResource;
-import uk.gov.ida.stub.idp.resources.singleidp.LogoutPageResource;
-import uk.gov.ida.stub.idp.resources.singleidp.PreRegistrationResource;
-import uk.gov.ida.stub.idp.resources.singleidp.SingleIdpPromptPageResource;
+import uk.gov.ida.stub.idp.resources.singleidp.SingleIdpHomePageResource;
+import uk.gov.ida.stub.idp.resources.singleidp.SingleIdpLogoutPageResource;
+import uk.gov.ida.stub.idp.resources.singleidp.SingleIdpPreRegistrationResource;
+import uk.gov.ida.stub.idp.resources.singleidp.SingleIdpStartPromptPageResource;
 
 import javax.servlet.DispatcherType;
 import java.util.EnumSet;
@@ -143,10 +143,10 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
 
         // single idp resources
         if(configuration.isSingleIdpJourneyEnabled()) {
-            environment.jersey().register(SingleIdpPromptPageResource.class);
-            environment.jersey().register(LogoutPageResource.class);
-            environment.jersey().register(HomePageResource.class);
-            environment.jersey().register(PreRegistrationResource.class);
+            environment.jersey().register(SingleIdpStartPromptPageResource.class);
+            environment.jersey().register(SingleIdpLogoutPageResource.class);
+            environment.jersey().register(SingleIdpHomePageResource.class);
+            environment.jersey().register(SingleIdpPreRegistrationResource.class);
 
             environment.jersey().register(LoginPageResource.class);
             environment.jersey().register(RegistrationPageResource.class);

@@ -33,7 +33,7 @@ import static uk.gov.ida.stub.idp.views.ErrorMessageType.NO_ERROR;
 
 @Path(Urls.SINGLE_IDP_START_PROMPT_RESOURCE)
 @Produces(MediaType.TEXT_HTML)
-public class SingleIdpPromptPageResource {
+public class SingleIdpStartPromptPageResource {
 
     private final IdpStubsRepository idpStubsRepository;
     private final ServiceListService serviceListService;
@@ -41,7 +41,7 @@ public class SingleIdpPromptPageResource {
     private final IdpSessionRepository idpSessionRepository;
 
     @Inject
-    public SingleIdpPromptPageResource(
+    public SingleIdpStartPromptPageResource(
             IdpStubsRepository idpStubsRepository,
             ServiceListService serviceListService,
             SingleIdpConfiguration singleIdpConfiguration,

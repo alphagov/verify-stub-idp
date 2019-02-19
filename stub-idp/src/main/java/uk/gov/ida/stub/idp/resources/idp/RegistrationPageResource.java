@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.stub.idp.Urls;
-import uk.gov.ida.stub.idp.cookies.CookieFactory;
 import uk.gov.ida.stub.idp.cookies.CookieNames;
 import uk.gov.ida.stub.idp.csrf.CSRFCheckProtection;
 import uk.gov.ida.stub.idp.domain.SamlResponse;
@@ -68,8 +67,7 @@ public class RegistrationPageResource {
             IdpUserService idpUserService,
             SamlResponseRedirectViewFactory samlResponseRedirectViewFactory,
             NonSuccessAuthnResponseService nonSuccessAuthnResponseService,
-            IdpSessionRepository idpSessionRepository,
-            CookieFactory cookieFactory) {
+            IdpSessionRepository idpSessionRepository) {
         this.idpUserService = idpUserService;
         this.idpStubsRepository = idpStubsRepository;
         this.samlResponseRedirectViewFactory = samlResponseRedirectViewFactory;

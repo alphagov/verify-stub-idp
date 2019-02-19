@@ -28,14 +28,14 @@ import static uk.gov.ida.stub.idp.views.ErrorMessageType.NO_ERROR;
 
 @Path(Urls.SINGLE_IDP_PRE_REGISTER_RESOURCE)
 @Produces(MediaType.TEXT_HTML)
-public class PreRegistrationResource {
+public class SingleIdpPreRegistrationResource {
 
     private final IdpStubsRepository idpStubsRepository;
     private final CookieFactory cookieFactory;
     private final IdpSessionRepository idpSessionRepository;
 
     @Inject
-    public PreRegistrationResource(
+    public SingleIdpPreRegistrationResource(
             IdpStubsRepository idpStubsRepository, CookieFactory cookieFactory, IdpSessionRepository idpSessionRepository) {
         this.idpStubsRepository = idpStubsRepository;
         this.cookieFactory = cookieFactory;
