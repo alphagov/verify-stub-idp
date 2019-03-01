@@ -67,13 +67,13 @@ public class EidasProxyNodeServiceMetadataResource {
         try {
             Document metadata = getMetadataDocument(metadataUrl, ssoEndpoint);
             return Response.ok(metadata).build();
-		} catch (CertificateEncodingException | MarshallingException | SecurityException | SignatureException e) {
+		} catch (CertificateEncodingException | MarshallingException | SignatureException e) {
             LOG.error("Failed to generate metadata", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    private Document getMetadataDocument(URI requestPath, URI ssoEndpoint) throws CertificateEncodingException, MarshallingException, SecurityException, SignatureException {
+    private Document getMetadataDocument(URI requestPath, URI ssoEndpoint) throws CertificateEncodingException, MarshallingException, SignatureException {
         EntityDescriptor metadata = countryMetadataBuilder.createEntityDescriptorForProxyNodeService(
             requestPath,
             ssoEndpoint,
