@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.stub.idp.Urls;
-import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
 import uk.gov.ida.stub.idp.domain.EidasAuthnRequest;
 import uk.gov.ida.stub.idp.domain.EidasScheme;
 import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
@@ -65,9 +64,6 @@ public class EidasLoginPageResourceTest {
 
     @Mock
     private StubCountry stubCountry;
-
-    @Mock
-    private DatabaseIdpUser user;
 
     @Mock
     private StubCountryService stubCountryService;
