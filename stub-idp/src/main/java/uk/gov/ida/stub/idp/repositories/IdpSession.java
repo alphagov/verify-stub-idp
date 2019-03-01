@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static java.util.Optional.empty;
+
 public class IdpSession extends Session {
 	private final IdaAuthnRequestFromHub idaAuthnRequestFromHub;
 	private Optional<DatabaseIdpUser> idpUser = Optional.empty();
@@ -27,7 +29,7 @@ public class IdpSession extends Session {
 	}
 
 	public IdpSession(SessionId sessionId) {
-		this(sessionId, null, null, null, null, null, null, null);
+		this(sessionId, null, null, null, null, empty(), empty(), empty());
 	}
 
 	public IdaAuthnRequestFromHub getIdaAuthnRequestFromHub() {
