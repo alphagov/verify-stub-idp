@@ -62,7 +62,7 @@ public class UserResource {
 
         List<ValidationResponse> validationResponses = userService.validateUsers(asList(users));
 
-        if(validationResponses.stream().anyMatch(validationResponse -> !validationResponse.isOk())) {
+        if(validationResponses.stream().anyMatch(ValidationResponse::isNotOk)) {
             final List<String> validationMessages = validationResponses.stream()
                     .filter(ValidationResponse::isNotOk)
                     .map(ValidationResponse::getMessages)

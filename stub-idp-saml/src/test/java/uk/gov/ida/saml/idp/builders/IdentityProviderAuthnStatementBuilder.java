@@ -12,16 +12,18 @@ import uk.gov.ida.saml.core.domain.IpAddress;
 
 public class IdentityProviderAuthnStatementBuilder {
 
-    private Optional<FraudAuthnDetails> fraudAuthnDetails = Optional.empty();
+    private FraudAuthnDetails fraudAuthnDetails = null;
     private AuthnContext authnContext = AuthnContext.LEVEL_1;
-    private Optional<IpAddress> userIpAddress = Optional.of(new IpAddress("9.9.8.8"));
+    private IpAddress userIpAddress = new IpAddress("9.9.8.8");
 
     public static IdentityProviderAuthnStatementBuilder anIdentityProviderAuthnStatement() {
         return new IdentityProviderAuthnStatementBuilder();
     }
 
     public IdentityProviderAuthnStatement build() {
-        return fraudAuthnDetails.map(fraudAuthnDetails1 -> createIdentityProviderFraudAuthnStatement(fraudAuthnDetails1, userIpAddress.orElse(null))).orElseGet(() -> createIdentityProviderAuthnStatement(authnContext, userIpAddress.orElse(null)));
+        return (fraudAuthnDetails == null)
+                ? createIdentityProviderAuthnStatement(authnContext, userIpAddress)
+                : createIdentityProviderFraudAuthnStatement(fraudAuthnDetails, userIpAddress);
     }
 
     public IdentityProviderAuthnStatementBuilder withAuthnContext(AuthnContext authnContext) {
@@ -30,12 +32,12 @@ public class IdentityProviderAuthnStatementBuilder {
     }
 
     public IdentityProviderAuthnStatementBuilder withFraudDetails(FraudAuthnDetails fraudDetails) {
-        this.fraudAuthnDetails = Optional.ofNullable(fraudDetails);
+        this.fraudAuthnDetails = fraudDetails;
         return this;
     }
 
     public IdentityProviderAuthnStatementBuilder withUserIpAddress(IpAddress userIpAddress) {
-        this.userIpAddress = Optional.ofNullable(userIpAddress);
+        this.userIpAddress = userIpAddress;
         return this;
     }
 }
