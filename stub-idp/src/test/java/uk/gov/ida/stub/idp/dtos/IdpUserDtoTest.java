@@ -66,10 +66,10 @@ public class IdpUserDtoTest {
                 .withLevelOfAssurance("LEVEL_2")
                 .build();
 
-        assertThat(compareIdpUserDto(idpUserDtoFromJson,idpuserDto)).isTrue();
+        compareIdpUserDto(idpUserDtoFromJson,idpuserDto);
     }
 
-    private boolean compareIdpUserDto(final IdpUserDto idpUserDtoFromJson, final IdpUserDto idpuserDto) {
+    private void compareIdpUserDto(final IdpUserDto idpUserDtoFromJson, final IdpUserDto idpuserDto) {
 
         assertThat(idpuserDto.getPid()).isEqualTo(idpUserDtoFromJson.getPid());
 
@@ -126,8 +126,6 @@ public class IdpUserDtoTest {
         assertThat(idpuserDtoAddress.isVerified()).isEqualTo(idpUserDtoFromJsonAddress.isVerified());
 
         assertThat(idpuserDto.getLevelOfAssurance()).isEqualTo(idpUserDtoFromJson.getLevelOfAssurance());
-
-        return true;
     }
 
     private <T> void compareSimpleMdsObjects(final MatchingDatasetValue<T> firstSimpleMdsValue, final MatchingDatasetValue<T> secondSimpleMdsValue) {

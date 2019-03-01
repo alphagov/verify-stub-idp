@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class GeneratePasswordResourceTest {
 
     @Test
-    public void saltedPasswordsShouldVerifyWithBCrypt() throws Exception {
+    public void saltedPasswordsShouldVerifyWithBCrypt() {
         GeneratePasswordResource generatePasswordResource = new GeneratePasswordResource(new GeneratePasswordService());
 
         GeneratePasswordView passwordPage = generatePasswordResource.getPasswordPage();

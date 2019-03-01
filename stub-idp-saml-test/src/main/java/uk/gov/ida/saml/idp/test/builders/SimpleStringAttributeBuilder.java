@@ -18,9 +18,7 @@ public class SimpleStringAttributeBuilder {
     public Attribute build() {
         Attribute attribute = openSamlXmlObjectFactory.createAttribute();
 
-        if (name.isPresent()) {
-            attribute.setName(name.get());
-        }
+        name.ifPresent(attribute::setName);
         if (simpleStringValue.isPresent()){
             StringBasedMdsAttributeValue attributeValue = openSamlXmlObjectFactory.createSimpleMdsAttributeValue(simpleStringValue.get());
             attribute.getAttributeValues().add(attributeValue);

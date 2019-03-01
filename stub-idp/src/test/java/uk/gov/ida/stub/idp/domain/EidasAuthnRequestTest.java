@@ -47,7 +47,7 @@ import uk.gov.ida.stub.idp.services.AuthnRequestReceiverService;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -168,13 +168,13 @@ public class EidasAuthnRequestTest {
                 TestEntityIds.HUB_ENTITY_ID)));
         PublicKey publicSigningKey = publicKeyFactory.createPublicKey(TestCertificateStrings.getPrimaryPublicEncryptionCert(TestEntityIds.HUB_ENTITY_ID));
 
-        PrivateKey publicEncryptionKey = new PrivateKeyFactory().createPrivateKey(Base64.decodeBase64(TestCertificateStrings.HUB_TEST_PRIVATE_ENCRYPTION_KEY));;
+        PrivateKey publicEncryptionKey = new PrivateKeyFactory().createPrivateKey(Base64.decodeBase64(TestCertificateStrings.HUB_TEST_PRIVATE_ENCRYPTION_KEY));
         PublicKey privateEncryptionKey = publicKeyFactory.createPublicKey(TestCertificateStrings.HUB_TEST_PUBLIC_ENCRYPTION_CERT);
 
         KeyPair signingKeyPair = new KeyPair(publicSigningKey, privateSigningKey);
         KeyPair encryptionKeyPair = new KeyPair(privateEncryptionKey, publicEncryptionKey);
 
-        return new IdaKeyStore(signingKeyPair, Arrays.asList(encryptionKeyPair));
+        return new IdaKeyStore(signingKeyPair, Collections.singletonList(encryptionKeyPair));
     }
 
     private Extensions createEidasExtensions() {

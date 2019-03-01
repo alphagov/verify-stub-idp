@@ -63,7 +63,7 @@ public class IdpUserService {
                                                 AuthnContext levelOfAssurance,
                                                 String dateOfBirth,
                                                 String username, String password
-                                                ) throws IncompleteRegistrationException, InvalidDateException, UsernameAlreadyTakenException, InvalidUsernameOrPasswordException {
+                                                ) throws IncompleteRegistrationException, InvalidDateException, UsernameAlreadyTakenException {
         Idp idp = idpStubsRepository.getIdpWithFriendlyId(idpName);
         return createUserInIdp(firstname, surname, addressLine1, addressLine2, addressTown, addressPostCode, levelOfAssurance, dateOfBirth, username, password, idp);
     }

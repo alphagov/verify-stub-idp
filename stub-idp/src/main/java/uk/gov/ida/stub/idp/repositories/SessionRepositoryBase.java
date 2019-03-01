@@ -3,7 +3,6 @@ package uk.gov.ida.stub.idp.repositories;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
@@ -60,8 +59,6 @@ public abstract class SessionRepositoryBase<T extends Session> implements Sessio
             T session = objectMapper.readValue(unescapeJson(serializedSession.substring(1, serializedSession.length() - 1)), sessionType);
 
             return Optional.of(session);
-        } catch (JsonMappingException e) {
-            return cleanupSession(sessionToken);
         } catch (IOException e) {
             return cleanupSession(sessionToken);
         }

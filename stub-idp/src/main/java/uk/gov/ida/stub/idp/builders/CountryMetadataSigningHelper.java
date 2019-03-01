@@ -5,7 +5,6 @@ import javax.inject.Named;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.saml.common.SignableSAMLObject;
-import org.opensaml.security.SecurityException;
 import org.opensaml.xmlsec.signature.support.SignatureException;
 import org.opensaml.xmlsec.signature.support.Signer;
 
@@ -19,7 +18,7 @@ public class CountryMetadataSigningHelper {
         this.signatureFactory = signatureFactory;
     }
 
-    public <T extends SignableSAMLObject> T sign(T signableSAMLObject) throws MarshallingException, SignatureException, SecurityException {
+    public <T extends SignableSAMLObject> T sign(T signableSAMLObject) throws MarshallingException, SignatureException {
         signableSAMLObject.setSignature(signatureFactory.createSignature());
         XMLObjectProviderRegistrySupport.getMarshallerFactory().getMarshaller(signableSAMLObject).marshall(signableSAMLObject);
         Signer.signObject(signableSAMLObject.getSignature());

@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class GeneratePasswordServiceTest {
 
     @Test
-    public void saltedPasswordsShouldVerifyWithBCrypt() throws Exception {
+    public void saltedPasswordsShouldVerifyWithBCrypt() {
         GeneratePasswordService generatePasswordService = new GeneratePasswordService();
 
         final String password = generatePasswordService.generateCandidatePassword();

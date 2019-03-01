@@ -30,27 +30,27 @@ public class IdentityProviderAuthnStatementToAuthnStatementTransformerTest {
     }
 
     @Test
-    public void shouldTransformAuthnStatementWithLevel1() throws Exception {
+    public void shouldTransformAuthnStatementWithLevel1() {
         verifyLevel(AuthnContext.LEVEL_1, IdaAuthnContext.LEVEL_1_AUTHN_CTX);
     }
 
     @Test
-    public void shouldTransformAuthnStatementWithLevel2() throws Exception {
+    public void shouldTransformAuthnStatementWithLevel2() {
         verifyLevel(AuthnContext.LEVEL_2, IdaAuthnContext.LEVEL_2_AUTHN_CTX);
     }
 
     @Test
-    public void shouldTransformAuthnStatementWithLevel3() throws Exception {
+    public void shouldTransformAuthnStatementWithLevel3() {
         verifyLevel(AuthnContext.LEVEL_3, IdaAuthnContext.LEVEL_3_AUTHN_CTX);
     }
 
     @Test
-    public void shouldTransformAuthnStatementWithLevel4() throws Exception {
+    public void shouldTransformAuthnStatementWithLevel4() {
         verifyLevel(AuthnContext.LEVEL_4, IdaAuthnContext.LEVEL_4_AUTHN_CTX);
     }
 
     @Test
-    public void shouldTransformAuthnStatementWithLevelX() throws Exception {
+    public void shouldTransformAuthnStatementWithLevelX() {
         verifyLevel(AuthnContext.LEVEL_X, IdaAuthnContext.LEVEL_X_AUTHN_CTX);
     }
 

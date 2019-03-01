@@ -21,19 +21,19 @@ public class IdpIdaStatusMarshallerTest {
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         IdaSamlBootstrap.bootstrap();
     }
 
     @Test
-    public void transform_shouldTransformSuccess() throws Exception {
+    public void transform_shouldTransformSuccess() {
         Status transformedStatus = marshaller.toSamlStatus(IdpIdaStatus.success());
 
         assertThat(transformedStatus.getStatusCode().getValue()).isEqualTo(StatusCode.SUCCESS);
     }
 
     @Test
-    public void transform_shouldTransformNoAuthenticationContext() throws Exception {
+    public void transform_shouldTransformNoAuthenticationContext() {
         Status transformedStatus = marshaller.toSamlStatus(IdpIdaStatus.noAuthenticationContext());
 
         assertThat(transformedStatus.getStatusCode().getValue()).isEqualTo(StatusCode.RESPONDER);
@@ -41,7 +41,7 @@ public class IdpIdaStatusMarshallerTest {
     }
 
     @Test
-    public void transform_shouldTransformAuthenticationPending() throws Exception {
+    public void transform_shouldTransformAuthenticationPending() {
         Status transformedStatus = marshaller.toSamlStatus(IdpIdaStatus.authenticationPending());
         StatusValue actual = (StatusValue) transformedStatus.getStatusDetail().getOrderedChildren().get(0);
 
@@ -51,7 +51,7 @@ public class IdpIdaStatusMarshallerTest {
     }
 
     @Test
-    public void transform_shouldTransformAuthnFailedWithNoSubStatus() throws Exception {
+    public void transform_shouldTransformAuthnFailedWithNoSubStatus() {
         Status transformedStatus = marshaller.toSamlStatus(IdpIdaStatus.authenticationFailed());
 
         assertThat(transformedStatus.getStatusCode().getValue()).isEqualTo(StatusCode.RESPONDER);
@@ -60,14 +60,14 @@ public class IdpIdaStatusMarshallerTest {
     }
 
     @Test
-    public void transform_shouldTransformRequesterError() throws Exception {
+    public void transform_shouldTransformRequesterError() {
         Status transformedStatus = marshaller.toSamlStatus(IdpIdaStatus.requesterError());
 
         assertThat(transformedStatus.getStatusCode().getValue()).isEqualTo(StatusCode.REQUESTER);
     }
 
     @Test
-    public void transform_shouldTransformRequesterErrorWithMessage() throws Exception {
+    public void transform_shouldTransformRequesterErrorWithMessage() {
         String message = "Oh dear";
         Status transformedStatus = marshaller.toSamlStatus(IdpIdaStatus.requesterError(Optional.of(message)));
 

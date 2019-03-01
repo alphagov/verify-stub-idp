@@ -50,28 +50,28 @@ public class SessionCookieValueMustExistAsASessionFilterTest {
     }
 
     @Test (expected = SessionIdCookieNotFoundException.class)
-    public void shouldReturnNullWhenCheckingNotRequiredButNoCookies() throws Exception {
+    public void shouldReturnNullWhenCheckingNotRequiredButNoCookies() {
         Map<String, Cookie> cookies = ImmutableMap.of();
         when(containerRequestContext.getCookies()).thenReturn(cookies);
         new SessionCookieValueMustExistAsASessionFilter(idpSessionRepository, eidasSessionRepository, hmacValidator, isSecureCookieEnabled).filter(containerRequestContext);
     }
 
     @Test (expected = SecureCookieNotFoundException.class)
-    public void shouldReturnNullWhenCheckingNotRequiredButSecureCookie() throws Exception {
+    public void shouldReturnNullWhenCheckingNotRequiredButSecureCookie() {
         Map<String, Cookie> cookies = ImmutableMap.of(SESSION_COOKIE_NAME, new NewCookie(SESSION_COOKIE_NAME, "some-session-id"));
         when(containerRequestContext.getCookies()).thenReturn(cookies);
         new SessionCookieValueMustExistAsASessionFilter(idpSessionRepository, eidasSessionRepository, hmacValidator, isSecureCookieEnabled).filter(containerRequestContext);
     }
 
     @Test (expected = InvalidSecureCookieException.class)
-    public void shouldReturnNullWhenCheckingNotRequiredButSessionCookieIsSetToNoCurrentValue() throws Exception {
+    public void shouldReturnNullWhenCheckingNotRequiredButSessionCookieIsSetToNoCurrentValue() {
         Map<String, Cookie> cookies = ImmutableMap.of(SESSION_COOKIE_NAME, new NewCookie(SESSION_COOKIE_NAME, "some-session-id"), SECURE_COOKIE_NAME, new NewCookie(SECURE_COOKIE_NAME, NO_CURRENT_SESSION_COOKIE_VALUE));
         when(containerRequestContext.getCookies()).thenReturn(cookies);
         new SessionCookieValueMustExistAsASessionFilter(idpSessionRepository, eidasSessionRepository, hmacValidator, isSecureCookieEnabled).filter(containerRequestContext);
     }
 
     @Test (expected = InvalidSecureCookieException.class)
-    public void shouldReturnNullWhenCheckingNotRequiredButSessionCookieAndSecureCookieDontMatchUp() throws Exception {
+    public void shouldReturnNullWhenCheckingNotRequiredButSessionCookieAndSecureCookieDontMatchUp() {
         SessionId sessionId = SessionId.createNewSessionId();
         Map<String, Cookie> cookies = ImmutableMap.of(SESSION_COOKIE_NAME, new NewCookie(SESSION_COOKIE_NAME, sessionId.toString()), SECURE_COOKIE_NAME, new NewCookie(SECURE_COOKIE_NAME, "secure-cookie"));
         when(hmacValidator.validateHMACSHA256("secure-cookie", sessionId.getSessionId())).thenReturn(false);
@@ -80,7 +80,7 @@ public class SessionCookieValueMustExistAsASessionFilterTest {
     }
 
     @Test
-    public void shouldReturnSessionIdWhenCheckingNotRequiredButSessionCookieAndSecureCookieMatchUp() throws Exception {
+    public void shouldReturnSessionIdWhenCheckingNotRequiredButSessionCookieAndSecureCookieMatchUp() {
         SessionId sessionId = SessionId.createNewSessionId();
         Map<String, Cookie> cookies = ImmutableMap.of(SESSION_COOKIE_NAME, new NewCookie(SESSION_COOKIE_NAME, sessionId.toString()), SECURE_COOKIE_NAME, new NewCookie(SECURE_COOKIE_NAME, "secure-cookie"));
         when(containerRequestContext.getCookies()).thenReturn(cookies);
@@ -90,7 +90,7 @@ public class SessionCookieValueMustExistAsASessionFilterTest {
     }
 
     @Test
-    public void shouldThrowCookieNotFoundExceptionWhenCheckingRequiredButNoCookies() throws Exception {
+    public void shouldThrowCookieNotFoundExceptionWhenCheckingRequiredButNoCookies() {
         Map<String, Cookie> cookies = ImmutableMap.of();
         when(containerRequestContext.getCookies()).thenReturn(cookies);
         try {
@@ -102,7 +102,7 @@ public class SessionCookieValueMustExistAsASessionFilterTest {
     }
 
     @Test
-    public void shouldThrowSecureCookieNotFoundExceptionWhenCheckingRequiredButNoSessionIdCookie() throws Exception {
+    public void shouldThrowSecureCookieNotFoundExceptionWhenCheckingRequiredButNoSessionIdCookie() {
         Map<String, Cookie> cookies = ImmutableMap.of();
         when(containerRequestContext.getCookies()).thenReturn(cookies);
         try {
@@ -114,7 +114,7 @@ public class SessionCookieValueMustExistAsASessionFilterTest {
     }
 
     @Test
-    public void shouldThrowSecureCookieNotFoundExceptionWhenCheckingRequiredButNoSecureCookie() throws Exception {
+    public void shouldThrowSecureCookieNotFoundExceptionWhenCheckingRequiredButNoSecureCookie() {
         Map<String, Cookie> cookies = ImmutableMap.of(
                 SESSION_COOKIE_NAME, new NewCookie(SESSION_COOKIE_NAME, "some-session-id")
         );
@@ -128,7 +128,7 @@ public class SessionCookieValueMustExistAsASessionFilterTest {
     }
 
     @Test
-    public void shouldThrowInvalidSecureExceptionWhenCheckingRequiredButSessionCookieIsSetToNoCurrentValue() throws Exception {
+    public void shouldThrowInvalidSecureExceptionWhenCheckingRequiredButSessionCookieIsSetToNoCurrentValue() {
         Map<String, Cookie> cookies = ImmutableMap.of(
                 SESSION_COOKIE_NAME, new NewCookie(SESSION_COOKIE_NAME, "session-id"),
                 SECURE_COOKIE_NAME, new NewCookie(SECURE_COOKIE_NAME, NO_CURRENT_SESSION_COOKIE_VALUE)
@@ -143,7 +143,7 @@ public class SessionCookieValueMustExistAsASessionFilterTest {
     }
 
     @Test
-    public void shoulThrowInvalidSecureCookieExceptionWhenCheckingRequiredButSessionCookieAndSecureCookieDontMatchUp() throws Exception {
+    public void shoulThrowInvalidSecureCookieExceptionWhenCheckingRequiredButSessionCookieAndSecureCookieDontMatchUp() {
         SessionId sessionId = SessionId.createNewSessionId();
         Map<String, Cookie> cookies = ImmutableMap.of(
                 SESSION_COOKIE_NAME, new NewCookie(SESSION_COOKIE_NAME, sessionId.toString()),
@@ -160,7 +160,7 @@ public class SessionCookieValueMustExistAsASessionFilterTest {
     }
 
     @Test (expected = SessionNotFoundException.class)
-    public void shouldThrowNotFoundIfSessionNotActive() throws Exception {
+    public void shouldThrowNotFoundIfSessionNotActive() {
         SessionId sessionId = SessionId.createNewSessionId();
         Map<String, Cookie> cookies = ImmutableMap.of(
                 SESSION_COOKIE_NAME, new NewCookie(SESSION_COOKIE_NAME, sessionId.toString()),
@@ -174,7 +174,7 @@ public class SessionCookieValueMustExistAsASessionFilterTest {
 
 
     @Test
-    public void shouldIgnoreSecureCookieIfSecureCookiesNotEnabled() throws Exception {
+    public void shouldIgnoreSecureCookieIfSecureCookiesNotEnabled() {
         SessionId sessionId = SessionId.createNewSessionId();
         Map<String, Cookie> cookies = ImmutableMap.of(
                 SESSION_COOKIE_NAME, new NewCookie(SESSION_COOKIE_NAME, sessionId.toString()),

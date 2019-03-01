@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class ValidationResponse {
-    private boolean isOk = false;
-    private List<String> messages = new ArrayList<>();
+    private boolean isOk;
+    private List<String> messages;
 
     public static ValidationResponse aValidResponse() {
         return new ValidationResponse(true, new ArrayList<>());
@@ -22,6 +22,10 @@ public final class ValidationResponse {
 
     public boolean isOk() {
         return isOk;
+    }
+
+    public boolean isNotOk() {
+        return !isOk;
     }
 
     public List<String> getMessages() {

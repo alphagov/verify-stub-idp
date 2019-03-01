@@ -116,12 +116,8 @@ public class AuthnRequestSteps {
     private Response postAuthnRequest(List<String> hints, Optional<String> language, Optional<Boolean> registration, String authnRequest, String ssoEndpoint) {
         Form form = new Form();
         form.param(Urls.SAML_REQUEST_PARAM, authnRequest);
-        if(registration.isPresent()) {
-            form.param(Urls.REGISTRATION_PARAM, registration.get().toString());
-        }
-        if(language.isPresent()) {
-            form.param(Urls.LANGUAGE_HINT_PARAM, language.get());
-        }
+        registration.ifPresent(aBoolean -> form.param(Urls.REGISTRATION_PARAM, aBoolean.toString()));
+        language.ifPresent(s -> form.param(Urls.LANGUAGE_HINT_PARAM, s));
         for(String hint : hints) {
             form.param(Urls.HINTS_PARAM, hint);
         }

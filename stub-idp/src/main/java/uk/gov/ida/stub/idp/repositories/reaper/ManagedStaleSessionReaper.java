@@ -34,7 +34,7 @@ public class ManagedStaleSessionReaper implements Managed {
     }
 
     @Override
-    public void start() throws Exception {
+    public void start() {
         final StaleSessionReaper staleSessionReaper = new StaleSessionReaper(verifySessionRepository, staleSessionReaperConfiguration);
         scheduledExecutorService.scheduleWithFixedDelay(staleSessionReaper,
                 reaperFrequencyInSeconds,
@@ -43,7 +43,7 @@ public class ManagedStaleSessionReaper implements Managed {
     }
 
     @Override
-    public void stop() throws Exception {
+    public void stop() {
         LOGGER.info("shutting down; waiting for any active reapers to finish");
         scheduledExecutorService.shutdown();
         try {

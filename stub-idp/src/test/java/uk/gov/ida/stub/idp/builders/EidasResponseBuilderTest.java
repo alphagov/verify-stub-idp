@@ -37,7 +37,7 @@ public class EidasResponseBuilderTest {
     }
 
     @Test
-    public void shouldCreateEidasResponseWithRequiredFields() throws Exception {
+    public void shouldCreateEidasResponseWithRequiredFields() {
         List<Attribute> attributes = Collections.emptyList();
         DateTime issueInstant = DateTime.now().minusSeconds(2);
         DateTime assertionIssueInstant = DateTime.now().minusSeconds(1);

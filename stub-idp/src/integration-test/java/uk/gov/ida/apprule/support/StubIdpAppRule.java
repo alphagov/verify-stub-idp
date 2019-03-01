@@ -75,7 +75,7 @@ public class StubIdpAppRule extends DropwizardAppRule<StubIdpConfiguration> {
                 .add(ConfigOverride.config("singleIdpJourney.enabled", "true"))
                 .add(configOverrides)
                 .build();
-        return overrides.toArray(new ConfigOverride[overrides.size()]);
+        return overrides.toArray(new ConfigOverride[0]);
     }
 
     @Override

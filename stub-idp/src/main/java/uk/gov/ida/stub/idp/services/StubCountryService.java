@@ -107,7 +107,8 @@ public class StubCountryService {
     private EidasUser createEidasUser(Optional<DatabaseEidasUser> optionalUser) {
 
         DatabaseEidasUser user = optionalUser.get();
-        EidasUser eidasUser = new EidasUser(
+
+        return new EidasUser(
                 user.getFirstname().getValue(),
                 getOptionalValue(user.getNonLatinFirstname()),
                 user.getSurname().getValue(),
@@ -117,12 +118,10 @@ public class StubCountryService {
                 Optional.empty(),
                 Optional.empty()
         );
-
-        return eidasUser;
     }
 
     private Optional<String> getOptionalValue(Optional<MatchingDatasetValue<String>> fieldValue) {
-        return Optional.ofNullable(fieldValue.map(MatchingDatasetValue::getValue).orElse(null));
+        return fieldValue.map(MatchingDatasetValue::getValue);
     }
 
     private <T> MatchingDatasetValue<T> createMdsValue(T value) {

@@ -17,7 +17,7 @@ public class HmacValidatorTest {
     private HmacDigest hmacDigest;
 
     @Test
-    public void shouldReturnTrueWhenSessionCookieAndSecureCookieMatchUp() throws Exception {
+    public void shouldReturnTrueWhenSessionCookieAndSecureCookieMatchUp() {
         SessionId sessionId = SessionId.createNewSessionId();
         String secureCookie = "secure-cookie";
         String hmacDouble = "hmac-double";
@@ -29,7 +29,7 @@ public class HmacValidatorTest {
     }
 
     @Test
-    public void shouldReturnFalseWhenSessionCookieAndSecureCookieDontMatchUp() throws Exception {
+    public void shouldReturnFalseWhenSessionCookieAndSecureCookieDontMatchUp() {
         SessionId sessionId = SessionId.createNewSessionId();
         String secureCookie = "secure-cookie";
         when(hmacDigest.digest(sessionId.getSessionId())).thenReturn("session-id-hmac");

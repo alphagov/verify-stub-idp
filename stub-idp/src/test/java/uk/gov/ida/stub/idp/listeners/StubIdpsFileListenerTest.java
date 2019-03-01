@@ -18,7 +18,6 @@ import uk.gov.ida.stub.idp.configuration.IdpStubsConfiguration;
 import uk.gov.ida.stub.idp.configuration.SamlConfigurationImpl;
 import uk.gov.ida.stub.idp.configuration.StubIdp;
 import uk.gov.ida.stub.idp.configuration.StubIdpConfiguration;
-import uk.gov.ida.stub.idp.configuration.UserCredentials;
 import uk.gov.ida.stub.idp.repositories.AllIdpsUserRepository;
 import uk.gov.ida.stub.idp.repositories.Idp;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
@@ -58,7 +57,7 @@ public class StubIdpsFileListenerTest {
 
     @Before
     public void setup() throws Exception {
-        StubIdp testStubIdp = new TestStubIdp("a", "b", "c", Lists.<UserCredentials>newArrayList());
+        StubIdp testStubIdp = new TestStubIdp("a", "b", "c", Lists.newArrayList());
         createYamlFile(testStubIdp);
         final StubIdpConfiguration stubIdpConfiguration = mock(StubIdpConfiguration.class);
         when(stubIdpConfiguration.getStubIdpsYmlFileLocation()).thenReturn(YML_FILE.getAbsolutePath());
@@ -83,7 +82,7 @@ public class StubIdpsFileListenerTest {
     @Test
     public void verifyIdaStubsRepositoryIsUpdatedOnFileChange() throws Exception {
         initializeSynchronizationWithFileMonitor();
-        StubIdp changedTestStubIdp = new TestStubIdp("e", "f", "g", Lists.<UserCredentials>newArrayList());
+        StubIdp changedTestStubIdp = new TestStubIdp("e", "f", "g", Lists.newArrayList());
         createYamlFile(changedTestStubIdp);
 
         waitForFileToBeReadByMonitor();
@@ -102,7 +101,7 @@ public class StubIdpsFileListenerTest {
     public void verifyIdaStubsRepositoryIsUpdatedEvenIfPreviousFileChangeWasInvalid() throws Exception {
         ensureInvalidStubIdpsConfigWasProcessed();
         initializeSynchronizationWithFileMonitor();
-        StubIdp changedTestStubIdp = new TestStubIdp("m", "n", "o", Lists.<UserCredentials>newArrayList());
+        StubIdp changedTestStubIdp = new TestStubIdp("m", "n", "o", Lists.newArrayList());
         createYamlFile(changedTestStubIdp);
 
         waitForFileToBeReadByMonitor();

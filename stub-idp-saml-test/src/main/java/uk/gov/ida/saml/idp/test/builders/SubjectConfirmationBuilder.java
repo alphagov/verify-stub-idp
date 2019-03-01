@@ -18,13 +18,8 @@ public class SubjectConfirmationBuilder {
     public SubjectConfirmation build() {
         SubjectConfirmation subjectConfirmation = openSamlXmlObjectFactory.createSubjectConfirmation();
 
-        if (method.isPresent()) {
-            subjectConfirmation.setMethod(method.get());
-        }
-
-        if (subjectConfirmationData.isPresent()) {
-            subjectConfirmation.setSubjectConfirmationData(subjectConfirmationData.get());
-        }
+        method.ifPresent(subjectConfirmation::setMethod);
+        subjectConfirmationData.ifPresent(subjectConfirmation::setSubjectConfirmationData);
 
         return subjectConfirmation;
     }

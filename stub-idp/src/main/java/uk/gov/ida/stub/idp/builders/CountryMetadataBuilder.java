@@ -24,7 +24,6 @@ import org.opensaml.saml.saml2.metadata.IDPSSODescriptor;
 import org.opensaml.saml.saml2.metadata.RoleDescriptor;
 import org.opensaml.saml.saml2.metadata.SingleSignOnService;
 import org.opensaml.saml.saml2.metadata.impl.SingleSignOnServiceBuilder;
-import org.opensaml.security.SecurityException;
 import org.opensaml.xmlsec.signature.support.SignatureException;
 
 import uk.gov.ida.common.shared.security.Certificate;
@@ -52,7 +51,7 @@ public class CountryMetadataBuilder {
         URI ssoEndpoint,
         java.security.cert.Certificate signingCertificate,
         java.security.cert.Certificate encryptingCertificate
-    ) throws MarshallingException, SecurityException, SignatureException, CertificateEncodingException {
+    ) throws MarshallingException, SignatureException, CertificateEncodingException {
         EntityDescriptor entityDescriptor = createElement(EntityDescriptor.DEFAULT_ELEMENT_NAME, EntityDescriptor.TYPE_NAME);
         entityDescriptor.setEntityID(entityId.toString());
         entityDescriptor.setValidUntil(DateTime.now().plus(validity));

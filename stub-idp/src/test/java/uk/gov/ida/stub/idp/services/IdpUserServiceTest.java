@@ -23,7 +23,7 @@ import uk.gov.ida.stub.idp.repositories.IdpSession;
 import uk.gov.ida.stub.idp.repositories.IdpSessionRepository;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -80,7 +80,7 @@ public class IdpUserServiceTest {
 
     @Test
     public void shouldHaveStatusSuccessResponseWhenUserRegisters() throws InvalidSessionIdException, IncompleteRegistrationException, InvalidDateException, UsernameAlreadyTakenException, InvalidUsernameOrPasswordException {
-        IdpSession session = new IdpSession(SessionId.createNewSessionId(), idaAuthnRequestFromHubOptional, "test-relay-state", Arrays.asList(), Arrays.asList(), Optional.empty(), Optional.empty(), Optional.empty());
+        IdpSession session = new IdpSession(SessionId.createNewSessionId(), idaAuthnRequestFromHubOptional, "test-relay-state", Collections.emptyList(), Collections.emptyList(), Optional.empty(), Optional.empty(), Optional.empty());
         when(sessionRepository.get(SESSION_ID)).thenReturn(Optional.ofNullable(new IdpSession(SESSION_ID, idaAuthnRequestFromHubOptional, RELAY_STATE, null, null, null, null, null)));
         when(idpStubsRepository.getIdpWithFriendlyId(IDP_NAME)).thenReturn(idp);
         when(idp.userExists(USERNAME)).thenReturn(false);

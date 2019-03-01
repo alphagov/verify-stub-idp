@@ -50,7 +50,7 @@ public class HintsIntegrationTests extends IntegrationTestHelper {
     }
 
     @Test
-    public void debugPageShowsHints() throws Exception {
+    public void debugPageShowsHints() {
         List<String> hints = ImmutableList.of(IdpHint.has_apps.name(), "snakes", "plane");
         final Optional<Boolean> registration = Optional.of(true);
         final Optional<String> language = Optional.empty();
@@ -69,7 +69,7 @@ public class HintsIntegrationTests extends IntegrationTestHelper {
     }
 
     @Test
-    public void debugPageShowsLanguageHint() throws Exception {
+    public void debugPageShowsLanguageHint() {
         List<String> hints = ImmutableList.of();
         final Optional<Boolean> registration = Optional.empty();
         final Optional<String> language = Optional.ofNullable("cy");

@@ -43,7 +43,7 @@ public class CookieFactoryTest {
     }
 
     @Test
-    public void createSecureCookieWithSecurelyHashedValue_shouldCreateACookie() throws Exception {
+    public void createSecureCookieWithSecurelyHashedValue_shouldCreateACookie() {
         SessionId sessionId = new SessionId(UUID.randomUUID().toString());
 
         String digestedValue = "ummm cookie";
@@ -60,7 +60,7 @@ public class CookieFactoryTest {
     }
 
     @Test
-    public void createSessionIdCookie_shouldCreateACookie() throws Exception {
+    public void createSessionIdCookie_shouldCreateACookie() {
 
         when(secureCookieConfiguration.isSecure()).thenReturn(IS_SECURE);
         SessionId expectedValue = SessionId.createNewSessionId();

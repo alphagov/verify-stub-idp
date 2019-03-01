@@ -17,7 +17,6 @@ import javax.inject.Named;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Cookie;
-import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -31,7 +30,8 @@ public class SessionCookieValueMustExistAsASessionFilter implements ContainerReq
     private final HmacValidator hmacValidator;
     private final boolean isSecureCookieEnabled;
 
-    public enum Status {VERIFIED, ID_NOT_PRESENT, HASH_NOT_PRESENT, DELETED_SESSION, INVALID_HASH, NOT_FOUND };
+    public enum Status {VERIFIED, ID_NOT_PRESENT, HASH_NOT_PRESENT, DELETED_SESSION, INVALID_HASH, NOT_FOUND }
+
     public static final String NO_CURRENT_SESSION_COOKIE_VALUE = "no-current-session";
 
     @Inject
@@ -46,7 +46,7 @@ public class SessionCookieValueMustExistAsASessionFilter implements ContainerReq
     }
 
     @Override
-    public void filter(ContainerRequestContext requestContext) throws IOException {
+    public void filter(ContainerRequestContext requestContext) {
 
         // Get SessionId from cookie
         final Optional<String> sessionCookie = Optional.ofNullable(getValueOfPossiblyNullCookie(requestContext.getCookies(), SESSION_COOKIE_NAME));

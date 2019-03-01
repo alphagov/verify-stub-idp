@@ -6,11 +6,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.saml.saml2.core.Attribute;
 import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.saml.saml2.core.StatusCode;
-import org.opensaml.xmlsec.signature.support.SignatureException;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.saml.core.IdaConstants;
 import uk.gov.ida.saml.core.IdaSamlBootstrap;
@@ -61,7 +59,7 @@ public class EidasAuthnResponseServiceTest {
     }
 
     @Test
-    public void getEidasSuccessResponse() throws URISyntaxException, MarshallingException, SignatureException {
+    public void getEidasSuccessResponse() throws URISyntaxException {
         EidasAuthnRequest request = new EidasAuthnRequest("request-id", "issuer", "destination", "loa", Collections.emptyList());
         EidasSession session = new EidasSession(new SessionId("session-id"), request, "relay-state", Collections.emptyList(), Collections.emptyList(), Optional.empty(), Optional.empty());
         session.setEidasUser(new EidasUser("Firstname", Optional.empty(), "Familyname", Optional.empty(), "pid", dateOfBirth, null, null));
@@ -83,7 +81,7 @@ public class EidasAuthnResponseServiceTest {
     }
 
     @Test
-    public void getEidasSuccessWithNonLatinNamesDataResponse() throws URISyntaxException, MarshallingException, SignatureException {
+    public void getEidasSuccessWithNonLatinNamesDataResponse() throws URISyntaxException {
         EidasAuthnRequest request = new EidasAuthnRequest("request-id", "issuer", "destination", "loa", Collections.emptyList());
         EidasSession session = new EidasSession(new SessionId("session-id"), request, "relay-state", Collections.emptyList(), Collections.emptyList(), Optional.empty(), Optional.empty());
         session.setEidasUser(new EidasUser("Firstname", Optional.of("nonLatinFirstname"), "Familyname", Optional.of("nonLatinFamilyname"), "pid", dateOfBirth, null, null));
