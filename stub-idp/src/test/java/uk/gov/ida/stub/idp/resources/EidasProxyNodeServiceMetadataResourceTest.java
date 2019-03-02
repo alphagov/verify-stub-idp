@@ -45,7 +45,6 @@ public class EidasProxyNodeServiceMetadataResourceTest {
     private static final String INVALID_COUNTRY = "invalid-stub-country";
     private static final String METADATA_URL_PATTERN = "https://stub.test/{0}/ServiceMetadata";
     private static final String SSO_URL_PATTERN = "https://stub.test/eidas/{0}/SAML2/SSO";
-    private EntityDescriptor entityDescriptor;
     private URI validCountryUri;
 
     @Mock
@@ -66,8 +65,8 @@ public class EidasProxyNodeServiceMetadataResourceTest {
     public void setUp() throws CertificateEncodingException, MarshallingException, SignatureException, URISyntaxException {
         validCountryUri = new URI(MessageFormat.format(METADATA_URL_PATTERN, VALID_COUNTRY));
         resource = new EidasProxyNodeServiceMetadataResource(idaKeyStore, METADATA_URL_PATTERN, SSO_URL_PATTERN, countryMetadataBuilder);
-        entityDescriptor = (EntityDescriptor) XMLObjectProviderRegistrySupport.getBuilderFactory()
-          .getBuilder(EntityDescriptor.DEFAULT_ELEMENT_NAME).buildObject(EntityDescriptor.DEFAULT_ELEMENT_NAME, EntityDescriptor.TYPE_NAME);
+        EntityDescriptor entityDescriptor = (EntityDescriptor) XMLObjectProviderRegistrySupport.getBuilderFactory()
+                .getBuilder(EntityDescriptor.DEFAULT_ELEMENT_NAME).buildObject(EntityDescriptor.DEFAULT_ELEMENT_NAME, EntityDescriptor.TYPE_NAME);
         when(idaKeyStore.getSigningCertificate()).thenReturn(signingCertificate);
         when(countryMetadataBuilder.createEntityDescriptorForProxyNodeService(any(), any(), any(), any())).thenReturn(entityDescriptor);
     }
