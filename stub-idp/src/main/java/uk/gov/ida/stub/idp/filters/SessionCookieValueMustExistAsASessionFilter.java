@@ -17,9 +17,9 @@ import javax.inject.Named;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Cookie;
-import java.util.Map;
 import java.util.Optional;
 
+import static java.util.Optional.empty;
 import static uk.gov.ida.stub.idp.cookies.CookieNames.SECURE_COOKIE_NAME;
 import static uk.gov.ida.stub.idp.cookies.CookieNames.SESSION_COOKIE_NAME;
 
@@ -49,13 +49,13 @@ public class SessionCookieValueMustExistAsASessionFilter implements ContainerReq
     public void filter(ContainerRequestContext requestContext) {
 
         // Get SessionId from cookie
-        final Optional<String> sessionCookie = Optional.ofNullable(getValueOfPossiblyNullCookie(requestContext.getCookies(), SESSION_COOKIE_NAME));
+        final Optional<String> sessionCookie = getValueOfPossiblyNullCookie(requestContext.getCookies().getOrDefault(SESSION_COOKIE_NAME, null));
         // Get SessionId HMAC from cookie
         final Optional<String> secureCookie;
         if (isSecureCookieEnabled) {
-            secureCookie = Optional.ofNullable(getValueOfPossiblyNullCookie(requestContext.getCookies(), SECURE_COOKIE_NAME));
+            secureCookie = getValueOfPossiblyNullCookie(requestContext.getCookies().getOrDefault(SECURE_COOKIE_NAME, null));
         } else {
-            secureCookie = Optional.empty();
+            secureCookie = empty();
         }
 
         if (!sessionCookie.isPresent()) {
@@ -99,7 +99,7 @@ public class SessionCookieValueMustExistAsASessionFilter implements ContainerReq
         }
     }
 
-    private String getValueOfPossiblyNullCookie(Map<String, Cookie> cookies, String cookieName) {
-        return cookies.containsKey(cookieName) ? cookies.get(cookieName).getValue() : null;
+    private Optional<String> getValueOfPossiblyNullCookie(Cookie cookie) {
+        return Optional.ofNullable(cookie).map(Cookie::getValue);
     }
 }
