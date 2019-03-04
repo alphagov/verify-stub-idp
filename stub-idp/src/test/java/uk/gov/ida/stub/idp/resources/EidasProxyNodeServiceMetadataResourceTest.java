@@ -10,7 +10,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
-import org.opensaml.security.SecurityException;
 import org.opensaml.xmlsec.signature.support.SignatureException;
 import org.w3c.dom.Document;
 import uk.gov.ida.saml.core.IdaSamlBootstrap;
@@ -64,7 +63,7 @@ public class EidasProxyNodeServiceMetadataResourceTest {
     }
 
     @Before
-    public void setUp() throws CertificateEncodingException, MarshallingException, SecurityException, SignatureException, URISyntaxException {
+    public void setUp() throws CertificateEncodingException, MarshallingException, SignatureException, URISyntaxException {
         validCountryUri = new URI(MessageFormat.format(METADATA_URL_PATTERN, VALID_COUNTRY));
         resource = new EidasProxyNodeServiceMetadataResource(idaKeyStore, METADATA_URL_PATTERN, SSO_URL_PATTERN, countryMetadataBuilder);
         entityDescriptor = (EntityDescriptor) XMLObjectProviderRegistrySupport.getBuilderFactory()
@@ -79,7 +78,7 @@ public class EidasProxyNodeServiceMetadataResourceTest {
     }
 
     @Test
-    public void getShouldReturnADocumentWhenIdpIsKnown() throws URISyntaxException, SecurityException, CertificateEncodingException, SignatureException, MarshallingException {
+    public void getShouldReturnADocumentWhenIdpIsKnown() throws URISyntaxException, CertificateEncodingException, SignatureException, MarshallingException {
         final Response response = resource.getMetadata(VALID_COUNTRY);
 
         URI validCountrySsoUri = new URI(String.format("https://stub.test/eidas/%s/SAML2/SSO", VALID_COUNTRY));
@@ -89,7 +88,7 @@ public class EidasProxyNodeServiceMetadataResourceTest {
     }
 
     @Test
-    public void getShouldReturnNotFoundWhenIdpIsNullOrEmpty() throws CertificateEncodingException, MarshallingException, SecurityException, SignatureException {
+    public void getShouldReturnNotFoundWhenIdpIsNullOrEmpty() throws CertificateEncodingException, MarshallingException, SignatureException {
         Response response = resource.getMetadata(null);
         assertThat(response.getStatus()).isEqualTo(Response.Status.NOT_FOUND.getStatusCode());
         assertThat(response.getEntity()).isEqualTo(null);

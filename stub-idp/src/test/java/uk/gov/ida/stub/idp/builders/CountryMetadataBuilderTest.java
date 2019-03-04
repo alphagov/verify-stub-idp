@@ -25,7 +25,6 @@ import org.opensaml.saml.saml2.metadata.IDPSSODescriptor;
 import org.opensaml.saml.saml2.metadata.KeyDescriptor;
 import org.opensaml.saml.saml2.metadata.ManageNameIDService;
 import org.opensaml.saml.saml2.metadata.SingleLogoutService;
-import org.opensaml.security.SecurityException;
 import org.opensaml.security.credential.UsageType;
 import org.opensaml.xmlsec.signature.KeyInfo;
 import org.opensaml.xmlsec.signature.X509Certificate;
@@ -71,14 +70,14 @@ public class CountryMetadataBuilderTest {
         return cert.replaceAll("\\s", "");
     }
 
-    private EntityDescriptor getMetadata() throws CertificateEncodingException, MarshallingException, SecurityException, SignatureException {
+    private EntityDescriptor getMetadata() throws CertificateEncodingException, MarshallingException, SignatureException {
         when(metadataSigner.sign(any(EntityDescriptor.class))).thenAnswer(i -> i.getArguments()[0]);
         CountryMetadataBuilder countryMetadataBuilder = new CountryMetadataBuilder(new Period(1, 0, 0, 0), metadataSigner);
         return countryMetadataBuilder.createEntityDescriptorForProxyNodeService(ENTITY_ID, SSO_URL, SIGNING_CERTIFICATE, ENCRYPTING_CERTIFICATE);
     }
 
     @Test
-    public void shouldGenerateEntityDescriptor() throws CertificateEncodingException, MarshallingException, SecurityException, SignatureException {
+    public void shouldGenerateEntityDescriptor() throws CertificateEncodingException, MarshallingException, SignatureException {
         EntityDescriptor metadata = getMetadata();
         assertThat(metadata).isNotNull();
         assertThat(metadata.getValidUntil()).isNotNull();
@@ -88,7 +87,7 @@ public class CountryMetadataBuilderTest {
     }
 
     @Test
-    public void shouldGenerateIdpSSODescriptor() throws MarshallingException, SecurityException, SignatureException, CertificateEncodingException {
+    public void shouldGenerateIdpSSODescriptor() throws MarshallingException, SignatureException, CertificateEncodingException {
         EntityDescriptor metadata = getMetadata();
         assertThat(metadata).isNotNull();
 
@@ -98,7 +97,7 @@ public class CountryMetadataBuilderTest {
     }
 
     @Test
-    public void shouldGenerateCertificatesInsideDescriptor() throws CertificateEncodingException, MarshallingException, SecurityException, SignatureException {
+    public void shouldGenerateCertificatesInsideDescriptor() throws CertificateEncodingException, MarshallingException, SignatureException {
         EntityDescriptor metadata = getMetadata();
         assertThat(metadata).isNotNull();
 
@@ -115,13 +114,13 @@ public class CountryMetadataBuilderTest {
     }
 
     @Test
-    public void shouldSignDescriptor() throws CertificateEncodingException, MarshallingException, SecurityException, SignatureException {
+    public void shouldSignDescriptor() throws CertificateEncodingException, MarshallingException, SignatureException {
         EntityDescriptor metadata = getMetadata();
         verify(metadataSigner, times(1)).sign(metadata);
     }
 
     @Test
-    public void shouldNotContainOtherServiceElements() throws CertificateEncodingException, MarshallingException, SecurityException, SignatureException {
+    public void shouldNotContainOtherServiceElements() throws CertificateEncodingException, MarshallingException, SignatureException {
         EntityDescriptor metadata = getMetadata();
         assertThat(metadata).isNotNull();
 
