@@ -70,7 +70,7 @@ checkServiceStatus() {
   local HOST_NAME=$1
   local APP_NAME=$2
   if [ "$(curl -sL --retry 5 --retry-delay 10  -w "%{http_code}\\n" https://"$HOST_NAME.$CF_DOMAIN"/service-status)" != "200" ] ; then
-    printf "$(tput setaf 1)Zero downtime deployment failed.\\nUse 'cf logs $APP_NAME --recent' for more information.\\n$(tput sgr0)"
+    printf "%sZero downtime deployment failed.\\nUse 'cf logs %s --recent' for more information.\\n%s" "$(tput setaf 1)" "$APP_NAME" "$(tput sgr0)"
     exit 1;
   fi
 }
