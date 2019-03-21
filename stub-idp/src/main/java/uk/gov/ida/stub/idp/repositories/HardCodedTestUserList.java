@@ -347,6 +347,8 @@ public final class HardCodedTestUserList {
             return null;
         }
 
-        return new MatchingDatasetValue<>(value, null, null, true);
+        DateTime from = DateTime.now();
+
+        return new MatchingDatasetValue<>(value, from, from.plusYears(1), true);
     }
 }
