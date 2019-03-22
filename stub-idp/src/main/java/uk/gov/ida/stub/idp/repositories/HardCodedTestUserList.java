@@ -347,8 +347,6 @@ public final class HardCodedTestUserList {
             return null;
         }
 
-        DateTime from = DateTime.now();
-
-        return new MatchingDatasetValue<>(value, from, from.plusYears(1), true);
+        return new MatchingDatasetValue<>(value, DateTime.now().minusDays(1), null, true);
     }
 }
