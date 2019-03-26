@@ -21,7 +21,7 @@ import javax.ws.rs.core.Response;
 import static uk.gov.ida.stub.idp.builders.StubIdpBuilder.aStubIdp;
 
 public class PreRegistrationIntegrationTest extends IntegrationTestHelper {
-    private static final String IDP_NAME = "stub-idp-one";
+    private static final String IDP_NAME = "stub-idp-demo-one";
     private static final String DISPLAY_NAME = "Stub Idp One Pre-Register";
     private static final String FIRSTNAME_PARAM = "Jack";
     private static final String SURNAME_PARAM = "Bauer";
