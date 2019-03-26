@@ -3,18 +3,18 @@ idea {
         // add the integration tests to the idea test sources for convenience
         // this makes idea different to command line config as on the command line
         // where there are entirely separate source sets for unit and integration tests
-        testSourceDirs += file('src/integration-test/java')
-        testSourceDirs += file('src/integration-test/resources')
+        testSourceDirs += file('stub-idp/src/integration-test/java')
+        testSourceDirs += file('stub-idp/src/integration-test/resources')
     }
 }
 
 sourceSets {
     integrationTest {
         java {
-            srcDir "${rootDir}/src/integration-test/java"
+            srcDir "${rootDir}/stub-idp/src/integration-test/java"
         }
         resources {
-            srcDir "${rootDir}/src/integration-test/resources"
+            srcDir "${rootDir}/stub-idp/src/integration-test/resources"
             srcDir "${rootDir}/configuration"
         }
         compileClasspath += sourceSets.main.runtimeClasspath
