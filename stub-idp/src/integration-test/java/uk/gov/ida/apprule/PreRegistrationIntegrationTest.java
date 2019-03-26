@@ -4,7 +4,6 @@ import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 import uk.gov.ida.apprule.steps.FormBuilder;
 import uk.gov.ida.apprule.steps.PreRegistrationSteps;
@@ -22,7 +21,7 @@ import javax.ws.rs.core.Response;
 import static uk.gov.ida.stub.idp.builders.StubIdpBuilder.aStubIdp;
 
 public class PreRegistrationIntegrationTest extends IntegrationTestHelper {
-    private static final String IDP_NAME = "stub-idp-one";
+    private static final String IDP_NAME = "stub-idp-demo-one";
     private static final String DISPLAY_NAME = "Stub Idp One Pre-Register";
     private static final String FIRSTNAME_PARAM = "Jack";
     private static final String SURNAME_PARAM = "Bauer";
@@ -46,7 +45,6 @@ public class PreRegistrationIntegrationTest extends IntegrationTestHelper {
         client.target("http://localhost:" + applicationRule.getAdminPort() + "/tasks/metadata-refresh").request().post(Entity.text(""));
     }
 
-    @Ignore
     @Test
     public void userPreRegistersAndThenComesFromRP(){
         PreRegistrationSteps toCompletePreRegistrationAndLogin = new PreRegistrationSteps(client, applicationRule);
