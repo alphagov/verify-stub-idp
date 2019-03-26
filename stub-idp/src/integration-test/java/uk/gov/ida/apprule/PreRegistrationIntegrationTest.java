@@ -4,6 +4,7 @@ import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import uk.gov.ida.apprule.steps.FormBuilder;
 import uk.gov.ida.apprule.steps.PreRegistrationSteps;
@@ -45,6 +46,7 @@ public class PreRegistrationIntegrationTest extends IntegrationTestHelper {
         client.target("http://localhost:" + applicationRule.getAdminPort() + "/tasks/metadata-refresh").request().post(Entity.text(""));
     }
 
+    @Ignore
     @Test
     public void userPreRegistersAndThenComesFromRP(){
         PreRegistrationSteps toCompletePreRegistrationAndLogin = new PreRegistrationSteps(client, applicationRule);

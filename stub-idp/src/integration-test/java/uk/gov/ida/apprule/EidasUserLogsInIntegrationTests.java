@@ -4,6 +4,7 @@ import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opensaml.saml.saml2.core.Attribute;
 import org.opensaml.saml.saml2.core.StatusCode;
@@ -42,6 +43,7 @@ public class EidasUserLogsInIntegrationTests extends IntegrationTestHelper {
         client.target("http://localhost:"+applicationRule.getAdminPort()+"/tasks/connector-metadata-refresh").request().post(Entity.text(""));
     }
 
+    @Ignore
     @Test
     public void loginBehaviourTest() {
         final AuthnRequestSteps.Cookies cookies = authnRequestSteps.userPostsEidasAuthnRequestToStubIdp();
@@ -49,6 +51,7 @@ public class EidasUserLogsInIntegrationTests extends IntegrationTestHelper {
         authnRequestSteps.eidasUserConsentsReturnSamlResponse(cookies, false);
     }
 
+    @Ignore
     @Test
     public void debugPageLoadsAndValuesForOptionalAttribuesAreReturnedTest() {
         // this test requests these attributes and checks that they are displayed on the debug page as requested
