@@ -1,6 +1,7 @@
 ---
 applications:
   - name: ida-stub-idp
+    stack: cflinuxfs3
     memory: 1G
     buildpack: java_buildpack
     env:
