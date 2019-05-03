@@ -25,7 +25,7 @@ ext {
 
 def dependencyVersions = [
         opensaml              : "$opensaml_version",
-        ida_utils             : '2.0.0-350',
+        ida_utils             : '2.0.0-359',
         dropwizard            : '1.3.8',
         ida_dev_pki           : '1.1.0-34',
         saml_libs             : "$opensaml_version-157",
