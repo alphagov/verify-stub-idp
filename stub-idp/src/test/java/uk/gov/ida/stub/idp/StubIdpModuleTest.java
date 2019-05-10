@@ -4,7 +4,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import uk.gov.ida.common.shared.configuration.PrivateKeyConfiguration;
 import uk.gov.ida.saml.core.test.TestCertificateStrings;
 import uk.gov.ida.stub.idp.configuration.SigningKeyPairConfiguration;
 import uk.gov.ida.stub.idp.configuration.StubIdpConfiguration;
@@ -17,9 +16,6 @@ public class StubIdpModuleTest {
 
     @Mock
     StubIdpConfiguration configuration;
-
-    @Mock
-    PrivateKeyConfiguration privateKeyConfiguration;
 
     @Mock
     SigningKeyPairConfiguration signingKeyPairConfiguration;

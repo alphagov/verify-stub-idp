@@ -300,19 +300,6 @@ public class LoginPageResource {
                 .build();
     }
 
-    private IdpSession checkAndGetSession(String idpName, SessionId sessionCookie) {
-        if (Strings.isNullOrEmpty(sessionCookie.toString())) {
-            throw new GenericStubIdpException(format("Unable to locate session cookie for " + idpName), Response.Status.BAD_REQUEST);
-        }
-
-        Optional<IdpSession> session = sessionRepository.get(sessionCookie);
-
-        if (!session.isPresent() || session.get().getIdaAuthnRequestFromHub() == null) {
-            throw new GenericStubIdpException(format("Session is invalid for " + idpName), Response.Status.BAD_REQUEST);
-        }
-        return session.get();
-    }
-
     private IdpSession checkAndDeleteAndGetSession(String idpName, SessionId sessionCookie) {
         if (Strings.isNullOrEmpty(sessionCookie.toString())) {
             throw new GenericStubIdpException(format("Unable to locate session cookie for " + idpName), Response.Status.BAD_REQUEST);

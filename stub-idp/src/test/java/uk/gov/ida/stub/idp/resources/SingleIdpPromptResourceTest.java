@@ -11,7 +11,6 @@ import uk.gov.ida.saml.core.test.TestEntityIds;
 import uk.gov.ida.stub.idp.configuration.SingleIdpConfiguration;
 import uk.gov.ida.stub.idp.domain.Service;
 import uk.gov.ida.stub.idp.exceptions.FeatureNotEnabledException;
-import uk.gov.ida.stub.idp.repositories.AllIdpsUserRepository;
 import uk.gov.ida.stub.idp.repositories.Idp;
 import uk.gov.ida.stub.idp.repositories.IdpSessionRepository;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
@@ -50,9 +49,6 @@ public class SingleIdpPromptResourceTest {
 
     @Mock
     private ServiceListService serviceListService;
-
-    @Mock
-    private AllIdpsUserRepository allIdpsUserRepository;
 
     @Mock
     private IdpSessionRepository idpSessionRepository;
