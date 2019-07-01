@@ -7,7 +7,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.stub.idp.domain.EidasAuthnRequest;
 import uk.gov.ida.stub.idp.domain.EidasScheme;
@@ -60,7 +60,7 @@ public class EidasConsentResourceTest {
     private StubCountry stubCountry;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         resource = new EidasConsentResource(sessionRepository, successAuthnResponseService, successAuthnResponseService, samlResponseRedirectViewFactory, stubCountryRepository);
 
         EidasAuthnRequest eidasAuthnRequest = new EidasAuthnRequest("request-id", "issuer", "destination", "loa", Collections.emptyList());
@@ -72,7 +72,7 @@ public class EidasConsentResourceTest {
     }
 
     @Test
-    public void getShouldReturnASuccessfulResponseWhenSessionIsValid(){
+    public void getShouldReturnASuccessfulResponseWhenSessionIsValid() {
         when(stubCountryRepository.getStubCountryWithFriendlyId(EidasScheme.fromString(SCHEME_NAME).get())).thenReturn(stubCountry);
 
         final Response response = resource.get(SCHEME_NAME, SESSION_ID);
@@ -86,7 +86,7 @@ public class EidasConsentResourceTest {
         when(successAuthnResponseService.getSuccessResponse(session, SCHEME_NAME)).thenReturn(samlResponse);
         when(samlResponseRedirectViewFactory.sendSamlMessage(samlResponse)).thenReturn(Response.ok().build());
 
-        final Response response = resource.consent(SCHEME_NAME, "rsasha256","submit", SESSION_ID);
+        final Response response = resource.consent(SCHEME_NAME, "rsasha256", "submit", SESSION_ID);
 
         assertThat(response.getStatus()).isEqualTo(Response.Status.OK.getStatusCode());
     }
@@ -97,7 +97,7 @@ public class EidasConsentResourceTest {
         when(successAuthnResponseService.getSuccessResponse(session, SCHEME_NAME)).thenReturn(samlResponse);
         when(samlResponseRedirectViewFactory.sendSamlMessage(samlResponse)).thenReturn(Response.ok().build());
 
-        final Response response = resource.consent(SCHEME_NAME, "rsassa-pss","submit", SESSION_ID);
+        final Response response = resource.consent(SCHEME_NAME, "rsassa-pss", "submit", SESSION_ID);
 
         assertThat(response.getStatus()).isEqualTo(Response.Status.OK.getStatusCode());
     }
@@ -105,16 +105,12 @@ public class EidasConsentResourceTest {
     @Test(expected = InvalidSigningAlgorithmException.class)
     public void postShouldThrowAnExceptionWhenAnInvalidSigningAlgorithmIsUsed() {
         SamlResponseFromValue<org.opensaml.saml.saml2.core.Response> samlResponse = new SamlResponseFromValue<>(null, (r) -> null, null, null);
-        when(successAuthnResponseService.getSuccessResponse(session, SCHEME_NAME)).thenReturn(samlResponse);
-        when(samlResponseRedirectViewFactory.sendSamlMessage(samlResponse)).thenReturn(Response.ok().build());
 
-        resource.consent(SCHEME_NAME, "rsa-sha384","submit", SESSION_ID);
+        resource.consent(SCHEME_NAME, "rsa-sha384", "submit", SESSION_ID);
     }
-
 
     @Test(expected = GenericStubIdpException.class)
-    public void shouldThrowAGenericStubIdpExceptionWhenSessionIsEmpty(){
+    public void shouldThrowAGenericStubIdpExceptionWhenSessionIsEmpty() {
         resource.get(SCHEME_NAME, null);
     }
-
 }
