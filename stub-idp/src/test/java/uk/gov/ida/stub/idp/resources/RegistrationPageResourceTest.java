@@ -6,7 +6,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.saml.hub.domain.IdaAuthnRequestFromHub;
 import uk.gov.ida.stub.idp.cookies.CookieFactory;
@@ -31,8 +31,8 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.ida.saml.core.domain.AuthnContext.LEVEL_2;
@@ -88,8 +88,8 @@ public class RegistrationPageResourceTest {
     }
 
     @Test
-    public void shouldHaveStatusAuthnCancelledResponseWhenUserCancels() {
-        when(nonSuccessAuthnResponseService.generateAuthnCancel(any(String.class), any(String.class), eq(RELAY_STATE))).thenReturn(new SamlResponseFromValue<>("saml", Function.identity(), RELAY_STATE, URI.create("uri")));
+    public void shouldHaveStatusAuthnCancelledResponseWhenUserCancels(){
+        when(nonSuccessAuthnResponseService.generateAuthnCancel(anyString(), anyString(), eq(RELAY_STATE))).thenReturn(new SamlResponseFromValue<>("saml", Function.identity(), RELAY_STATE, URI.create("uri")));
 
         resource.post(IDP_NAME, null, null, null, null, null, null, null, null, null, null, Cancel, SESSION_ID);
 
@@ -105,7 +105,7 @@ public class RegistrationPageResourceTest {
 
         assertThat(response.getStatus()).isEqualTo(303);
         assertThat(response.getLocation().toString()).contains("consent");
-        verify(idpUserService).createAndAttachIdpUserToSession(eq(IDP_NAME), any(String.class), any(String.class), any(String.class), any(String.class), any(String.class), any(String.class), eq(LEVEL_2), any(String.class), any(String.class), any(String.class), eq(SESSION_ID));
+        verify(idpUserService).createAndAttachIdpUserToSession(eq(IDP_NAME), anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), eq(LEVEL_2), anyString(), anyString(), anyString(), eq(SESSION_ID));
     }
 
     @Test
@@ -117,6 +117,7 @@ public class RegistrationPageResourceTest {
 
         assertThat(response.getStatus()).isEqualTo(303);
         assertThat(response.getLocation().toString()).contains("start-prompt");
-        verify(idpUserService).createAndAttachIdpUserToSession(eq(IDP_NAME), any(String.class), any(String.class), any(String.class), any(String.class), any(String.class), any(String.class), eq(LEVEL_2), any(String.class), any(String.class), any(String.class), eq(SESSION_ID));
+        verify(idpUserService).createAndAttachIdpUserToSession(eq(IDP_NAME), anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), eq(LEVEL_2), anyString(), anyString(), anyString(), eq(SESSION_ID));
     }
+
 }

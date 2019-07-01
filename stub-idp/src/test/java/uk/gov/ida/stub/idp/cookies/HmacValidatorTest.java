@@ -3,7 +3,7 @@ package uk.gov.ida.stub.idp.cookies;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.common.shared.security.HmacDigest;
 

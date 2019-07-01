@@ -6,7 +6,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.ida.saml.core.test.TestEntityIds;
 import uk.gov.ida.stub.idp.configuration.SingleIdpConfiguration;
 import uk.gov.ida.stub.idp.domain.Service;

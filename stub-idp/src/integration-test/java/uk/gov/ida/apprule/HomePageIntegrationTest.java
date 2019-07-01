@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.ida.apprule.steps.FormBuilder;
 import uk.gov.ida.apprule.steps.PreRegistrationSteps;
 import uk.gov.ida.apprule.support.StubIdpAppRule;
