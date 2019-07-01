@@ -6,7 +6,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.stub.idp.domain.EidasAuthnRequest;
 import uk.gov.ida.stub.idp.domain.EidasScheme;
@@ -30,8 +30,8 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.ida.saml.core.domain.AuthnContext.LEVEL_2;
@@ -82,8 +82,8 @@ public class EidasRegistrationPageResourceTest {
     }
 
     @Test
-    public void shouldHaveStatusAuthnCancelledResponseWhenUserCancels(){
-        when(nonSuccessAuthnResponseService.generateAuthnCancel(anyString(), anyString(), eq(RELAY_STATE))).thenReturn(new SamlResponseFromValue<>("saml", Function.identity(), RELAY_STATE, URI.create("uri")));
+    public void shouldHaveStatusAuthnCancelledResponseWhenUserCancels() {
+        when(nonSuccessAuthnResponseService.generateAuthnCancel(any(String.class), any(String.class), eq(RELAY_STATE))).thenReturn(new SamlResponseFromValue<>("saml", Function.identity(), RELAY_STATE, URI.create("uri")));
 
         resource.post(STUB_COUNTRY, null, null, null, null, null, null, null, null, Cancel, SESSION_ID);
 
@@ -96,8 +96,6 @@ public class EidasRegistrationPageResourceTest {
         final Response response = resource.post(STUB_COUNTRY, "bob", "", "jones", "", "2000-01-01", "username", "password", LEVEL_2, Register, SESSION_ID);
 
         assertThat(response.getStatus()).isEqualTo(303);
-        verify(stubCountryService).createAndAttachIdpUserToSession(eq(EidasScheme.fromString(STUB_COUNTRY).get()), anyString(), anyString(), eq(eidasSession), anyString(), anyString(), anyString(), anyString(), anyString(), eq(LEVEL_2));
+        verify(stubCountryService).createAndAttachIdpUserToSession(eq(EidasScheme.fromString(STUB_COUNTRY).get()), any(String.class), any(String.class), eq(eidasSession), any(String.class), any(String.class), any(String.class), any(String.class), any(String.class), eq(LEVEL_2));
     }
-
-
 }

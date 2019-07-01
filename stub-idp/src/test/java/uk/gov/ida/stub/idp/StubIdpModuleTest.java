@@ -3,7 +3,7 @@ package uk.gov.ida.stub.idp;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.ida.saml.core.test.TestCertificateStrings;
 import uk.gov.ida.stub.idp.configuration.SigningKeyPairConfiguration;
 import uk.gov.ida.stub.idp.configuration.StubIdpConfiguration;

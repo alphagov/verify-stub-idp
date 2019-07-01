@@ -6,7 +6,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.common.shared.configuration.SecureCookieConfiguration;
 import uk.gov.ida.common.shared.security.HmacDigest;

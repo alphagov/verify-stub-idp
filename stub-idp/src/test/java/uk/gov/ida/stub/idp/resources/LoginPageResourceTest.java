@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.saml.hub.domain.IdaAuthnRequestFromHub;
 import uk.gov.ida.stub.idp.cookies.CookieFactory;
@@ -16,7 +16,6 @@ import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
 import uk.gov.ida.stub.idp.domain.SubmitButtonValue;
 import uk.gov.ida.stub.idp.exceptions.InvalidSessionIdException;
 import uk.gov.ida.stub.idp.exceptions.InvalidUsernameOrPasswordException;
-import uk.gov.ida.stub.idp.repositories.AllIdpsUserRepository;
 import uk.gov.ida.stub.idp.repositories.Idp;
 import uk.gov.ida.stub.idp.repositories.IdpSession;
 import uk.gov.ida.stub.idp.repositories.IdpSessionRepository;
@@ -33,8 +32,8 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -52,7 +51,7 @@ public class LoginPageResourceTest {
     public static void doALittleHackToMakeGuicierHappyForSomeReason() {
         JerseyGuiceUtils.reset();
     }
-    
+
     private LoginPageResource resource;
 
     @Mock
@@ -65,8 +64,6 @@ public class LoginPageResourceTest {
     IdaAuthnRequestFromHub idaAuthnRequestFromHub;
     @Mock
     private IdpUserService idpUserService;
-    @Mock
-    private AllIdpsUserRepository allIdpsUserRepository;
     @Mock
     private DatabaseIdpUser databaseIdpUser;
     @Mock
@@ -90,8 +87,8 @@ public class LoginPageResourceTest {
     }
 
     @Test
-    public void shouldBuildNoAuthnContext(){
-        when(nonSuccessAuthnResponseService.generateNoAuthnContext(anyString(), anyString(), eq(RELAY_STATE))).thenReturn(new SamlResponseFromValue<>("saml", Function.identity(), RELAY_STATE, URI.create("uri")));
+    public void shouldBuildNoAuthnContext() {
+        when(nonSuccessAuthnResponseService.generateNoAuthnContext(any(String.class), any(String.class), eq(RELAY_STATE))).thenReturn(new SamlResponseFromValue<>("saml", Function.identity(), RELAY_STATE, URI.create("uri")));
 
         resource.postNoAuthnContext(IDP_NAME, SESSION_ID);
 
@@ -99,8 +96,8 @@ public class LoginPageResourceTest {
     }
 
     @Test
-    public void shouldBuildUpliftFailed(){
-        when(nonSuccessAuthnResponseService.generateUpliftFailed(anyString(), anyString(), eq(RELAY_STATE))).thenReturn(new SamlResponseFromValue<>("saml", Function.identity(), RELAY_STATE, URI.create("uri")));
+    public void shouldBuildUpliftFailed() {
+        when(nonSuccessAuthnResponseService.generateUpliftFailed(any(String.class), any(String.class), eq(RELAY_STATE))).thenReturn(new SamlResponseFromValue<>("saml", Function.identity(), RELAY_STATE, URI.create("uri")));
 
         resource.postUpliftFailed(IDP_NAME, SESSION_ID);
 
@@ -108,8 +105,8 @@ public class LoginPageResourceTest {
     }
 
     @Test
-    public void shouldBuildNoAuthnCancel(){
-        when(nonSuccessAuthnResponseService.generateAuthnCancel(anyString(), anyString(), eq(RELAY_STATE))).thenReturn(new SamlResponseFromValue<>("saml", Function.identity(), RELAY_STATE, URI.create("uri")));
+    public void shouldBuildNoAuthnCancel() {
+        when(nonSuccessAuthnResponseService.generateAuthnCancel(any(String.class), any(String.class), eq(RELAY_STATE))).thenReturn(new SamlResponseFromValue<>("saml", Function.identity(), RELAY_STATE, URI.create("uri")));
 
         resource.post(IDP_NAME, USERNAME, PASSWORD, SubmitButtonValue.Cancel, SESSION_ID);
 
@@ -118,9 +115,6 @@ public class LoginPageResourceTest {
 
     @Test
     public void shouldBuildSuccessResponse() throws InvalidUsernameOrPasswordException, InvalidSessionIdException {
-
-        when(allIdpsUserRepository.getUserForIdp(anyString(), anyString())).thenReturn(Optional.of(databaseIdpUser));
-
         final Response response = resource.post(IDP_NAME, USERNAME, PASSWORD, SubmitButtonValue.SignIn, SESSION_ID);
 
         verify(idpUserService).attachIdpUserToSession(IDP_NAME, USERNAME, PASSWORD, SESSION_ID);
@@ -128,8 +122,8 @@ public class LoginPageResourceTest {
     }
 
     @Test
-    public void shouldBuildAuthnPending(){
-        when(nonSuccessAuthnResponseService.generateAuthnPending(anyString(), anyString(), eq(RELAY_STATE))).thenReturn(new SamlResponseFromValue<>("saml", Function.identity(), RELAY_STATE, URI.create("uri")));
+    public void shouldBuildAuthnPending() {
+        when(nonSuccessAuthnResponseService.generateAuthnPending(any(String.class), any(String.class), eq(RELAY_STATE))).thenReturn(new SamlResponseFromValue<>("saml", Function.identity(), RELAY_STATE, URI.create("uri")));
 
         resource.postAuthnPending(IDP_NAME, SESSION_ID);
 
@@ -176,26 +170,22 @@ public class LoginPageResourceTest {
         when(idp.getDisplayName()).thenReturn("mock idp display name");
         when(idp.getFriendlyId()).thenReturn("mock idp friendly id");
         when(idp.getAssetId()).thenReturn("mock idp asset id");
-        final Response response = resource.get(IDP_NAME, Optional.of(ErrorMessageType.NO_ERROR),SESSION_ID);
+        final Response response = resource.get(IDP_NAME, Optional.of(ErrorMessageType.NO_ERROR), SESSION_ID);
         assertThat(response.getStatus()).isEqualTo(Response.Status.OK.getStatusCode());
     }
 
     @Test
     public void shouldLogUserInAndTakeToHomePageWhenNoIdaReq() {
-        Optional<IdpSession> idpSession = Optional.of(Mockito.mock(IdpSession.class));
-        when(idpSession.get().getIdaAuthnRequestFromHub()).thenReturn(null);
-        when(idpSession.get().getIdpUser()).thenReturn(Optional.empty());
-        final Response response = resource.post(IDP_NAME,USERNAME,PASSWORD, SubmitButtonValue.SignIn, SESSION_ID);
+        final Response response = resource.post(IDP_NAME, USERNAME, PASSWORD, SubmitButtonValue.SignIn, SESSION_ID);
+
         assertThat(response.getStatus()).isEqualTo(Response.Status.SEE_OTHER.getStatusCode());
         assertThat(response.getLocation().toString()).contains("an%20idp%20name");
     }
 
     @Test
     public void shouldLogUserInAndTakeToConsentPageWhenIdaReqPresent() {
-        Optional<IdpSession> idpSession = Optional.of(Mockito.mock(IdpSession.class));
-        when(idpSession.get().getIdaAuthnRequestFromHub()).thenReturn(idaAuthnRequestFromHub);
-        when(idpSession.get().getIdpUser()).thenReturn(Optional.empty());
-        final Response response = resource.post(IDP_NAME,USERNAME,PASSWORD, SubmitButtonValue.SignIn, SESSION_ID);
+        final Response response = resource.post(IDP_NAME, USERNAME, PASSWORD, SubmitButtonValue.SignIn, SESSION_ID);
+
         assertThat(response.getStatus()).isEqualTo(Response.Status.SEE_OTHER.getStatusCode());
         assertThat(response.getLocation().toString()).contains("consent");
     }
