@@ -21,28 +21,28 @@ import uk.gov.ida.saml.core.errors.SamlTransformationErrorFactory;
 import uk.gov.ida.saml.core.transformers.AuthnContextFactory;
 import uk.gov.ida.saml.core.validation.SamlTransformationErrorException;
 import uk.gov.ida.saml.core.validation.SamlValidationSpecificationFailure;
+import uk.gov.ida.saml.core.validation.assertion.AssertionAttributeStatementValidator;
+import uk.gov.ida.saml.core.validation.assertion.IdentityProviderAssertionValidator;
+import uk.gov.ida.saml.core.validation.subjectconfirmation.AssertionSubjectConfirmationValidator;
 import uk.gov.ida.saml.core.validators.DestinationValidator;
-import uk.gov.ida.saml.core.validators.assertion.AssertionAttributeStatementValidator;
 import uk.gov.ida.saml.core.validators.assertion.AuthnStatementAssertionValidator;
-import uk.gov.ida.saml.core.validators.assertion.DuplicateAssertionValidator;
+import uk.gov.ida.saml.core.validators.assertion.DuplicateAssertionValidatorImpl;
 import uk.gov.ida.saml.core.validators.assertion.IPAddressValidator;
-import uk.gov.ida.saml.core.validators.assertion.IdentityProviderAssertionValidator;
 import uk.gov.ida.saml.core.validators.assertion.MatchingDatasetAssertionValidator;
 import uk.gov.ida.saml.core.validators.subject.AssertionSubjectValidator;
-import uk.gov.ida.saml.core.validators.subjectconfirmation.AssertionSubjectConfirmationValidator;
 import uk.gov.ida.saml.deserializers.OpenSamlXMLObjectUnmarshaller;
 import uk.gov.ida.saml.deserializers.StringToOpenSamlObjectTransformer;
 import uk.gov.ida.saml.deserializers.parser.SamlObjectParser;
 import uk.gov.ida.saml.deserializers.validators.Base64StringDecoder;
 import uk.gov.ida.saml.deserializers.validators.NotNullSamlStringValidator;
-import uk.gov.ida.saml.hub.domain.IdpIdaStatus;
 import uk.gov.ida.saml.hub.domain.InboundResponseFromIdp;
 import uk.gov.ida.saml.hub.transformers.inbound.IdaResponseFromIdpUnmarshaller;
 import uk.gov.ida.saml.hub.transformers.inbound.IdpIdaStatusUnmarshaller;
 import uk.gov.ida.saml.hub.transformers.inbound.PassthroughAssertionUnmarshaller;
-import uk.gov.ida.saml.hub.transformers.inbound.SamlStatusToIdpIdaStatusMappingsFactory;
+import uk.gov.ida.saml.hub.transformers.inbound.SamlStatusToIdaStatusCodeMapper;
 import uk.gov.ida.saml.hub.transformers.inbound.providers.DecoratedSamlResponseToIdaResponseIssuedByIdpTransformer;
 import uk.gov.ida.saml.hub.validators.StringSizeValidator;
+import uk.gov.ida.saml.hub.validators.authnrequest.ConcurrentMapIdExpirationCache;
 import uk.gov.ida.saml.hub.validators.response.common.ResponseSizeValidator;
 import uk.gov.ida.saml.hub.validators.response.idp.components.EncryptedResponseFromIdpValidator;
 import uk.gov.ida.saml.hub.validators.response.idp.components.ResponseAssertionsFromIdpValidator;
@@ -119,13 +119,13 @@ public class SamlDecrypter {
     }
 
     private JerseyClientMetadataResolver getMetadataResolver(URI metadataUri) {
-        final JerseyClientMetadataResolver jerseyClientMetadataResolver = new JerseyClientMetadataResolver(null,  client, metadataUri);
+        final JerseyClientMetadataResolver jerseyClientMetadataResolver = new JerseyClientMetadataResolver(null, client, metadataUri);
         try {
             // a parser pool needs to be provided
             BasicParserPool pool = new BasicParserPool();
             pool.initialize();
             jerseyClientMetadataResolver.setParserPool(pool);
-            jerseyClientMetadataResolver.setId("SamlDecrypter.MetadataResolver"+UUID.randomUUID());
+            jerseyClientMetadataResolver.setId("SamlDecrypter.MetadataResolver" + UUID.randomUUID());
             jerseyClientMetadataResolver.initialize();
             jerseyClientMetadataResolver.refresh();
         } catch (ComponentInitializationException | ResolverException e) {
@@ -156,8 +156,8 @@ public class SamlDecrypter {
         Decrypter decrypter = new DecrypterFactory().createDecrypter(idaKeyStoreCredentialRetriever.getDecryptingCredentials());
         return new AssertionDecrypter(
                 new EncryptionAlgorithmValidator(
-                    ImmutableSet.of(EncryptionConstants.ALGO_ID_BLOCKCIPHER_AES256, EncryptionConstants.ALGO_ID_BLOCKCIPHER_AES256_GCM),
-                    ImmutableSet.of(EncryptionConstants.ALGO_ID_KEYTRANSPORT_RSAOAEP)),
+                        ImmutableSet.of(EncryptionConstants.ALGO_ID_BLOCKCIPHER_AES256, EncryptionConstants.ALGO_ID_BLOCKCIPHER_AES256_GCM),
+                        ImmutableSet.of(EncryptionConstants.ALGO_ID_KEYTRANSPORT_RSAOAEP)),
                 decrypter
         );
     }
@@ -192,14 +192,14 @@ public class SamlDecrypter {
 
             new EidasAttributeStatementAssertionValidator().validate(validatedIdentityAssertion);
             new AuthnStatementAssertionValidator(
-                    new DuplicateAssertionValidator(new ConcurrentHashMap<>())
+                    new DuplicateAssertionValidatorImpl(new ConcurrentMapIdExpirationCache<>(new ConcurrentHashMap<>()))
             ).validate(validatedIdentityAssertion);
             new EidasAuthnResponseIssuerValidator().validate(validatedResponse, validatedIdentityAssertion);
         }
     }
 
     private SamlMessageSignatureValidator getSamlMessageSignatureValidator(String entityId) {
-        return ofNullable(getMetadataResolver(URI.create("http://localhost:"+localPort+"/"+eidasSchemeName.get()+"/ServiceMetadata")))
+        return ofNullable(getMetadataResolver(URI.create("http://localhost:" + localPort + "/" + eidasSchemeName.get() + "/ServiceMetadata")))
                 .map(m -> {
                     try {
                         return new MetadataSignatureTrustEngineFactory().createSignatureTrustEngine(m);
@@ -234,12 +234,12 @@ public class SamlDecrypter {
         IdaKeyStoreCredentialRetriever storeCredentialRetriever = new IdaKeyStoreCredentialRetriever(keyStore);
         return new DecoratedSamlResponseToIdaResponseIssuedByIdpTransformer(
                 new IdaResponseFromIdpUnmarshaller(
-                        new IdpIdaStatusUnmarshaller(new IdpIdaStatus.IdpIdaStatusFactory(), new SamlStatusToIdpIdaStatusMappingsFactory()),
+                        new IdpIdaStatusUnmarshaller(),
                         new PassthroughAssertionUnmarshaller(new XmlObjectToBase64EncodedStringTransformer<>(), new AuthnContextFactory())),
                 new SamlResponseSignatureValidator(new SamlMessageSignatureValidator(new CredentialFactorySignatureValidator(credentialFactory))),
                 new AssertionDecrypter(new EncryptionAlgorithmValidator(), new DecrypterFactory().createDecrypter(storeCredentialRetriever.getDecryptingCredentials())),
                 new SamlAssertionsSignatureValidator(new SamlMessageSignatureValidator(new CredentialFactorySignatureValidator(credentialFactory))),
-                new EncryptedResponseFromIdpValidator(new SamlStatusToIdpIdaStatusMappingsFactory()),
+                new EncryptedResponseFromIdpValidator(new SamlStatusToIdaStatusCodeMapper()),
                 new DestinationValidator(URI.create("http://foo.com/bar"), "/bar"),
                 new ResponseAssertionsFromIdpValidator(
                         new IdentityProviderAssertionValidator(
@@ -247,8 +247,8 @@ public class SamlDecrypter {
                                 new AssertionSubjectValidator(),
                                 new AssertionAttributeStatementValidator(),
                                 new AssertionSubjectConfirmationValidator()),
-                        new MatchingDatasetAssertionValidator(new DuplicateAssertionValidator(new ConcurrentHashMap<>())),
-                        new AuthnStatementAssertionValidator(new DuplicateAssertionValidator(new ConcurrentHashMap<>())),
+                        new MatchingDatasetAssertionValidator(new DuplicateAssertionValidatorImpl(new ConcurrentMapIdExpirationCache<>(new ConcurrentHashMap<>()))),
+                        new AuthnStatementAssertionValidator(new DuplicateAssertionValidatorImpl(new ConcurrentMapIdExpirationCache<>(new ConcurrentHashMap<>()))),
                         new IPAddressValidator(),
                         hubEntityId));
     }

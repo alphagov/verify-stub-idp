@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.ida.common.SessionId;
 import uk.gov.ida.saml.core.domain.AuthnContext;
 import uk.gov.ida.stub.idp.domain.DatabaseEidasUser;
@@ -28,7 +28,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.eq;;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -36,7 +36,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class StubCountryServiceTest {
 
-    private final String RELAY_STATE = "relayState";
     private static final EidasScheme EIDAS_SCHEME = EidasScheme.stub_country;
     private static final String PASSWORD = "password";
     private static final String USERNAME = "username";
@@ -49,7 +48,7 @@ public class StubCountryServiceTest {
     private EidasSession session;
 
     private EidasAuthnRequest eidasAuthnRequest;
-    
+
     @Mock
     private SessionRepository<EidasSession> sessionRepository;
 
@@ -60,7 +59,7 @@ public class StubCountryServiceTest {
     private StubCountry stubCountry;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         when(stubCountryRepository.getStubCountryWithFriendlyId(EIDAS_SCHEME)).thenReturn(stubCountry);
         stubCountryService = new StubCountryService(stubCountryRepository, sessionRepository);
         eidasAuthnRequest = new EidasAuthnRequest("request-id", "issuer", "destination", "loa", Collections.emptyList());
@@ -88,7 +87,6 @@ public class StubCountryServiceTest {
     @Test
     public void shouldHaveStatusSuccessResponseWhenUserRegisters() throws InvalidSessionIdException, IncompleteRegistrationException, InvalidDateException, UsernameAlreadyTakenException, InvalidUsernameOrPasswordException {
         EidasSession session = new EidasSession(SESSION_ID, eidasAuthnRequest, "test-relay-state", Collections.emptyList(), Collections.emptyList(), Optional.empty(), Optional.empty());
-        when(sessionRepository.get(SESSION_ID)).thenReturn(Optional.ofNullable(new EidasSession(SESSION_ID, eidasAuthnRequest, RELAY_STATE, null, null, null, null)));
         when(stubCountryRepository.getStubCountryWithFriendlyId(EIDAS_SCHEME)).thenReturn(stubCountry);
         when(stubCountry.createUser(eq(USERNAME), eq(PASSWORD), any(), any(), any(), any(), any(), any())).thenReturn(newUser().get());
 
@@ -105,4 +103,3 @@ public class StubCountryServiceTest {
         return (value == null) ? null : new MatchingDatasetValue<>(value, null, null, true);
     }
 }
-
