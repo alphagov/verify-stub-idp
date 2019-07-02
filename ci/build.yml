@@ -1,0 +1,37 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: openjdk
+    tag: 11-jdk-slim
+
+inputs:
+  - name: stub-idp
+  - name: stub-idp-federation-config
+  - name: stub-idp-version
+
+outputs:
+  - name: stub-idp-java
+
+caches:
+  - path: ../../../root/.gradle/caches
+  - path: ../../../root/.gradle/wrapper
+
+run:
+  path: /bin/sh
+  args:
+    - -c
+    - |
+      apt-get update && apt-get install -y rsync
+      stub_idp_fed_config="$(pwd)/stub-idp-federation-config"
+      mkdir -p stub-idp/stub-idp/src/dist/resources
+      /usr/bin/rsync -qrv "$stub_idp_fed_config/configuration/" stub-idp/stub-idp/src/dist/resources/
+      cd stub-idp/stub-idp
+      ../gradlew --parallel --no-daemon clean test intTest
+      ../gradlew --no-daemon \
+              -Pversion=$(cat ../../stub-idp-version/number) \
+              -PstubidpExtraLogosDirectory="$stub_idp_fed_config/idp-logos" \
+              copyStubIdpLogos copyToLib distZip
+      cp build/distributions/stub-idp-*.zip ../../stub-idp-java
