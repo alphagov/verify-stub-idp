@@ -10,17 +10,6 @@ server:
     type: classic
     appenders:
       - type: console
-      - type: file
-        currentLogFilename: ${LOG_PATH}/debug/stub-idp_access.log
-        archivedLogFilenamePattern: ${LOG_PATH}/debug/stub-idp_access.log.%d.gz
-        archivedFileCount: 7
-      - type: logstash-file
-        currentLogFilename: ${LOG_PATH}/stub-idp_access.log
-        archivedLogFilenamePattern: ${LOG_PATH}/stub-idp_access.log.%d.gz
-        archivedFileCount: 7
-      - type: logstash-syslog
-        facility: local2
-        tag: stub-idp
 
 assertionLifetime: 60m
 
@@ -34,17 +23,6 @@ logging:
   level: ${LOG_LEVEL:-INFO}
   appenders:
     - type: console
-    - type: file
-      currentLogFilename: ${LOG_PATH}/debug/stub-idp.log
-      archivedLogFilenamePattern: ${LOG_PATH}/debug/stub-idp.log.%d.gz
-      archivedFileCount: 7
-    - type: logstash-file
-      currentLogFilename: ${LOG_PATH}/stub-idp.log
-      archivedLogFilenamePattern: ${LOG_PATH}/stub-idp.log.%d.gz
-      archivedFileCount: 7
-    - type: logstash-syslog
-      facility: local2
-      tag: stub-idp
 
 signingKeyPairConfiguration:
   privateKeyConfiguration:
