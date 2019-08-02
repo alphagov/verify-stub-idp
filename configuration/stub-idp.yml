@@ -10,17 +10,6 @@ server:
     type: classic
     appenders:
       - type: console
-      - type: file
-        currentLogFilename: ${LOG_PATH}/debug/stub-idp_access.log
-        archivedLogFilenamePattern: ${LOG_PATH}/debug/stub-idp_access.log.%d.gz
-        archivedFileCount: 7
-      - type: logstash-file
-        currentLogFilename: ${LOG_PATH}/stub-idp_access.log
-        archivedLogFilenamePattern: ${LOG_PATH}/stub-idp_access.log.%d.gz
-        archivedFileCount: 7
-      - type: logstash-syslog
-        facility: local2
-        tag: stub-idp
 
 assertionLifetime: 60m
 
@@ -34,17 +23,6 @@ logging:
   level: ${LOG_LEVEL:-INFO}
   appenders:
     - type: console
-    - type: file
-      currentLogFilename: ${LOG_PATH}/debug/stub-idp.log
-      archivedLogFilenamePattern: ${LOG_PATH}/debug/stub-idp.log.%d.gz
-      archivedFileCount: 7
-    - type: logstash-file
-      currentLogFilename: ${LOG_PATH}/stub-idp.log
-      archivedLogFilenamePattern: ${LOG_PATH}/stub-idp.log.%d.gz
-      archivedFileCount: 7
-    - type: logstash-syslog
-      facility: local2
-      tag: stub-idp
 
 signingKeyPairConfiguration:
   privateKeyConfiguration:
@@ -118,10 +96,7 @@ europeanIdentity:
       name: stub_country_signing_cert
 
 database:
-# Ensure to run the application you have DB_URI
-# Format for DB_URI: jdbc:postgresql://host-name:port/database-name?user=user-name&password=password
-# example: jdbc:postgresql://localhost:5432/postgres?user=postgres&password=password
-  url: ${DB_URI:-}
+  vcapServices: '${VCAP_SERVICES:-}'
 
 singleIdpJourney:
   enabled: ${SINGLE_IDP_FEATURE:-false}

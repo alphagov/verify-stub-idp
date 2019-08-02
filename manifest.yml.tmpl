@@ -1,0 +1,39 @@
+---
+applications:
+  - name: stub-idp-$ENV
+    routes:
+      - route: stub-idp-$ENV.cloudapps.digital
+      - route: idp-stub-$ENV.ida.digital.cabinet-office.gov.uk
+    stack: cflinuxfs3
+    memory: 1G
+    buildpacks:
+      - java_buildpack
+    env:
+      JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 11.+ } }'
+      LOG_PATH: /app/stub-idp/logs
+      LOG_LEVEL: INFO
+      CONFIG_FILE: /app/stub-idp/stub-idp.yml
+      ENTITY_ID: "http://stub_idp.acme.org/%s/SSO/POST"
+      KEY_TYPE: encoded
+      STUB_IDP_SIGNING_PRIVATE_KEY: $SIGNING_KEY
+      CERT_TYPE: encoded
+      STUB_IDP_SIGNING_CERT: $SIGNING_CERT
+      STUB_IDP_BASIC_AUTH: true
+      STUB_IDPS_FILE_PATH: /app/stub-idp/resources/$ENV/stub-idps.yml
+      GRAPHITE_REPORTING_FREQUENCY: 100days
+      METADATA_ENTITY_ID: $METADATA_ENTITY_ID
+      METADATA_URL: $METADATA_URL
+      TRUSTSTORE_TYPE: encoded
+      METADATA_TRUSTSTORE: $METADATA_TRUSTSTORE
+      TRUSTSTORE_PASSWORD: $TRUSTSTORE_PASSWORD
+      EUROPEAN_IDENTITY_ENABLED: $EUROPEAN_IDENTITY_ENABLED
+      HUB_CONNECTOR_ENTITY_ID: $HUB_CONNECTOR_ENTITY_ID
+      STUB_IDP_HOSTNAME: $STUB_IDP_HOSTNAME
+      STUB_COUNTRY_SIGNING_PRIVATE_KEY: $STUB_COUNTRY_SIGNING_PRIVATE_KEY
+      STUB_COUNTRY_SIGNING_CERT: $STUB_COUNTRY_SIGNING_CERT
+      SINGLE_IDP_FEATURE: $SINGLE_IDP_FEATURE
+      SERVICE_LIST_URL: $SERVICE_LIST_URL
+      VERIFY_SUBMISSION_URL: $VERIFY_SUBMISSION_URL
+    services:
+      - stub-idp-db-$ENV
+      - stub-idp-logit-$ENV
