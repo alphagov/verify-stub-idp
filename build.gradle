@@ -19,7 +19,7 @@ apply plugin: 'java'
 apply plugin: 'com.github.ben-manes.versions'
 
 ext {
-  opensaml_version = '3.4.2'
+  opensaml_version = '3.4.3'
   build_version = "$opensaml_version-${System.env.BUILD_NUMBER ?: 'SNAPSHOT'}"
 }
 
@@ -28,9 +28,9 @@ def dependencyVersions = [
         ida_utils             : '2.0.0-368',
         dropwizard            : '1.3.8',
         ida_dev_pki           : '1.1.0-37',
-        saml_libs             : "$opensaml_version-203",
+        saml_libs             : "$opensaml_version-209",
         ida_test_utils        : '2.0.0-46',
-        hub_saml              : "$opensaml_version-15757",
+        hub_saml              : "$opensaml_version-15766",
         hk2_version           : '2.5.0-b05'
 ]
 
