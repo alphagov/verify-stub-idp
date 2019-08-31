@@ -60,7 +60,7 @@ You need to set the hub (or service) entityId that messages will be received fro
 
 # Using as a Stub eIDAS Proxy Service Node
 
-Set the values in `europeanIdentity` including HUB_CONNECTOR_ENTITY_ID for the consuming relying party/service provider/hub.
+Set the values in `europeanIdentity` including HUB_CONNECTOR_ENTITY_ID and CONNECTOR_NODE_METADATA_URI for the consuming relying party/service provider/hub. These values may be the same if the Connector Node metadata is published at the same URL as its entity ID.
 
 Several countries can be dynamically stubbed at once - see the full list in [EidasScheme](src/main/java/uk/gov/ida/stub/idp/domain/EidasScheme.java) (use the values, not the enum keys).  Once the metadata is retrieved for each stub it can be used by the consuming relying party/service provider/hub.  Metadata is at http://localhost:50140/[scheme]/ServiceMetadata  Test users are all `stub-country*`.
 
