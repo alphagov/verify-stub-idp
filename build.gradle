@@ -65,7 +65,8 @@ subprojects {
     }
 
     dependencies {
-        stub_idp 'com.hubspot.dropwizard:dropwizard-guicier:1.0.0.6',
+        stub_idp 'com.nimbusds:oauth2-oidc-sdk:6.14', 
+                'com.hubspot.dropwizard:dropwizard-guicier:1.0.0.6',
                 // 0-jersey2-guice-spi has to be near the top of the dependencies
                 'com.squarespace.jersey2-guice:0-jersey2-guice-spi:1.0.6',
                 'de.neuland-bfi:jade4j:0.4.0',

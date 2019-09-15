@@ -96,7 +96,7 @@ europeanIdentity:
       name: stub_country_signing_cert
 
 database:
-  vcapServices: '${VCAP_SERVICES:-}'
+  url: '${DB_URI:-}'
 
 singleIdpJourney:
   enabled: ${SINGLE_IDP_FEATURE:-false}
