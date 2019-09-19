@@ -20,6 +20,7 @@ import uk.gov.ida.saml.core.extensions.eidas.PersonIdentifier;
 import uk.gov.ida.stub.idp.StubIdpModule;
 import uk.gov.ida.stub.idp.builders.EidasResponseBuilder;
 import uk.gov.ida.stub.idp.domain.EidasAddress;
+import uk.gov.ida.stub.idp.domain.EidasScheme;
 import uk.gov.ida.stub.idp.domain.EidasUser;
 import uk.gov.ida.stub.idp.domain.RequestedAttribute;
 import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
@@ -37,6 +38,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 
 public class EidasAuthnResponseService {
 
@@ -58,6 +60,7 @@ public class EidasAuthnResponseService {
 
     public SamlResponseFromValue<Response> getSuccessResponse(EidasSession session, String schemeId) {
         String issuerId = UriBuilder.fromUri(stubCountryMetadataUrl).build(schemeId).toString();
+        boolean signAssertions = EidasScheme.fromString(schemeId).get().getSignsAssertions();
         URI hubUrl = metadataProvider.getAssertionConsumerServiceLocation();
         String requestId = session.getEidasAuthnRequest().getRequestId();
         List<Attribute> eidasAttributes = getEidasAttributes(session);
@@ -77,7 +80,9 @@ public class EidasAuthnResponseService {
             hubConnectorEntityId
         );
 
-        return new SamlResponseFromValue<>(response, eidasResponseTransformerProvider.getTransformer(), session.getRelayState(), hubUrl);
+        Function<Response,String> transformer = eidasResponseTransformerProvider.getTransformer(signAssertions);
+
+        return new SamlResponseFromValue<>(response, transformer, session.getRelayState(), hubUrl);
     }
 
     public SamlResponseFromValue<Response> generateAuthnFailed(EidasSession session, String schemeId) {
