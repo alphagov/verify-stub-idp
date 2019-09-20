@@ -7,6 +7,7 @@ import java.util.Optional;
  */
 public enum EidasScheme {
     stub_country("stub-country"),
+    stub_country_unsigned_assertions("stub-country-unsigned-assertions", false),
     stub_cef_reference("stub-cef-reference"),
 
     austria("austria"),
@@ -34,7 +35,7 @@ public enum EidasScheme {
     romania("romania"),
     slovakia("slovakia"),
     slovenia("slovenia"),
-    spain("spain"),
+    spain("spain", false),
     sweden("sweden"),
     united_kingdom("united-kingdom"),
     iceland("iceland"),
@@ -42,14 +43,21 @@ public enum EidasScheme {
     norway("norway");
 
     private String eidasSchemeName;
+    private boolean shouldSignAssertions;
 
     EidasScheme(String eidasSchemeName) {
+        this(eidasSchemeName, true);
+    }
+
+    EidasScheme(String eidasSchemeName, boolean shouldSignAssertions) {
         this.eidasSchemeName = eidasSchemeName;
+        this.shouldSignAssertions = shouldSignAssertions;
     }
 
     public String getEidasSchemeName() {
         return eidasSchemeName;
     }
+    public boolean getSignsAssertions() { return shouldSignAssertions; }
 
     public static Optional<EidasScheme> fromString(String eidasSchemeName) {
         for(EidasScheme eidasScheme : values()) {

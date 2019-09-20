@@ -3,14 +3,16 @@ package uk.gov.ida.stub.idp.saml.transformers;
 import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.xmlsec.algorithm.DigestAlgorithm;
 import org.opensaml.xmlsec.algorithm.SignatureAlgorithm;
-import org.opensaml.xmlsec.encryption.support.EncryptionConstants;
 import uk.gov.ida.saml.core.api.CoreTransformersFactory;
 import uk.gov.ida.saml.security.EncrypterFactory;
 import uk.gov.ida.saml.security.EncryptionKeyStore;
 import uk.gov.ida.saml.security.EntityToEncryptForLocator;
 import uk.gov.ida.saml.security.IdaKeyStore;
+import uk.gov.ida.stub.idp.domain.factories.StubCoreTransformersFactory;
 
 import java.util.function.Function;
+
+import static org.opensaml.xmlsec.encryption.support.EncryptionConstants.ALGO_ID_BLOCKCIPHER_AES256_GCM;
 
 public class EidasResponseTransformerProvider {
 
@@ -36,6 +38,17 @@ public class EidasResponseTransformerProvider {
         this.digestAlgorithm = digestAlgorithm;
     }
 
+    public Function<Response, String> getTransformer(boolean signAssertions){
+        return StubCoreTransformersFactory.getResponseStringTransformer(
+            encryptionKeyStore,
+            keyStore,
+            entityToEncryptForLocator,
+            signatureAlgorithm,
+            digestAlgorithm,
+            new EncrypterFactory().withDataEncryptionAlgorithm(ALGO_ID_BLOCKCIPHER_AES256_GCM),
+            signAssertions);
+    }
+
     public Function<Response, String> getTransformer(){
         return coreTransformersFactory.getResponseStringTransformer(
                 encryptionKeyStore,
@@ -43,6 +56,7 @@ public class EidasResponseTransformerProvider {
                 entityToEncryptForLocator,
                 signatureAlgorithm,
                 digestAlgorithm,
-                new EncrypterFactory().withDataEncryptionAlgorithm(EncryptionConstants.ALGO_ID_BLOCKCIPHER_AES256_GCM));
+                new EncrypterFactory().withDataEncryptionAlgorithm(ALGO_ID_BLOCKCIPHER_AES256_GCM)
+        ); // default behaviour is to sign assertions for backwards compatibility
     }
 }

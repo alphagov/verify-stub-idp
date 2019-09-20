@@ -1,5 +1,6 @@
 package uk.gov.ida.stub.idp.services;
 
+import com.squarespace.jersey2.guice.JerseyGuiceUtils;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,11 +31,13 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EidasAuthnResponseServiceTest {
     private final String SCHEME_ID = "stub-country";
+    private final String SCHEME_ID_UNSIGNED_ASSERTIONS = "stub-country-unsigned-assertions";
     private final String SAML_RESPONSE_AS_STRING = "some response";
 
     private EidasAuthnResponseService service;
@@ -58,17 +61,46 @@ public class EidasAuthnResponseServiceTest {
             );
     }
 
+    /**
+     * See: https://github.com/dropwizard/dropwizard/issues/1772#issuecomment-326994919
+     */
+    static {
+        JerseyGuiceUtils.install((s, serviceLocator) -> null);
+    }
+
     @Test
     public void getEidasSuccessResponse() throws URISyntaxException {
         EidasAuthnRequest request = new EidasAuthnRequest("request-id", "issuer", "destination", "loa", Collections.emptyList());
         EidasSession session = new EidasSession(new SessionId("session-id"), request, "relay-state", Collections.emptyList(), Collections.emptyList(), Optional.empty(), Optional.empty());
         session.setEidasUser(new EidasUser("Firstname", Optional.empty(), "Familyname", Optional.empty(), "pid", dateOfBirth, null, null));
         when(metadataRepository.getAssertionConsumerServiceLocation()).thenReturn(new URI("http://hub.url"));
-        when(eidasResponseTransformerProvider.getTransformer()).thenReturn(x -> SAML_RESPONSE_AS_STRING);
+        when(eidasResponseTransformerProvider.getTransformer(true)).thenReturn(x -> SAML_RESPONSE_AS_STRING);
 
         SamlResponseFromValue<Response> samlResponse = service.getSuccessResponse(session, SCHEME_ID);
         Response response = samlResponse.getResponseObject();
         assertThat(response.getIssuer().getValue()).isEqualTo("http://stub/stub-country/ServiceMetadata");
+        assertThat(response.getStatus().getStatusCode().getValue()).isEqualTo(StatusCode.SUCCESS);
+        assertThat(response.getInResponseTo()).isEqualTo("request-id");
+        assertThat(response.getDestination()).isEqualTo("http://hub.url");
+
+        assertThat(response.getAssertions()).hasSize(1);
+        assertThat(response.getAssertions().get(0).getAttributeStatements()).hasSize(1);
+        assertThatRequiredAssertionsAreIncluded(response.getAssertions().get(0).getAttributeStatements().get(0).getAttributes());
+
+        assertThat(samlResponse.getResponseString()).isEqualTo(SAML_RESPONSE_AS_STRING);
+    }
+
+    @Test
+    public void getEidasSuccessResponseForUnsignedAssertionsCountry() throws URISyntaxException {
+        EidasAuthnRequest request = new EidasAuthnRequest("request-id", "issuer", "destination", "loa", Collections.emptyList());
+        EidasSession session = new EidasSession(new SessionId("session-id"), request, "relay-state", Collections.emptyList(), Collections.emptyList(), Optional.empty(), Optional.empty());
+        session.setEidasUser(new EidasUser("Firstname", Optional.empty(), "Familyname", Optional.empty(), "pid", dateOfBirth, null, null));
+        when(metadataRepository.getAssertionConsumerServiceLocation()).thenReturn(new URI("http://hub.url"));
+        when(eidasResponseTransformerProvider.getTransformer(false)).thenReturn(x -> SAML_RESPONSE_AS_STRING);
+
+        SamlResponseFromValue<Response> samlResponse = service.getSuccessResponse(session, SCHEME_ID_UNSIGNED_ASSERTIONS);
+        Response response = samlResponse.getResponseObject();
+        assertThat(response.getIssuer().getValue()).isEqualTo("http://stub/stub-country-unsigned-assertions/ServiceMetadata");
         assertThat(response.getStatus().getStatusCode().getValue()).isEqualTo(StatusCode.SUCCESS);
         assertThat(response.getInResponseTo()).isEqualTo("request-id");
         assertThat(response.getDestination()).isEqualTo("http://hub.url");
@@ -86,7 +118,7 @@ public class EidasAuthnResponseServiceTest {
         EidasSession session = new EidasSession(new SessionId("session-id"), request, "relay-state", Collections.emptyList(), Collections.emptyList(), Optional.empty(), Optional.empty());
         session.setEidasUser(new EidasUser("Firstname", Optional.of("nonLatinFirstname"), "Familyname", Optional.of("nonLatinFamilyname"), "pid", dateOfBirth, null, null));
         when(metadataRepository.getAssertionConsumerServiceLocation()).thenReturn(new URI("http://hub.url"));
-        when(eidasResponseTransformerProvider.getTransformer()).thenReturn(x -> SAML_RESPONSE_AS_STRING);
+        when(eidasResponseTransformerProvider.getTransformer(true)).thenReturn(x -> SAML_RESPONSE_AS_STRING);
 
         SamlResponseFromValue<Response> samlResponse = service.getSuccessResponse(session, SCHEME_ID);
         Response response = samlResponse.getResponseObject();

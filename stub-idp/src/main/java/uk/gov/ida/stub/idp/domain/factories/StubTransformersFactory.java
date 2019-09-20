@@ -67,7 +67,6 @@ public class StubTransformersFactory {
             SignatureAlgorithm signatureAlgorithm,
             DigestAlgorithm digestAlgorithm
     ){
-
         return coreTransformersFactory.getResponseStringTransformer(
                 publicKeyStore,
                 keyStore,

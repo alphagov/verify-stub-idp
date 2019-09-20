@@ -340,7 +340,8 @@ public class StubIdpModule extends AbstractModule {
     public EidasResponseTransformerProvider getECDSAEidasResponseTransfomerProvider(
             @Named(StubIdpModule.HUB_CONNECTOR_ENCRYPTION_KEY_STORE) Optional<EncryptionKeyStore> encryptionKeyStore,
             @Named(COUNTRY_SIGNING_KEY_STORE) IdaKeyStore keyStore,
-            EntityToEncryptForLocator entityToEncryptForLocator) {
+            EntityToEncryptForLocator entityToEncryptForLocator,
+            StubIdpConfiguration stubIdpConfiguration) {
         return new EidasResponseTransformerProvider(
                 new CoreTransformersFactory(),
                 encryptionKeyStore.orElse(null),
@@ -370,7 +371,8 @@ public class StubIdpModule extends AbstractModule {
     public EidasResponseTransformerProvider getEidasResponseTransformerProvider(
         @Named(StubIdpModule.HUB_CONNECTOR_ENCRYPTION_KEY_STORE) Optional<EncryptionKeyStore> encryptionKeyStore,
         @Named(COUNTRY_SIGNING_KEY_STORE) IdaKeyStore keyStore,
-        EntityToEncryptForLocator entityToEncryptForLocator) {
+        EntityToEncryptForLocator entityToEncryptForLocator,
+        StubIdpConfiguration stubIdpConfiguration) {
         return new EidasResponseTransformerProvider(
             new CoreTransformersFactory(),
             encryptionKeyStore.orElse(null),
