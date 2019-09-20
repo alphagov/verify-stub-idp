@@ -23,7 +23,6 @@ import uk.gov.ida.saml.security.SigningKeyStore;
 import uk.gov.ida.stub.idp.domain.IdpIdaStatusMarshaller;
 import uk.gov.ida.stub.idp.domain.OutboundResponseFromIdp;
 import uk.gov.ida.stub.idp.saml.transformers.OutboundResponseFromIdpToSamlResponseTransformer;
-import uk.gov.ida.stub.idp.transformers.UnsignedAssertionCapableResponseToSignedStringTransformer;
 
 import java.util.function.Function;
 

@@ -24,17 +24,6 @@ import uk.gov.ida.stub.idp.transformers.UnsignedAssertionCapableResponseToSigned
  */
 public class StubCoreTransformersFactory {
 
-    static UnsignedAssertionCapableResponseToSignedStringTransformer getResponseStringTransformer(
-        final EncryptionKeyStore publicKeyStore,
-        final IdaKeyStore keyStore,
-        final EntityToEncryptForLocator entityToEncryptForLocator,
-        final SignatureAlgorithm signatureAlgorithm,
-        final DigestAlgorithm digestAlgorithm,
-        final boolean signAssertions) {
-        return getResponseStringTransformer(publicKeyStore, keyStore, entityToEncryptForLocator, signatureAlgorithm,
-            digestAlgorithm, new EncrypterFactory(), signAssertions);
-    }
-
     public static UnsignedAssertionCapableResponseToSignedStringTransformer getResponseStringTransformer(
         final EncryptionKeyStore publicKeyStore,
         final IdaKeyStore keyStore,
@@ -43,50 +32,20 @@ public class StubCoreTransformersFactory {
         final DigestAlgorithm digestAlgorithm,
         final EncrypterFactory encrypterFactory,
         final boolean signAssertions) {
-        SignatureFactory signatureFactory = new SignatureFactory(new IdaKeyStoreCredentialRetriever(keyStore), signatureAlgorithm, digestAlgorithm);
+
+        SignatureFactory signatureFactory = new SignatureFactory(
+            new IdaKeyStoreCredentialRetriever(keyStore),
+            signatureAlgorithm,
+            digestAlgorithm);
+
         ResponseAssertionSigner responseAssertionSigner = new ResponseAssertionSigner(signatureFactory);
-        return getResponseStringTransformer(publicKeyStore, entityToEncryptForLocator, encrypterFactory, signatureFactory, responseAssertionSigner, signAssertions);
-    }
 
-    static UnsignedAssertionCapableResponseToSignedStringTransformer getResponseStringTransformer(
-        final EncryptionKeyStore encryptionKeyStore,
-        final IdaKeyStore keyStore,
-        final EntityToEncryptForLocator entityToEncryptForLocator,
-        final String publicSigningKey,
-        final String issuerId,
-        final SignatureAlgorithm signatureAlgorithm,
-        final DigestAlgorithm digestAlgorithm,
-        final boolean signAssertions
-    ) {
-        SignatureFactory signatureFactory = new SignatureWithKeyInfoFactory(new IdaKeyStoreCredentialRetriever(keyStore), signatureAlgorithm, digestAlgorithm, issuerId, publicSigningKey);
-        ResponseAssertionSigner responseAssertionSigner = new ResponseAssertionSigner(signatureFactory);
-        return getResponseStringTransformer(encryptionKeyStore, entityToEncryptForLocator, new EncrypterFactory(), signatureFactory, responseAssertionSigner, signAssertions);
-    }
-
-    static UnsignedAssertionCapableResponseToSignedStringTransformer getResponseStringTransformer(
-        final EncryptionKeyStore publicKeyStore,
-        final IdaKeyStore keyStore,
-        final EntityToEncryptForLocator entityToEncryptForLocator,
-        final ResponseAssertionSigner responseAssertionSigner,
-        final SignatureAlgorithm signatureAlgorithm,
-        final DigestAlgorithm digestAlgorithm,
-        final boolean signAssertions) {
-        SignatureFactory signatureFactory = new SignatureFactory(new IdaKeyStoreCredentialRetriever(keyStore), signatureAlgorithm, digestAlgorithm);
-        return getResponseStringTransformer(publicKeyStore, entityToEncryptForLocator, new EncrypterFactory(), signatureFactory, responseAssertionSigner, signAssertions);
-    }
-
-    private static UnsignedAssertionCapableResponseToSignedStringTransformer getResponseStringTransformer(
-        final EncryptionKeyStore publicKeyStore,
-        final EntityToEncryptForLocator entityToEncryptForLocator,
-        final EncrypterFactory encrypterFactory,
-        final SignatureFactory signatureFactory,
-        final ResponseAssertionSigner responseAssertionSigner,
-        final boolean signAssertions) {
         SamlResponseAssertionEncrypter responseAssertionEncrypter =
             new SamlResponseAssertionEncrypter(
                 new KeyStoreBackedEncryptionCredentialResolver(publicKeyStore),
                 encrypterFactory,
                 entityToEncryptForLocator);
+
         return new UnsignedAssertionCapableResponseToSignedStringTransformer(
             new XmlObjectToBase64EncodedStringTransformer<>(),
             new SamlSignatureSigner<>(),
