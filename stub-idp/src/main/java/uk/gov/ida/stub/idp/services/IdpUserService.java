@@ -101,7 +101,7 @@ public class IdpUserService {
             throw new UsernameAlreadyTakenException();
         }
 
-        Address address = new Address(asList(addressLine1, addressLine2), addressPostCode, null, null, null, null, false);
+        Address address = new Address(asList(addressLine1, addressLine2, addressTown), addressPostCode, null, null, null, null, false);
 
         AuthnContext levelOfAssurance = _levelOfAssurance;
         if ("LevelZeroUser".equals(username)) {
