@@ -13,9 +13,8 @@ import uk.gov.ida.saml.security.IdaKeyStore;
 import uk.gov.ida.saml.security.IdaKeyStoreCredentialRetriever;
 import uk.gov.ida.saml.security.KeyStoreBackedEncryptionCredentialResolver;
 import uk.gov.ida.saml.security.SignatureFactory;
-import uk.gov.ida.saml.security.SignatureWithKeyInfoFactory;
 import uk.gov.ida.saml.serializers.XmlObjectToBase64EncodedStringTransformer;
-import uk.gov.ida.stub.idp.transformers.UnsignedAssertionCapableResponseToSignedStringTransformer;
+import uk.gov.ida.stub.idp.transformers.StubIdpResponseToSignedStringTransformer;
 
 /**
  * Replaces <i>some</i> calls that would have been made to CoreTransformersFactory in saml-libs - in particular,
@@ -24,7 +23,7 @@ import uk.gov.ida.stub.idp.transformers.UnsignedAssertionCapableResponseToSigned
  */
 public class StubCoreTransformersFactory {
 
-    public static UnsignedAssertionCapableResponseToSignedStringTransformer getResponseStringTransformer(
+    public static StubIdpResponseToSignedStringTransformer getResponseStringTransformer(
         final EncryptionKeyStore publicKeyStore,
         final IdaKeyStore keyStore,
         final EntityToEncryptForLocator entityToEncryptForLocator,
@@ -46,7 +45,7 @@ public class StubCoreTransformersFactory {
                 encrypterFactory,
                 entityToEncryptForLocator);
 
-        return new UnsignedAssertionCapableResponseToSignedStringTransformer(
+        return new StubIdpResponseToSignedStringTransformer(
             new XmlObjectToBase64EncodedStringTransformer<>(),
             new SamlSignatureSigner<>(),
             responseAssertionEncrypter,

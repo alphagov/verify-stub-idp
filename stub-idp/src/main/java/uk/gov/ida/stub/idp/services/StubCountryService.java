@@ -32,10 +32,11 @@ public class StubCountryService {
         this.sessionRepository = sessionRepository;
     }
 
-    public void attachStubCountryToSession(EidasScheme eidasScheme, String username, String password, EidasSession session) throws InvalidUsernameOrPasswordException, InvalidSessionIdException {
+    public void attachStubCountryToSession(EidasScheme eidasScheme, String username, String password, boolean signAssertions, EidasSession session) throws InvalidUsernameOrPasswordException, InvalidSessionIdException {
         StubCountry stubCountry = stubCountryRepository.getStubCountryWithFriendlyId(eidasScheme);
         Optional<DatabaseEidasUser> user = stubCountry.getUser(username, password);
         attachEidasUserToSession(user, session);
+        setAssertionSigningIntention(signAssertions, session);
     }
 
     public void createAndAttachIdpUserToSession(EidasScheme eidasScheme,
@@ -88,6 +89,11 @@ public class StubCountryService {
                 createMdsValue(surname), createOptionalMdsValue(nonLatinSurname),
                 createMdsValue(parsedDateOfBirth),
                 levelOfAssurance);
+    }
+
+    private void setAssertionSigningIntention(boolean signAssertions, EidasSession session) {
+        session.setSignAssertions(signAssertions);
+        sessionRepository.updateSession(session.getSessionId(), session);
     }
 
     private void attachEidasUserToSession(Optional<DatabaseEidasUser> user, EidasSession session) throws InvalidUsernameOrPasswordException, InvalidSessionIdException {

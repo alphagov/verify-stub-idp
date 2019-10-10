@@ -75,9 +75,9 @@ public class EidasRegistrationPageResourceTest {
                 sessionRepository
         );
 
-        eidasSession = new EidasSession(SESSION_ID, eidasAuthnRequest, RELAY_STATE, null, null, null, null);
+        eidasSession = new EidasSession(SESSION_ID, eidasAuthnRequest, RELAY_STATE, null, null, null, null, null);
         when(sessionRepository.get(SESSION_ID)).thenReturn(Optional.ofNullable(eidasSession));
-        when(sessionRepository.deleteAndGet(SESSION_ID)).thenReturn(Optional.ofNullable(new EidasSession(SESSION_ID, eidasAuthnRequest, RELAY_STATE, null, null, null, null)));
+        when(sessionRepository.deleteAndGet(SESSION_ID)).thenReturn(Optional.ofNullable(new EidasSession(SESSION_ID, eidasAuthnRequest, RELAY_STATE, null, null, null, null, null)));
         when(eidasAuthnRequest.getRequestId()).thenReturn(SAML_REQUEST_ID);
     }
 

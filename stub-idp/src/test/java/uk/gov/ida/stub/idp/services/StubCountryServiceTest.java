@@ -63,7 +63,7 @@ public class StubCountryServiceTest {
         when(stubCountryRepository.getStubCountryWithFriendlyId(EIDAS_SCHEME)).thenReturn(stubCountry);
         stubCountryService = new StubCountryService(stubCountryRepository, sessionRepository);
         eidasAuthnRequest = new EidasAuthnRequest("request-id", "issuer", "destination", "loa", Collections.emptyList());
-        session = new EidasSession(SESSION_ID, eidasAuthnRequest, null, null, null, Optional.empty(), Optional.empty());
+        session = new EidasSession(SESSION_ID, eidasAuthnRequest, null, null, null, Optional.empty(), Optional.empty(), Optional.empty());
         user = newUser();
     }
 
@@ -71,7 +71,7 @@ public class StubCountryServiceTest {
     public void shouldAttachEidasToSession() throws InvalidUsernameOrPasswordException, InvalidSessionIdException {
         when(stubCountry.getUser(USERNAME, PASSWORD)).thenReturn(user);
 
-        stubCountryService.attachStubCountryToSession(EIDAS_SCHEME, USERNAME, PASSWORD, session);
+        stubCountryService.attachStubCountryToSession(EIDAS_SCHEME, USERNAME, PASSWORD, true, session);
 
         assertThat(session.getEidasUser().isPresent()).isTrue();
     }
@@ -81,12 +81,12 @@ public class StubCountryServiceTest {
         user = Optional.empty();
         when(stubCountry.getUser(USERNAME, PASSWORD)).thenReturn(user);
 
-        stubCountryService.attachStubCountryToSession(EIDAS_SCHEME, USERNAME, PASSWORD, session);
+        stubCountryService.attachStubCountryToSession(EIDAS_SCHEME, USERNAME, PASSWORD, true, session);
     }
 
     @Test
     public void shouldHaveStatusSuccessResponseWhenUserRegisters() throws InvalidSessionIdException, IncompleteRegistrationException, InvalidDateException, UsernameAlreadyTakenException, InvalidUsernameOrPasswordException {
-        EidasSession session = new EidasSession(SESSION_ID, eidasAuthnRequest, "test-relay-state", Collections.emptyList(), Collections.emptyList(), Optional.empty(), Optional.empty());
+        EidasSession session = new EidasSession(SESSION_ID, eidasAuthnRequest, "test-relay-state", Collections.emptyList(), Collections.emptyList(), Optional.empty(), Optional.empty(), Optional.of(true));
         when(stubCountryRepository.getStubCountryWithFriendlyId(EIDAS_SCHEME)).thenReturn(stubCountry);
         when(stubCountry.createUser(eq(USERNAME), eq(PASSWORD), any(), any(), any(), any(), any(), any())).thenReturn(newUser().get());
 

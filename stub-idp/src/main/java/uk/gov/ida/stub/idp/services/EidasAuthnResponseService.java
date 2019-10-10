@@ -20,7 +20,6 @@ import uk.gov.ida.saml.core.extensions.eidas.PersonIdentifier;
 import uk.gov.ida.stub.idp.StubIdpModule;
 import uk.gov.ida.stub.idp.builders.EidasResponseBuilder;
 import uk.gov.ida.stub.idp.domain.EidasAddress;
-import uk.gov.ida.stub.idp.domain.EidasScheme;
 import uk.gov.ida.stub.idp.domain.EidasUser;
 import uk.gov.ida.stub.idp.domain.RequestedAttribute;
 import uk.gov.ida.stub.idp.domain.SamlResponseFromValue;
@@ -60,7 +59,6 @@ public class EidasAuthnResponseService {
 
     public SamlResponseFromValue<Response> getSuccessResponse(EidasSession session, String schemeId) {
         String issuerId = UriBuilder.fromUri(stubCountryMetadataUrl).build(schemeId).toString();
-        boolean signAssertions = EidasScheme.fromString(schemeId).get().getSignsAssertions();
         URI hubUrl = metadataProvider.getAssertionConsumerServiceLocation();
         String requestId = session.getEidasAuthnRequest().getRequestId();
         List<Attribute> eidasAttributes = getEidasAttributes(session);
@@ -80,8 +78,7 @@ public class EidasAuthnResponseService {
             hubConnectorEntityId
         );
 
-        Function<Response,String> transformer = eidasResponseTransformerProvider.getTransformer(signAssertions);
-
+        Function<Response, String> transformer = eidasResponseTransformerProvider.getTransformer(session.getSignAssertions());
         return new SamlResponseFromValue<>(response, transformer, session.getRelayState(), hubUrl);
     }
 
@@ -91,15 +88,15 @@ public class EidasAuthnResponseService {
         URI hubUrl = metadataProvider.getAssertionConsumerServiceLocation();
 
         Response eidasInvalidResponse = new EidasResponseBuilder()
-                .withRandomId()
-                .withStatus(StatusCode.RESPONDER, StatusCode.AUTHN_FAILED)
-                .withIssuer(issuerId)
-                .withInResponseTo(requestId)
-                .withIssueInstant(DateTime.now())
-                .withDestination(hubUrl.toString())
-                .build();
+            .withRandomId()
+            .withStatus(StatusCode.RESPONDER, StatusCode.AUTHN_FAILED)
+            .withIssuer(issuerId)
+            .withInResponseTo(requestId)
+            .withIssueInstant(DateTime.now())
+            .withDestination(hubUrl.toString())
+            .build();
 
-        return new SamlResponseFromValue<>(eidasInvalidResponse, eidasResponseTransformerProvider.getTransformer(), session.getRelayState(), hubUrl);
+        return new SamlResponseFromValue<>(eidasInvalidResponse, eidasResponseTransformerProvider.getTransformer(session.getSignAssertions()), session.getRelayState(), hubUrl);
     }
 
     private List<Attribute> getEidasAttributes(EidasSession session) {
@@ -123,7 +120,7 @@ public class EidasAuthnResponseService {
 
     private Attribute buildCurrentGivenNameAttribute(String name, Optional<String> givenNameNonLatinOptional) {
         XMLObjectBuilder<? extends CurrentGivenName> eidasTypeBuilder =
-                (XMLObjectBuilder<? extends CurrentGivenName>) XMLObjectSupport.getBuilder(CurrentGivenName.TYPE_NAME);
+            (XMLObjectBuilder<? extends CurrentGivenName>) XMLObjectSupport.getBuilder(CurrentGivenName.TYPE_NAME);
         CurrentGivenName givenName = eidasTypeBuilder.buildObject(AttributeValue.DEFAULT_ELEMENT_NAME, CurrentGivenName.TYPE_NAME);
         givenName.setFirstName(name);
 
@@ -139,7 +136,7 @@ public class EidasAuthnResponseService {
 
     private Attribute buildCurrentFamilyNameAttribute(String name, Optional<String> familyNameNonLatinOptional) {
         XMLObjectBuilder<? extends CurrentFamilyName> eidasTypeBuilder =
-                (XMLObjectBuilder<? extends CurrentFamilyName>) XMLObjectSupport.getBuilder(CurrentFamilyName.TYPE_NAME);
+            (XMLObjectBuilder<? extends CurrentFamilyName>) XMLObjectSupport.getBuilder(CurrentFamilyName.TYPE_NAME);
         CurrentFamilyName familyName = eidasTypeBuilder.buildObject(AttributeValue.DEFAULT_ELEMENT_NAME, CurrentFamilyName.TYPE_NAME);
         familyName.setFamilyName(name);
 

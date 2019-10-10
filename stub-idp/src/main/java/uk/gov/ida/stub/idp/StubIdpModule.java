@@ -26,11 +26,20 @@ import uk.gov.ida.common.shared.configuration.KeyConfiguration;
 import uk.gov.ida.common.shared.configuration.SecureCookieConfiguration;
 import uk.gov.ida.common.shared.configuration.SecureCookieKeyConfiguration;
 import uk.gov.ida.common.shared.configuration.SecureCookieKeyStore;
-
 import uk.gov.ida.common.shared.security.HmacDigest;
 import uk.gov.ida.common.shared.security.IdGenerator;
+import uk.gov.ida.common.shared.security.PublicKeyFactory;
 import uk.gov.ida.common.shared.security.SecureCookieKeyConfigurationKeyStore;
 import uk.gov.ida.common.shared.security.X509CertificateFactory;
+import uk.gov.ida.jerseyclient.ErrorHandlingClient;
+import uk.gov.ida.jerseyclient.JsonClient;
+import uk.gov.ida.jerseyclient.JsonResponseProcessor;
+import uk.gov.ida.restclient.ClientProvider;
+import uk.gov.ida.saml.hub.domain.IdaAuthnRequestFromHub;
+import uk.gov.ida.saml.idp.configuration.SamlConfiguration;
+import uk.gov.ida.saml.metadata.MetadataHealthCheck;
+import uk.gov.ida.saml.metadata.MetadataResolverConfiguration;
+import uk.gov.ida.saml.metadata.factories.DropwizardMetadataResolverFactory;
 import uk.gov.ida.saml.security.EncryptionKeyStore;
 import uk.gov.ida.saml.security.EntityToEncryptForLocator;
 import uk.gov.ida.saml.security.IdaKeyStore;
@@ -38,22 +47,9 @@ import uk.gov.ida.saml.security.IdaKeyStoreCredentialRetriever;
 import uk.gov.ida.saml.security.SignatureFactory;
 import uk.gov.ida.saml.security.SigningKeyStore;
 import uk.gov.ida.saml.security.signature.SignatureRSASSAPSS;
-import uk.gov.ida.common.shared.security.PublicKeyFactory;
-import uk.gov.ida.jerseyclient.ErrorHandlingClient;
-import uk.gov.ida.jerseyclient.JsonClient;
-import uk.gov.ida.jerseyclient.JsonResponseProcessor;
-import uk.gov.ida.restclient.ClientProvider;
-import uk.gov.ida.saml.core.api.CoreTransformersFactory;
-import uk.gov.ida.saml.hub.domain.IdaAuthnRequestFromHub;
-import uk.gov.ida.saml.idp.configuration.SamlConfiguration;
-import uk.gov.ida.saml.metadata.MetadataHealthCheck;
-import uk.gov.ida.saml.metadata.MetadataResolverConfiguration;
-import uk.gov.ida.saml.metadata.factories.DropwizardMetadataResolverFactory;
-
 import uk.gov.ida.stub.idp.auth.ManagedAuthFilterInstaller;
 import uk.gov.ida.stub.idp.builders.CountryMetadataBuilder;
 import uk.gov.ida.stub.idp.builders.CountryMetadataSigningHelper;
-
 import uk.gov.ida.stub.idp.configuration.AssertionLifetimeConfiguration;
 import uk.gov.ida.stub.idp.configuration.IdpStubsConfiguration;
 import uk.gov.ida.stub.idp.configuration.SigningKeyPairConfiguration;
@@ -66,7 +62,6 @@ import uk.gov.ida.stub.idp.domain.factories.AssertionRestrictionsFactory;
 import uk.gov.ida.stub.idp.domain.factories.IdentityProviderAssertionFactory;
 import uk.gov.ida.stub.idp.domain.factories.StubTransformersFactory;
 import uk.gov.ida.stub.idp.listeners.StubIdpsFileListener;
-
 import uk.gov.ida.stub.idp.repositories.AllIdpsUserRepository;
 import uk.gov.ida.stub.idp.repositories.EidasSession;
 import uk.gov.ida.stub.idp.repositories.EidasSessionRepository;
@@ -87,7 +82,6 @@ import uk.gov.ida.stub.idp.saml.transformers.EidasResponseTransformerProvider;
 import uk.gov.ida.stub.idp.saml.transformers.OutboundResponseFromIdpTransformerProvider;
 import uk.gov.ida.stub.idp.security.HubEncryptionKeyStore;
 import uk.gov.ida.stub.idp.security.IdaAuthnRequestKeyStore;
-
 import uk.gov.ida.stub.idp.services.AuthnRequestReceiverService;
 import uk.gov.ida.stub.idp.services.EidasAuthnResponseService;
 import uk.gov.ida.stub.idp.services.GeneratePasswordService;
@@ -343,7 +337,6 @@ public class StubIdpModule extends AbstractModule {
             EntityToEncryptForLocator entityToEncryptForLocator,
             StubIdpConfiguration stubIdpConfiguration) {
         return new EidasResponseTransformerProvider(
-                new CoreTransformersFactory(),
                 encryptionKeyStore.orElse(null),
                 keyStore,
                 entityToEncryptForLocator,
@@ -374,7 +367,6 @@ public class StubIdpModule extends AbstractModule {
         EntityToEncryptForLocator entityToEncryptForLocator,
         StubIdpConfiguration stubIdpConfiguration) {
         return new EidasResponseTransformerProvider(
-            new CoreTransformersFactory(),
             encryptionKeyStore.orElse(null),
             keyStore,
             entityToEncryptForLocator,
