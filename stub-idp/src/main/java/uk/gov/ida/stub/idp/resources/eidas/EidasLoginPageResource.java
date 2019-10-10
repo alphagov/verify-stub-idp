@@ -36,6 +36,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 import static java.text.MessageFormat.format;
@@ -55,11 +56,11 @@ public class EidasLoginPageResource {
 
     @Inject
     public EidasLoginPageResource(
-            SessionRepository<EidasSession> sessionRepository,
-            EidasAuthnResponseService eidasSuucessAuthnResponseRequest,
-            SamlResponseRedirectViewFactory samlResponseRedirectViewFactory,
-            StubCountryRepository stubCountryRepository,
-            StubCountryService stubCountryService) {
+        SessionRepository<EidasSession> sessionRepository,
+        EidasAuthnResponseService eidasSuucessAuthnResponseRequest,
+        SamlResponseRedirectViewFactory samlResponseRedirectViewFactory,
+        StubCountryRepository stubCountryRepository,
+        StubCountryService stubCountryService) {
         this.sessionRepository = sessionRepository;
         this.eidasSuccessAuthnResponseRequest = eidasSuucessAuthnResponseRequest;
         this.samlResponseRedirectViewFactory = samlResponseRedirectViewFactory;
@@ -69,12 +70,12 @@ public class EidasLoginPageResource {
 
     @GET
     public Response get(
-            @PathParam(Urls.SCHEME_ID_PARAM) @NotNull String schemeName,
-            @QueryParam(Urls.ERROR_MESSAGE_PARAM) java.util.Optional<ErrorMessageType> errorMessage,
-            @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
+        @PathParam(Urls.SCHEME_ID_PARAM) @NotNull String schemeName,
+        @QueryParam(Urls.ERROR_MESSAGE_PARAM) java.util.Optional<ErrorMessageType> errorMessage,
+        @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
 
         final Optional<EidasScheme> eidasScheme = EidasScheme.fromString(schemeName);
-        if(!eidasScheme.isPresent()) {
+        if (!eidasScheme.isPresent()) {
             throw new InvalidEidasSchemeException();
         }
 
@@ -83,28 +84,31 @@ public class EidasLoginPageResource {
         StubCountry stubCountry = stubCountryRepository.getStubCountryWithFriendlyId(eidasScheme.get());
 
         return Response.ok()
-                .entity(new EidasLoginPageView(stubCountry.getDisplayName(), stubCountry.getFriendlyId(), errorMessage.orElse(NO_ERROR).getMessage(), stubCountry.getAssetId()))
-                .build();
+            .entity(new EidasLoginPageView(stubCountry.getDisplayName(), stubCountry.getFriendlyId(), errorMessage.orElse(NO_ERROR).getMessage(), stubCountry.getAssetId()))
+            .build();
     }
 
     @POST
     @Produces(MediaType.TEXT_HTML)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response post(
-            @PathParam(Urls.SCHEME_ID_PARAM) @NotNull String schemeName,
-            @FormParam(Urls.USERNAME_PARAM) String username,
-            @FormParam(Urls.PASSWORD_PARAM) String password,
-            @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
+        @PathParam(Urls.SCHEME_ID_PARAM) @NotNull String schemeName,
+        @FormParam(Urls.USERNAME_PARAM) String username,
+        @FormParam(Urls.PASSWORD_PARAM) String password,
+        @FormParam(Urls.SIGN_ASSERTIONS_PARAM_CHECKBOX_GROUP) List<String> signAssertionChecks,
+        @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
+
+        boolean signAssertions = signAssertionChecks.contains(Urls.SIGN_ASSERTIONS_PARAM_VALUE);
 
         final Optional<EidasScheme> eidasScheme = EidasScheme.fromString(schemeName);
-        if(!eidasScheme.isPresent()) {
+        if (!eidasScheme.isPresent()) {
             throw new InvalidEidasSchemeException();
         }
 
         EidasSession session = checkSession(schemeName, sessionCookie);
 
         try {
-            stubCountryService.attachStubCountryToSession(eidasScheme.get(), username, password, session);
+            stubCountryService.attachStubCountryToSession(eidasScheme.get(), username, password, signAssertions, session);
         } catch (InvalidUsernameOrPasswordException e) {
             return createErrorResponse(INVALID_USERNAME_OR_PASSWORD, schemeName);
         } catch (InvalidSessionIdException e) {
@@ -112,25 +116,25 @@ public class EidasLoginPageResource {
         }
 
         return Response.seeOther(UriBuilder.fromPath(Urls.EIDAS_CONSENT_RESOURCE)
-                .build(schemeName))
-                .build();
+            .build(schemeName))
+            .build();
     }
 
     @POST
     @Path(Urls.LOGIN_AUTHN_FAILURE_PATH)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response postAuthnFailure(
-            @PathParam(Urls.SCHEME_ID_PARAM) @NotNull String schemeName,
-            @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
+        @PathParam(Urls.SCHEME_ID_PARAM) @NotNull String schemeName,
+        @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
 
-        if(!EidasScheme.fromString(schemeName).isPresent()) {
+        if (!EidasScheme.fromString(schemeName).isPresent()) {
             throw new InvalidEidasSchemeException();
         }
 
         EidasSession session = checkAndDeleteAndGetSession(schemeName, sessionCookie);
 
-            final SamlResponse loginFailureResponse = eidasSuccessAuthnResponseRequest.generateAuthnFailed(session, schemeName);
-            return samlResponseRedirectViewFactory.sendSamlMessage(loginFailureResponse);
+        final SamlResponse loginFailureResponse = eidasSuccessAuthnResponseRequest.generateAuthnFailed(session, schemeName);
+        return samlResponseRedirectViewFactory.sendSamlMessage(loginFailureResponse);
     }
 
     private EidasSession checkSession(String schemeId, SessionId sessionCookie) {
@@ -162,8 +166,8 @@ public class EidasLoginPageResource {
 
     private Response createErrorResponse(ErrorMessageType errorMessage, String stubCountry) {
         URI uri = UriBuilder.fromPath(Urls.EIDAS_LOGIN_RESOURCE)
-                .queryParam(Urls.ERROR_MESSAGE_PARAM, errorMessage)
-                .build(stubCountry);
+            .queryParam(Urls.ERROR_MESSAGE_PARAM, errorMessage)
+            .build(stubCountry);
         return Response.seeOther(uri).build();
     }
 

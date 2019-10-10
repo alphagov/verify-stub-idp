@@ -31,6 +31,9 @@
                 <input class="field medium" name="password" id="password" type="password"/>
                 <em>Note about this field</em>
             </div>
+            <div>
+                <input class="medium" type="checkbox" name="${signAssertionsCheckboxGroup}" id="${signAssertionsCheckboxGroup}" value="${signAssertionsCheckboxValue}" checked>Sign assertions</input>
+            </div>
             <div class="submit">
               <!--  <a class="forgot" href="#">Forgotten Password?</a> -->
                 <input id="login" class="button color-ok" type="submit" name="submit" value="SignIn"/>

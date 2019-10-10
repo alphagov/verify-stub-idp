@@ -1,8 +1,6 @@
 package uk.gov.ida.stub.idp.transformers;
 
 import org.opensaml.saml.saml2.core.Response;
-import org.opensaml.xml.signature.P;
-import uk.gov.ida.saml.core.transformers.outbound.ResponseToSignedStringTransformer;
 import uk.gov.ida.saml.core.transformers.outbound.decorators.ResponseAssertionSigner;
 import uk.gov.ida.saml.core.transformers.outbound.decorators.ResponseSignatureCreator;
 import uk.gov.ida.saml.core.transformers.outbound.decorators.SamlResponseAssertionEncrypter;
@@ -12,11 +10,7 @@ import uk.gov.ida.saml.serializers.XmlObjectToBase64EncodedStringTransformer;
 import javax.inject.Inject;
 import java.util.function.Function;
 
-/**
- * Very similar to ResponseToSignedStringTransformer, but does not form a part of the saml-libs:
- * The capability to generate SAML with unsigned assertions is <u>only</u> required by the stub-idp.
- */
-public class UnsignedAssertionCapableResponseToSignedStringTransformer implements Function<Response, String> {
+public class StubIdpResponseToSignedStringTransformer implements Function<Response, String> {
 
     private final XmlObjectToBase64EncodedStringTransformer<?> xmlObjectToBase64EncodedStringTransformer;
     private final SamlSignatureSigner<Response> samlSignatureSigner;
@@ -26,7 +20,7 @@ public class UnsignedAssertionCapableResponseToSignedStringTransformer implement
     private final boolean signAssertions;
 
     @Inject
-    public UnsignedAssertionCapableResponseToSignedStringTransformer(
+    public StubIdpResponseToSignedStringTransformer(
         XmlObjectToBase64EncodedStringTransformer<?> xmlObjectToBase64EncodedStringTransformer,
         SamlSignatureSigner<Response> samlSignatureSigner,
         SamlResponseAssertionEncrypter samlResponseAssertionEncrypter,

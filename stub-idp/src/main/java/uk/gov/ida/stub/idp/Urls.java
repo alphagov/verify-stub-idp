@@ -15,6 +15,8 @@ public interface Urls {
     @SuppressWarnings("squid:S2068")
     String PASSWORD_PARAM = "password";
     String USERNAME_PARAM = "username";
+    String SIGN_ASSERTIONS_PARAM_CHECKBOX_GROUP = "assertionOptions";
+    String SIGN_ASSERTIONS_PARAM_VALUE = "signAssertions";
     String LOGIN_FAILURE_STATUS_PARAM = "failureStatus";
     String REQUESTER_ERROR_MESSAGE_PARAM = "requesterErrorMessage";
     String DATE_OF_BIRTH_PARAM = "dateOfBirth";
