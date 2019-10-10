@@ -66,9 +66,11 @@ Several countries can be dynamically stubbed at once - see the full list in [Eid
 
 ## Test Users
 
-Test users can be uploaded to the IDPs [docs](https://alphagov.github.io/rp-onboarding-tech-docs/pages/env/envEndToEndTests.html#createtestusers)
+Existing test users can be accessed via the `/{friendlyId}/users` endpoint, for which basic authentication is enabled by default (configure using `basicAuthEnabledForUserResource`).
 
-Basic auth for the `/{friendlyId}/users` endpoint is enabled by default and can be configured using `basicAuthEnabledForUserResource`
+* the user name and password when running locally is in [`verify-blackbox-passwords/ida-stub-idp-password`](https://github.com/alphagov/verify-blackbox-passwords/blob/master/ida-stub-idp-password.info)
+
+New users can be uploaded to the IDPs per the [onboarding docs](https://www.docs.verify.service.gov.uk/test-in-integration/testing/set-up-tests/#create-test-users).
 
 ## Issues and responsible disclosure
 
