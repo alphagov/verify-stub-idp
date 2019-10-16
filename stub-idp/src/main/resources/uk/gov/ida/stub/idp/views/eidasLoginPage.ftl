@@ -32,7 +32,7 @@
                 <em>Note about this field</em>
             </div>
             <div>
-                <input class="medium" type="checkbox" name="${signAssertionsCheckboxGroup}" id="${signAssertionsCheckboxGroup}" value="${signAssertionsCheckboxValue}" checked>Sign assertions</input>
+                <input class="medium" type="checkbox" name="${signAssertionsCheckboxGroup}" id="${signAssertionsCheckboxGroup}_${signAssertionsCheckboxValue}" value="${signAssertionsCheckboxValue}" checked>Sign assertions</input>
             </div>
             <div class="submit">
               <!--  <a class="forgot" href="#">Forgotten Password?</a> -->
