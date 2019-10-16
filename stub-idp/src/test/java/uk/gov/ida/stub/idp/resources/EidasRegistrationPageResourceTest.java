@@ -26,9 +26,11 @@ import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
 
 import javax.ws.rs.core.Response;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Function;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -85,7 +87,7 @@ public class EidasRegistrationPageResourceTest {
     public void shouldHaveStatusAuthnCancelledResponseWhenUserCancels() {
         when(nonSuccessAuthnResponseService.generateAuthnCancel(any(String.class), any(String.class), eq(RELAY_STATE))).thenReturn(new SamlResponseFromValue<>("saml", Function.identity(), RELAY_STATE, URI.create("uri")));
 
-        resource.post(STUB_COUNTRY, null, null, null, null, null, null, null, null, Cancel, SESSION_ID);
+        resource.post(STUB_COUNTRY, null, null, null, null, null, null, null, null, Cancel, asList("signAssertions"), SESSION_ID);
 
         verify(nonSuccessAuthnResponseService).generateAuthnCancel(STUB_COUNTRY, SAML_REQUEST_ID, RELAY_STATE);
     }
@@ -93,7 +95,7 @@ public class EidasRegistrationPageResourceTest {
     @Test
     public void shouldHaveStatusSuccessResponseWhenUserRegisters() throws InvalidSessionIdException, IncompleteRegistrationException, InvalidDateException, UsernameAlreadyTakenException, InvalidUsernameOrPasswordException {
 
-        final Response response = resource.post(STUB_COUNTRY, "bob", "", "jones", "", "2000-01-01", "username", "password", LEVEL_2, Register, SESSION_ID);
+        final Response response = resource.post(STUB_COUNTRY, "bob", "", "jones", "", "2000-01-01", "username", "password", LEVEL_2, Register, asList("signAssertions"), SESSION_ID);
 
         assertThat(response.getStatus()).isEqualTo(303);
         verify(stubCountryService).createAndAttachIdpUserToSession(eq(EidasScheme.fromString(STUB_COUNTRY).get()), any(String.class), any(String.class), eq(eidasSession), any(String.class), any(String.class), any(String.class), any(String.class), any(String.class), eq(LEVEL_2));

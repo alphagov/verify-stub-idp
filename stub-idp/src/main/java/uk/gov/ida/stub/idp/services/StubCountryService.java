@@ -91,7 +91,7 @@ public class StubCountryService {
                 levelOfAssurance);
     }
 
-    private void setAssertionSigningIntention(boolean signAssertions, EidasSession session) {
+    public void setAssertionSigningIntention(boolean signAssertions, EidasSession session) {
         session.setSignAssertions(signAssertions);
         sessionRepository.updateSession(session.getSessionId(), session);
     }

@@ -81,6 +81,9 @@
                 </select>
                 <em>Note about this field</em>
             </div>
+            <div>
+                <input class="medium" type="checkbox" name="${signAssertionsCheckboxGroup}" id="${signAssertionsCheckboxGroup}_${signAssertionsCheckboxValue}" value="${signAssertionsCheckboxValue}" checked>Sign assertions</input>
+            </div>
             <div class="submit">
                 <input id="register" class="button color-ok" type="submit" name="submit" value="Register"/>
                 <input id="cancel" class="button cancel color-cancel" type="submit" name="submit" value="Cancel" />
