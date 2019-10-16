@@ -41,6 +41,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 import static java.text.MessageFormat.format;
@@ -102,17 +103,20 @@ public class EidasRegistrationPageResource {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response post(
-            @PathParam(Urls.SCHEME_ID_PARAM) @NotNull String schemeId,
-            @FormParam(Urls.FIRSTNAME_PARAM) String firstname,
-            @FormParam(Urls.NON_LATIN_FIRSTNAME_PARAM) String nonLatinFirstname,
-            @FormParam(Urls.SURNAME_PARAM) String surname,
-            @FormParam(Urls.NON_LATIN_SURNAME_PARAM) String nonLatinSurname,
-            @FormParam(Urls.DATE_OF_BIRTH_PARAM) String dateOfBirth,
-            @FormParam(Urls.USERNAME_PARAM) String username,
-            @FormParam(Urls.PASSWORD_PARAM) String password,
-            @FormParam(Urls.LEVEL_OF_ASSURANCE_PARAM) AuthnContext levelOfAssurance,
-            @FormParam(Urls.SUBMIT_PARAM) @NotNull SubmitButtonValue submitButtonValue,
-            @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
+        @PathParam(Urls.SCHEME_ID_PARAM) @NotNull String schemeId,
+        @FormParam(Urls.FIRSTNAME_PARAM) String firstname,
+        @FormParam(Urls.NON_LATIN_FIRSTNAME_PARAM) String nonLatinFirstname,
+        @FormParam(Urls.SURNAME_PARAM) String surname,
+        @FormParam(Urls.NON_LATIN_SURNAME_PARAM) String nonLatinSurname,
+        @FormParam(Urls.DATE_OF_BIRTH_PARAM) String dateOfBirth,
+        @FormParam(Urls.USERNAME_PARAM) String username,
+        @FormParam(Urls.PASSWORD_PARAM) String password,
+        @FormParam(Urls.LEVEL_OF_ASSURANCE_PARAM) AuthnContext levelOfAssurance,
+        @FormParam(Urls.SUBMIT_PARAM) @NotNull SubmitButtonValue submitButtonValue,
+        @FormParam(Urls.SIGN_ASSERTIONS_PARAM_CHECKBOX_GROUP) List<String> signAssertionChecks,
+        @CookieParam(CookieNames.SESSION_COOKIE_NAME) @NotNull SessionId sessionCookie) {
+
+        boolean signAssertions = signAssertionChecks.contains(Urls.SIGN_ASSERTIONS_PARAM_VALUE);
 
         final Optional<EidasScheme> eidasScheme = EidasScheme.fromString(schemeId);
         if(!eidasScheme.isPresent()) {
@@ -153,6 +157,9 @@ public class EidasRegistrationPageResource {
                             dateOfBirth,
                             levelOfAssurance
                     );
+
+                    stubCountryService.setAssertionSigningIntention(signAssertions, session.get());
+
                     return Response.seeOther(UriBuilder.fromPath(Urls.EIDAS_CONSENT_RESOURCE)
                             .build(schemeId))
                             .build();
