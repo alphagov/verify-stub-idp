@@ -1,0 +1,110 @@
+server:
+  applicationConnectors:
+    - type: http
+      port: ${STUB_IDP_PORT:-50140}
+  adminConnectors:
+    - type: http
+      port: 50141
+
+  requestLog:
+    appenders:
+      - type: console
+      - type: file
+        currentLogFilename: ${LOG_PATH}/debug/stub-idp_access.log
+        archivedLogFilenamePattern: ${LOG_PATH}/debug/stub-idp_access.log.%d.gz
+        archivedFileCount: 7
+
+assertionLifetime: 60m
+
+saml:
+  entityId: ${ENTITY_ID:-"http://stub_idp.acme.org/%s/SSO/POST"}
+
+serviceInfo:
+  name: stub-idp
+
+logging:
+  level: ${LOG_LEVEL:-INFO}
+  appenders:
+    - type: console
+    - type: file
+      currentLogFilename: ${LOG_PATH}/debug/stub-idp.log
+      archivedLogFilenamePattern: ${LOG_PATH}/debug/stub-idp.log.%d.gz
+      archivedFileCount: 7
+      logFormat: '%-5p [%d{ISO8601,UTC}] %c: %X{logPrefix}%m%n%xEx'
+
+signingKeyPairConfiguration:
+  privateKeyConfiguration:
+    type: ${KEY_TYPE:-file}
+    key: ${STUB_IDP_SIGNING_PRIVATE_KEY}
+  publicKeyConfiguration:
+    type: ${CERT_TYPE:-file}
+    cert: ${STUB_IDP_SIGNING_CERT}
+    name: idp.signing.cert
+
+basicAuthEnabledForUserResource: ${STUB_IDP_BASIC_AUTH}
+
+stubIdpsYmlFileLocation: ${STUB_IDPS_FILE_PATH:-/ida/stub-idp/stub-idps.yml}
+stubIdpYmlFileRefresh: 10s
+
+hubEntityId: ${METADATA_ENTITY_ID}
+
+metadata:
+  client:
+    timeout: 60s
+    timeToLive: 10m
+    cookiesEnabled: false
+    connectionTimeout: 4s
+    tls:
+      protocol: TLSv1.2
+      verifyHostname: false
+      trustSelfSignedCertificates: true
+  uri: ${METADATA_URL:-http://localhost:55000/local/metadata.xml}
+  trustStore:
+    type: ${TRUSTSTORE_TYPE:-file}
+    store: ${METADATA_TRUSTSTORE}
+    password: ${TRUSTSTORE_PASSWORD}
+  minRefreshDelay: 30000
+  maxRefreshDelay: 1800000
+  expectedEntityId: ${METADATA_ENTITY_ID}
+
+europeanIdentity:
+  enabled: ${EUROPEAN_IDENTITY_ENABLED:-false}
+  hubConnectorEntityId: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}
+  stubCountryBaseUrl: http://localhost:50140
+  metadata:
+    jerseyClientName: connector-metadata-client
+    client:
+      timeout: 60s
+      timeToLive: 10m
+      connectionTimeout: 4s
+      tls:
+        protocol: TLSv1.2
+        verifyHostname: false
+    uri: ${HUB_CONNECTOR_ENTITY_ID}
+    trustStore:
+      type: ${TRUSTSTORE_TYPE:-file}
+      store: ${METADATA_TRUSTSTORE}
+      password: ${TRUSTSTORE_PASSWORD}
+    minRefreshDelay: 30000
+    maxRefreshDelay: 1800000
+    expectedEntityId: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}
+  signingKeyPairConfiguration:
+    privateKeyConfiguration:
+      type: ${KEY_TYPE:-file}
+      key: ${STUB_COUNTRY_SIGNING_PRIVATE_KEY}
+    publicKeyConfiguration:
+      type: ${CERT_TYPE:-file}
+      cert: ${STUB_COUNTRY_SIGNING_CERT}
+      name: stub_country_signing_cert
+
+database:
+  url: ${DB_URI:-jdbc:postgresql://localhost:5432/postgres?user=postgres}
+
+singleIdpJourney:
+  enabled: ${SINGLE_IDP_FEATURE:-false}
+  serviceListUri: ${SERVICE_LIST_URL:-http://localhost:50300/get-available-services}
+  serviceListClient:
+    timeout: 60s
+    timeToLive: 10m
+    connectionTimeout: 4s
+  verifySubmissionUri: ${VERIFY_SUBMISSION_URL:-http://localhost:50300/initiate-single-idp-journey}
