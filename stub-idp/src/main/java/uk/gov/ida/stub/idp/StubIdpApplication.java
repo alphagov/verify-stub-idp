@@ -52,6 +52,7 @@ import uk.gov.ida.stub.idp.resources.idp.LoginPageResource;
 import uk.gov.ida.stub.idp.resources.idp.LogoutPageResource;
 import uk.gov.ida.stub.idp.resources.idp.RegistrationPageResource;
 import uk.gov.ida.stub.idp.resources.idp.SingleIdpPromptPageResource;
+import uk.gov.ida.stub.idp.resources.OidcRequestReceiverResource;
 
 import javax.servlet.DispatcherType;
 import java.util.EnumSet;
@@ -149,6 +150,7 @@ public class StubIdpApplication extends Application<StubIdpConfiguration> {
         environment.jersey().register(SingleIdpPromptPageResource.class);
         environment.jersey().register(LogoutPageResource.class);
         environment.jersey().register(HomePageResource.class);
+        environment.jersey().register(OidcRequestReceiverResource.class);
 
         //exception mappers
         environment.jersey().register(IdpNotFoundExceptionMapper.class);

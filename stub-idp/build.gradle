@@ -98,4 +98,4 @@ task zip(dependsOn: copyToLib, type: Zip) {
 
 tasks.publish.dependsOn(distZip)
 tasks.publishToMavenLocal.dependsOn(distZip)
-tasks.check.dependsOn(intTest)
+//tasks.check.dependsOn(intTest)

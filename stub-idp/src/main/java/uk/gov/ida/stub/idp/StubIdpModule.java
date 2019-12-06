@@ -71,9 +71,11 @@ import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
 import uk.gov.ida.stub.idp.repositories.MetadataRepository;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
 import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
+import uk.gov.ida.stub.idp.repositories.TokenRepository;
 import uk.gov.ida.stub.idp.repositories.UserRepository;
 import uk.gov.ida.stub.idp.repositories.jdbc.JDBIEidasSessionRepository;
 import uk.gov.ida.stub.idp.repositories.jdbc.JDBIIdpSessionRepository;
+import uk.gov.ida.stub.idp.repositories.jdbc.JDBITokenRepository;
 import uk.gov.ida.stub.idp.repositories.jdbc.JDBIUserRepository;
 import uk.gov.ida.stub.idp.repositories.jdbc.UserMapper;
 import uk.gov.ida.stub.idp.repositories.reaper.ManagedStaleSessionReaper;
@@ -90,6 +92,7 @@ import uk.gov.ida.stub.idp.services.NonSuccessAuthnResponseService;
 import uk.gov.ida.stub.idp.services.ServiceListService;
 import uk.gov.ida.stub.idp.services.StubCountryService;
 import uk.gov.ida.stub.idp.services.SuccessAuthnResponseService;
+import uk.gov.ida.stub.idp.services.TokenService;
 import uk.gov.ida.stub.idp.services.UserService;
 import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
 import uk.gov.ida.truststore.EmptyKeyStoreProvider;
@@ -213,6 +216,13 @@ public class StubIdpModule extends AbstractModule {
 
     @Provides
     @Singleton
+    public TokenRepository getTokenRepository(StubIdpConfiguration configuration) {
+        Jdbi jdbi = Jdbi.create(configuration.getDatabaseConfiguration().getUrl());
+        return new JDBITokenRepository(jdbi);
+    }
+
+    @Provides
+    @Singleton
     @Named("HubEntityId")
     public String getHubEntityId(StubIdpConfiguration configuration) {
         return configuration.getHubEntityId();
@@ -313,6 +323,11 @@ public class StubIdpModule extends AbstractModule {
             new SignatureRSASHA256(),
             new DigestSHA256()
         );
+    }
+
+    @Provides
+    public TokenService getTokenService(StubIdpConfiguration configuration) {
+        return new TokenService(getTokenRepository(configuration));
     }
 
     @Provides
