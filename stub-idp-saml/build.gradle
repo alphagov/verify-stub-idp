@@ -4,16 +4,6 @@ apply plugin: 'maven-publish'
 apply plugin: 'java'
 
 publishing {
-    repositories {
-        maven {
-            credentials {
-                username "${System.env.ARTIUSER}"
-                password "${System.env.ARTIPASSWORD}"
-            }
-            url "https://artifactory.ida.digital.cabinet-office.gov.uk/artifactory/libs-release-local"
-        }
-    }
-
     publications {
         mavenJava(MavenPublication) {
             from components.java

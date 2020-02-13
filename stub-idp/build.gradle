@@ -48,23 +48,6 @@ distZip {
     }
 }
 
-publishing {
-    publications {
-        zipFile(MavenPublication) {
-            artifactId = "ida-stub-idp"
-            version = "${version ?: 'SNAPSHOT'}"
-            groupId = "uk.gov.ida"
-
-            artifact file("build/distributions/${project.name}-${version}.zip")
-        }
-    }
-    repositories {
-        maven {
-            url "/srv/maven"
-        }
-    }
-}
-
 task copyStubIdpLogos(type: Copy) {
     description 'Copy stub idp logos from federation config into the main resource dir'
     if (project.hasProperty('stubidpExtraLogosDirectory')) {
