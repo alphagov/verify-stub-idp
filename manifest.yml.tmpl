@@ -6,6 +6,7 @@ applications:
       - route: idp-stub-$ENV.ida.digital.cabinet-office.gov.uk
     stack: cflinuxfs3
     memory: 1G
+    timeout: 120
     buildpacks:
       - java_buildpack
     env:
