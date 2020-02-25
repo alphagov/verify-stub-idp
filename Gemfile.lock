@@ -39,7 +39,7 @@ GEM
     mini_mime (1.0.2)
     mini_portile2 (2.4.0)
     mustache (0.99.8)
-    nokogiri (1.10.4)
+    nokogiri (1.10.8)
       mini_portile2 (~> 2.4.0)
     pleaserun (0.0.30)
       cabin (> 0)
