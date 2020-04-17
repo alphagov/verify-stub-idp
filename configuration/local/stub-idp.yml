@@ -98,7 +98,7 @@ europeanIdentity:
       name: stub_country_signing_cert
 
 database:
-  url: ${DB_URI:-jdbc:postgresql://localhost:5432/postgres?user=postgres}
+  url: ${DB_URI:-jdbc:postgresql://localhost:5432/postgres?user=postgres&password=docker}
 
 singleIdpJourney:
   enabled: ${SINGLE_IDP_FEATURE:-false}
