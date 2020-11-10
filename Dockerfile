@@ -1,4 +1,4 @@
-FROM gradle:4.7.0-jdk8 as build
+FROM gradle:6.5.1-jdk11 as build
 
 WORKDIR /stub-idp
 USER root
@@ -25,11 +25,11 @@ RUN gradle :stub-idp:installDist
 ENTRYPOINT ["gradle"]
 CMD ["tasks"]
 
-FROM openjdk:8-jre
+FROM openjdk:11.0.6-jre
 
 WORKDIR /stub-idp
 
-COPY configuration/stub-idp.yml stub-idp.yml
+COPY configuration/local/stub-idp.yml stub-idp.yml
 COPY --from=build /stub-idp/stub-idp/build/install/stub-idp .
 
 CMD bin/stub-idp server stub-idp.yml
