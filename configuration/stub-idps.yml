@@ -1,0 +1,7 @@
+stubIdps:
+  - friendlyId: stub-idp-demo-g3
+    displayName: Stub Idp Demo G3
+    assetId: stub-idp-demo-g3
+    idpUserCredentials:
+      - user: ida
+        password: # Insert ida password here - https://github.com/alphagov/verify-stub-idp-federation-config/blob/master/configuration/integration/stub-idps.yml#L7
