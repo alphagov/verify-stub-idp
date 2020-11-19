@@ -1,0 +1,7 @@
+stubIdps:
+  - friendlyId: stub-idp-demo-g3
+    displayName: Stub Idp Demo G3
+    assetId: stub-idp-demo-g3
+    idpUserCredentials:
+      - user: ida
+        password: $2a$10$LpErNy.nf1mhCskGwURbI.VxoOsRqYEkfAhRD83sbgJUHlBMBBELq
