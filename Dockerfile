@@ -1,4 +1,4 @@
-FROM gradle:6.5.1-jdk11 as build
+FROM ghcr.io/alphagov/verify/gradle:gradle-jdk11 as build
 
 WORKDIR /stub-idp
 USER root
@@ -25,7 +25,7 @@ RUN gradle :stub-idp:installDist
 ENTRYPOINT ["gradle"]
 CMD ["tasks"]
 
-FROM openjdk:11.0.6-jre
+FROM ghcr.io/alphagov/verify/java:openjdk-11
 
 WORKDIR /stub-idp
 
