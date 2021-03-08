@@ -65,36 +65,6 @@ metadata:
   maxRefreshDelay: 1800000
   expectedEntityId: ${METADATA_ENTITY_ID}
 
-europeanIdentity:
-  enabled: ${EUROPEAN_IDENTITY_ENABLED:-false}
-  hubConnectorEntityId: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}
-  stubCountryBaseUrl: ${STUB_IDP_HOSTNAME:-DefaultNotUsed}
-  metadata:
-    jerseyClientName: connector-metadata-client
-    client:
-      timeout: 60s
-      timeToLive: 10m
-      connectionTimeout: 4s
-      tls:
-        protocol: TLSv1.2
-        verifyHostname: false
-    uri: ${CONNECTOR_NODE_METADATA_URI:-http://DefaultNotUsed}
-    trustStore:
-      type: ${TRUSTSTORE_TYPE:-file}
-      store: ${METADATA_TRUSTSTORE}
-      password: ${TRUSTSTORE_PASSWORD}
-    minRefreshDelay: 30000
-    maxRefreshDelay: 1800000
-    expectedEntityId: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}
-  signingKeyPairConfiguration:
-    privateKeyConfiguration:
-      type: ${KEY_TYPE:-file}
-      key: ${STUB_COUNTRY_SIGNING_PRIVATE_KEY}
-    publicKeyConfiguration:
-      type: ${CERT_TYPE:-file}
-      cert: ${STUB_COUNTRY_SIGNING_CERT}
-      name: stub_country_signing_cert
-
 database:
   vcapServices: '${VCAP_SERVICES:-}'
 
