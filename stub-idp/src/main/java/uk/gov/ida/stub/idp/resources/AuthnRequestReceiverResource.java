@@ -6,9 +6,7 @@ import uk.gov.ida.common.SessionId;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.cookies.CookieFactory;
 import uk.gov.ida.stub.idp.cookies.CookieNames;
-import uk.gov.ida.stub.idp.domain.EidasScheme;
 import uk.gov.ida.stub.idp.domain.IdpLanguageHint;
-import uk.gov.ida.stub.idp.exceptions.InvalidEidasSchemeException;
 import uk.gov.ida.stub.idp.exceptions.InvalidSessionIdException;
 import uk.gov.ida.stub.idp.exceptions.InvalidUsernameOrPasswordException;
 import uk.gov.ida.stub.idp.repositories.IdpSession;
@@ -87,26 +85,6 @@ public class AuthnRequestReceiverResource {
                 }
             }
         }
-        return Response.seeOther(sessionCreated.getNextLocation())
-                .cookie(getCookies(sessionCreated))
-                .build();
-    }
-
-    @POST
-    @Path(Urls.EIDAS_SAML2_SSO_RESOURCE)
-    public Response handleEidasPost(
-            @PathParam(Urls.SCHEME_ID_PARAM) @NotNull String schemeId,
-            @FormParam(Urls.SAML_REQUEST_PARAM) @NotNull String samlRequest,
-            @FormParam(Urls.RELAY_STATE_PARAM) String relayState,
-            @FormParam(Urls.LANGUAGE_HINT_PARAM) Optional<IdpLanguageHint> languageHint) {
-        LOG.debug("Received request for country {} from HUB", schemeId);
-
-        if(!EidasScheme.fromString(schemeId).isPresent()) {
-            throw new InvalidEidasSchemeException();
-        }
-
-        final SessionCreated sessionCreated = authnRequestReceiverService.handleEidasAuthnRequest(schemeId, samlRequest, relayState, languageHint);
-
         return Response.seeOther(sessionCreated.getNextLocation())
                 .cookie(getCookies(sessionCreated))
                 .build();

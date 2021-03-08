@@ -41,11 +41,9 @@ public interface Urls {
 
     // paths and resources
     String IDP_SAML2_SSO_RESOURCE = "/{"+IDP_ID_PARAM+"}/SAML2/SSO";
-    String EIDAS_SAML2_SSO_RESOURCE = "/eidas/{"+SCHEME_ID_PARAM+"}/SAML2/SSO";
     String HEADLESS_ROOT = "/headless";
 
     String LOGIN_RESOURCE = "/{"+IDP_ID_PARAM+"}/login";
-    String EIDAS_LOGIN_RESOURCE = "/eidas/{"+SCHEME_ID_PARAM+"}/login";
     String LOGIN_AUTHN_FAILURE_PATH = "authn-failure";
     String LOGIN_NO_AUTHN_CONTEXT_PATH = "no-authn-context";
     String LOGIN_FRAUD_FAILURE_PATH = "fraud-failure";
@@ -63,10 +61,7 @@ public interface Urls {
     String PRE_REGISTER_PATH = "pre-register";
     String SINGLE_IDP_PROMPT_RESOURCE = "/{"+IDP_ID_PARAM+"}/start-prompt";
 
-    String EIDAS_REGISTER_RESOURCE = "/eidas/{"+SCHEME_ID_PARAM+"}/register";
-    String EIDAS_CONSENT_RESOURCE = "/eidas/{"+SCHEME_ID_PARAM+"}/consent";
     String METADATA_RESOURCE = "/{"+SCHEME_ID_PARAM+"}/ServiceMetadata";
-    String EIDAS_DEBUG_RESOURCE = "/eidas/{"+SCHEME_ID_PARAM+"}/debug";
 
     String USERS_RESOURCE = "/{"+IDP_ID_PARAM+"}/users";
     String DELETE_USER_PATH = "/delete";
