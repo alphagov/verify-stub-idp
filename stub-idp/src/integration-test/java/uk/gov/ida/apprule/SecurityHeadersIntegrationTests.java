@@ -23,11 +23,6 @@ public class SecurityHeadersIntegrationTests extends IntegrationTestHelper {
     @ClassRule
     public static final StubIdpAppRule applicationRule = new StubIdpAppRule();
 
-    @Before
-    public void refreshMetadata() {
-        client.target("http://localhost:"+applicationRule.getAdminPort()+"/tasks/connector-metadata-refresh").request().post(Entity.text(""));
-    }
-
     @Test
     public void securityHeaderTest() {
         final Response response = client.target(UriBuilder.fromUri("http://localhost:" + applicationRule.getLocalPort())
