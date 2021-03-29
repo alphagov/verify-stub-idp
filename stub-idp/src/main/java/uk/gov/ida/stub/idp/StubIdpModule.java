@@ -46,10 +46,7 @@ import uk.gov.ida.saml.security.IdaKeyStore;
 import uk.gov.ida.saml.security.IdaKeyStoreCredentialRetriever;
 import uk.gov.ida.saml.security.SignatureFactory;
 import uk.gov.ida.saml.security.SigningKeyStore;
-import uk.gov.ida.saml.security.signature.SignatureRSASSAPSS;
 import uk.gov.ida.stub.idp.auth.ManagedAuthFilterInstaller;
-import uk.gov.ida.stub.idp.builders.CountryMetadataBuilder;
-import uk.gov.ida.stub.idp.builders.CountryMetadataSigningHelper;
 import uk.gov.ida.stub.idp.configuration.AssertionLifetimeConfiguration;
 import uk.gov.ida.stub.idp.configuration.IdpStubsConfiguration;
 import uk.gov.ida.stub.idp.configuration.SigningKeyPairConfiguration;
@@ -63,32 +60,25 @@ import uk.gov.ida.stub.idp.domain.factories.IdentityProviderAssertionFactory;
 import uk.gov.ida.stub.idp.domain.factories.StubTransformersFactory;
 import uk.gov.ida.stub.idp.listeners.StubIdpsFileListener;
 import uk.gov.ida.stub.idp.repositories.AllIdpsUserRepository;
-import uk.gov.ida.stub.idp.repositories.EidasSession;
-import uk.gov.ida.stub.idp.repositories.EidasSessionRepository;
 import uk.gov.ida.stub.idp.repositories.IdpSession;
 import uk.gov.ida.stub.idp.repositories.IdpSessionRepository;
 import uk.gov.ida.stub.idp.repositories.IdpStubsRepository;
 import uk.gov.ida.stub.idp.repositories.MetadataRepository;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
-import uk.gov.ida.stub.idp.repositories.StubCountryRepository;
 import uk.gov.ida.stub.idp.repositories.UserRepository;
-import uk.gov.ida.stub.idp.repositories.jdbc.JDBIEidasSessionRepository;
 import uk.gov.ida.stub.idp.repositories.jdbc.JDBIIdpSessionRepository;
 import uk.gov.ida.stub.idp.repositories.jdbc.JDBIUserRepository;
 import uk.gov.ida.stub.idp.repositories.jdbc.UserMapper;
 import uk.gov.ida.stub.idp.repositories.reaper.ManagedStaleSessionReaper;
 import uk.gov.ida.stub.idp.saml.locators.IdpHardCodedEntityToEncryptForLocator;
-import uk.gov.ida.stub.idp.saml.transformers.EidasResponseTransformerProvider;
 import uk.gov.ida.stub.idp.saml.transformers.OutboundResponseFromIdpTransformerProvider;
 import uk.gov.ida.stub.idp.security.HubEncryptionKeyStore;
 import uk.gov.ida.stub.idp.security.IdaAuthnRequestKeyStore;
 import uk.gov.ida.stub.idp.services.AuthnRequestReceiverService;
-import uk.gov.ida.stub.idp.services.EidasAuthnResponseService;
 import uk.gov.ida.stub.idp.services.GeneratePasswordService;
 import uk.gov.ida.stub.idp.services.IdpUserService;
 import uk.gov.ida.stub.idp.services.NonSuccessAuthnResponseService;
 import uk.gov.ida.stub.idp.services.ServiceListService;
-import uk.gov.ida.stub.idp.services.StubCountryService;
 import uk.gov.ida.stub.idp.services.SuccessAuthnResponseService;
 import uk.gov.ida.stub.idp.services.UserService;
 import uk.gov.ida.stub.idp.views.SamlResponseRedirectViewFactory;
@@ -114,13 +104,9 @@ public class StubIdpModule extends AbstractModule {
 
     private final Bootstrap<StubIdpConfiguration> bootstrap;
 
-    public static final String HUB_CONNECTOR_METADATA_REPOSITORY = "HubConnectorMetadataRepository";
     public static final String HUB_METADATA_REPOSITORY = "HubMetadataRepository";
-    public static final String HUB_CONNECTOR_METADATA_RESOLVER = "HubConnectorMetadataResolver";
     public static final String HUB_METADATA_RESOLVER = "HubMetadataResolver";
-    public static final String HUB_CONNECTOR_ENCRYPTION_KEY_STORE = "HubConnectorEncryptionKeyStore";
     public static final String HUB_ENCRYPTION_KEY_STORE = "HubEncryptionKeyStore";
-    public static final String COUNTRY_SIGNING_KEY_STORE = "CountrySigningKeyStore";
     public static final String IDP_SIGNING_KEY_STORE = "IdpSigningKeyStore";
 
     public StubIdpModule(Bootstrap<StubIdpConfiguration> bootstrap) {
@@ -134,7 +120,6 @@ public class StubIdpModule extends AbstractModule {
         bind(SigningKeyStore.class).to(IdaAuthnRequestKeyStore.class).asEagerSingleton();
 
         bind(EntityToEncryptForLocator.class).to(IdpHardCodedEntityToEncryptForLocator.class).asEagerSingleton();
-        bind(CountryMetadataSigningHelper.class).asEagerSingleton();
         bind(new TypeLiteral<ConcurrentMap<String, Document>>() {
         }).toInstance(new ConcurrentHashMap<>());
 
@@ -148,7 +133,6 @@ public class StubIdpModule extends AbstractModule {
         bind(AssertionFactory.class);
         bind(AssertionRestrictionsFactory.class);
         bind(IdentityProviderAssertionFactory.class);
-        bind(CountryMetadataBuilder.class);
 
         bind(StubIdpsFileListener.class).asEagerSingleton();
 
@@ -164,12 +148,10 @@ public class StubIdpModule extends AbstractModule {
         bind(GeneratePasswordService.class);
         bind(NonSuccessAuthnResponseService.class);
         bind(IdpUserService.class);
-        bind(StubCountryService.class);
         bind(UserService.class);
         bind(SamlResponseRedirectViewFactory.class);
         
         bind(new TypeLiteral<SessionRepository<IdpSession>>(){}).to(IdpSessionRepository.class);
-        bind(new TypeLiteral<SessionRepository<EidasSession>>(){}).to(EidasSessionRepository.class);
 
         bind(ManagedStaleSessionReaper.class).asEagerSingleton();
 
@@ -206,37 +188,9 @@ public class StubIdpModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public EidasSessionRepository getEidasSessionRepository(StubIdpConfiguration configuration) {
-        Jdbi jdbi = Jdbi.create(configuration.getDatabaseConfiguration().getUrl());
-        return new JDBIEidasSessionRepository(jdbi);
-    }
-
-    @Provides
-    @Singleton
     @Named("HubEntityId")
     public String getHubEntityId(StubIdpConfiguration configuration) {
         return configuration.getHubEntityId();
-    }
-
-    @Provides
-    @Singleton
-    @Named("HubConnectorEntityId")
-    public String getHubConnectorEntityId(StubIdpConfiguration configuration) {
-        return configuration.getEuropeanIdentityConfiguration().getHubConnectorEntityId();
-    }
-
-    @Provides
-    @Singleton
-    @Named("StubCountryMetadataUrl")
-    public String getStubCountryMetadataUrl(StubIdpConfiguration configuration) {
-        return configuration.getEuropeanIdentityConfiguration().getStubCountryBaseUrl() + Urls.METADATA_RESOURCE;
-    }
-
-    @Provides
-    @Singleton
-    @Named("StubCountrySsoUrl")
-    public String getStubCountrySsoUrl(StubIdpConfiguration configuration) {
-        return configuration.getEuropeanIdentityConfiguration().getStubCountryBaseUrl() + Urls.EIDAS_SAML2_SSO_RESOURCE;
     }
 
     @Provides
@@ -266,18 +220,6 @@ public class StubIdpModule extends AbstractModule {
     @Provides
     DigestAlgorithm provideDigestAlgorithm() {
         return new DigestSHA256();
-    }
-
-    @Provides
-    @Named("countryMetadataSignatureFactory")
-    private SignatureFactory getSignatureFactoryWithKeyInfo(@Named(COUNTRY_SIGNING_KEY_STORE) IdaKeyStore keyStore, DigestAlgorithm digestAlgorithm, SignatureAlgorithm signatureAlgorithm) {
-        return new SignatureFactory(true, new IdaKeyStoreCredentialRetriever(keyStore), signatureAlgorithm, digestAlgorithm);
-    }
-
-    @Provides
-    @Singleton
-    public StubCountryRepository getStubCountryRepository(AllIdpsUserRepository allIdpsUserRepository, @Named("StubCountryMetadataUrl")String stubCountryMetadataUrl){
-        return new StubCountryRepository(allIdpsUserRepository, stubCountryMetadataUrl);
     }
 
     @Provides
@@ -316,64 +258,6 @@ public class StubIdpModule extends AbstractModule {
     }
 
     @Provides
-    @Named("RSASHA256EidasAuthnResponseService")
-    public EidasAuthnResponseService getECDSAEidasAuthnResponseService(
-       @Named("HubConnectorEntityId") String hubConnectorEntityId,
-       @Named("RSASHA256EidasResponseTransfomerProvider") EidasResponseTransformerProvider eidasResponseTransformerProvider,
-       @Named(StubIdpModule.HUB_CONNECTOR_METADATA_REPOSITORY) Optional<MetadataRepository> metadataProvider,
-       @Named("StubCountryMetadataUrl") String stubCountryMetadataUrl) {
-        return new EidasAuthnResponseService(
-                hubConnectorEntityId,
-                eidasResponseTransformerProvider,
-                metadataProvider,
-                stubCountryMetadataUrl);
-    }
-
-    @Provides
-    @Named("RSASHA256EidasResponseTransfomerProvider")
-    public EidasResponseTransformerProvider getECDSAEidasResponseTransfomerProvider(
-            @Named(StubIdpModule.HUB_CONNECTOR_ENCRYPTION_KEY_STORE) Optional<EncryptionKeyStore> encryptionKeyStore,
-            @Named(COUNTRY_SIGNING_KEY_STORE) IdaKeyStore keyStore,
-            EntityToEncryptForLocator entityToEncryptForLocator) {
-        return new EidasResponseTransformerProvider(
-                encryptionKeyStore.orElse(null),
-                keyStore,
-                entityToEncryptForLocator,
-                new SignatureRSASHA256(),
-                new DigestSHA256()
-        );
-    }
-
-    @Provides
-    @Named("RSASSAPSSEidasAuthnResponseService")
-    public EidasAuthnResponseService getRSASSAPSSEidasAuthnResponseService(
-            @Named("HubConnectorEntityId") String hubConnectorEntityId,
-            @Named("RSASSAPSSEidasResponseTransformerProvider") EidasResponseTransformerProvider eidasResponseTransformerProvider,
-            @Named(StubIdpModule.HUB_CONNECTOR_METADATA_REPOSITORY) Optional<MetadataRepository> metadataProvider,
-            @Named("StubCountryMetadataUrl") String stubCountryMetadataUrl) {
-        return new EidasAuthnResponseService(
-                hubConnectorEntityId,
-                eidasResponseTransformerProvider,
-                metadataProvider,
-                stubCountryMetadataUrl);
-    }
-
-    @Named("RSASSAPSSEidasResponseTransformerProvider")
-    @Provides
-    public EidasResponseTransformerProvider getEidasResponseTransformerProvider(
-        @Named(StubIdpModule.HUB_CONNECTOR_ENCRYPTION_KEY_STORE) Optional<EncryptionKeyStore> encryptionKeyStore,
-        @Named(COUNTRY_SIGNING_KEY_STORE) IdaKeyStore keyStore,
-        EntityToEncryptForLocator entityToEncryptForLocator) {
-        return new EidasResponseTransformerProvider(
-            encryptionKeyStore.orElse(null),
-            keyStore,
-            entityToEncryptForLocator,
-            new SignatureRSASSAPSS(),
-            new DigestSHA256()
-        );
-    }
-
-    @Provides
     @Singleton
     public SamlConfiguration samlConfiguration(StubIdpConfiguration stubIdpConfiguration) {
         return stubIdpConfiguration.getSamlConfiguration();
@@ -384,13 +268,6 @@ public class StubIdpModule extends AbstractModule {
     @Named(IDP_SIGNING_KEY_STORE)
     public IdaKeyStore getKeyStore(StubIdpConfiguration stubIdpConfiguration) {
         return getKeystoreFromConfig(stubIdpConfiguration.getSigningKeyPairConfiguration());
-    }
-
-    @Provides
-    @Singleton
-    @Named(COUNTRY_SIGNING_KEY_STORE)
-    public IdaKeyStore getCountryKeyStore(StubIdpConfiguration stubIdpConfiguration) {
-        return getKeystoreFromConfig(stubIdpConfiguration.getEuropeanIdentityConfiguration().getSigningKeyPairConfiguration());
     }
 
     @Provides
@@ -432,24 +309,10 @@ public class StubIdpModule extends AbstractModule {
     }
 
     @Provides
-    @Named(HUB_CONNECTOR_ENCRYPTION_KEY_STORE)
-    @Singleton
-    public Optional<EncryptionKeyStore> getHubConnectorEncryptionKeyStore(@Named(HUB_CONNECTOR_METADATA_REPOSITORY) Optional<MetadataRepository> metadataRepository, PublicKeyFactory publicKeyFactory) {
-        return metadataRepository.map(metadataRepository1 -> new HubEncryptionKeyStore(metadataRepository1, publicKeyFactory));
-    }
-
-    @Provides
     @Named(HUB_METADATA_REPOSITORY)
     @Singleton
     public MetadataRepository getHubMetadataRepository(@Named(HUB_METADATA_RESOLVER) MetadataResolver metadataResolver, @Named("HubEntityId") String hubEntityId) {
         return new MetadataRepository(metadataResolver, hubEntityId);
-    }
-
-    @Provides
-    @Named(HUB_CONNECTOR_METADATA_REPOSITORY)
-    @Singleton
-    public Optional<MetadataRepository> getHubConnectorMetadataRepository(@Named(HUB_CONNECTOR_METADATA_RESOLVER) Optional<MetadataResolver> metadataResolver, @Named("HubConnectorEntityId") String hubEntityId) {
-        return metadataResolver.map(metadataResolver1 -> new MetadataRepository(metadataResolver1, hubEntityId));
     }
 
     @Provides
@@ -459,18 +322,6 @@ public class StubIdpModule extends AbstractModule {
         MetadataResolver metadataResolver = new DropwizardMetadataResolverFactory().createMetadataResolver(environment, configuration.getMetadataConfiguration());
         registerMetadataHealthcheckAndRefresh(environment, metadataResolver, configuration.getMetadataConfiguration(), "metadata");
         return metadataResolver;
-    }
-
-    @Provides
-    @Named(HUB_CONNECTOR_METADATA_RESOLVER)
-    @Singleton
-    public Optional<MetadataResolver> getHubConnectorMetadataResolver(Environment environment, StubIdpConfiguration configuration) {
-        if (configuration.getEuropeanIdentityConfiguration().isEnabled()) {
-            MetadataResolver metadataResolver = new DropwizardMetadataResolverFactory().createMetadataResolver(environment, configuration.getEuropeanIdentityConfiguration().getMetadata());
-            registerMetadataHealthcheckAndRefresh(environment, metadataResolver, configuration.getEuropeanIdentityConfiguration().getMetadata(), "connector-metadata");
-            return Optional.of(metadataResolver);
-        }
-        return Optional.empty();
     }
 
     @Provides

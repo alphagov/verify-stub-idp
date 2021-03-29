@@ -8,7 +8,6 @@ import uk.gov.ida.stub.idp.exceptions.InvalidSecureCookieException;
 import uk.gov.ida.stub.idp.exceptions.SecureCookieNotFoundException;
 import uk.gov.ida.stub.idp.exceptions.SessionIdCookieNotFoundException;
 import uk.gov.ida.stub.idp.exceptions.SessionNotFoundException;
-import uk.gov.ida.stub.idp.repositories.EidasSession;
 import uk.gov.ida.stub.idp.repositories.IdpSession;
 import uk.gov.ida.stub.idp.repositories.SessionRepository;
 
@@ -26,7 +25,6 @@ import static uk.gov.ida.stub.idp.cookies.CookieNames.SESSION_COOKIE_NAME;
 public class SessionCookieValueMustExistAsASessionFilter implements ContainerRequestFilter {
 
     private final SessionRepository<IdpSession> idpSessionRepository;
-    private final SessionRepository<EidasSession> eidasSessionRepository;
     private final HmacValidator hmacValidator;
     private final boolean isSecureCookieEnabled;
 
@@ -36,11 +34,9 @@ public class SessionCookieValueMustExistAsASessionFilter implements ContainerReq
 
     @Inject
     public SessionCookieValueMustExistAsASessionFilter(SessionRepository<IdpSession> idpSessionRepository,
-                                                       SessionRepository<EidasSession> eidasSessionRepository,
                                                        HmacValidator hmacValidator,
                                                        @Named("isSecureCookieEnabled") Boolean isSecureCookieEnabled) {
         this.idpSessionRepository = idpSessionRepository;
-        this.eidasSessionRepository = eidasSessionRepository;
         this.hmacValidator = hmacValidator;
         this.isSecureCookieEnabled = isSecureCookieEnabled;
     }
@@ -75,7 +71,7 @@ public class SessionCookieValueMustExistAsASessionFilter implements ContainerReq
             status = Status.DELETED_SESSION;
         } else if (isSecureCookieEnabled && !hmacValidator.validateHMACSHA256(secureCookie.get(), sessionCookie.get())) {
             status = Status.INVALID_HASH;
-        } else if (!idpSessionRepository.containsSession(new SessionId(sessionCookie.get())) && !eidasSessionRepository.containsSession(new SessionId(sessionCookie.get()))) {
+        } else if (!idpSessionRepository.containsSession(new SessionId(sessionCookie.get()))) {
             status = Status.NOT_FOUND;
         } else {
             status = Status.VERIFIED;

@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import uk.gov.ida.apprule.support.TestSamlRequestFactory;
-import uk.gov.ida.apprule.support.eidas.EidasAuthnRequestBuilder;
 import uk.gov.ida.saml.core.IdaConstants;
 import uk.gov.ida.stub.idp.Urls;
 import uk.gov.ida.stub.idp.cookies.CookieNames;
@@ -21,7 +20,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.ida.stub.idp.repositories.StubCountryRepository.STUB_COUNTRY_FRIENDLY_ID;
 
 public class AuthnRequestSteps {
     private final Client client;
@@ -74,27 +72,6 @@ public class AuthnRequestSteps {
         return getCookiesAndFollowRedirect(response);
     }
 
-    public Cookies userPostsEidasAuthnRequestToStubIdp() {
-        return userPostsEidasAuthnRequestToStubIdpWithAttribute(false, false);
-    }
-
-    public Cookies userPostsEidasAuthnRequestToStubIdpWithAttribute(boolean requestAddress, boolean requestGender) {
-        final EidasAuthnRequestBuilder eidasAuthnRequestBuilder = EidasAuthnRequestBuilder.anAuthnRequest();
-        if(requestAddress) {
-            eidasAuthnRequestBuilder.withRequestedAttribute(IdaConstants.Eidas_Attributes.CurrentAddress.NAME);
-        }
-        if(requestGender) {
-            eidasAuthnRequestBuilder.withRequestedAttribute(IdaConstants.Eidas_Attributes.Gender.NAME);
-        }
-        String authnRequest = eidasAuthnRequestBuilder.build();
-        Response response = postAuthnRequest(ImmutableList.of(), Optional.empty(), Optional.empty(), authnRequest, Urls.EIDAS_SAML2_SSO_RESOURCE);
-
-        assertThat(response.getStatus()).isEqualTo(303);
-        assertThat(response.getLocation().getPath()).startsWith(getStubIdpUri(Urls.EIDAS_LOGIN_RESOURCE).getPath());
-
-        return getCookiesAndFollowRedirect(response);
-    }
-
     private Cookies getCookiesAndFollowRedirect(Response response) {
         final NewCookie sessionCookie = response.getCookies().get(CookieNames.SESSION_COOKIE_NAME);
         assertThat(sessionCookie).isNotNull();
@@ -132,10 +109,6 @@ public class AuthnRequestSteps {
         userLogsIn(cookies, idpName);
     }
 
-    public void eidasUserLogsIn(Cookies cookies) {
-        userLogsIn(cookies, STUB_COUNTRY_FRIENDLY_ID, Urls.EIDAS_LOGIN_RESOURCE, Urls.EIDAS_CONSENT_RESOURCE);
-    }
-
     public void userLogsIn(Cookies cookies, String username) {
         userLogsIn(cookies, username, Urls.LOGIN_RESOURCE, Urls.CONSENT_RESOURCE);
     }
@@ -158,10 +131,6 @@ public class AuthnRequestSteps {
 
     public String userConsentsReturnSamlResponse(Cookies cookies, boolean randomize) {
         return userConsentsReturnSamlResponse(cookies, randomize, Urls.CONSENT_RESOURCE);
-    }
-
-    public String eidasUserConsentsReturnSamlResponse(Cookies cookies, boolean randomize) {
-        return userConsentsReturnSamlResponse(cookies, randomize, Urls.EIDAS_CONSENT_RESOURCE);
     }
 
     private String userConsentsReturnSamlResponse(Cookies cookies, boolean randomize, String consentUrl) {
@@ -192,12 +161,6 @@ public class AuthnRequestSteps {
 
     public void userViewsTheDebugPage(Cookies cookies) {
         userViewsTheDebugPage(cookies, getStubIdpUri(Urls.DEBUG_RESOURCE));
-    }
-
-    public String eidasUserViewsTheDebugPage(Cookies cookies) {
-        final String page = userViewsTheDebugPage(cookies, getStubIdpUri(Urls.EIDAS_DEBUG_RESOURCE));
-        assertThat(page).contains("http://eidas.europa.eu/attributes/naturalperson/PersonIdentifier");
-        return page;
     }
 
     private String userViewsTheDebugPage(Cookies cookies, URI debugUrl) {

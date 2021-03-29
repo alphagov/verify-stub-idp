@@ -1,9 +1,7 @@
 package uk.gov.ida.stub.idp.repositories.jdbc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import uk.gov.ida.stub.idp.domain.DatabaseEidasUser;
 import uk.gov.ida.stub.idp.domain.DatabaseIdpUser;
-import uk.gov.ida.stub.idp.repositories.jdbc.json.EidasUserJson;
 import uk.gov.ida.stub.idp.repositories.jdbc.json.IdpUserJson;
 
 import javax.inject.Singleton;
@@ -31,18 +29,6 @@ public class UserMapper {
         );
     }
 
-    public User mapFrom(String stubCountryFriendlyName, DatabaseEidasUser eidasUser) {
-        String eidasUserAsJson = uncheck(() -> mapper.writeValueAsString(eidasUser));
-
-        return new User(
-                null,
-                eidasUser.getUsername(),
-                eidasUser.getPassword(),
-                stubCountryFriendlyName,
-                eidasUserAsJson
-        );
-    }
-
     public DatabaseIdpUser mapToIdpUser(User user) {
         IdpUserJson idpUserJson = uncheck(() -> mapper.readValue(user.getData(), IdpUserJson.class));
 
@@ -60,19 +46,4 @@ public class UserMapper {
         );
     }
 
-    public DatabaseEidasUser mapToEidasUser(User user) {
-        EidasUserJson eidasUserJson = uncheck(() -> mapper.readValue(user.getData(), EidasUserJson.class));
-
-        return new DatabaseEidasUser(
-                eidasUserJson.getUsername(),
-                eidasUserJson.getPersistentId(),
-                eidasUserJson.getPassword(),
-                eidasUserJson.getFirstname(),
-                eidasUserJson.getNonLatinFirstname(),
-                eidasUserJson.getSurname(),
-                eidasUserJson.getNonLatinSurname(),
-                eidasUserJson.getDateOfBirth(),
-                eidasUserJson.getLevelOfAssurance()
-        );
-    }
 }

@@ -12,7 +12,7 @@ public class StaleSessionReaper implements Runnable {
     private static final Logger LOGGER = Logger.getLogger(StaleSessionReaper.class);
 
     /**
-     * this operates on all sessions in the database, both eidas and verify
+     * this operates on all sessions in the database
      */
     private final SessionRepository<IdpSession> verifySessionRepository;
     private final Duration sessionIsStaleAfter;
@@ -26,11 +26,11 @@ public class StaleSessionReaper implements Runnable {
     @Override
     public void run() {
         final long sessionsInDatabaseBefore = verifySessionRepository.countSessionsInDatabase();
-        LOGGER.info(format("{0} active sessions before reaping (eidas + verify)", sessionsInDatabaseBefore));
+        LOGGER.info(format("{0} active sessions before reaping", sessionsInDatabaseBefore));
         final long staleSessionsToReap = verifySessionRepository.countSessionsOlderThan(sessionIsStaleAfter);
-        LOGGER.info(format("{0} session(s) (approx) are expected to be reaped (eidas + verify)", staleSessionsToReap));
+        LOGGER.info(format("{0} session(s) (approx) are expected to be reaped", staleSessionsToReap));
         verifySessionRepository.deleteSessionsOlderThan(sessionIsStaleAfter);
         final long sessionsInDatabaseAfter = verifySessionRepository.countSessionsInDatabase();
-        LOGGER.info(format("{0} active sessions after reaping (eidas + verify)", sessionsInDatabaseAfter));
+        LOGGER.info(format("{0} active sessions after reaping", sessionsInDatabaseAfter));
     }
 }

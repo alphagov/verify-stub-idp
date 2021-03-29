@@ -67,36 +67,6 @@ metadata:
   maxRefreshDelay: 1800000
   expectedEntityId: ${METADATA_ENTITY_ID}
 
-europeanIdentity:
-  enabled: ${EUROPEAN_IDENTITY_ENABLED:-false}
-  hubConnectorEntityId: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}
-  stubCountryBaseUrl: http://localhost:50140
-  metadata:
-    jerseyClientName: connector-metadata-client
-    client:
-      timeout: 60s
-      timeToLive: 10m
-      connectionTimeout: 4s
-      tls:
-        protocol: TLSv1.2
-        verifyHostname: false
-    uri: ${HUB_CONNECTOR_ENTITY_ID}
-    trustStore:
-      type: ${TRUSTSTORE_TYPE:-file}
-      store: ${METADATA_TRUSTSTORE}
-      password: ${TRUSTSTORE_PASSWORD}
-    minRefreshDelay: 30000
-    maxRefreshDelay: 1800000
-    expectedEntityId: ${HUB_CONNECTOR_ENTITY_ID:-http://DefaultNotUsed}
-  signingKeyPairConfiguration:
-    privateKeyConfiguration:
-      type: ${KEY_TYPE:-file}
-      key: ${STUB_COUNTRY_SIGNING_PRIVATE_KEY}
-    publicKeyConfiguration:
-      type: ${CERT_TYPE:-file}
-      cert: ${STUB_COUNTRY_SIGNING_CERT}
-      name: stub_country_signing_cert
-
 database:
   url: ${DB_URI:-jdbc:postgresql://localhost:5432/postgres?user=postgres&password=docker}
 

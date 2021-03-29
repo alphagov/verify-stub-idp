@@ -1,26 +1,18 @@
 package uk.gov.ida.apprule.support;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.resolver.ResolverException;
 import net.shibboleth.utilities.java.support.xml.BasicParserPool;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.Response;
-import org.opensaml.saml.saml2.encryption.Decrypter;
 import org.opensaml.saml.saml2.metadata.IDPSSODescriptor;
-import org.opensaml.xmlsec.encryption.support.EncryptionConstants;
 import org.slf4j.event.Level;
-import uk.gov.ida.apprule.support.eidas.EidasAttributeStatementAssertionValidator;
-import uk.gov.ida.apprule.support.eidas.EidasAuthnResponseIssuerValidator;
-import uk.gov.ida.apprule.support.eidas.InboundResponseFromCountry;
 import uk.gov.ida.common.shared.security.PrivateKeyFactory;
 import uk.gov.ida.common.shared.security.PublicKeyFactory;
 import uk.gov.ida.common.shared.security.X509CertificateFactory;
-import uk.gov.ida.saml.core.errors.SamlTransformationErrorFactory;
 import uk.gov.ida.saml.core.transformers.AuthnContextFactory;
 import uk.gov.ida.saml.core.validation.SamlTransformationErrorException;
-import uk.gov.ida.saml.core.validation.SamlValidationSpecificationFailure;
 import uk.gov.ida.saml.core.validation.assertion.AssertionAttributeStatementValidator;
 import uk.gov.ida.saml.core.validation.assertion.IdentityProviderAssertionValidator;
 import uk.gov.ida.saml.core.validation.subjectconfirmation.AssertionSubjectConfirmationValidator;
@@ -95,14 +87,12 @@ public class SamlDecrypter {
             new Base64StringDecoder(),
             new ResponseSizeValidator(new StringSizeValidator()),
             new OpenSamlXMLObjectUnmarshaller(new SamlObjectParser()));
-    private final Optional<String> eidasSchemeName;
 
-    public SamlDecrypter(Client client, URI metadataUri, String hubEntityId, int localPort, Optional<String> eidasSchemeName) {
+    public SamlDecrypter(Client client, URI metadataUri, String hubEntityId, int localPort) {
         this.client = client;
         this.metadataUri = metadataUri;
         this.hubEntityId = hubEntityId;
         this.localPort = localPort;
-        this.eidasSchemeName = eidasSchemeName;
     }
 
     /**
@@ -133,92 +123,6 @@ public class SamlDecrypter {
         }
         return jerseyClientMetadataResolver;
     }
-
-    /**
-     * Be warned that this method does little to no validation and is just for testing the contents of a response
-     */
-    public InboundResponseFromCountry decryptEidasSaml(String samlResponse) {
-
-        Response response = stringToOpenSamlObjectTransformer.apply(samlResponse);
-        ValidatedResponse validatedResponse = validateResponse(response);
-        AssertionDecrypter assertionDecrypter = getAES256WithGCMAssertionDecrypter(createHubKeyStore());
-        List<Assertion> assertions = assertionDecrypter.decryptAssertions(validatedResponse);
-        Optional<Assertion> validatedIdentityAssertion = validateAssertion(validatedResponse, assertions);
-
-        return new InboundResponseFromCountry(response.getIssuer().getValue(),
-                validatedIdentityAssertion.get(),
-                response.getStatus()
-        );
-    }
-
-    private AssertionDecrypter getAES256WithGCMAssertionDecrypter(IdaKeyStore keyStore) {
-        IdaKeyStoreCredentialRetriever idaKeyStoreCredentialRetriever = new IdaKeyStoreCredentialRetriever(keyStore);
-        Decrypter decrypter = new DecrypterFactory().createDecrypter(idaKeyStoreCredentialRetriever.getDecryptingCredentials());
-        return new AssertionDecrypter(
-                new EncryptionAlgorithmValidator(
-                        ImmutableSet.of(EncryptionConstants.ALGO_ID_BLOCKCIPHER_AES256, EncryptionConstants.ALGO_ID_BLOCKCIPHER_AES256_GCM),
-                        ImmutableSet.of(EncryptionConstants.ALGO_ID_KEYTRANSPORT_RSAOAEP)),
-                decrypter
-        );
-    }
-
-    private ValidatedResponse validateResponse(Response response) {
-        SamlResponseSignatureValidator samlResponseSignatureValidator = new SamlResponseSignatureValidator(getSamlMessageSignatureValidator(response.getIssuer().getValue()));
-        final ValidatedResponse validatedResponse = samlResponseSignatureValidator.validate(response, IDPSSODescriptor.DEFAULT_ELEMENT_NAME);
-        new DestinationValidator(URI.create("http://foo.com/bar"), "/bar").validate(response.getDestination());
-        return validatedResponse;
-    }
-
-    private void getValidatedAssertion(ValidatedResponse validatedResponse, List<Assertion> decryptedAssertions) {
-        SamlAssertionsSignatureValidator samlAssertionsSignatureValidator = new SamlAssertionsSignatureValidator(getSamlMessageSignatureValidator(validatedResponse.getIssuer().getValue()));
-        samlAssertionsSignatureValidator.validate(decryptedAssertions, IDPSSODescriptor.DEFAULT_ELEMENT_NAME);
-    }
-
-    public void responseAssertionFromCountryValidatorValidate(ValidatedResponse validatedResponse, Assertion validatedIdentityAssertion) {
-
-        new IdentityProviderAssertionValidator(
-                new IssuerValidator(),
-                new AssertionSubjectValidator(),
-                new AssertionAttributeStatementValidator(),
-                new AssertionSubjectConfirmationValidator()
-        ).validate(validatedIdentityAssertion, validatedResponse.getInResponseTo(), "http://foo.com/bar");
-
-        if (validatedResponse.isSuccess()) {
-
-            if (validatedIdentityAssertion.getAuthnStatements().size() > 1) {
-                SamlValidationSpecificationFailure failure = SamlTransformationErrorFactory.multipleAuthnStatements();
-                throw new SamlTransformationErrorException(failure.getErrorMessage(), failure.getLogLevel());
-            }
-
-            new EidasAttributeStatementAssertionValidator().validate(validatedIdentityAssertion);
-            new AuthnStatementAssertionValidator(
-                    new DuplicateAssertionValidatorImpl(new ConcurrentMapIdExpirationCache<>(new ConcurrentHashMap<>()))
-            ).validate(validatedIdentityAssertion);
-            new EidasAuthnResponseIssuerValidator().validate(validatedResponse, validatedIdentityAssertion);
-        }
-    }
-
-    private SamlMessageSignatureValidator getSamlMessageSignatureValidator(String entityId) {
-        return ofNullable(getMetadataResolver(URI.create("http://localhost:" + localPort + "/" + eidasSchemeName.get() + "/ServiceMetadata")))
-                .map(m -> {
-                    try {
-                        return new MetadataSignatureTrustEngineFactory().createSignatureTrustEngine(m);
-                    } catch (ComponentInitializationException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .map(MetadataBackedSignatureValidator::withoutCertificateChainValidation)
-                .map(SamlMessageSignatureValidator::new)
-                .orElseThrow(() -> new SamlTransformationErrorException(format("Unable to find metadata resolver for entity Id {0}", entityId), Level.ERROR));
-    }
-
-    private Optional<Assertion> validateAssertion(ValidatedResponse validatedResponse, List<Assertion> decryptedAssertions) {
-        getValidatedAssertion(validatedResponse, decryptedAssertions);
-        Optional<Assertion> identityAssertion = decryptedAssertions.stream().findFirst();
-        identityAssertion.ifPresent(assertion -> responseAssertionFromCountryValidatorValidate(validatedResponse, assertion));
-        return identityAssertion;
-    }
-
 
     public IdaKeyStore createHubKeyStore() {
         PrivateKey privateKey = new PrivateKeyFactory().createPrivateKey(Base64.getDecoder().decode(HUB_TEST_PRIVATE_ENCRYPTION_KEY));

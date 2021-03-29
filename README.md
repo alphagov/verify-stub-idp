@@ -1,6 +1,6 @@
 # Verify Stub IDP
 
-This microservice is a stub IDP that can be white-labelled to simulate any IDP, or used as a Stub eIDAS Proxy Service Node.
+This microservice is a stub IDP that can be white-labelled to simulate any IDP.
 
 [![Build Status](https://travis-ci.org/alphagov/verify-stub-idp.svg?branch=master)](https://travis-ci.org/alphagov/verify-stub-idp)
 
@@ -57,12 +57,6 @@ You need to use the entityId `http://stub_idp.acme.org/{friendlyId}/SSO/POST` or
 The SSO URI for that IDP will be `http://localhost:50140/{friendlyId}/SAML2/SSO` or equivalent.
 
 You need to set the hub (or service) entityId that messages will be received from/sent back to, as well as where the hub/service metadata can be received from -> see the `hubEntityId` and `metadata` configuration blocks.
-
-# Using as a Stub eIDAS Proxy Service Node
-
-Set the values in `europeanIdentity` including HUB_CONNECTOR_ENTITY_ID and CONNECTOR_NODE_METADATA_URI for the consuming relying party/service provider/hub. These values may be the same if the Connector Node metadata is published at the same URL as its entity ID.
-
-Several countries can be dynamically stubbed at once - see the full list in [EidasScheme](src/main/java/uk/gov/ida/stub/idp/domain/EidasScheme.java) (use the values, not the enum keys).  Once the metadata is retrieved for each stub it can be used by the consuming relying party/service provider/hub.  Metadata is at http://localhost:50140/[scheme]/ServiceMetadata  Test users are all `stub-country*`.
 
 ## Test Users
 
