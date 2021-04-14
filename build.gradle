@@ -14,9 +14,28 @@ buildscript {
     }
 }
 
+plugins {
+    id "io.github.gradle-nexus.publish-plugin" version "1.0.0"
+}
+
+apply plugin: 'io.github.gradle-nexus.publish-plugin'
 apply plugin: 'idea'
 apply plugin: 'java'
 apply plugin: 'com.github.ben-manes.versions'
+
+nexusPublishing {
+    useStaging = true
+    repositories {
+        sonatype {
+            // because we registered in Sonatype after 24 Feb 2021, we provide these URIs
+            // see: https://github.com/gradle-nexus/publish-plugin/blob/master/README.md
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+            username = System.getenv("SONATYPE_USERNAME")
+            password = System.getenv("SONATYPE_PASSWORD")
+        }
+    }
+}
 
 ext {
   opensaml_version = '3.4.3'
@@ -34,11 +53,11 @@ def dependencyVersions = [
         hk2_version           : '2.5.0-b05'
 ]
 
+group = "uk.gov.ida"
+version = "${build_version}"
+
 subprojects {
     apply plugin: 'java'
-
-    group = "uk.gov.ida"
-    version = "${version ?: 'SNAPSHOT'}"
 
     compileJava.options.encoding = "UTF-8"
     compileTestJava.options.encoding = "UTF-8"
