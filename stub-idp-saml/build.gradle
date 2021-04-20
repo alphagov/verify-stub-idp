@@ -1,4 +1,3 @@
-apply plugin: 'java'
 apply from: "${rootDir}/publish.gradle"
 
 dependencies {

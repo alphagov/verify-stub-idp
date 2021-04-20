@@ -1,4 +1,3 @@
-apply plugin: 'java'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
@@ -7,7 +6,6 @@ publishing {
         mavenJava(MavenPublication) {
             from components.java
             groupId = "uk.gov.ida"
-            version = "$build_version"
             pom {
                 name = project.name
                 packaging = 'jar'

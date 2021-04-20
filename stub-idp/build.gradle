@@ -7,7 +7,6 @@ dependencies {
 
 apply plugin: 'application'
 apply plugin: 'maven-publish'
-apply plugin: 'idea'
 
 mainClassName = 'uk.gov.ida.stub.idp.StubIdpApplication'
 
