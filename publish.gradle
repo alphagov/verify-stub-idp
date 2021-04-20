@@ -1,0 +1,48 @@
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            groupId = "uk.gov.ida"
+            version = "$build_version"
+            pom {
+                name = project.name
+                packaging = 'jar'
+                description = "Library for ${project.name}"
+                url = "https://github.com/alphagov/${project.name}"
+                artifactId = project.name
+
+                scm {
+                    url = "https://github.com/alphagov/${project.name}"
+                    connection = "scm:git:git://github.com/alphagov/${project.name}.git"
+                    developerConnection = "scm:git:ssh://git@github.com:alphagov/${project.name}.git"
+                }
+
+                licenses {
+                    license {
+                        name = 'MIT Licence'
+                        url = "https://github.com/alphagov/${project.name}/blob/master/LICENCE"
+                        distribution = 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        name = 'GDS Developers'
+                    }
+                }
+            }
+        }
+    }
+}
+
+signing {
+    useInMemoryPgpKeys(
+            System.getenv("MAVEN_CENTRAL_SIGNING_KEY"),
+            System.getenv("MAVEN_CENTRAL_SIGNING_KEY_PASSWORD")
+    )
+    sign publishing.publications
+}
