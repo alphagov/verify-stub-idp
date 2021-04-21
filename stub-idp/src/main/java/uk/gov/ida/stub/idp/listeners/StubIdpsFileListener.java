@@ -26,6 +26,7 @@ public class StubIdpsFileListener implements Managed {
 
     /**
      * @param stubIdpConfiguration which contains the stubIdpYmlFileLocation passed in as e.g. configuration/local/stub-idps.yml
+     * @param idpStubsRepository which contains the idpStubRepository
      */
     @Inject
     public StubIdpsFileListener(StubIdpConfiguration stubIdpConfiguration, IdpStubsRepository idpStubsRepository) {

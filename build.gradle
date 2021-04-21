@@ -19,9 +19,8 @@ plugins {
 }
 
 apply plugin: 'io.github.gradle-nexus.publish-plugin'
-apply plugin: 'idea'
-apply plugin: 'java'
 apply plugin: 'com.github.ben-manes.versions'
+
 
 nexusPublishing {
     useStaging = true
@@ -53,12 +52,20 @@ def dependencyVersions = [
         hk2_version           : '2.5.0-b05'
 ]
 
-group = "uk.gov.ida"
-version = "${build_version}"
+allprojects {
+    apply plugin: 'idea'
+    apply plugin: 'java'
+    group = "uk.gov.ida"
+    version = "${build_version}"
+
+    java {
+        withJavadocJar()
+        withSourcesJar()
+    }
+}
+
 
 subprojects {
-    apply plugin: 'java'
-
     compileJava.options.encoding = "UTF-8"
     compileTestJava.options.encoding = "UTF-8"
 
