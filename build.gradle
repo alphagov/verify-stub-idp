@@ -1,26 +1,6 @@
-buildscript {
-    repositories {
-        if (System.getenv('VERIFY_USE_PUBLIC_BINARIES') == 'true') {
-            logger.warn('Production builds MUST NOT be built with public binaries.\nUse artifactory/allowed-repos for production builds.\n\n')
-            maven { url 'https://dl.bintray.com/alphagov/maven-test' }
-            jcenter()
-        }
-        else {
-            maven { url 'https://gds.jfrog.io/artifactory/allowed-repos' }
-        }
-    }
-    dependencies {
-      classpath 'com.github.ben-manes:gradle-versions-plugin:0.17.0'
-    }
-}
-
 plugins {
     id "io.github.gradle-nexus.publish-plugin" version "1.0.0"
 }
-
-apply plugin: 'io.github.gradle-nexus.publish-plugin'
-apply plugin: 'com.github.ben-manes.versions'
-
 
 nexusPublishing {
     useStaging = true
@@ -43,12 +23,12 @@ ext {
 
 def dependencyVersions = [
         opensaml              : "$opensaml_version",
-        ida_utils             : '2.0.0-392',
+        ida_utils             : '2.0.0-395',
         dropwizard            : '1.3.8',
-        ida_dev_pki           : '1.1.0-37',
-        saml_libs             : "$opensaml_version-250",
-        ida_test_utils        : '2.0.0-46',
-        hub_saml              : "$opensaml_version-15766",
+        verify_dev_pki        : '2.0.0-45',
+        saml_libs             : "$opensaml_version-254",
+        ida_test_utils        : '2.0.0-65',
+        hub_saml              : "$opensaml_version-15825",
         hk2_version           : '2.5.0-b05'
 ]
 
@@ -72,10 +52,7 @@ subprojects {
     repositories {
         if (System.getenv('VERIFY_USE_PUBLIC_BINARIES') == 'true') {
             logger.warn('Production builds MUST NOT be built with public binaries.\nUse artifactory/allowed-repos for production builds.\n\n')
-            maven { url 'https://dl.bintray.com/alphagov/maven' } // For dropwizard-logstash
-            maven { url 'https://dl.bintray.com/alphagov/maven-test' } // For other public verify binaries
-            maven { url 'https://build.shibboleth.net/nexus/content/repositories/releases' }
-            jcenter()
+            mavenCentral()
         }
         else {
             maven { url 'https://gds.jfrog.io/artifactory/allowed-repos' }
@@ -123,7 +100,7 @@ subprojects {
                 'com.fasterxml.jackson.datatype:jackson-datatype-joda:2.9.5'
 
         stub_idp_test "io.dropwizard:dropwizard-testing:$dependencyVersions.dropwizard",
-                "uk.gov.ida:ida-dev-pki:$dependencyVersions.ida_dev_pki",
+                "uk.gov.ida:verify-dev-pki:$dependencyVersions.verify_dev_pki",
                 "uk.gov.ida:saml-test:$dependencyVersions.saml_libs",
                 "uk.gov.ida:common-test-utils:$dependencyVersions.ida_test_utils",
                 "uk.gov.ida:hub-saml:$dependencyVersions.hub_saml",
@@ -142,7 +119,7 @@ subprojects {
                 'commons-lang:commons-lang:2.6'
 
         stub_idp_saml_test 'commons-codec:commons-codec:1.10',
-                "uk.gov.ida:ida-dev-pki:$dependencyVersions.ida_dev_pki",
+                "uk.gov.ida:verify-dev-pki:$dependencyVersions.verify_dev_pki",
                 "uk.gov.ida:saml-test:$dependencyVersions.saml_libs",
                 "uk.gov.ida:common-utils:$dependencyVersions.ida_utils",
                 'org.assertj:assertj-joda-time:1.1.0'

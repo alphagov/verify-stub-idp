@@ -1,4 +1,4 @@
-FROM ghcr.io/alphagov/verify/gradle:gradle-jdk11 as build
+FROM gradle:6.8.3-jdk11 as build
 
 WORKDIR /stub-idp
 USER root
