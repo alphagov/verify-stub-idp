@@ -1,4 +1,4 @@
-FROM ghcr.io/alphagov/verify/ruby:2.6.6
+FROM ruby:2.6.6
 
 ADD Gemfile Gemfile
 

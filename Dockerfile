@@ -25,7 +25,7 @@ RUN gradle :stub-idp:installDist
 ENTRYPOINT ["gradle"]
 CMD ["tasks"]
 
-FROM ghcr.io/alphagov/verify/java:openjdk-11
+FROM openjdk:11.0.9.1-jre
 
 WORKDIR /stub-idp
 
