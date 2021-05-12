@@ -10,6 +10,7 @@ COPY stub-idp-saml/build.gradle stub-idp-saml/build.gradle
 COPY shared.gradle shared.gradle
 COPY settings.gradle settings.gradle
 COPY inttest.gradle inttest.gradle
+COPY publish.gradle publish.gradle
 # There is an issue running idea.gradle in the container
 # So just make this an empty file
 RUN touch idea.gradle
