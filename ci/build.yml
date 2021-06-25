@@ -6,6 +6,8 @@ image_resource:
   source:
     repository: openjdk
     tag: 11-jdk-slim
+    username: ((dockerhub-username))
+    password: ((dockerhub-password))
 
 inputs:
   - name: stub-idp
