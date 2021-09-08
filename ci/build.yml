@@ -32,8 +32,7 @@ run:
       /usr/bin/rsync -qrv "$stub_idp_fed_config/configuration/" stub-idp/stub-idp/src/dist/resources/
       cd stub-idp/stub-idp
       ../gradlew --parallel --no-daemon clean test intTest
-      ../gradlew --no-daemon \
-              -Pversion=$(cat ../../stub-idp-version/number) \
+      BUILD_NUMBER=$(cat ../../stub-idp-version/number) ../gradlew --no-daemon \
               -PstubidpExtraLogosDirectory="$stub_idp_fed_config/idp-logos" \
               copyStubIdpLogos copyToLib distZip
       cp build/distributions/stub-idp-*.zip ../../stub-idp-java
