@@ -17,7 +17,7 @@ nexusPublishing {
 }
 
 ext {
-  opensaml_version = '3.4.3'
+  opensaml_version = '3.4.6'
   build_version = "$opensaml_version-${System.env.BUILD_NUMBER ?: 'SNAPSHOT'}"
 }
 
@@ -26,7 +26,7 @@ def dependencyVersions = [
         ida_utils             : '2.0.0-395',
         dropwizard            : '1.3.8',
         verify_dev_pki        : '2.0.0-45',
-        saml_libs             : "$opensaml_version-254",
+        saml_libs             : "$opensaml_version-258",
         ida_test_utils        : '2.0.0-65',
         hub_saml              : "$opensaml_version-15825",
         hk2_version           : '2.5.0-b05'
