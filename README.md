@@ -1,8 +1,10 @@
 # Verify Stub IDP
 
-This microservice is a stub IDP that can be white-labelled to simulate any IDP.
+>**GOV.UK Verify has closed**
+>
+>This repository is out of date and has been archived
 
-[![Build Status](https://travis-ci.org/alphagov/verify-stub-idp.svg?branch=master)](https://travis-ci.org/alphagov/verify-stub-idp)
+This microservice is a stub IDP that can be white-labelled to simulate any IDP.
 
 ## Note about the history of this repository
 
